@@ -27,7 +27,7 @@ public class SetTest {
 
     @Test
     public void updateVertexPropertyWithString() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) SET n.name = 'marko'"
         )).hasTraversalBeforeReturn(
             __.V()
@@ -44,7 +44,7 @@ public class SetTest {
 
     @Test
     public void updateVertexPropertyWithNumber() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) SET n.age = 33"
         )).hasTraversalBeforeReturn(
             __.V()
@@ -61,7 +61,7 @@ public class SetTest {
 
     @Test
     public void updatePropertyWithList() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n:A) SET n.x = [1, 2, 3] RETURN n.x as x"
         )).hasTraversalBeforeReturn(
             __.V().as("n").where(
@@ -81,7 +81,7 @@ public class SetTest {
 
     @Test
     public void removeVertexProperty() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n:A) SET n.property1 = null RETURN n"
         )).hasTraversalBeforeReturn(
             __.V().as("n").where(
@@ -98,7 +98,7 @@ public class SetTest {
 
     @Test
     public void removeVertexProperty2() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n:A) REMOVE n.property1, n.property2 RETURN n"
         )).hasTraversalBeforeReturn(
             __.V().as("n").where(
@@ -118,7 +118,7 @@ public class SetTest {
 
     @Test
     public void setEdgeProperty() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n)-[r]->(m) SET r.property1 = 'value1' RETURN m"
         )).hasTraversalBeforeReturn(
             __.V().as("n")
@@ -136,7 +136,7 @@ public class SetTest {
 
     @Test
     public void setEdgeProperty2() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n)-[r:REL]->(m) SET (r).name = 'neo4j' RETURN r"
         )).hasTraversalBeforeReturn(
             __.V().as("n")
@@ -153,7 +153,7 @@ public class SetTest {
 
     @Test
     public void unsetEdgeProperty() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n)-[r]->(m) SET r.property1 = null RETURN r"
         )).hasTraversalBeforeReturn(
             __.V().as("n")
@@ -172,7 +172,7 @@ public class SetTest {
 
     @Test
     public void addPropertiesWithMap() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) SET n += {name: 'marko', age: 28} RETURN n"
         )).hasTraversalBeforeReturn(
             __.V()
@@ -190,7 +190,7 @@ public class SetTest {
 
     @Test
     public void setPropertiesWithMap() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) SET n = {name: 'marko', age: 28} RETURN n"
         )).hasTraversalBeforeReturn(
             __.V()

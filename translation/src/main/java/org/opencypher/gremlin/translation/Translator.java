@@ -21,8 +21,7 @@ import java.util.function.Function;
 
 /**
  * Abstraction over the process of building a translation
- * and result post-processing configuration
- * used in Cypher AST walkers.
+ * for different targets.
  */
 public class Translator<T, P> {
     private final TranslationBuilder<T, P> translationBuilder;

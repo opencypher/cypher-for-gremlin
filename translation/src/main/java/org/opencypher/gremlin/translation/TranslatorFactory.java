@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation;
 
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.Column;
@@ -35,7 +36,7 @@ public class TranslatorFactory {
         return new Translator<>(new StringTranslationBuilder(), new StringPredicateFactory());
     }
 
-    public static Translator<GraphTraversal, org.apache.tinkerpop.gremlin.process.traversal.P> traversal(GraphTraversal g) {
+    public static Translator<GraphTraversal, P> traversal(GraphTraversal g) {
         return new Translator<>(new TraversalTranslationBuilder(g), new TraversalPredicateFactory());
     }
 

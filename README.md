@@ -25,7 +25,7 @@ Clauses          | Other       | Patterns                       | Functions
 `SET`            |             |                                |
 `DETACH DELETE`  |             |                                |
 
-It is not expected, however, that any combination or syntax using one of the listed clauses, patterns, or functions will work. You are welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
+It is not expected, however, that any combination of the listed clauses, patterns, or functions will work. You are welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
 
 See the current TCK report for a detailed overview of language coverage.
 

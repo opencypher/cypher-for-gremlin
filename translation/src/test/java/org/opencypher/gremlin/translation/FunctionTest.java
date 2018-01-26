@@ -25,7 +25,7 @@ public class FunctionTest {
 
     @Test
     public void countCapitalized() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) " +
                 "RETURN Count(n)"
         ))
@@ -38,7 +38,7 @@ public class FunctionTest {
 
     @Test
     public void typeCapitalized() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n)-[r]->(m) " +
                 "WHERE Type(r) = 'foo' " +
                 "RETURN n"
@@ -53,7 +53,7 @@ public class FunctionTest {
 
     @Test
     public void existsCapitalized() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) " +
                 "WHERE Exists(n.name) " +
                 "RETURN n"
@@ -68,7 +68,7 @@ public class FunctionTest {
 
     @Test
     public void existsInReturn() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) " +
                 "RETURN exists(n.name)"
         )).hasTraversalBeforeReturn(
@@ -80,7 +80,7 @@ public class FunctionTest {
 
     @Test
     public void functionsCombination() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (n) " +
                 "RETURN sum(size(keys(n))) AS totalNumberOfProps"
         )).hasTraversalBeforeReturn(
@@ -92,7 +92,7 @@ public class FunctionTest {
 
     @Test
     public void rangeCapitalized() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "UNWIND Range(1, 3) AS r " +
                 "RETURN r"
         ))

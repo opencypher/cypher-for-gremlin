@@ -28,7 +28,7 @@ public class OptionalMatchTest {
 
     @Test
     public void singleNode() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "OPTIONAL MATCH (n) RETURN n"
         ))
             .hasTraversalBeforeReturn(
@@ -44,7 +44,7 @@ public class OptionalMatchTest {
 
     @Test
     public void multipleNodes() throws Exception {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "OPTIONAL MATCH (n)-[r]->(m) RETURN n"
         ))
             .hasTraversalBeforeReturn(
@@ -59,7 +59,7 @@ public class OptionalMatchTest {
 
     @Test
     public void path() throws Exception {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "OPTIONAL MATCH p = (n)-[r]->(m) RETURN p"
         ))
             .hasTraversalBeforeReturn(
@@ -74,7 +74,7 @@ public class OptionalMatchTest {
 
     @Test
     public void mixMatch() {
-        assertThat(CypherAstFacade.parse(
+        assertThat(CypherAstWrapper.parse(
             "MATCH (p:person) " +
                 "OPTIONAL MATCH (p)-[c:created]->(s:software) " +
                 "RETURN p.name AS name"

@@ -16,14 +16,14 @@
 package org.opencypher.gremlin.translation.helpers;
 
 import org.assertj.core.api.Assertions;
-import org.opencypher.gremlin.translation.CypherAstFacade;
+import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.TranslationBuilder;
 import org.opencypher.gremlin.translation.TranslatorFactory;
 import org.opencypher.gremlin.translation.string.StringPredicate;
 import org.opencypher.gremlin.translation.string.StringPredicateFactory;
 
 public class CypherAstAssertions extends Assertions {
-    public static CypherAstAssert assertThat(CypherAstFacade actual) {
+    public static CypherAstAssert assertThat(CypherAstWrapper actual) {
         return new CypherAstAssert(actual);
     }
 

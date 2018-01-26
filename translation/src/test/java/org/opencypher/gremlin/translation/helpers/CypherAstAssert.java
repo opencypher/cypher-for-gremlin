@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.helpers;
 
 import org.assertj.core.api.AbstractAssert;
-import org.opencypher.gremlin.translation.CypherAstFacade;
+import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.TranslationBuilder;
 import org.opencypher.gremlin.translation.TranslationPlan;
 import org.opencypher.gremlin.translation.Translator;
@@ -32,11 +32,11 @@ import static java.util.function.Function.identity;
 import static org.opencypher.gremlin.translation.Tokens.AGGREGATION;
 import static org.opencypher.gremlin.translation.Tokens.PIVOT;
 
-public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstFacade> {
+public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
 
     private final TranslationPlan<String> actualTranslationPlan;
 
-    CypherAstAssert(CypherAstFacade actual) {
+    CypherAstAssert(CypherAstWrapper actual) {
         super(actual, CypherAstAssert.class);
         Translator<String, StringPredicate> dsl = TranslatorFactory.string();
         actualTranslationPlan = actual.buildTranslation(dsl);
@@ -44,7 +44,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstFa
 
     public CypherAstAssert normalizedTo(String expected) {
         String actualString = actual.toString();
-        String expectedString = CypherAstFacade.parse(expected).toString();
+        String expectedString = CypherAstWrapper.parse(expected).toString();
         if (!Objects.equals(actualString, expectedString)) {
             failWithMessage(
                 "AST mismatch!\nExpected: <%s>\n  Actual: <%s>",

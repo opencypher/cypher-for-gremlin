@@ -38,7 +38,7 @@ public final class CypherExecutor {
     }
 
     public List<Map<String, Object>> execute(String cypher, Map<String, Object> parameters) {
-        CypherAstFacade ast = CypherAstFacade.parse(cypher, parameters);
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
         TranslationPlan<GraphTraversal> translationPlan = ast.buildTranslation(TranslatorFactory.traversal(g));
 

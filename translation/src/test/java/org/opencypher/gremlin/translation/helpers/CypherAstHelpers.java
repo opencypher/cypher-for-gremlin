@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.helpers;
 
-import org.opencypher.gremlin.translation.CypherAstFacade;
+import org.opencypher.gremlin.translation.CypherAstWrapper;
 
 import java.util.Map;
 
@@ -25,13 +25,13 @@ public final class CypherAstHelpers {
     private CypherAstHelpers() {
     }
 
-    public static CypherAstFacade parse(String queryText) {
+    public static CypherAstWrapper parse(String queryText) {
         return parse(queryText, emptyMap());
     }
 
-    public static CypherAstFacade parse(String queryText, Map<String, Object> passedParams) {
+    public static CypherAstWrapper parse(String queryText, Map<String, Object> passedParams) {
         try {
-            return CypherAstFacade.parse(queryText, passedParams);
+            return CypherAstWrapper.parse(queryText, passedParams);
         } catch (Exception e) {
             throw new RuntimeException("Error parsing query: " + queryText, e);
         }

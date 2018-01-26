@@ -23,20 +23,20 @@ import static java.util.Collections.emptyMap;
  * Parsed Cypher AST wrapper that can transform it in a suitable format
  * for executing a Gremlin traversal.
  */
-public class CypherAstFacade {
+public class CypherAstWrapper {
     private final CypherAst ast;
 
-    private CypherAstFacade(CypherAst ast) {
+    private CypherAstWrapper(CypherAst ast) {
         this.ast = ast;
     }
 
-    public static CypherAstFacade parse(String queryText) {
+    public static CypherAstWrapper parse(String queryText) {
         return parse(queryText, emptyMap());
     }
 
-    public static CypherAstFacade parse(String queryText, Map<String, Object> passedParams) {
+    public static CypherAstWrapper parse(String queryText, Map<String, Object> passedParams) {
         CypherAst ast = CypherAst.parse(queryText, passedParams);
-        return new CypherAstFacade(ast);
+        return new CypherAstWrapper(ast);
     }
 
     /**
