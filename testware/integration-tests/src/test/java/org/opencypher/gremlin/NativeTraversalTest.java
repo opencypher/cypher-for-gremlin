@@ -1,0 +1,569 @@
+/*
+ * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.opencypher.gremlin;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Streams;
+import com.google.common.io.Resources;
+import org.apache.tinkerpop.gremlin.driver.Result;
+import org.assertj.core.groups.Tuple;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.extractor.Extractors.byName;
+import static org.assertj.core.groups.FieldsOrPropertiesExtractor.extract;
+
+public class NativeTraversalTest  {
+
+    @ClassRule
+    public static final TinkerGraphServerEmbedded gremlinServer = new TinkerGraphServerEmbedded();
+
+    private List<Map<String, Object>> submitAndGet(String cypher) {
+        return gremlinServer.client().submitCypher(cypher);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> submitGremlin(String gremlin) {
+        List<Result> results = gremlinServer.client().submitGremlin(gremlin);
+
+        return results.stream()
+            .map(result -> (Map<String, Object>) result.get(Map.class))
+            .collect(toList());
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        String createSnMini = Resources.toString(Resources.getResource("snMini.cyp"), Charsets.UTF_8).trim();
+        for (String statement : createSnMini.split(";")) {
+            submitAndGet(statement);
+        }
+    }
+
+    @Test
+    public void aggregateNothing() throws Exception {
+        submitAndGet("MATCH (n) DETACH DELETE n");
+        List<Map<String, Object>> count = submitAndGet("MATCH (n) RETURN count(n)");
+
+        assertThat(count)
+            .extracting("count(n)")
+            .containsExactly(0L);
+    }
+
+    @Test
+    public void pivotAndAggregateNothing() throws Exception {
+        submitAndGet("MATCH (n) DETACH DELETE n");
+        List<Map<String, Object>> count = submitAndGet("MATCH (n) RETURN count(n), keys(n)");
+        assertThat(count).isEmpty();
+    }
+
+    @Test
+    public void returnLiteral() throws Exception {
+        List<Map<String, Object>> result = submitAndGet("RETURN 1 AS literal");
+        assertThat(result)
+            .extracting("literal")
+            .containsExactly(1L);
+    }
+
+    @Test
+    public void returnFunction() throws Exception {
+        List<Map<String, Object>> result = submitAndGet("RETURN toString(1) AS function");
+        assertThat(result)
+            .extracting("function")
+            .containsExactly("1");
+    }
+
+    @Test
+    public void limit() throws Exception {
+        List<Map<String, Object>> result = submitAndGet("MATCH (n) RETURN n LIMIT 2");
+        assertThat(result)
+            .hasSize(2);
+    }
+
+    @Test
+    public void aggregationFromPivot() throws Exception {
+        List<Map<String, Object>> result = submitAndGet("match (n:Person) RETURN max(size(n.firstName)) as longest_name");
+        assertThat(result)
+            .extracting("longest_name")
+            .containsExactly(6L);
+    }
+
+    @Test
+    public void functionChain() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH [1.235] AS list\n" +
+                "RETURN toString(toFloat(toInteger(list[0]))) AS chain"
+        );
+        assertThat(results)
+            .extracting("chain")
+            .containsExactly("1.0");
+    }
+
+    @Test
+    public void mapLiteral() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH {name: 'Matz', name2: 'Pontus'} AS map\n" +
+                "RETURN exists(map.name) AS result"
+        );
+        assertThat(results)
+            .extracting("result")
+            .containsExactly(true);
+    }
+
+    @Test
+    public void isNull() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:Person) RETURN p.notName IS NULL AS isNull, count(*)"
+        );
+
+        assertThat(results)
+            .extracting("isNull", "count(*)")
+            .containsExactly(tuple(true, 7L));
+    }
+
+    @Test
+    public void nullOnMin() throws Exception {
+        submitAndGet("MATCH (n) DETACH DELETE n");
+
+        submitAndGet("CREATE (:kid), (:kid)");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (k:kid) RETURN min(k.income) as income"
+        );
+
+        assertThat(results)
+            .extracting("income")
+            .contains((Object) null);
+    }
+
+    @Test
+    public void oneAggregation() throws Exception {
+        String cypher = "MATCH (n1) RETURN collect(n1)";
+        String gremlin = "g.V().as('n1').fold().project('collect(n1)').by()";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .containsAll(cypherResults)
+            .hasSize(1)
+            .flatExtracting("collect(n1)")
+            .hasSize(18);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void onePivotOneAggregation() throws Exception {
+        String[] columnNames = {"n.lastName", "c1"};
+
+        String cypher = "MATCH (n:Person) RETURN\n" +
+            "n.lastName," +
+            "collect(n.firstName) AS c1;";
+
+        String gremlin = "g.V().as('n')" +
+            ".where(__.select('n').hasLabel('Person'))" +
+            ".group()" +
+            "   .by(" +
+            "       project('n.lastName').by(values('lastName')))" +
+            "   .by(" +
+            "       fold().project('c1')" +
+            "           .by(unfold().values('firstName').fold())" +
+            ").unfold()" +
+            ".map(toCypherResults())";
+
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .extracting(Map::keySet)
+            .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
+
+        assertThat(gremlinResults)
+            .hasSize(4)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple("Andresen", asList("Erik", "Erik", "Erik", "Lars")),
+                tuple("Lehtinen", asList("Olavi")),
+                tuple("Haugland", asList("Martin")),
+                tuple("Pedersen", asList("Erlend"))
+            );
+    }
+
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void twoPivotsTwoAggregations() throws Exception {
+        String[] columnNames = {"p1", "p2", "c1", "c2"};
+
+        String cypher = "MATCH (n:Person) RETURN\n" +
+            "n.lastName as p1," +
+            "n.firstName as p2," +
+            "count(n) AS c1," +
+            "collect(n.email) AS c2;";
+
+        String gremlin = "g.V().as('n').where(__.select('n').hasLabel('Person'))" +
+            ".group()" +
+            "    .by(" +
+            "       project('p1','p2').by(values('lastName')).by(values('firstName')))" +
+            "    .by(" +
+            "       fold().project('c1','c2')" +
+            "           .by(unfold().count())" +
+            "           .by(unfold().values('email').fold())" +
+            ").unfold()" +
+            ".map(toCypherResults())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .extracting(Map::keySet)
+            .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
+
+        assertThat(gremlinResults)
+            .hasSize(5)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple("Andresen", "Erik", 3L, asList("ErikJunior@gmx.com", "TheErik@gmail.com", "ErikTheSecond4@gmail.com")),
+                tuple("Andresen", "Lars", 1L, asList("Lars.Nielsen.6711515243877401003@yahoo.com")),
+                tuple("Lehtinen", "Olavi", 1L, asList("Olavi4398046541996@gmx.com")),
+                tuple("Haugland", "Martin", 1L, asList("Martin4398046518130@hotmail.com")),
+                tuple("Pedersen", "Erlend", 1L, asList("Erlend2199023287971@gmail.com"))
+            );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void onePivotThreeAggregations() throws Exception {
+        String[] columnNames = {"n.lastName", "c1", "c2", "c3"};
+
+        String cypher = "MATCH (n:Person) RETURN\n" +
+            "n.lastName," +
+            "count(n) AS c1," +
+            "collect(n.born) AS c2," +
+            "max(n.born) AS c3;";
+
+        String gremlin = "g.V().as('n').where(__.select('n').hasLabel('Person'))" +
+            ".group()" +
+            "    .by(" +
+            "       project('n.lastName').by(values('lastName')))" +
+            "    .by(" +
+            "       fold().project('c1','c2','c3')" +
+            "           .by(unfold().count())" +
+            "           .by(unfold().values('born').fold())" +
+            "           .by(unfold().values('born').max())" +
+            ").unfold()" +
+            ".map(toCypherResults())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .extracting(Map::keySet)
+            .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
+
+        assertThat(gremlinResults)
+            .hasSize(4)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple("Andresen", 4L, asList(1995L, 1988L, 1988L, 1986L), 1995L),
+                tuple("Lehtinen", 1L, asList(1983L), 1983L),
+                tuple("Haugland", 1L, asList(1984L), 1984L),
+                tuple("Pedersen", 1L, asList(1996L), 1996L)
+            );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void threePivotsThreeAggregations() throws Exception {
+        String[] columnNames = {"p1", "p2", "p3", "c1", "c2", "c3"};
+
+        String cypher = "MATCH (n:Person) RETURN\n" +
+            "n.lastName as p1," +
+            "n.firstName as p2," +
+            "n.born as p3," +
+            "count(n) AS c1," +
+            "collect(n.email) AS c2," +
+            "max(n.born) AS c3;";
+
+        String gremlin = "g.V().as('n').where(__.select('n').hasLabel('Person'))" +
+            ".group()" +
+            "    .by(" +
+            "       project('p1','p2','p3')" +
+            "           .by(values('lastName'))" +
+            "           .by(values('firstName'))" +
+            "           .by(values('born'))" +
+            "    ).by(" +
+            "       fold().project('c1','c2','c3')" +
+            "           .by(unfold().count())" +
+            "           .by(unfold().values('email').fold())" +
+            "           .by(unfold().values('born').max())" +
+            ").unfold()" +
+            ".map(toCypherResults())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .extracting(Map::keySet)
+            .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
+
+        assertThat(gremlinResults)
+            .hasSize(6)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple("Andresen", "Erik", 1988L, 2L, asList("TheErik@gmail.com", "ErikTheSecond4@gmail.com"), 1988L),
+                tuple("Andresen", "Erik", 1995L, 1L, asList("ErikJunior@gmx.com"), 1995L),
+                tuple("Andresen", "Lars", 1986L, 1L, asList("Lars.Nielsen.6711515243877401003@yahoo.com"), 1986L),
+                tuple("Lehtinen", "Olavi", 1983L, 1L, asList("Olavi4398046541996@gmx.com"), 1983L),
+                tuple("Haugland", "Martin", 1984L, 1L, asList("Martin4398046518130@hotmail.com"), 1984L),
+                tuple("Pedersen", "Erlend", 1996L, 1L, asList("Erlend2199023287971@gmail.com"), 1996L)
+            );
+    }
+
+    @Test
+    public void distinct() throws Exception {
+        String[] columnNames = {"n.lastName", "type(r)"};
+
+        String cypher = "MATCH ()-[r]->(n:Person) RETURN DISTINCT n.lastName, type(r)";
+
+        String gremlin = "g.V().as('n').inE().as('r').where(__.select('n').hasLabel('Person'))" +
+            ".group()" +
+            "    .by(" +
+            "       project('n.lastName').by(select('n').values('lastName')))" +
+            "    .by(" +
+            "       fold().project('type(r)')" +
+            "           .by(unfold().label())" +
+            ").unfold()" +
+            ".dedup()" +
+            ".map(toCypherResults())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .hasSize(3)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple("Andresen", "KNOWS"),
+                tuple("Pedersen", "KNOWS"),
+                tuple("Lehtinen", "KNOWS")
+            );
+    }
+
+    @Test
+    public void aggregationsOnDifferentNodes() throws Exception {
+        String[] columnNames = {"n.lastName", "type(r)", "collect(m.name)"};
+
+        String cypher = "MATCH (n:Person)-[r]->(m:Interest) RETURN n.lastName, type(r), collect(m.name)";
+
+        String gremlin = "g.V().as('n').outE().as('r').inV().as('m')" +
+            ".where(__.and(__.select('n').hasLabel('Person'), __.select('m').hasLabel('Interest')))" +
+            ".select('m','r','n')" +
+            ".group()" +
+            "    .by(" +
+            "       project('n.lastName').by(select('n').values('lastName')))" +
+            "    .by(" +
+            "       fold().project('type(r)','collect(m.name)')" +
+            "           .by(unfold().select('r').label())" +
+            "           .by(unfold().select('m').values('name').fold())" +
+            ").unfold()" +
+            ".map(toCypherResults())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .hasSize(2)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple("Andresen", "LIKES", asList("Video", "Video", "Music")),
+                tuple("Haugland", "LIKES", asList("Video"))
+            );
+    }
+
+    @Test
+    public void multiple() throws Exception {
+        String[] columnNames = {"type(r)", "count"};
+
+        String cypher = "MATCH ()-[r]->() RETURN count(r) AS count, type(r)";
+
+        String gremlin = "g.V().as('n').outE().as('r').as('r1').inV().as('m')" +
+            ".select('r','r1')" + // force go to SelectStep not SelectOneStep
+            ".group()" +
+            "    .by(" +
+            "       project('type(r)').by(select('r').label()))" +
+            "    .by(" +
+            "       fold().project('count')" +
+            "           .by(unfold().select('r').count())" +
+            ").unfold()" +
+            ".map(toCypherResults())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .hasSize(4)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple("IS_LOCATED_IN", 6L),
+                tuple("LIKES", 4L),
+                tuple("KNOWS", 6L),
+                tuple("IS_PART_OF", 6L)
+            );
+    }
+
+
+    @Test
+    public void aggregationsOnly() throws Exception {
+        String[] columnNames = {"count(n1)", "count(n2)"};
+        String cypher = "MATCH (n1)-[r]->(n2) RETURN count(n1), count(n2)";
+        String gremlin = "g.V().as('n1').outE().as('r').inV().as('n2')" +
+            ".select('n1','r','n2').fold().project('count(n1)','count(n2)')" +
+            "  .by(unfold().select('r').count())" +
+            "  .by(unfold().select('r').count())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .hasSize(1)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple(22L, 22L)
+            );
+    }
+
+    @Test
+    public void labelPredicate() throws Exception {
+        String[] columnNames = {"isPerson", "count"};
+        String cypher = "MATCH (n)\n" +
+            "RETURN (n:Person) AS isPerson, count(*) AS count";
+
+        String gremlin = "g.V().as('n').as('n1')" +
+            ".select('n','n1')" + // force go to SelectStep not SelectOneStep
+            ".group()" +
+            "    .by(" +
+            "       project('isPerson').by(select('n').choose(hasLabel('Person'), constant(true), constant(false)))" +
+            "    ).by(" +
+            "       fold().project('count')" +
+            "           .by(unfold().select('n').count())" +
+            ").unfold()" +
+            ".map(toCypherResults())";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
+
+        assertThat(gremlinResults)
+            .hasSize(2)
+            .extracting(columnNames)
+            .usingElementComparator(ignoreOrderInCollections())
+            .containsAll(extract(cypherResults, byName(columnNames)))
+            .containsExactlyInAnyOrder(
+                tuple(true, 7L),
+                tuple(false, 11L)
+            );
+    }
+
+    Comparator<? super Tuple> comparator = ignoreOrderInCollections();
+
+    @Test
+    public void testIgnoreOrderInCollections1() throws Exception {
+        assertThat(comparator.compare(
+            tuple("Andresen", asList("Erik", "Erik", "Erik", "Lars")),
+            tuple("Andresen", asList("Erik", "Erik", "Erik", "Lars"))
+        )).isEqualTo(0);
+    }
+
+    @Test
+    public void testIgnoreOrderInCollections2() throws Exception {
+        assertThat(comparator.compare(
+            tuple("Andresen", asList("Lars", "Erik", "Erik", "Erik")),
+            tuple("Andresen", asList("Erik", "Erik", "Erik", "Lars"))
+        )).isEqualTo(0);
+    }
+
+    @Test
+    public void testIgnoreOrderInCollections3() throws Exception {
+        assertThat(comparator.compare(
+            tuple("Andresen", asList("Lars", "Erik", "Erik", "Erik")),
+            tuple("Andresen", asList("Erik", "Erik", "Lars"))
+        )).isNotEqualTo(0);
+    }
+
+    @Test
+    public void testIgnoreOrderInCollections4() throws Exception {
+        assertThat(comparator.compare(
+            tuple("Andresen", asList(null, "Erik", "Erik", "Erik")),
+            tuple("Andresen", asList("Erik", "Erik", "Lars", null))
+        )).isNotEqualTo(0);
+    }
+
+    @Test
+    public void testIgnoreOrderInCollections5() throws Exception {
+        assertThat(comparator.compare(
+            tuple("Andresen", asList(null, "Erik", "Erik", "Lars")),
+            tuple("Andresen", asList(null, "Erik", "Erik", "Lars"))
+        )).isEqualTo(0);
+    }
+
+    public static Comparator<? super Tuple> ignoreOrderInCollections() {
+        return (t1, t2) ->
+            (int) Streams.zip(t1.toList().stream(), t2.toList().stream(),
+                (o1, o2) ->
+                    areEqualCollections(o1, o2) || Objects.equals(o1, o2))
+                .filter(isEqual -> !isEqual)
+                .count();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static boolean areEqualCollections(Object o1, Object o2) {
+        if (o1 != null && (o2 != null) &&
+            (o1 instanceof Collection) && (o2 instanceof Collection)) {
+            Collection list1 = Collection.class.cast(o1);
+            Collection list2 = Collection.class.cast(o2);
+            return list1.size() == list2.size() && list1.containsAll(list2);
+        }
+        return false;
+    }
+}

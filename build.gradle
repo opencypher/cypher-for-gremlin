@@ -1,6 +1,8 @@
 buildscript {
     ext {
         assertjVersion = '3.8.0'
+        guavaVersion = '22.0'
+        junitVersion = '4.12'
         neo4jVersion = '3.2.9'
         scalaVersion = '2.11'
         scalaPatchVersion = '12'
@@ -10,10 +12,12 @@ buildscript {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
         classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.8.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
     }
 }
 
@@ -40,7 +44,7 @@ subprojects {
     }
 
     dependencies {
-        testCompile 'junit:junit:4.12'
+        testCompile "junit:junit:${junitVersion}"
         testCompile "org.assertj:assertj-core:${assertjVersion}"
         testCompile 'org.mockito:mockito-all:1.10.19'
     }
@@ -72,5 +76,42 @@ project(':translation') {
         compile "org.scala-lang:scala-library:${scalaVersion}.${scalaPatchVersion}"
         compile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
         compile "org.neo4j:neo4j-cypher-frontend-3.2:${neo4jVersion}"
+    }
+}
+
+project(':plugin:plugin-common') {
+    dependencies {
+        compile project(':translation')
+
+        compile("org.apache.tinkerpop:gremlin-server:${tinkerpopVersion}") {
+            exclude group: 'org.codehaus.groovy'
+        }
+    }
+}
+
+project(':plugin:server-plugin') {
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    dependencies {
+        compile project(':plugin:plugin-common')
+    }
+}
+
+project(':testware:testware-common') {
+    dependencies {
+        compile project(':plugin:server-plugin')
+
+        compile "junit:junit:${junitVersion}"
+        compile "org.assertj:assertj-core:${assertjVersion}"
+        compile 'ch.qos.logback:logback-classic:1.2.3'
+        compile "com.google.guava:guava:${guavaVersion}"
+        compile "org.apache.tinkerpop:gremlin-server:${tinkerpopVersion}"
+        compile "org.apache.tinkerpop:tinkergraph-gremlin:${tinkerpopVersion}"
+    }
+}
+
+project(':testware:integration-tests') {
+    dependencies {
+        testCompile project(':testware:testware-common')
     }
 }
