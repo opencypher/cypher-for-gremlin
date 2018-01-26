@@ -1,0 +1,76 @@
+buildscript {
+    ext {
+        assertjVersion = '3.8.0'
+        neo4jVersion = '3.2.9'
+        scalaVersion = '2.11'
+        scalaPatchVersion = '12'
+        springBootVersion = '1.5.6.RELEASE'
+        tinkerpopVersion = '3.3.1'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.8.0'
+    }
+}
+
+allprojects {
+    group 'org.opencypher.gremlin'
+    version '1.0-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'com.diffplug.gradle.spotless'
+
+    repositories {
+        mavenCentral()
+    }
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        options.compilerArgs += '-Xlint:unchecked'
+        options.compilerArgs += '-Xlint:deprecation'
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.12'
+        testCompile "org.assertj:assertj-core:${assertjVersion}"
+        testCompile 'org.mockito:mockito-all:1.10.19'
+    }
+
+    spotless {
+        format 'misc', {
+            target '**/*.java', '**/*.scala'
+            endWithNewline()
+            trimTrailingWhitespace()
+            licenseHeaderFile "${rootDir}/license-header.txt", 'package '
+        }
+        java {
+            removeUnusedImports()
+        }
+        scala {
+            scalafmt('1.4.0').configFile("${rootDir}/.scalafmt.conf")
+        }
+    }
+}
+
+project(':translation') {
+    apply plugin: 'scala'
+
+    sourceSets.main.scala.srcDir "src/main/java"
+    sourceSets.main.java.srcDirs = []
+
+    dependencies {
+        compile "org.apache.tinkerpop:gremlin-core:${tinkerpopVersion}"
+        compile "org.scala-lang:scala-library:${scalaVersion}.${scalaPatchVersion}"
+        compile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
+        compile "org.neo4j:neo4j-cypher-frontend-3.2:${neo4jVersion}"
+    }
+}
