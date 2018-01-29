@@ -23,6 +23,13 @@ import static java.util.Collections.emptyMap;
 
 /**
  * Cypher to Gremlin translation facade.
+ * <p>
+ * Basic usage example:
+ * <pre>{@code
+ * String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
+ * TranslationFacade cfog = new TranslationFacade();
+ * String gremlin = cfog.toGremlin(cypher);
+ * }</pre>
  */
 public class TranslationFacade {
 
@@ -40,11 +47,11 @@ public class TranslationFacade {
      * Translate a Cypher query to Gremlin.
      *
      * @param cypher Cypher query
-     * @param params query parameters
+     * @param parameters query parameters
      * @return Gremlin query
      */
-    public String toGremlin(String cypher, Map<String, Object> params) {
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, params);
+    public String toGremlin(String cypher, Map<String, Object> parameters) {
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
         Translator<String, StringPredicate> translator = TranslatorFactory.string();
         TranslationPlan<String> translationPlan = ast.buildTranslation(translator);
         return translationPlan.getTranslation();

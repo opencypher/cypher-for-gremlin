@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public final class StringTranslationUtils {
+final class StringTranslationUtils {
 
     static String apply(String name, Object... arguments) {
         String joined = Stream.of(arguments)
@@ -35,7 +35,7 @@ public final class StringTranslationUtils {
         return "." + apply(name, arguments);
     }
 
-    public static String toLiteral(Object argument) {
+    private static String toLiteral(Object argument) {
         if (argument instanceof List) {
             return ((List<?>) argument).stream()
                 .map(StringTranslationUtils::toLiteral)
@@ -67,7 +67,7 @@ public final class StringTranslationUtils {
         return "'" + agrument.replaceAll("(['\\\\])", "\\\\$1") + "'";
     }
 
-    public static Unquoted unquoted(String value) {
+    static Unquoted unquoted(String value) {
         return new Unquoted(value);
     }
 

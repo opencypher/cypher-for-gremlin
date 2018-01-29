@@ -15,6 +15,9 @@
  */
 package org.opencypher.gremlin.translation.exception;
 
+/**
+ * Thrown when an unsupported or invalid Cypher query syntax is encountered.
+ */
 public class SyntaxException extends RuntimeException {
     public SyntaxException(String message) {
         super(message);

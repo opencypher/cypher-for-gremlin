@@ -57,10 +57,10 @@ import static org.slf4j.LoggerFactory.getLogger;
  * {@link OpProcessor} implementation for processing Cypher {@link RequestMessage}s:
  * <pre>
  * {
- *  "requestId": "&lt;some UUID>",
- *  "op": "eval",
- *  "processor": "cypher",
- *  "args": { "gremlin": "&lt;CYPHER QUERY>" }
+ *   "requestId": "&lt;some UUID&gt;",
+ *   "op": "eval",
+ *   "processor": "cypher",
+ *   "args": { "gremlin": "&lt;CYPHER QUERY&gt;" }
  * }
  * </pre>
  */

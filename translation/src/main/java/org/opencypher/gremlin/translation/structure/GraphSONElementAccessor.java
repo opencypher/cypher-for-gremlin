@@ -25,7 +25,7 @@ public class GraphSONElementAccessor implements ElementAccessor {
 
     private final Map<String, Object> element;
 
-    public GraphSONElementAccessor(Map<String, Object> element) {
+    GraphSONElementAccessor(Map<String, Object> element) {
         this.element = element;
     }
 

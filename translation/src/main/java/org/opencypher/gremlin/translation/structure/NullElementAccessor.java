@@ -21,6 +21,9 @@ import static java.util.Collections.emptySet;
 
 public class NullElementAccessor implements ElementAccessor {
 
+    NullElementAccessor() {
+    }
+
     @Override
     public Set<String> keys() {
         return emptySet();

@@ -15,6 +15,14 @@
  */
 package org.opencypher.gremlin.translation;
 
+/**
+ * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.P} predicate abstraction.
+ *
+ * @param <T> translation predicate type
+ * @see <a href="https://tinkerpop.apache.org/docs/current/reference/#a-note-on-predicates">A Note on Predicates</a>
+ * @see Translator
+ * @see TranslatorFactory
+ */
 public interface PredicateFactory<T> {
     T isEq(Object value); // Named like this to satisfy Scala compiler
 

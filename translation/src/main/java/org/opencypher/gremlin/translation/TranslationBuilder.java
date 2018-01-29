@@ -26,13 +26,17 @@ import java.util.function.Function;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} DSL wrapper.
- * Implementations define a translation target that can be built in Gremlin DSL terms.
+ * <p>
+ * Implementations define a translation target that can be built with
+ * {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} steps.
+ * <p>
  * Note: steps are expected to be side-effecting, thus, unsuitable for use in immutable contexts.
  *
  * @param <T> translation target type
  * @param <P> predicate target type
- * @see org.opencypher.gremlin.translation.traversal.TraversalTranslationBuilder
- * @see org.opencypher.gremlin.translation.string.StringTranslationBuilder
+ * @see <a href="https://tinkerpop.apache.org/docs/current/reference/#graph-traversal-steps">Graph Traversal Steps</a>
+ * @see Translator
+ * @see TranslatorFactory
  */
 public interface TranslationBuilder<T, P> {
     T current();
@@ -55,6 +59,7 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> aggregate(String label);
 
+    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> and(TranslationBuilder<T, P>... ands);
 
     TranslationBuilder<T, P> as(String label);
@@ -73,6 +78,7 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> choose(P predicate, TranslationBuilder<T, P> trueChoice);
 
+    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> coalesce(TranslationBuilder<T, P>... traversals);
 
     TranslationBuilder<T, P> constant(Object e);
@@ -123,6 +129,7 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> not(TranslationBuilder<T, P> rhs);
 
+    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> or(TranslationBuilder<T, P>... ors);
 
     TranslationBuilder<T, P> order();
@@ -165,6 +172,7 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> unfold();
 
+    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> union(TranslationBuilder<T, P>... translationBuilders);
 
     TranslationBuilder<T, P> until(TranslationBuilder<T, P> translationBuilder);

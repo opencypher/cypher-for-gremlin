@@ -108,8 +108,9 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
         return this;
     }
 
+    @SafeVarargs
     @Override
-    public TranslationBuilder<String, StringPredicate> and(TranslationBuilder<String, StringPredicate>... ands) {
+    public final TranslationBuilder<String, StringPredicate> and(TranslationBuilder<String, StringPredicate>... ands) {
         g.append(chain("and", (Object[]) ands));
         return this;
     }
@@ -165,8 +166,9 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
         return this;
     }
 
+    @SafeVarargs
     @Override
-    public TranslationBuilder<String, StringPredicate> coalesce(TranslationBuilder<String, StringPredicate>... traversals) {
+    public final TranslationBuilder<String, StringPredicate> coalesce(TranslationBuilder<String, StringPredicate>... traversals) {
         g.append(chain("coalesce", (Object[]) traversals));
         return this;
     }
@@ -315,8 +317,9 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
         return this;
     }
 
+    @SafeVarargs
     @Override
-    public TranslationBuilder<String, StringPredicate> or(TranslationBuilder<String, StringPredicate>... ors) {
+    public final TranslationBuilder<String, StringPredicate> or(TranslationBuilder<String, StringPredicate>... ors) {
         g.append(chain("or", (Object[]) ors));
         return this;
     }
@@ -455,8 +458,9 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
         return this;
     }
 
+    @SafeVarargs
     @Override
-    public TranslationBuilder<String, StringPredicate> union(TranslationBuilder<String, StringPredicate>... translationBuilders) {
+    public final TranslationBuilder<String, StringPredicate> union(TranslationBuilder<String, StringPredicate>... translationBuilders) {
         g.append(chain("union", (Object[]) translationBuilders));
         return this;
     }

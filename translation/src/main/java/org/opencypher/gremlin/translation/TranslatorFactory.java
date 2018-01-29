@@ -28,14 +28,33 @@ import org.opencypher.gremlin.traversal.GremlinRemote;
 
 import java.util.function.Function;
 
+/**
+ * This factory creates {@link Translator} instances with common configurations.
+ */
 public class TranslatorFactory {
     private TranslatorFactory() {
     }
 
+    /**
+     * Creates a {@link Translator} that translates Cypher queries
+     * to strings of Gremlin-Groovy.
+     *
+     * @return translator to string
+     */
     public static Translator<String, StringPredicate> string() {
         return new Translator<>(new StringTranslationBuilder(), new StringPredicateFactory());
     }
 
+    /**
+     * Creates a {@link Translator} that translates Cypher queries
+     * to native Gremlin {@code Traversal} that can be iterated to yield results
+     * for its source.
+     * <p>
+     * See: https://tinkerpop.apache.org/docs/current/reference/#traversal
+     *
+     * @param g traversal to modify with translated steps
+     * @return provided traversal, modified
+     */
     public static Translator<GraphTraversal, P> traversal(GraphTraversal g) {
         return new Translator<>(new TraversalTranslationBuilder(g), new TraversalPredicateFactory());
     }

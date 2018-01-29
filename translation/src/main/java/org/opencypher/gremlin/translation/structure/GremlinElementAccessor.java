@@ -29,7 +29,7 @@ public class GremlinElementAccessor implements ElementAccessor {
 
     private final Element element;
 
-    public GremlinElementAccessor(Element element) {
+    GremlinElementAccessor(Element element) {
         this.element = element;
     }
 

@@ -15,10 +15,11 @@
  */
 package org.opencypher.gremlin.translation.exception;
 
+/**
+ * Thrown when an unsupported or invalid traversal type is encountered.
+ */
 public class TypeException extends RuntimeException {
-
     public TypeException(String message) {
         super(message);
     }
-
 }

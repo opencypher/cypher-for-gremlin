@@ -22,6 +22,8 @@ import java.util.function.Function;
 /**
  * Abstraction over the process of building a translation
  * for different targets.
+ *
+ * @see TranslatorFactory
  */
 public class Translator<T, P> {
     private final TranslationBuilder<T, P> translationBuilder;
@@ -43,18 +45,20 @@ public class Translator<T, P> {
     }
 
     /**
-     * Provides access to a traversal DSL.
+     * Provides access to the traversal DSL.
      *
      * @return traversal DSL
+     * @see #predicateFactory()
      */
     public TranslationBuilder<T, P> translationBuilder() {
         return translationBuilder;
     }
 
     /**
-     * Return a factory for traversal predicates for use in a traversal DSL.
+     * Returns a factory for traversal predicates for use with the traversal DSL.
      *
      * @return factory for traversal predicates
+     * @see #translationBuilder()
      */
     public PredicateFactory<P> predicateFactory() {
         return predicateFactory;

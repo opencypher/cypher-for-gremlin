@@ -36,9 +36,6 @@ public class CypherPlugin implements GremlinPlugin {
         return "cypher.extra";
     }
 
-    /**
-     * Called by reflection from {@link org.apache.tinkerpop.gremlin.groovy.engine.GremlinExecutor}
-     */
     public static GremlinPlugin instance() {
         return new CypherPlugin();
     }

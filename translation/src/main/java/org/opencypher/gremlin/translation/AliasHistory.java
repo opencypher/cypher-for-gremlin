@@ -18,6 +18,10 @@ package org.opencypher.gremlin.translation;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is used to create and track multiple Gremlin aliases for a single Cypher variable.
+ * Multiple aliases are used in translation of Cypher variables re-use and shadowing.
+ */
 public class AliasHistory {
 
     private final Map<String, Integer> aliases;

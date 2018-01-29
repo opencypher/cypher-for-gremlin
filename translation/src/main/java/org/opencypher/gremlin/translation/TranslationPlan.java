@@ -20,8 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Translation plan is a composition of all the parts
- * necessary to run a translated Cypher query on a TinkerPop graph.
+ * Translation plan is the final result of Cypher to Gremlin translation.
  *
  * @param <T> translation type
  * @see Translator
@@ -47,7 +46,7 @@ public class TranslationPlan<T> {
     }
 
     /**
-     * Returns full Gremlin translation
+     * Returns full Gremlin translation of the configured type.
      *
      * @return translation in type {@code T}
      */
@@ -57,6 +56,9 @@ public class TranslationPlan<T> {
 
     /**
      * Returns a result row containing translation plan explanation for this query.
+     *
+     * The result of this method is returned when running Cypher {@code EXPLAIN} queries
+     * with one of Cypher for Gremlin plugins.
      *
      * @return explanation row
      */

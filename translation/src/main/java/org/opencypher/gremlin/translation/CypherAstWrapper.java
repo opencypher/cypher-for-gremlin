@@ -30,11 +30,24 @@ public class CypherAstWrapper {
         this.ast = ast;
     }
 
+    /**
+     * Constructs a new Cypher AST from the provided query.
+     *
+     * @param queryText Cypher query
+     * @return Cypher AST wrapper
+     */
     public static CypherAstWrapper parse(String queryText) {
         return parse(queryText, emptyMap());
     }
 
-    public static CypherAstWrapper parse(String queryText, Map<String, Object> passedParams) {
+    /**
+     * Constructs a new Cypher AST from the provided query.
+     *
+     * @param queryText    Cypher query
+     * @param passedParams Cypher query parameters
+     * @return Cypher AST wrapper
+     */
+    static CypherAstWrapper parse(String queryText, Map<String, Object> passedParams) {
         CypherAst ast = CypherAst.parse(queryText, passedParams);
         return new CypherAstWrapper(ast);
     }
@@ -51,6 +64,11 @@ public class CypherAstWrapper {
         return ast.buildTranslation(translator);
     }
 
+    /**
+     * Pretty-prints the Cypher AST.
+     *
+     * @return string representation
+     */
     @Override
     public String toString() {
         return ast.toString();
