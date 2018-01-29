@@ -47,7 +47,7 @@ public class CypherAstWrapper {
      * @param passedParams Cypher query parameters
      * @return Cypher AST wrapper
      */
-    static CypherAstWrapper parse(String queryText, Map<String, Object> passedParams) {
+    public static CypherAstWrapper parse(String queryText, Map<String, Object> passedParams) {
         CypherAst ast = CypherAst.parse(queryText, passedParams);
         return new CypherAstWrapper(ast);
     }
