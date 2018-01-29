@@ -1,0 +1,62 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/repo
+
+    environment:
+      JVM_OPTS: -Xmx256m -XshowSettings:vm
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "build.gradle" }}
+          - v2-dependencies-
+
+      - run:
+          command: gradle dependencies
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v2-dependencies-{{ checksum "build.gradle" }}
+
+      - run:
+          name: Check formatting
+          command: gradle spotlessCheck
+
+      - run:
+          name: Run unit and integration tests
+          command: gradle test
+
+      - run:
+          name: Compile JMH benchmark sources
+          command: gradle :testware:performance-tests:jmhClasses
+
+      - run:
+          name: Collect test result files in single folder
+          when: always
+          command: |
+              mkdir -p build/junit/
+              cp `find . -name "*.xml" | grep "build/test-results/test/"` build/junit/
+
+      - store_test_results:
+          path: ~/repo/build/junit
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - build
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master
