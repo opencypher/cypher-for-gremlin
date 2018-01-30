@@ -30,6 +30,8 @@ import java.util.function.Function;
 
 /**
  * This factory creates {@link Translator} instances with common configurations.
+ * <p>
+ * Translators produced by this factory can be used to translate a single query.
  */
 public class TranslatorFactory {
     private TranslatorFactory() {

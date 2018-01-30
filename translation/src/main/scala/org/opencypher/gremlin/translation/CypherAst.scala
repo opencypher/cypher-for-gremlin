@@ -15,13 +15,18 @@
  */
 package org.opencypher.gremlin.translation
 
-import java.util.{Map => JMap}
+import java.util
 
 import org.neo4j.cypher.internal.frontend.v3_2.CypherException
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.neo4j.cypher.internal.frontend.v3_2.helpers.rewriting.RewriterStepSequencer
 import org.neo4j.cypher.internal.frontend.v3_2.phases._
-import org.opencypher.gremlin.translation.preparser.{CypherPreParser, PreParsedStatement, PreParserOption}
+import org.opencypher.gremlin.translation.preparser.{
+  CypherPreParser,
+  ExplainOption,
+  PreParsedStatement,
+  PreParserOption
+}
 import org.opencypher.gremlin.translation.walker.{StatementContext, StatementWalker}
 
 import scala.collection.JavaConverters._
@@ -35,22 +40,27 @@ import scala.collection.mutable
   * @param extractedParameters extracted parameters provided by Cypher parser
   * @param options             pre-parser options provided by Cypher parser
   */
-class CypherAst(
-    val statement: Statement,
-    val extractedParameters: Map[String, Any],
-    val options: Seq[PreParserOption]) {
+class CypherAst(val statement: Statement, val extractedParameters: Map[String, Any], options: Seq[PreParserOption]) {
 
   /**
-    * Create a translation plan by passing the wrapped AST, parameters, and options
+    * Create a translation by passing the wrapped AST, parameters, and options
     * to [[StatementWalker.walk]].
     *
     * @param dsl Instance of [[Translator]] (e.g. Gremlin traversal or string)
-    * @return to-Gremlin translation plan
+    * @return to-Gremlin translation
     */
-  def buildTranslation[T, P](dsl: Translator[T, P]): TranslationPlan[T] = {
-    val context = StatementContext(dsl, extractedParameters, options)
+  def buildTranslation[T, P](dsl: Translator[T, P]): T = {
+    val context = StatementContext(dsl, extractedParameters)
     StatementWalker.walk(context, statement)
+    context.dsl.translate()
   }
+
+  private val statementOptions: Set[StatementOption] = options.flatMap {
+    case ExplainOption => Some(StatementOption.EXPLAIN)
+    case _             => None // ignore unknown
+  }.toSet
+
+  def getOptions: util.Set[StatementOption] = new util.HashSet(statementOptions.asJava)
 
   override def toString: String = {
     val acc = mutable.ArrayBuffer.empty[(String, Int)]
@@ -89,7 +99,7 @@ class CypherAst(
 object CypherAst {
 
   @throws[CypherException]
-  def parse(queryText: String, passedParams: JMap[String, Any]): CypherAst = {
+  def parse(queryText: String, passedParams: util.Map[String, Any]): CypherAst = {
     val params = Option(passedParams)
       .map(_.asScala.toMap)
       .getOrElse(Map())

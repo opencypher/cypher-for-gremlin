@@ -53,7 +53,6 @@ public class TranslationFacade {
     public String toGremlin(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
         Translator<String, StringPredicate> translator = TranslatorFactory.string();
-        TranslationPlan<String> translationPlan = ast.buildTranslation(translator);
-        return translationPlan.getTranslation();
+        return ast.buildTranslation(translator);
     }
 }

@@ -1,9 +1,9 @@
 # Cypher to Gremlin Translation
 
 The translation module provides facilities to:
-- parse *Cypher* queries using the Cypher frontend,
-- prepare a translation plan (to *Gremlin*),
-- transform results to a format that is accepted by the target *Gremlin Server* implementation.
+- parse Cypher queries using the Cypher frontend,
+- produce a translation to Gremlin,
+- transform results to a format that is accepted by the target Gremlin Server implementation.
 
 ## Usage
 

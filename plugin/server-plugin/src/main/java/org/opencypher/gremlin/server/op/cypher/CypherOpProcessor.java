@@ -33,13 +33,13 @@ import org.apache.tinkerpop.gremlin.server.op.OpProcessorException;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.TranslationPlan;
 import org.opencypher.gremlin.translation.Translator;
 import org.opencypher.gremlin.translation.TranslatorFactory;
 import org.opencypher.gremlin.translation.string.StringPredicate;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -98,19 +98,18 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
 
         Translator<String, StringPredicate> stringTranslator = TranslatorFactory.string();
-        TranslationPlan<String> stringTranslationPlan = ast.buildTranslation(stringTranslator);
-        String gremlin = stringTranslationPlan.getTranslation();
+        String gremlin = ast.buildTranslation(stringTranslator);
         logger.info("Gremlin: {}", gremlin);
 
-        if (stringTranslationPlan.hasOption(EXPLAIN)) {
-            explainQuery(context, stringTranslationPlan);
+        if (ast.getOptions().contains(EXPLAIN)) {
+            explainQuery(context, ast, gremlin);
             return;
         }
 
         Translator<GraphTraversal, P> traversalTranslator = TranslatorFactory.traversal(g);
-        TranslationPlan<GraphTraversal> translationPlan = ast.buildTranslation(traversalTranslator);
-        Traversal traversal = getGraphTraversal(translationPlan);
-        inTransaction(gts, () -> handleIterator(context, traversal));
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(traversalTranslator);
+        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(toCypherResults());
+        inTransaction(gts, () -> handleIterator(context, normalizedTraversal));
     }
 
     private void inTransaction(GraphTraversalSource gts, Runnable runnable) {
@@ -131,12 +130,6 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
                 graph.tx().rollback();
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private Traversal getGraphTraversal(TranslationPlan<GraphTraversal> translationPlan) {
-        GraphTraversal traversal = translationPlan.getTranslation();
-        return traversal.map(toCypherResults());
     }
 
     private GraphTraversalSource traversal(Context context) throws OpProcessorException {
@@ -177,11 +170,15 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         }
     }
 
-    private void explainQuery(Context context, TranslationPlan<String> translationPlan) {
+    private void explainQuery(Context context, CypherAstWrapper ast, String gremlin) {
+        Map<String, Object> explanation = new LinkedHashMap<>();
+        explanation.put("translation", gremlin);
+        explanation.put("options", ast.getOptions().toString());
+
         ResponseMessage explainMsg = ResponseMessage.build(context.getRequestMessage())
             .code(ResponseStatusCode.SUCCESS)
             .statusMessage("OK")
-            .result(singletonList(translationPlan.explain()))
+            .result(singletonList(explanation))
             .create();
 
         ChannelHandlerContext ctx = context.getChannelHandlerContext();

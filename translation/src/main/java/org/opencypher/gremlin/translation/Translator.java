@@ -16,7 +16,6 @@
 package org.opencypher.gremlin.translation;
 
 
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -65,17 +64,11 @@ public class Translator<T, P> {
     }
 
     /**
-     * Creates a translation plan.
+     * Creates a translation for the configured target.
      *
-     * @param options enabled Cypher query options
-     * @return translation plan
+     * @return translation
      */
-    public TranslationPlan<T> toTranslationPlan(Set<StatementOption> options) {
-        T translation = translationProducer.apply(translationBuilder.copy());
-
-        return new TranslationPlan<>(
-            translation,
-            options
-        );
+    public T translate() {
+        return translationProducer.apply(translationBuilder.copy());
     }
 }

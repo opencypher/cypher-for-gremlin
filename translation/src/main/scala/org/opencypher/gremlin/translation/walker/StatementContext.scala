@@ -15,20 +15,15 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.opencypher.gremlin.translation.preparser.PreParserOption
 import org.opencypher.gremlin.translation.{TranslationBuilder, Translator}
 
 import scala.collection.mutable
 
 object StatementContext {
-  def apply[T, P](
-      dsl: Translator[T, P],
-      extractedParameters: Map[String, Any],
-      options: Seq[PreParserOption]): StatementContext[T, P] = {
+  def apply[T, P](dsl: Translator[T, P], extractedParameters: Map[String, Any]): StatementContext[T, P] = {
     new StatementContext(
       dsl,
       extractedParameters,
-      options,
       new mutable.HashSet[String]
     )
   }
@@ -39,13 +34,11 @@ object StatementContext {
   *
   * @param dsl                   reference to [[Translator]] implementation in use
   * @param extractedParameters   Cypher query parameters
-  * @param options               pre-parser options provided by Cypher parser
   * @param matchedOrCreatedNodes tracks node aliases referenced in translation
   */
 sealed class StatementContext[T, P](
     val dsl: Translator[T, P],
     val extractedParameters: Map[String, Any],
-    val options: Seq[PreParserOption],
     val matchedOrCreatedNodes: mutable.HashSet[String]) {
 
   private var midTraversals = 0
@@ -87,7 +80,7 @@ sealed class StatementContext[T, P](
   }
 
   def copy(): StatementContext[T, P] = {
-    val result = StatementContext(dsl, extractedParameters, options)
+    val result = StatementContext(dsl, extractedParameters)
     result.matchedOrCreatedNodes ++= matchedOrCreatedNodes
     result
   }

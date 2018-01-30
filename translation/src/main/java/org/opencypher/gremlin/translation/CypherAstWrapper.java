@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation;
 
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.emptyMap;
 
@@ -53,15 +54,24 @@ public class CypherAstWrapper {
     }
 
     /**
-     * Create a plan for translation to Gremlin.
+     * Create a translation to Gremlin.
      *
      * @param translator {@link Translator} implementation (e.g. Gremlin traversal or string)
      * @param <T>        translation target type
      * @param <P>        predicate target type
-     * @return to-Gremlin translation plan
+     * @return to-Gremlin translation
      */
-    public <T, P> TranslationPlan<T> buildTranslation(Translator<T, P> translator) {
+    public <T, P> T buildTranslation(Translator<T, P> translator) {
         return ast.buildTranslation(translator);
+    }
+
+    /**
+     * Get declared options for this query.
+     *
+     * @return set of statement options
+     */
+    public Set<StatementOption> getOptions() {
+        return ast.getOptions();
     }
 
     /**

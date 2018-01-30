@@ -15,35 +15,20 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import java.util
-
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
-import org.opencypher.gremlin.translation.StatementOption._
 import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation._
-import org.opencypher.gremlin.translation.preparser.ExplainOption
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
   * AST walker that starts translation of the Cypher AST.
   */
 object StatementWalker {
-  def walk[T, P](context: StatementContext[T, P], node: Statement): TranslationPlan[T] = {
+  def walk[T, P](context: StatementContext[T, P], node: Statement) {
     val g = context.dsl.translationBuilder()
     new StatementWalker(context, g).walk(node)
-
-    val options = mutable.Set.empty[StatementOption]
-    context.options.foreach {
-      case ExplainOption =>
-        options += EXPLAIN
-      case n =>
-        context.unsupported("pre-parser option", n)
-    }
-
-    context.dsl.toTranslationPlan(new util.HashSet(options.asJava))
   }
 }
 

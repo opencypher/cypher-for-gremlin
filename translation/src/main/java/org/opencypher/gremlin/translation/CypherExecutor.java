@@ -15,14 +15,17 @@
  */
 package org.opencypher.gremlin.translation;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
+import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.toCypherResults;
 
 /**
@@ -62,16 +65,17 @@ public final class CypherExecutor {
      */
     public List<Map<String, Object>> execute(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
-        DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
-        TranslationPlan<GraphTraversal> translationPlan = ast.buildTranslation(TranslatorFactory.traversal(g));
 
-        if (translationPlan.hasOption(StatementOption.EXPLAIN)) {
-            Map<String, Object> explanation = ast.buildTranslation(TranslatorFactory.string()).explain();
+        if (ast.getOptions().contains(EXPLAIN)) {
+            Map<String, Object> explanation = new LinkedHashMap<>();
+            explanation.put("translation", ast.buildTranslation(TranslatorFactory.string()));
+            explanation.put("options", ast.getOptions().toString());
             return singletonList(explanation);
         }
 
-        GraphTraversal<?, ?> translation = translationPlan.getTranslation();
-        GraphTraversal<?, Map<String, Object>> iterator = translation.map(toCypherResults());
-        return iterator.toList();
+        DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(TranslatorFactory.traversal(g));
+        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(toCypherResults());
+        return normalizedTraversal.toList();
     }
 }

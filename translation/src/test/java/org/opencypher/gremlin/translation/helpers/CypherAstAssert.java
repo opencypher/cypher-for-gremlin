@@ -18,7 +18,6 @@ package org.opencypher.gremlin.translation.helpers;
 import org.assertj.core.api.AbstractAssert;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.TranslationBuilder;
-import org.opencypher.gremlin.translation.TranslationPlan;
 import org.opencypher.gremlin.translation.Translator;
 import org.opencypher.gremlin.translation.TranslatorFactory;
 import org.opencypher.gremlin.translation.string.StringPredicate;
@@ -34,12 +33,12 @@ import static org.opencypher.gremlin.translation.Tokens.PIVOT;
 
 public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
 
-    private final TranslationPlan<String> actualTranslationPlan;
+    private final String actualTranslation;
 
     CypherAstAssert(CypherAstWrapper actual) {
         super(actual, CypherAstAssert.class);
         Translator<String, StringPredicate> dsl = TranslatorFactory.string();
-        actualTranslationPlan = actual.buildTranslation(dsl);
+        actualTranslation = actual.buildTranslation(dsl);
     }
 
     public CypherAstAssert normalizedTo(String expected) {
@@ -82,7 +81,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
                                          Function<String, String> extractor) {
         isNotNull();
 
-        String actual = Optional.ofNullable(actualTranslationPlan.getTranslation())
+        String actual = Optional.ofNullable(actualTranslation)
             .map(extractor)
             .orElse(null);
         String expected = Optional.ofNullable(traversal)
