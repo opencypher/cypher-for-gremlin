@@ -102,6 +102,16 @@ project(':plugin:server-plugin') {
     }
 }
 
+project(':plugin:console-plugin') {
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    dependencies {
+        compile project(':plugin:plugin-common')
+
+        compileOnly "org.apache.tinkerpop:gremlin-console:${tinkerpopVersion}"
+    }
+}
+
 project(':testware:testware-common') {
     dependencies {
         compile project(':plugin:server-plugin')

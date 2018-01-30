@@ -4,10 +4,10 @@ This is an [`OpProcessor`](https://tinkerpop.apache.org/docs/current/reference/#
 
 ## Prerequisites
 
-- [Gremlin Server](https://tinkerpop.apache.org/)  or a compatible graph database.
-- Ability to install Gremlin Server plugins.
+- [Gremlin Server](https://tinkerpop.apache.org/) or a compatible graph database
+- Ability to install Gremlin Server plugins
 
-## Usage
+## Installation
 
 1. Build the plugin JAR file:
    ```sh
@@ -19,7 +19,7 @@ This is an [`OpProcessor`](https://tinkerpop.apache.org/docs/current/reference/#
    ```
 1. [Register](https://tinkerpop.apache.org/docs/current/reference/#opprocessor-configurations) the `org.opencypher.gremlin.server.op.cypher.CypherOpProcessor`.
 1. Restart Gremlin Server.
-1. If plugin has been installed correctly, you should see the following line among the logs:
+1. If the plugin has been installed correctly, you should see the following line among the logs:
    ```
    [INFO] OpLoader - Adding the cypher OpProcessor.
    ```

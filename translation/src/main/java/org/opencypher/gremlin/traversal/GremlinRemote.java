@@ -15,10 +15,15 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import org.apache.tinkerpop.gremlin.structure.Column;
+import org.opencypher.gremlin.translation.TranslationBuilder;
+import org.opencypher.gremlin.translation.string.StringPredicate;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.normalize;
@@ -27,17 +32,17 @@ public class GremlinRemote {
     public static final String PIVOTS = "pivots";
     public static final String AGGREGATIONS = "aggregations";
 
-    public static Map<String, Object> fromCosmos(Map<String, Object> fromCosmos) {
+    public static Map<String, Object> normalizeRow(Map<String, Object> fromRemote) {
         HashMap<String, Object> result = new LinkedHashMap<>();
-        if (fromCosmos.containsKey(PIVOTS) && fromCosmos.containsKey(AGGREGATIONS)) {
-            if (fromCosmos.get(PIVOTS) instanceof Map) {
-                result.putAll((Map<? extends String, ?>) normalize(fromCosmos.get(PIVOTS)));
+        if (fromRemote.containsKey(PIVOTS) && fromRemote.containsKey(AGGREGATIONS)) {
+            if (fromRemote.get(PIVOTS) instanceof Map) {
+                result.putAll((Map<? extends String, ?>) normalize(fromRemote.get(PIVOTS)));
             }
-            if (fromCosmos.get(AGGREGATIONS) instanceof Map) {
-                result.putAll((Map<? extends String, ?>) normalize(fromCosmos.get(AGGREGATIONS)));
+            if (fromRemote.get(AGGREGATIONS) instanceof Map) {
+                result.putAll((Map<? extends String, ?>) normalize(fromRemote.get(AGGREGATIONS)));
             }
         } else {
-            result.putAll(normalize(fromCosmos));
+            result.putAll(normalize(fromRemote));
         }
         return result;
     }
@@ -45,7 +50,14 @@ public class GremlinRemote {
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> normalizeResults(List<Map<String, Object>> results) {
         return results.stream()
-            .map(GremlinRemote::fromCosmos)
+            .map(GremlinRemote::normalizeRow)
             .collect(toList());
+    }
+
+    public static Function<TranslationBuilder<String, StringPredicate>, String> transposeReturnMap() {
+        return builder -> builder.project(PIVOTS, AGGREGATIONS)
+            .by(builder.start().select(Column.keys))
+            .by(builder.start().select(Column.values))
+            .current();
     }
 }

@@ -18,15 +18,15 @@ package org.opencypher.gremlin.translation;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.string.StringPredicate;
 import org.opencypher.gremlin.translation.string.StringPredicateFactory;
 import org.opencypher.gremlin.translation.string.StringTranslationBuilder;
 import org.opencypher.gremlin.translation.traversal.TraversalPredicateFactory;
 import org.opencypher.gremlin.translation.traversal.TraversalTranslationBuilder;
-import org.opencypher.gremlin.traversal.GremlinRemote;
 
 import java.util.function.Function;
+
+import static org.opencypher.gremlin.traversal.GremlinRemote.transposeReturnMap;
 
 /**
  * This factory creates {@link Translator} instances with common configurations.
@@ -61,19 +61,19 @@ public class TranslatorFactory {
         return new Translator<>(new TraversalTranslationBuilder(g), new TraversalPredicateFactory());
     }
 
+    static Translator<String, StringPredicate> transposedString() {
+        return new Translator<>(
+            new StringTranslationBuilder(),
+            new StringPredicateFactory(),
+            transposeReturnMap());
+    }
+
     public static Translator<String, StringPredicate> cosmos() {
         return new Translator<>(
             new CosmosStringTranslationBuilder("g", null),
             new StringPredicateFactory(),
             transposeReturnMap()
         );
-    }
-
-    private static Function<TranslationBuilder<String, StringPredicate>, String> transposeReturnMap() {
-        return builder -> builder.project(GremlinRemote.PIVOTS, GremlinRemote.AGGREGATIONS)
-            .by(builder.start().select(Column.keys))
-            .by(builder.start().select(Column.values))
-            .current();
     }
 
     private static class CosmosStringTranslationBuilder extends StringTranslationBuilder {
