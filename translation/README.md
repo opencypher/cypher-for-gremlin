@@ -7,6 +7,8 @@ The translation module provides facilities to:
 
 ## Usage
 
+### Translating Cypher
+
 To translate a Cypher query to a Gremlin query:
 
 ```java
@@ -15,15 +17,16 @@ TranslationFacade cfog = new TranslationFacade();
 String gremlin = cfog.toGremlin(cypher);
 ```
 
-A more verbose version of the above, demonstrating several extension points:
+A bit more verbose version of the above, demonstrating several extension points:
 
 ```java
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
 Translator<String, StringPredicate> translator = TranslatorFactory.string();
-TranslationPlan<String> translationPlan = ast.buildTranslation(translator);
-String gremlin = translationPlan.getTranslation();
+String gremlin = ast.buildTranslation(translator);
 ```
+
+Note that `Translator` instances are not reusable. A new one has to be created for each `buildTranslation` call. `TranslationFacade` handles this for you.
 
 Custom translation targets can be provided by implementing `TranslationBuilder` and `PredicateFactory`:
 
@@ -34,8 +37,20 @@ Translator<String, StringPredicate> translator = new Translator<>(
 ); 
 ```
 
-This is how all the different pieces fit together:
+This is how all the different translation pieces fit together:
 
 ![](assets/translation-module.png)
 
 Consult the published Javadoc for more information.
+
+### Running Cypher
+
+You can use `TranslationFacade` to translate Cypher to Gremlin as a string, but you can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
+
+```java
+TinkerGraph graph = TinkerFactory.createModern();
+GraphTraversalSource traversal = graph.traversal();
+CypherExecutor cypherExecutor = new CypherExecutor(traversal);
+String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
+List<Map<String, Object>> results = cypherExecutor.execute(cypher);
+```
