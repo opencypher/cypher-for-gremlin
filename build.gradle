@@ -162,8 +162,8 @@ project(':testware:tck') {
     dependencies {
         compile project(':testware:testware-common')
 
-        testCompile "org.scala-lang:scala-library:${scalaVersion}"
-        testCompile 'org.scala-lang.modules:scala-java8-compat_2.11:0.8.0'
+        testCompile "org.scala-lang:scala-library:${scalaVersion}.${scalaPatchVersion}"
+        testCompile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
         testCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
         testCompile 'org.opencypher:tck-api:1.0.0-M09'
