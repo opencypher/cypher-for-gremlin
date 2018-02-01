@@ -16,7 +16,6 @@
 package org.opencypher.gremlin.translation;
 
 
-import java.util.function.Function;
 
 /**
  * Abstraction over the process of building a translation
@@ -27,20 +26,11 @@ import java.util.function.Function;
 public class Translator<T, P> {
     private final TranslationBuilder<T, P> translationBuilder;
     private final PredicateFactory<P> predicateFactory;
-    private final Function<TranslationBuilder<T, P>, T> translationProducer;
-
-    Translator(TranslationBuilder<T, P> translationBuilder,
-               PredicateFactory<P> predicateFactory,
-               Function<TranslationBuilder<T, P>, T> translationProducer) {
-        this.translationBuilder = translationBuilder;
-        this.predicateFactory = predicateFactory;
-        this.translationProducer = translationProducer;
-
-    }
 
     Translator(TranslationBuilder<T, P> translationBuilder,
                PredicateFactory<P> predicateFactory) {
-        this(translationBuilder, predicateFactory, TranslationBuilder::current);
+        this.translationBuilder = translationBuilder;
+        this.predicateFactory = predicateFactory;
     }
 
     /**
@@ -69,6 +59,6 @@ public class Translator<T, P> {
      * @return translation
      */
     public T translate() {
-        return translationProducer.apply(translationBuilder.copy());
+        return translationBuilder.copy().current();
     }
 }

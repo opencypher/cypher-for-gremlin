@@ -37,13 +37,17 @@ object ReturnWalker {
 }
 
 private class ReturnWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+
   case class SubTraversals(
       select: Seq[String],
+      all: Map[String, TranslationBuilder[T, P]],
       pivots: Map[String, TranslationBuilder[T, P]],
       aggregations: Map[String, TranslationBuilder[T, P]])
 
   sealed trait ReturnFunctionType
+
   case object Aggregation extends ReturnFunctionType
+
   case object Pivot extends ReturnFunctionType
 
   def walk(node: Return): TranslationBuilder[T, P] = {
@@ -63,10 +67,16 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
 
     val pivotCollector = mutable.LinkedHashMap.empty[String, TranslationBuilder[T, P]]
     val aggregationCollector = mutable.LinkedHashMap.empty[String, TranslationBuilder[T, P]]
+    val allCollector = mutable.LinkedHashMap.empty[String, TranslationBuilder[T, P]]
 
     for (item <- items) {
       val AliasedReturnItem(expression, Variable(alias)) = item
+
+      val (_, traversalUnfold) = pivot(expression, multipleVariables, unfold = true)
       val (returnType, traversal) = pivot(expression, multipleVariables, unfold = false)
+
+      allCollector.put(alias, traversalUnfold)
+
       returnType match {
         case Pivot       => pivotCollector.put(alias, traversal)
         case Aggregation => aggregationCollector.put(alias, traversal)
@@ -75,8 +85,9 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
 
     val pivots = ListMap(pivotCollector.toSeq: _*)
     val aggregations = ListMap(aggregationCollector.toSeq: _*)
+    val all = ListMap(allCollector.toSeq: _*)
 
-    SubTraversals(select, pivots, aggregations)
+    SubTraversals(select, all, pivots, aggregations)
   }
 
   private def applyReturnTraversal(
@@ -85,28 +96,28 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
       distinct: Boolean,
       skip: Option[Skip],
       limit: Option[Limit]): TranslationBuilder[T, P] = {
-    val SubTraversals(select, pivots, aggregations) = subTraversals
+    val SubTraversals(select, all, pivots, aggregations) = subTraversals
     val selectIfAny = () => if (select.nonEmpty) g.select(select.toSeq: _*) else g
 
     if (pivots.nonEmpty && aggregations.nonEmpty) {
       val pivotTraversal = g.start().project(pivots.keySet.toSeq: _*)
       for ((_, expression) <- pivots) pivotTraversal.by(expression)
 
-      val aggregationTraversal = g.start().fold().project(aggregations.keySet.toSeq: _*)
-      for ((_, expression) <- aggregations) aggregationTraversal.by(expression)
+      val aggregationTraversal = g.start().fold().project(all.keySet.toSeq: _*)
+      for ((_, expression) <- all) aggregationTraversal.by(expression)
 
       selectIfAny()
         .group()
         .by(pivotTraversal)
         .by(aggregationTraversal)
-
+        .unfold()
+        .select(Column.values)
     } else if (pivots.nonEmpty) {
       val pivotTraversal = g.start().project(pivots.keySet.toSeq: _*)
       for ((_, expression) <- pivots) pivotTraversal.by(expression)
 
       selectIfAny()
-        .project(PIVOT)
-        .by(pivotTraversal)
+        .coalesce(pivotTraversal)
 
     } else if (aggregations.nonEmpty) {
       val aggregationTraversal = g.start().project(aggregations.keySet.toSeq: _*)
@@ -114,8 +125,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
 
       selectIfAny()
         .fold()
-        .project(AGGREGATION)
-        .by(aggregationTraversal)
+        .coalesce(aggregationTraversal)
     } else {
       context.unsupported("return clause", node)
     }
@@ -137,7 +147,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
       }
     }
 
-    g.unfold()
+    g
   }
 
   private def getVariableNames(items: Seq[ReturnItem]): Seq[String] = {

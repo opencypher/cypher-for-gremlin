@@ -29,7 +29,6 @@ import java.util.stream.IntStream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.opencypher.gremlin.translation.Tokens.NULL;
-import static org.opencypher.gremlin.translation.Tokens.PIVOT;
 import static org.opencypher.gremlin.translation.Tokens.START;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
@@ -163,8 +162,7 @@ public class LiteralTest {
         ))
             .hasTraversal(
                 __.inject(START)
-                    .project(PIVOT)
-                    .by(__
+                    .coalesce(__
                         .project("list")
                         .by(__.constant(asList(
                             13,
@@ -181,7 +179,7 @@ public class LiteralTest {
                             emptyList(),
                             nestedList
                         )))
-                    ).unfold()
+                    )
             );
     }
 
@@ -196,8 +194,7 @@ public class LiteralTest {
         ))
             .hasTraversal(
                 __.inject(START)
-                    .project(PIVOT)
-                    .by(__
+                    .coalesce(__
                         .project("n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10")
                         .by(__.constant(13))
                         .by(__.constant(-40000))
@@ -211,7 +208,6 @@ public class LiteralTest {
                         .by(__.constant(false))
                         .by(__.constant(NULL))
                     )
-                    .unfold()
             );
     }
 

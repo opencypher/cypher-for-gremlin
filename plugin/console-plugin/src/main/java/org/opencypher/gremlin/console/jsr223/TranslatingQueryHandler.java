@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
-import static org.opencypher.gremlin.traversal.GremlinRemote.normalizeRow;
+import static org.opencypher.gremlin.traversal.ReturnNormalizer.normalize;
 
 /**
  * Translates Cypher query to Gremlin query and builds request to plugin-less Gremlin Server.
@@ -57,7 +57,7 @@ public class TranslatingQueryHandler implements QueryHandler {
 
         return results.stream()
             .map(result -> {
-                Map<String, Object> normalized = normalizeRow(result.get(Map.class));
+                Map<String, Object> normalized = normalize(result.get(Map.class));
                 return new Result(normalized);
             })
             .collect(toList());

@@ -24,7 +24,6 @@ import org.opencypher.gremlin.translation.Tokens;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,29 +36,16 @@ public class ReturnNormalizer {
     @SuppressWarnings("unchecked")
     public static <S> Function<Traverser<S>, Map<String, Object>> toCypherResults() {
         return traverser -> {
-            try {
-                Entry maps = (Entry) traverser.get();
-                HashMap<String, Object> result = new LinkedHashMap<>();
-                if (maps.getKey() instanceof Map) {
-                    result.putAll((Map<? extends String, ?>) normalize(maps.getKey()));
-                }
-                if (maps.getValue() instanceof Map) {
-                    result.putAll((Map<? extends String, ?>) normalize(maps.getValue()));
-                }
-
-                return result;
-            } catch (ClassCastException e) {
-                throw new RuntimeException("Invalid input for pivot() function, expected " +
-                    "Entry<LinkedHashMap<String, Object>, LinkedHashMap<String, Object>>, got " + traverser.get(), e);
-            }
+            Map maps = (Map) traverser.get();
+            return normalize(maps);
         };
     }
 
     // https://bugs.openjdk.java.net/browse/JDK-8148463
-    static Map<String, Object> normalize(Map<String, ?> fromCosmos) {
+    public static Map<String, Object> normalize(Map<String, ?> row) {
         LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 
-        for (Entry<String, ?> e : fromCosmos.entrySet()) {
+        for (Entry<String, ?> e : row.entrySet()) {
             result.put(e.getKey(), normalize(e.getValue()));
         }
 

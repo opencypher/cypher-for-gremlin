@@ -25,7 +25,7 @@ import static java.lang.String.format;
 
 public enum Flavor {
     COSMOSDB(TranslatorFactory::cosmos),
-    GREMLIN(TranslatorFactory::transposedString);
+    GREMLIN(TranslatorFactory::string);
 
     private Supplier<Translator<String, StringPredicate>> translator;
 

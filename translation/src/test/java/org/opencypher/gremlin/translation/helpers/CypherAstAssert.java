@@ -28,8 +28,6 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import static java.util.function.Function.identity;
-import static org.opencypher.gremlin.translation.Tokens.AGGREGATION;
-import static org.opencypher.gremlin.translation.Tokens.PIVOT;
 
 public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
 
@@ -67,8 +65,8 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     private static final Pattern RETURN_START = Pattern.compile(
         "\\.(" +
             "group\\(\\)\\.by\\([^)]+\\)\\.by\\([^)]+\\)|" +
-            "project\\('" + PIVOT + "'\\)|" +
-            "fold\\(\\)\\.project\\('" + AGGREGATION + "'\\)" +
+            "coalesce\\(__\\.project|" +
+            "fold\\(\\)\\.coalesce\\(__\\.project" +
             ").*$"
     );
 
