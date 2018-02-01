@@ -15,8 +15,8 @@
  */
 package org.opencypher.gremlin.client;
 
-import org.apache.tinkerpop.gremlin.driver.Client;
-import org.apache.tinkerpop.gremlin.driver.Result;
+import static java.util.stream.Collectors.toList;
+import static org.opencypher.gremlin.server.op.cypher.PluginCommunication.createRequest;
 
 import java.io.Closeable;
 import java.util.HashMap;
@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
-import static org.opencypher.gremlin.server.op.cypher.PluginCommunication.createRequest;
+import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.driver.Result;
 
 public class CypherGremlinClient implements Closeable {
     protected static final int DEFAULT_TIMEOUT_SEC = 5;
@@ -43,9 +43,13 @@ public class CypherGremlinClient implements Closeable {
         client.close();
     }
 
-    public List<Result> submitGremlin(String gremlin) {
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> submitGremlin(String gremlin) {
         try {
-            return client.submit(gremlin).all().get();
+            List<Result> results = client.submit(gremlin).all().get();
+            return results.stream()
+                .map(result -> (Map<String, Object>) result.get(Map.class))
+                .collect(toList());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -65,14 +69,14 @@ public class CypherGremlinClient implements Closeable {
 
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> submitCypher(String cypher, Map<String, Object> parameters, String graph, int timeOutSeconds) throws TimeoutException {
-        List<Result> results;
         try {
-            results = client.submitAsync(createRequest(cypher, parameters, graph)).get(timeOutSeconds, TimeUnit.SECONDS).all().get(timeOutSeconds, TimeUnit.SECONDS);
+            List<Result> results = client.submitAsync(createRequest(cypher, parameters, graph)).get(timeOutSeconds, TimeUnit.SECONDS).all().get(timeOutSeconds, TimeUnit.SECONDS);
+            return results.stream()
+                .map(result -> (Map<String, Object>) result.get(Map.class))
+                .collect(toList());
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        return results.stream()
-            .map(result -> (Map<String, Object>) result.get(Map.class))
-            .collect(toList());
+
     }
 }

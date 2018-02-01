@@ -277,6 +277,12 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
+    public TranslationBuilder<GraphTraversal, P> id() {
+        g.id();
+        return this;
+    }
+
+    @Override
     public TranslationBuilder<GraphTraversal, P> inE(String... edgeLabels) {
         g.inE(edgeLabels);
         return this;
@@ -297,6 +303,12 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     @Override
     public TranslationBuilder<GraphTraversal, P> is(P predicate) {
         g.is(predicate);
+        return this;
+    }
+
+    @Override
+    public TranslationBuilder<GraphTraversal, P> key() {
+        g.key();
         return this;
     }
 

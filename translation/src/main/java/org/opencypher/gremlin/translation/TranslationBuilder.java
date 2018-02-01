@@ -107,6 +107,8 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> hasNot(String propertyKey);
 
+    TranslationBuilder<T, P> id();
+
     TranslationBuilder<T, P> inE(String... edgeLabels);
 
     TranslationBuilder<T, P> inV();
@@ -114,6 +116,8 @@ public interface TranslationBuilder<T, P> {
     TranslationBuilder<T, P> inject(Object... injections);
 
     TranslationBuilder<T, P> is(P predicate);
+
+    TranslationBuilder<T, P> key();
 
     TranslationBuilder<T, P> label();
 

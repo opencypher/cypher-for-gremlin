@@ -21,6 +21,8 @@ buildscript {
         classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.8.0'
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
         classpath 'me.champeau.gradle:jmh-gradle-plugin:0.4.5'
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
+        classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.2'
     }
 }
 
@@ -135,5 +137,35 @@ project(':testware:performance-tests') {
         iterations = 5
         timeUnit = 'ms'
         warmupIterations = 1
+    }
+}
+
+project(':testware:tck') {
+    apply plugin: 'scala'
+    apply plugin: 'org.junit.platform.gradle.plugin'
+    apply plugin: 'com.kncept.junit5.reporter'
+
+    tasks['junitHtmlReport'].onlyIf { project.hasProperty("tck") }
+    junitPlatformTest.onlyIf { project.hasProperty("tck") }
+    junitPlatformTest.finalizedBy 'junitHtmlReport'
+
+    test {
+        reports {
+            junitXml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    sourceSets.main.resources.srcDirs = ["src/main/resources", "../../../config"]
+    sourceSets.test.resources.srcDirs = ["src/test/resources", "../../../config"]
+
+    dependencies {
+        compile project(':testware:testware-common')
+
+        testCompile "org.scala-lang:scala-library:${scalaVersion}"
+        testCompile 'org.scala-lang.modules:scala-java8-compat_2.11:0.8.0'
+        testCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
+        testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
+        testCompile 'org.opencypher:tck-api:1.0.0-M09'
     }
 }

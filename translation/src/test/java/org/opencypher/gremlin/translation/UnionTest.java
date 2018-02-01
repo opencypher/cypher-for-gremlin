@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation;
 
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 
@@ -63,6 +64,7 @@ public class UnionTest {
                                 by(
                                     __.as("n_1").
                                         label().
+                                        is(P.neq(Vertex.DEFAULT_LABEL)).
                                         fold())).
                         by(
                             __.fold().

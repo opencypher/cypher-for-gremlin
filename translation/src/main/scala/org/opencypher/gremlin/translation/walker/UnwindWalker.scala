@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 import org.opencypher.gremlin.translation.{Tokens, TranslationBuilder}
@@ -37,6 +38,8 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: Translation
   private val injectHardLimit = 10000
 
   def walkClause(node: Unwind) {
+    val p = context.dsl.predicateFactory()
+
     if (context.isFirstStatement) {
       context.markFirstStatement()
     } else {
@@ -64,6 +67,8 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: Translation
           node
         )
         g.inject(range.asInstanceOf[Seq[Object]]: _*).as(varName)
+      case FunctionInvocation(_, FunctionName(fnName), _, Vector(Variable(funArg))) if "labels" == fnName.toLowerCase =>
+        g.select(funArg).label().is(p.neq(Vertex.DEFAULT_LABEL)).as(varName)
     }
   }
 }

@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.apache.tinkerpop.gremlin.structure.Column
+import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.exception.SyntaxException
@@ -166,8 +166,9 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
         val (_, traversal) = pivot(args.head, select, unfold)
 
         val function = fnName.toLowerCase match {
-          case "type"   => nullIfNull(traversal, g.start().label())
-          case "labels" => traversal.label().fold()
+          case "id"     => nullIfNull(traversal, g.start().id())
+          case "type"   => nullIfNull(traversal, g.start().label().is(p.neq(Vertex.DEFAULT_LABEL)))
+          case "labels" => traversal.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "keys"   => traversal.valueMap().select(Column.keys)
           case "exists" =>
             g.start().coalesce(traversal.is(p.neq(Tokens.NULL)).constant(true), g.start().constant(false))

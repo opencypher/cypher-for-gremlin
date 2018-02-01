@@ -18,7 +18,6 @@ package org.opencypher.gremlin;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Streams;
 import com.google.common.io.Resources;
-import org.apache.tinkerpop.gremlin.driver.Result;
 import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -32,28 +31,18 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.extractor.Extractors.byName;
 import static org.assertj.core.groups.FieldsOrPropertiesExtractor.extract;
 
-public class NativeTraversalTest  {
+public class NativeTraversalTest {
 
     @ClassRule
     public static final TinkerGraphServerEmbedded gremlinServer = new TinkerGraphServerEmbedded();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.client().submitCypher(cypher);
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Map<String, Object>> submitGremlin(String gremlin) {
-        List<Result> results = gremlinServer.client().submitGremlin(gremlin);
-
-        return results.stream()
-            .map(result -> (Map<String, Object>) result.get(Map.class))
-            .collect(toList());
     }
 
     @Before
@@ -163,13 +152,10 @@ public class NativeTraversalTest  {
     @Test
     public void oneAggregation() throws Exception {
         String cypher = "MATCH (n1) RETURN collect(n1)";
-        String gremlin = "g.V().as('n1').fold().project('collect(n1)').by()";
 
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
-            .containsAll(cypherResults)
+        assertThat(cypherResults)
             .hasSize(1)
             .flatExtracting("collect(n1)")
             .hasSize(18);
@@ -184,26 +170,13 @@ public class NativeTraversalTest  {
             "n.lastName," +
             "collect(n.firstName) AS c1;";
 
-        String gremlin = "g.V().as('n')" +
-            ".where(__.select('n').hasLabel('Person'))" +
-            ".group()" +
-            "   .by(" +
-            "       project('n.lastName').by(values('lastName')))" +
-            "   .by(" +
-            "       fold().project('c1')" +
-            "           .by(unfold().values('firstName').fold())" +
-            ").unfold()" +
-            ".map(toCypherResults())";
-
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .extracting(Map::keySet)
             .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(4)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -228,25 +201,13 @@ public class NativeTraversalTest  {
             "count(n) AS c1," +
             "collect(n.email) AS c2;";
 
-        String gremlin = "g.V().as('n').where(__.select('n').hasLabel('Person'))" +
-            ".group()" +
-            "    .by(" +
-            "       project('p1','p2').by(values('lastName')).by(values('firstName')))" +
-            "    .by(" +
-            "       fold().project('c1','c2')" +
-            "           .by(unfold().count())" +
-            "           .by(unfold().values('email').fold())" +
-            ").unfold()" +
-            ".map(toCypherResults())";
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .extracting(Map::keySet)
             .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(5)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -271,26 +232,13 @@ public class NativeTraversalTest  {
             "collect(n.born) AS c2," +
             "max(n.born) AS c3;";
 
-        String gremlin = "g.V().as('n').where(__.select('n').hasLabel('Person'))" +
-            ".group()" +
-            "    .by(" +
-            "       project('n.lastName').by(values('lastName')))" +
-            "    .by(" +
-            "       fold().project('c1','c2','c3')" +
-            "           .by(unfold().count())" +
-            "           .by(unfold().values('born').fold())" +
-            "           .by(unfold().values('born').max())" +
-            ").unfold()" +
-            ".map(toCypherResults())";
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .extracting(Map::keySet)
             .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(4)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -316,29 +264,13 @@ public class NativeTraversalTest  {
             "collect(n.email) AS c2," +
             "max(n.born) AS c3;";
 
-        String gremlin = "g.V().as('n').where(__.select('n').hasLabel('Person'))" +
-            ".group()" +
-            "    .by(" +
-            "       project('p1','p2','p3')" +
-            "           .by(values('lastName'))" +
-            "           .by(values('firstName'))" +
-            "           .by(values('born'))" +
-            "    ).by(" +
-            "       fold().project('c1','c2','c3')" +
-            "           .by(unfold().count())" +
-            "           .by(unfold().values('email').fold())" +
-            "           .by(unfold().values('born').max())" +
-            ").unfold()" +
-            ".map(toCypherResults())";
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .extracting(Map::keySet)
             .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(6)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -358,22 +290,9 @@ public class NativeTraversalTest  {
         String[] columnNames = {"n.lastName", "type(r)"};
 
         String cypher = "MATCH ()-[r]->(n:Person) RETURN DISTINCT n.lastName, type(r)";
-
-        String gremlin = "g.V().as('n').inE().as('r').where(__.select('n').hasLabel('Person'))" +
-            ".group()" +
-            "    .by(" +
-            "       project('n.lastName').by(select('n').values('lastName')))" +
-            "    .by(" +
-            "       fold().project('type(r)')" +
-            "           .by(unfold().label())" +
-            ").unfold()" +
-            ".dedup()" +
-            ".map(toCypherResults())";
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(3)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -391,23 +310,9 @@ public class NativeTraversalTest  {
 
         String cypher = "MATCH (n:Person)-[r]->(m:Interest) RETURN n.lastName, type(r), collect(m.name)";
 
-        String gremlin = "g.V().as('n').outE().as('r').inV().as('m')" +
-            ".where(__.and(__.select('n').hasLabel('Person'), __.select('m').hasLabel('Interest')))" +
-            ".select('m','r','n')" +
-            ".group()" +
-            "    .by(" +
-            "       project('n.lastName').by(select('n').values('lastName')))" +
-            "    .by(" +
-            "       fold().project('type(r)','collect(m.name)')" +
-            "           .by(unfold().select('r').label())" +
-            "           .by(unfold().select('m').values('name').fold())" +
-            ").unfold()" +
-            ".map(toCypherResults())";
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(2)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -424,21 +329,9 @@ public class NativeTraversalTest  {
 
         String cypher = "MATCH ()-[r]->() RETURN count(r) AS count, type(r)";
 
-        String gremlin = "g.V().as('n').outE().as('r').as('r1').inV().as('m')" +
-            ".select('r','r1')" + // force go to SelectStep not SelectOneStep
-            ".group()" +
-            "    .by(" +
-            "       project('type(r)').by(select('r').label()))" +
-            "    .by(" +
-            "       fold().project('count')" +
-            "           .by(unfold().select('r').count())" +
-            ").unfold()" +
-            ".map(toCypherResults())";
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(4)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -456,15 +349,10 @@ public class NativeTraversalTest  {
     public void aggregationsOnly() throws Exception {
         String[] columnNames = {"count(n1)", "count(n2)"};
         String cypher = "MATCH (n1)-[r]->(n2) RETURN count(n1), count(n2)";
-        String gremlin = "g.V().as('n1').outE().as('r').inV().as('n2')" +
-            ".select('n1','r','n2').fold().project('count(n1)','count(n2)')" +
-            "  .by(unfold().select('r').count())" +
-            "  .by(unfold().select('r').count())";
 
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(1)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
@@ -480,21 +368,9 @@ public class NativeTraversalTest  {
         String cypher = "MATCH (n)\n" +
             "RETURN (n:Person) AS isPerson, count(*) AS count";
 
-        String gremlin = "g.V().as('n').as('n1')" +
-            ".select('n','n1')" + // force go to SelectStep not SelectOneStep
-            ".group()" +
-            "    .by(" +
-            "       project('isPerson').by(select('n').choose(hasLabel('Person'), constant(true), constant(false)))" +
-            "    ).by(" +
-            "       fold().project('count')" +
-            "           .by(unfold().select('n').count())" +
-            ").unfold()" +
-            ".map(toCypherResults())";
-
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
-        List<Map<String, Object>> gremlinResults = submitGremlin(gremlin);
 
-        assertThat(gremlinResults)
+        assertThat(cypherResults)
             .hasSize(2)
             .extracting(columnNames)
             .usingElementComparator(ignoreOrderInCollections())
