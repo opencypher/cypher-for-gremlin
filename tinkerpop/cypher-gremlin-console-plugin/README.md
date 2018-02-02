@@ -2,7 +2,7 @@
 
 This plugin enables Cypher queries in [Gremlin Console](https://tinkerpop.apache.org/docs/current/tutorials/the-gremlin-console/).
 
-The plugin can work with any Gremlin Server and perform translation to Gremlin in the Console. Alternatively, if a Gremlin Server has the [Cypher plugin](../server-plugin) installed, the plugin can let the server handle the translation.
+The plugin can work with any Gremlin Server and perform translation to Gremlin in the Console. Alternatively, if a Gremlin Server has the [Cypher plugin](../cypher-gremlin-server-plugin) installed, the plugin can let the server handle the translation.
 
 ## Prerequisites
 
@@ -13,11 +13,11 @@ The plugin can work with any Gremlin Server and perform translation to Gremlin i
 
 1. Build the plugin JAR file:
     ```sh
-    ./gradlew :plugin:console-plugin:shadowJar
+    ./gradlew :tinkerpop:cypher-gremlin-console-plugin:shadowJar
     ```
 1. Copy plugin shadow JAR file to Gremlin Console `lib/` directory:
     ```sh
-    cp plugin/console-plugin/build/libs/console-plugin-*-all.jar /path/to/gremlin-console/lib/
+    cp tinkerpop/cypher-gremlin-console-plugin/build/libs/cypher-gremlin-console-plugin-*-all.jar /path/to/gremlin-console/lib/
     ```
 1. Export `JAVA_OPTIONS`:
     ```sh
@@ -38,7 +38,7 @@ The plugin can work with any Gremlin Server and perform translation to Gremlin i
     ==>opencypher.gremlin activated 
     ```
 1. Connect to Gremlin Server.
-   * With server-side translation ([Cypher plugin](../server-plugin) required):
+   * With server-side translation ([Cypher plugin](../cypher-gremlin-server-plugin) required):
     ```
     gremlin> :remote connect opencypher.gremlin conf/remote.yaml
     ==>Configured localhost/127.0.0.1:8182

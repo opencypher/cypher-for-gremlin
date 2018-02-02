@@ -84,7 +84,7 @@ project(':translation') {
     }
 }
 
-project(':plugin:plugin-common') {
+project(':tinkerpop:tinkerpop-common') {
     dependencies {
         compile project(':translation')
 
@@ -94,19 +94,19 @@ project(':plugin:plugin-common') {
     }
 }
 
-project(':plugin:server-plugin') {
+project(':tinkerpop:cypher-gremlin-server-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile project(':plugin:plugin-common')
+        compile project(':tinkerpop:tinkerpop-common')
     }
 }
 
-project(':plugin:console-plugin') {
+project(':tinkerpop:cypher-gremlin-console-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile project(':plugin:plugin-common')
+        compile project(':tinkerpop:tinkerpop-common')
 
         compileOnly "org.apache.tinkerpop:gremlin-console:${tinkerpopVersion}"
     }
@@ -114,7 +114,7 @@ project(':plugin:console-plugin') {
 
 project(':testware:testware-common') {
     dependencies {
-        compile project(':plugin:server-plugin')
+        compile project(':tinkerpop:cypher-gremlin-server-plugin')
 
         compile "junit:junit:${junitVersion}"
         compile "org.assertj:assertj-core:${assertjVersion}"
@@ -135,7 +135,7 @@ project(':testware:performance-tests') {
     apply plugin: 'me.champeau.gradle.jmh'
 
     dependencies {
-        jmh project(':plugin:plugin-common')
+        jmh project(':tinkerpop:tinkerpop-common')
         jmh "com.google.guava:guava:${guavaVersion}"
     }
 

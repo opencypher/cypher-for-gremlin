@@ -5,8 +5,8 @@ Cypher for Gremlin is a toolkit for users of [Apache TinkerPop™](https://tinke
 The toolkit is composed of:
 
 - [translation](translation): Cypher to Gremlin translation library for Java
-- [plugin/server-plugin](plugin/server-plugin): Gremlin Server plugin that enables Cypher query processing
-- [plugin/console-plugin](plugin/console-plugin): Gremlin Console plugin that can send Cypher queries to a remote
+- [tinkerpop/cypher-gremlin-server-plugin](tinkerpop/cypher-gremlin-server-plugin): Gremlin Server plugin that enables Cypher query processing
+- [tinkerpop/cypher-gremlin-console-plugin](tinkerpop/cypher-gremlin-console-plugin): Gremlin Console plugin that can send Cypher queries to a remote
 - Gremlin Console plugin that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server
 
 ## Language Support
