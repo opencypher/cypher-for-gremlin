@@ -23,26 +23,39 @@ import java.util.Map;
 import static java.util.Collections.emptyMap;
 
 public final class ClientServerCommunication {
-    public static final String OP_PROCESSOR_NAME = "cypher";
+    public static final String CYPHER_OP_PROCESSOR_NAME = "cypher";
     public static final String DEFAULT_GRAPH_NAME = "graph";
 
     private ClientServerCommunication() {
     }
 
     public static RequestMessage.Builder buildRequest(String cypher) {
-        return buildRequest(cypher, emptyMap(), null);
+        return buildRequest(cypher, emptyMap(), null, CYPHER_OP_PROCESSOR_NAME);
     }
 
     public static RequestMessage.Builder buildRequest(String cypher, Map<String, Object> parameters) {
-        return buildRequest(cypher, parameters, null);
+        return buildRequest(cypher, parameters, null, CYPHER_OP_PROCESSOR_NAME);
     }
 
-    public static RequestMessage.Builder buildRequest(String cypher, Map<String, Object> parameters, String graphName) {
-        RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
-            .processor(OP_PROCESSOR_NAME)
-            .add(Tokens.ARGS_GREMLIN, cypher);
+    public static RequestMessage.Builder buildRequest(
+        String cypher,
+        Map<String, Object> parameters,
+        String graphName
+    ) {
+        return buildRequest(cypher, parameters, graphName, CYPHER_OP_PROCESSOR_NAME);
+    }
 
-        if (!parameters.isEmpty()) {
+    public static RequestMessage.Builder buildRequest(
+        String query,
+        Map<String, Object> parameters,
+        String graphName,
+        String opProcessor
+    ) {
+        RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
+            .processor(opProcessor)
+            .add(Tokens.ARGS_GREMLIN, query);
+
+        if (parameters != null && !parameters.isEmpty()) {
             request.addArg(Tokens.ARGS_BINDINGS, parameters);
         }
 

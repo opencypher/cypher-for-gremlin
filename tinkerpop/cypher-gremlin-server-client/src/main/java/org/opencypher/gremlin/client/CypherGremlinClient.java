@@ -16,9 +16,6 @@
 package org.opencypher.gremlin.client;
 
 import org.apache.tinkerpop.gremlin.driver.Client;
-import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 import java.io.Closeable;
 import java.util.List;
@@ -26,29 +23,18 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.Collections.emptyMap;
-import static java.util.stream.Collectors.toList;
-import static org.opencypher.gremlin.ClientServerCommunication.buildRequest;
 
 /**
  * This is a convenience wrapper around a Gremlin {@link Client}
  * that configures the provided {@link Client} to be able to send Cypher queries
- * to a Gremlin Server with the Cypher to Gremlin plugin.
+ * to a Gremlin Server.
  */
-public final class CypherGremlinClient implements Closeable {
-
-    private final Client client;
-
-    public CypherGremlinClient(Client client) {
-        this.client = client;
-    }
-
+public interface CypherGremlinClient extends Closeable {
     /**
      * Closes the underlying Gremlin client.
      */
     @Override
-    public void close() {
-        client.close();
-    }
+    void close();
 
     /**
      * Submits a Cypher query.
@@ -56,8 +42,8 @@ public final class CypherGremlinClient implements Closeable {
      * @param cypher query text
      * @return Cypher-style results
      */
-    public List<Map<String, Object>> submit(String cypher) {
-        return submitAsync(cypher, emptyMap(), null).join();
+    default List<Map<String, Object>> submit(String cypher) {
+        return submitAsync(cypher, emptyMap()).join();
     }
 
     /**
@@ -67,22 +53,8 @@ public final class CypherGremlinClient implements Closeable {
      * @param parameters query parameters
      * @return Cypher-style results
      */
-    public List<Map<String, Object>> submit(String cypher, Map<String, Object> parameters) {
-        return submitAsync(cypher, parameters, null).join();
-    }
-
-    /**
-     * Submits a Cypher query.
-     *
-     * @param cypher     query text
-     * @param parameters query parameters
-     * @param graphName  target graph name
-     * @return Cypher-style results
-     * @see org.opencypher.gremlin.ClientServerCommunication
-     */
-    @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> submit(String cypher, Map<String, Object> parameters, String graphName) {
-        return submitAsync(cypher, parameters, graphName).join();
+    default List<Map<String, Object>> submit(String cypher, Map<String, Object> parameters) {
+        return submitAsync(cypher, parameters).join();
     }
 
     /**
@@ -91,8 +63,8 @@ public final class CypherGremlinClient implements Closeable {
      * @param cypher query text
      * @return Cypher-style results
      */
-    public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher) {
-        return submitAsync(cypher, emptyMap(), null);
+    default CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher) {
+        return submitAsync(cypher, emptyMap());
     }
 
     /**
@@ -100,33 +72,8 @@ public final class CypherGremlinClient implements Closeable {
      *
      * @param cypher     query text
      * @param parameters query parameters
-     * @return Cypher-style results
-     */
-    public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters) {
-        return submitAsync(cypher, parameters, null);
-    }
-
-    /**
-     * Submits a Cypher query asynchronously.
-     *
-     * @param cypher     query text
-     * @param parameters query parameters
-     * @param graphName  target graph name
      * @return Cypher-style results
      * @see org.opencypher.gremlin.ClientServerCommunication
      */
-    @SuppressWarnings("unchecked")
-    public CompletableFuture<List<Map<String, Object>>> submitAsync(
-        String cypher,
-        Map<String, Object> parameters,
-        String graphName
-    ) {
-        RequestMessage requestMessage = buildRequest(cypher, parameters, graphName).create();
-        return client.submitAsync(requestMessage)
-            .thenCompose(ResultSet::all)
-            .thenApply(results -> results.stream()
-                .map(result -> (Map<String, Object>) result.get(Map.class))
-                .map(ReturnNormalizer::normalize)
-                .collect(toList()));
-    }
+    CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters);
 }

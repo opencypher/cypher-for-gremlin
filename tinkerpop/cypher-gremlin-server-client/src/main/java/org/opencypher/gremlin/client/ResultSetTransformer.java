@@ -17,24 +17,37 @@ package org.opencypher.gremlin.client;
 
 import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.toList;
 
-public final class GremlinResultSet {
-    private GremlinResultSet() {
+public class ResultSetTransformer {
+    private ResultSetTransformer() {
     }
 
-    public static List<Result> resultSetSync(ResultSet resultSet) {
-        return resultSet.all().join();
+    public static List<Map<String, Object>> resultSetAsMap(ResultSet resultSet) {
+        return resultSet.all()
+            .thenApply(ResultSetTransformer::resultsAsMap)
+            .join();
+    }
+
+    public static CompletableFuture<List<Map<String, Object>>> resultSetAsMapAsync(
+        CompletableFuture<ResultSet> resultSetFuture
+    ) {
+        return resultSetFuture
+            .thenCompose(ResultSet::all)
+            .thenApply(ResultSetTransformer::resultsAsMap);
     }
 
     @SuppressWarnings("unchecked")
-    public static List<Map<String, Object>> resultSetAsMap(ResultSet resultSet) {
-        return resultSetSync(resultSet).stream()
+    private static List<Map<String, Object>> resultsAsMap(List<Result> results) {
+        return results.stream()
             .map(result -> (Map<String, Object>) result.get(Map.class))
+            .map(ReturnNormalizer::normalize)
             .collect(toList());
     }
 }

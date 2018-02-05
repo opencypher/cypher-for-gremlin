@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static org.opencypher.gremlin.ClientServerCommunication.OP_PROCESSOR_NAME;
+import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
 import static org.opencypher.gremlin.ClientServerCommunication.buildRequest;
 
 public class ClientServerCommunicationTest {
@@ -31,7 +31,7 @@ public class ClientServerCommunicationTest {
         RequestMessage request = buildRequest("cypher").create();
 
         assertThat(request.getOp()).isEqualTo(Tokens.OPS_EVAL);
-        assertThat(request.getProcessor()).isEqualTo(OP_PROCESSOR_NAME);
+        assertThat(request.getProcessor()).isEqualTo(CYPHER_OP_PROCESSOR_NAME);
         assertThat(request.getArgs()).containsOnly(
             entry(Tokens.ARGS_GREMLIN, "cypher")
         );

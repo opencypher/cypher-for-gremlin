@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin;
 
-import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -32,7 +31,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.opencypher.gremlin.client.GremlinResultSet.resultSetSync;
 
 public class CreateTest {
 
@@ -41,8 +39,7 @@ public class CreateTest {
 
     @Before
     public void setUp() {
-        ResultSet resultSet = gremlinServer.gremlinClient().submit("g.V().drop()");
-        resultSetSync(resultSet);
+        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {

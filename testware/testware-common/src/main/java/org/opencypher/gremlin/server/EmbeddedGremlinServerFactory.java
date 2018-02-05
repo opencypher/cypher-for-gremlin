@@ -49,19 +49,13 @@ public final class EmbeddedGremlinServerFactory {
             .build();
     }
 
-    public static SerializerSettings serializerSettings(Class<? extends MessageSerializer> serializer,
-                                                        Class<? extends IoRegistry> ioRegistry) {
-        Map<String, Object> config = serializerConfig(ioRegistry);
+    private static SerializerSettings serializerSettings(Class<? extends MessageSerializer> serializer,
+                                                         Class<? extends IoRegistry> ioRegistry) {
+        Map<String, Object> config = singletonMap("ioRegistries", singletonList(ioRegistry.getCanonicalName()));
         SerializerSettings settings = new SerializerSettings();
         settings.className = serializer.getCanonicalName();
         settings.config = config;
         return settings;
 
-    }
-
-    public static Map<String, Object> serializerConfig(Class<?> ioRegistry) {
-        Map<String, Object> config =
-            singletonMap("ioRegistries", singletonList(ioRegistry.getCanonicalName()));
-        return config;
     }
 }

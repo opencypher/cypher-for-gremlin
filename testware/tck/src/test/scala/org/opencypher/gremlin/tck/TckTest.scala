@@ -19,9 +19,9 @@ import java.util
 import java.util.concurrent.TimeUnit.SECONDS
 
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
-import org.opencypher.gremlin.client.GremlinResultSet.{resultSetSync, resultSetAsMap}
+import org.opencypher.gremlin.client.ResultSetTransformer
 import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded
-import org.opencypher.gremlin.tck.GremlinCypherValueConverter.{toCypherValueRecords, toExecutionFailed, toGremlinParams}
+import org.opencypher.gremlin.tck.GremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.GremlinQueries._
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
@@ -33,13 +33,13 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
 
   val tinkerGraphServerEmbedded = new TinkerGraphServerEmbedded
   tinkerGraphServerEmbedded.before()
-  resultSetSync(tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery))
+  tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
 
   override def cypher(query: String, params: Map[String, CypherValue], queryType: QueryType): Result = {
     queryType match {
       case SideEffectQuery if cypherToGremlinQueries.isDefinedAt(query) =>
         val resultSet = tinkerGraphServerEmbedded.gremlinClient().submit(cypherToGremlinQueries(query))
-        toCypherValueRecords(query, resultSetAsMap(resultSet))
+        toCypherValueRecords(query, ResultSetTransformer.resultSetAsMap(resultSet))
 
       case ExecQuery | InitQuery | SideEffectQuery =>
         val paramsJava: util.Map[String, Object] = toGremlinParams(params)
@@ -56,7 +56,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
   }
 
   override def close(): Unit = {
-    resultSetSync(tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery))
+    tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
   }
 }
 
