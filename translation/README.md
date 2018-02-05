@@ -41,7 +41,7 @@ This is how all the different translation pieces fit together:
 
 ![](assets/translation-module.png)
 
-Consult the published Javadoc for more information.
+Consult the Javadoc for more information.
 
 ### Running Cypher
 
@@ -54,3 +54,5 @@ CypherExecutor cypherExecutor = new CypherExecutor(traversal);
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 List<Map<String, Object>> results = cypherExecutor.execute(cypher);
 ```
+
+If you want to send queries to a remote Gremlin Server, you might be interested in the [Cypher client for Gremlin Server](../tinkerpop/cypher-gremlin-server-client).
