@@ -59,7 +59,6 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> aggregate(String label);
 
-    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> and(TranslationBuilder<T, P>... ands);
 
     TranslationBuilder<T, P> as(String label);
@@ -78,7 +77,6 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> choose(P predicate, TranslationBuilder<T, P> trueChoice);
 
-    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> coalesce(TranslationBuilder<T, P>... traversals);
 
     TranslationBuilder<T, P> constant(Object e);
@@ -133,7 +131,6 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> not(TranslationBuilder<T, P> rhs);
 
-    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> or(TranslationBuilder<T, P>... ors);
 
     TranslationBuilder<T, P> order();
@@ -176,7 +173,6 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> unfold();
 
-    @SuppressWarnings("unchecked")
     TranslationBuilder<T, P> union(TranslationBuilder<T, P>... translationBuilders);
 
     TranslationBuilder<T, P> until(TranslationBuilder<T, P> translationBuilder);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.server.op.cypher;
+package org.opencypher.gremlin;
 
 import org.apache.tinkerpop.gremlin.driver.Tokens;
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
@@ -21,14 +21,14 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static org.opencypher.gremlin.server.op.cypher.PluginCommunication.OP_PROCESSOR_NAME;
-import static org.opencypher.gremlin.server.op.cypher.PluginCommunication.createRequest;
+import static org.opencypher.gremlin.ClientServerCommunication.OP_PROCESSOR_NAME;
+import static org.opencypher.gremlin.ClientServerCommunication.buildRequest;
 
-public class PluginCommunicationTest {
+public class ClientServerCommunicationTest {
 
     @Test
     public void createRequestTest() throws Exception {
-        RequestMessage request = createRequest("cypher");
+        RequestMessage request = buildRequest("cypher").create();
 
         assertThat(request.getOp()).isEqualTo(Tokens.OPS_EVAL);
         assertThat(request.getProcessor()).isEqualTo(OP_PROCESSOR_NAME);

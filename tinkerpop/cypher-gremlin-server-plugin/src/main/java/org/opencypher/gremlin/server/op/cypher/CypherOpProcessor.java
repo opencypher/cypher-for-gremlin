@@ -47,8 +47,8 @@ import java.util.Set;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode.SERVER_ERROR;
-import static org.opencypher.gremlin.server.op.cypher.PluginCommunication.GRAPH_NAME;
-import static org.opencypher.gremlin.server.op.cypher.PluginCommunication.OP_PROCESSOR_NAME;
+import static org.opencypher.gremlin.ClientServerCommunication.DEFAULT_GRAPH_NAME;
+import static org.opencypher.gremlin.ClientServerCommunication.OP_PROCESSOR_NAME;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.toCypherResults;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -140,7 +140,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
             String traversalSourceName = aliases.get().get(Tokens.VAL_TRAVERSAL_SOURCE_ALIAS);
             return (GraphTraversalSource) graphManager.getTraversalSource(traversalSourceName);
         } else {
-            Optional<String> graphToUse = msg.optionalArgs(GRAPH_NAME);
+            Optional<String> graphToUse = msg.optionalArgs(DEFAULT_GRAPH_NAME);
             if (graphToUse.isPresent()) {
                 return graphManager.getGraph(graphToUse.get()).traversal();
             }

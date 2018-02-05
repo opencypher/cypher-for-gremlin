@@ -41,7 +41,7 @@ public class ReturnTest {
     public static final TinkerGraphServerEmbedded gremlinServer = new TinkerGraphServerEmbedded();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.client().submitCypher(cypher);
+        return gremlinServer.cypherGremlinClient().submit(cypher);
     }
 
     @Test

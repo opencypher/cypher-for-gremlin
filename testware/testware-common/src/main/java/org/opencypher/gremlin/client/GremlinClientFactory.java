@@ -20,28 +20,19 @@ import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.apache.tinkerpop.gremlin.driver.MessageSerializer;
 import org.apache.tinkerpop.gremlin.driver.ser.Serializers;
 
-public final class ClientFactory {
-
-    private ClientFactory() {
+public final class GremlinClientFactory {
+    private GremlinClientFactory() {
     }
 
-    public static Client gremlinClient(int port, MessageSerializer serializer) {
+    public static Client create(int port) {
+        return create(port, Serializers.GRYO_V3D0.simpleInstance());
+    }
+
+    public static Client create(int port, MessageSerializer serializer) {
         return Cluster.build()
             .port(port)
             .serializer(serializer)
             .create()
             .connect();
-    }
-
-    public static Client gremlinClient(int port) {
-        return gremlinClient(port, Serializers.GRYO_V3D0.simpleInstance());
-    }
-
-    public static CypherGremlinClient cypherGremlinClient() {
-        return cypherGremlinClient(8182);
-    }
-
-    public static CypherGremlinClient cypherGremlinClient(int port) {
-        return new CypherGremlinClient(() -> gremlinClient(port));
     }
 }

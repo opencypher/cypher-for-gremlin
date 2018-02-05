@@ -33,7 +33,7 @@ public class OrderBySkipLimitTest {
     private static final int VERTICES_COUNT = 6;
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.client().submitCypher(cypher);
+        return gremlinServer.cypherGremlinClient().submit(cypher);
     }
 
     @Test

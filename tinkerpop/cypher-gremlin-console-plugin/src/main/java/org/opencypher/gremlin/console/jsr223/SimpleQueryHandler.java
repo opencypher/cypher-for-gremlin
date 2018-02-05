@@ -16,8 +16,7 @@
 package org.opencypher.gremlin.console.jsr223;
 
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
-import org.opencypher.gremlin.server.op.cypher.PluginCommunication;
-
+import org.opencypher.gremlin.ClientServerCommunication;
 
 /**
  * Builds query request to CypherOpProcessor installed on Gremlin Server (Gremlin Server Cypher plugin).
@@ -29,6 +28,6 @@ public class SimpleQueryHandler implements QueryHandler {
 
     @Override
     public RequestMessage.Builder buildRequest(String query) {
-        return PluginCommunication.buildRequest(query);
+        return ClientServerCommunication.buildRequest(query);
     }
 }

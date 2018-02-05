@@ -34,7 +34,7 @@ import static java.util.Collections.emptyMap;
 public class TranslationFacade {
 
     /**
-     * Translate a Cypher query to Gremlin.
+     * Translates a Cypher query to Gremlin.
      *
      * @param cypher Cypher query
      * @return Gremlin query
@@ -44,7 +44,7 @@ public class TranslationFacade {
     }
 
     /**
-     * Translate a Cypher query to Gremlin.
+     * Translates a Cypher query to Gremlin.
      *
      * @param cypher Cypher query
      * @param parameters query parameters

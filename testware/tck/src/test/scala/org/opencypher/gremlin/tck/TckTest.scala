@@ -15,13 +15,16 @@
  */
 package org.opencypher.gremlin.tck
 
+import java.util
+import java.util.concurrent.TimeUnit.SECONDS
+
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
+import org.opencypher.gremlin.client.GremlinResultSet.{resultSetSync, resultSetAsMap}
 import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded
 import org.opencypher.gremlin.tck.GremlinCypherValueConverter.{toCypherValueRecords, toExecutionFailed, toGremlinParams}
 import org.opencypher.gremlin.tck.GremlinQueries._
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
-import java.util
 
 import scala.collection.JavaConverters._
 
@@ -30,18 +33,21 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
 
   val tinkerGraphServerEmbedded = new TinkerGraphServerEmbedded
   tinkerGraphServerEmbedded.before()
-  tinkerGraphServerEmbedded.client().submitGremlin(dropQuery)
+  resultSetSync(tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery))
 
   override def cypher(query: String, params: Map[String, CypherValue], queryType: QueryType): Result = {
     queryType match {
       case SideEffectQuery if cypherToGremlinQueries.isDefinedAt(query) =>
-        val results = tinkerGraphServerEmbedded.client.submitGremlin(cypherToGremlinQueries(query))
-        toCypherValueRecords(query, results)
+        val resultSet = tinkerGraphServerEmbedded.gremlinClient().submit(cypherToGremlinQueries(query))
+        toCypherValueRecords(query, resultSetAsMap(resultSet))
 
       case ExecQuery | InitQuery | SideEffectQuery =>
         val paramsJava: util.Map[String, Object] = toGremlinParams(params)
         try {
-          val results = tinkerGraphServerEmbedded.client.submitCypher(query, paramsJava, null, TIME_OUT_SECONDS)
+          val results = tinkerGraphServerEmbedded
+            .cypherGremlinClient()
+            .submitAsync(query, paramsJava)
+            .get(TIME_OUT_SECONDS, SECONDS)
           toCypherValueRecords(query, results)
         } catch {
           case e: Exception => toExecutionFailed(e)
@@ -50,7 +56,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
   }
 
   override def close(): Unit = {
-    tinkerGraphServerEmbedded.client.submitGremlin(dropQuery)
+    resultSetSync(tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery))
   }
 }
 

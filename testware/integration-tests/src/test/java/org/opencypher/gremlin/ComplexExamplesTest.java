@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin;
 
+import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -27,6 +28,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.client.GremlinResultSet.resultSetSync;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 
 public class ComplexExamplesTest {
@@ -36,11 +38,12 @@ public class ComplexExamplesTest {
 
     @Before
     public void setUp() {
-        gremlinServer.client().submitGremlin("g.V().drop()");
+        ResultSet resultSet = gremlinServer.gremlinClient().submit("g.V().drop()");
+        resultSetSync(resultSet);
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.client().submitCypher(cypher);
+        return gremlinServer.cypherGremlinClient().submit(cypher);
     }
 
     @Test

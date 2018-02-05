@@ -15,29 +15,32 @@
  */
 package org.opencypher.gremlin.rules;
 
+import org.apache.tinkerpop.gremlin.driver.Client;
 import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
+import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 
-import static org.opencypher.gremlin.client.ClientFactory.cypherGremlinClient;
 import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.tinkerGraph;
 
 public class TinkerGraphServerEmbedded extends ExternalResource {
 
     private EmbeddedGremlinServer gremlinServer;
-    private CypherGremlinClient client;
+    private Client gremlinClient;
+    private CypherGremlinClient cypherGremlinClient;
 
     @Override
     public void before() throws Throwable {
         gremlinServer = tinkerGraph();
         gremlinServer.start();
         int port = gremlinServer.getPort();
-        client = cypherGremlinClient(port);
+        gremlinClient = GremlinClientFactory.create(port);
+        cypherGremlinClient = new CypherGremlinClient(gremlinClient);
     }
 
     @Override
     public void after() {
-        client.close();
+        cypherGremlinClient.close();
         gremlinServer.stop();
     }
 
@@ -45,7 +48,11 @@ public class TinkerGraphServerEmbedded extends ExternalResource {
         return gremlinServer.getPort();
     }
 
-    public CypherGremlinClient client() {
-        return client;
+    public Client gremlinClient() {
+        return gremlinClient;
+    }
+
+    public CypherGremlinClient cypherGremlinClient() {
+        return cypherGremlinClient;
     }
 }

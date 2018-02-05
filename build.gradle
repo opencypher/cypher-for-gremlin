@@ -94,6 +94,16 @@ project(':tinkerpop:tinkerpop-common') {
     }
 }
 
+project(':tinkerpop:cypher-gremlin-server-client') {
+    dependencies {
+        compile project(':tinkerpop:tinkerpop-common')
+
+        compile("org.apache.tinkerpop:gremlin-driver:${tinkerpopVersion}") {
+            exclude group: 'org.codehaus.groovy'
+        }
+    }
+}
+
 project(':tinkerpop:cypher-gremlin-server-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -114,6 +124,7 @@ project(':tinkerpop:cypher-gremlin-console-plugin') {
 
 project(':testware:testware-common') {
     dependencies {
+        compile project(':tinkerpop:cypher-gremlin-server-client')
         compile project(':tinkerpop:cypher-gremlin-server-plugin')
 
         compile "junit:junit:${junitVersion}"

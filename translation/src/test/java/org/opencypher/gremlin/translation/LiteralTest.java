@@ -155,6 +155,7 @@ public class LiteralTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void literalsInReturnList() {
         String literals = String.join(", ", literalList);
         assertThat(parse(
@@ -184,6 +185,7 @@ public class LiteralTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void literalsInReturn() {
         String literals = IntStream.range(0, primitiveList.size())
             .mapToObj(i -> new SimpleEntry<>(i, primitiveList.get(i)))

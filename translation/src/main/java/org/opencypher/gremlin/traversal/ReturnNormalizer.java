@@ -36,32 +36,25 @@ public class ReturnNormalizer {
     @SuppressWarnings("unchecked")
     public static <S> Function<Traverser<S>, Map<String, Object>> toCypherResults() {
         return traverser -> {
-            Map maps = (Map) traverser.get();
-            return normalize(maps);
+            Map row = (Map) traverser.get();
+            return normalize(row);
         };
     }
 
-    // https://bugs.openjdk.java.net/browse/JDK-8148463
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> normalize(Map<String, ?> row) {
-        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
-
-        for (Entry<String, ?> e : row.entrySet()) {
-            result.put(e.getKey(), normalize(e.getValue()));
-        }
-
-        return result;
+        return (Map<String, Object>) normalizeValue(row);
     }
 
-    @SuppressWarnings("unchecked")
-    static Object normalize(Object value) {
+    private static Object normalizeValue(Object value) {
         if (value instanceof Map) {
-            return normalize(Map.class.cast(value));
+            return normalizeMap((Map<?, ?>) value);
         } else if (value instanceof Collection) {
-            return normalize(Collection.class.cast(value));
+            return normalizeCollection((Collection<?>) value);
         } else if (value instanceof DetachedVertexProperty) {
-            return extractMap(DetachedVertexProperty.class.cast(value));
+            return elementPropertyMap((DetachedVertexProperty) value);
         } else if (value instanceof Integer) {
-            return Integer.class.cast(value).longValue();
+            return ((Integer) value).longValue();
         } else if (Tokens.NULL.equals(value)) {
             return null;
         } else if (value instanceof Path) {
@@ -70,22 +63,27 @@ public class ReturnNormalizer {
         return value;
     }
 
-    private static Object extractMap(Element element) {
+    private static Map<?, ?> normalizeMap(Map<?, ?> value) {
+        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+        for (Entry<?, ?> e : value.entrySet()) {
+            result.put(String.valueOf(e.getKey()), normalizeValue(e.getValue()));
+        }
+        return result;
+    }
+
+    private static Collection<?> normalizeCollection(Collection<?> value) {
+        return value.stream()
+            .map(ReturnNormalizer::normalizeValue)
+            .collect(Collectors.toList());
+    }
+
+    private static Object elementPropertyMap(Element element) {
         LinkedHashMap<Object, Object> result = new LinkedHashMap<>();
         Iterator<? extends Property<Object>> properties = element.properties();
         while (properties.hasNext()) {
             Property<Object> next = properties.next();
             result.put(next.key(), next.value());
         }
-
         return result;
-    }
-
-
-    static Object normalize(Collection<Object> collection) {
-        return collection
-            .stream()
-            .map(ReturnNormalizer::normalize)
-            .collect(Collectors.toList());
     }
 }
