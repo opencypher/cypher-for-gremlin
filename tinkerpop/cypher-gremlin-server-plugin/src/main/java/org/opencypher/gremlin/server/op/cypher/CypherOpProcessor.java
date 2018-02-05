@@ -22,6 +22,7 @@ import org.apache.tinkerpop.gremlin.driver.message.ResponseMessage;
 import org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -42,12 +43,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode.SERVER_ERROR;
-import static org.opencypher.gremlin.ClientServerCommunication.DEFAULT_GRAPH_NAME;
 import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.toCypherResults;
@@ -134,26 +133,39 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
     private GraphTraversalSource traversal(Context context) throws OpProcessorException {
         RequestMessage msg = context.getRequestMessage();
-        Optional<Map<String, String>> aliases = msg.optionalArgs(Tokens.ARGS_ALIASES);
         GraphManager graphManager = context.getGraphManager();
-        if (aliases.isPresent()) {
-            String traversalSourceName = aliases.get().get(Tokens.VAL_TRAVERSAL_SOURCE_ALIAS);
-            return (GraphTraversalSource) graphManager.getTraversalSource(traversalSourceName);
-        } else {
-            Optional<String> graphToUse = msg.optionalArgs(DEFAULT_GRAPH_NAME);
-            if (graphToUse.isPresent()) {
-                return graphManager.getGraph(graphToUse.get()).traversal();
-            }
-            Set<String> graphNames = graphManager.getGraphNames();
-            if (!graphNames.isEmpty()) {
-                String graphName = graphNames.iterator().next();
-                return graphManager.getGraph(graphName).traversal();
-            } else {
-                String errorMessage = "No graphs found on the server";
-                throw new OpProcessorException(errorMessage,
-                    ResponseMessage.build(msg).code(SERVER_ERROR).statusMessage(errorMessage).create());
-            }
+
+        Optional<Map<String, String>> aliasesOptional = msg.optionalArgs(Tokens.ARGS_ALIASES);
+        String gAlias = aliasesOptional
+            .map(aliases -> aliases.get(Tokens.VAL_TRAVERSAL_SOURCE_ALIAS))
+            .orElse(null);
+
+        if (gAlias == null) {
+            return graphManager.getGraphNames().stream()
+                .findFirst()
+                .map(graphManager::getGraph)
+                .map(Graph::traversal)
+                .orElseThrow(() -> opProcessorException(msg, "No graphs found on the server"));
         }
+
+        Graph graph = graphManager.getGraph(gAlias);
+        if (graph != null) {
+            return graph.traversal();
+        }
+
+        TraversalSource traversalSource = graphManager.getTraversalSource(gAlias);
+        if (traversalSource instanceof GraphTraversalSource) {
+            return (GraphTraversalSource) traversalSource;
+        }
+
+        throw opProcessorException(msg, "Traversable alias '" + gAlias + "' not found");
+    }
+
+    private OpProcessorException opProcessorException(RequestMessage msg, String errorMessage) {
+        return new OpProcessorException(errorMessage,
+            ResponseMessage.build(msg)
+                .code(SERVER_ERROR)
+                .statusMessage(errorMessage).create());
     }
 
     private void handleIterator(Context context, Traversal traversal) {
