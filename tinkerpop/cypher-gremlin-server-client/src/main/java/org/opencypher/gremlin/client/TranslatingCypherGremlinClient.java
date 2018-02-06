@@ -17,7 +17,10 @@ package org.opencypher.gremlin.client;
 
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.opencypher.gremlin.translation.TranslationFacade;
+import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.Flavor;
+import org.opencypher.gremlin.translation.Translator;
+import org.opencypher.gremlin.translation.string.StringPredicate;
 
 import java.util.List;
 import java.util.Map;
@@ -26,11 +29,11 @@ import java.util.concurrent.CompletableFuture;
 final class TranslatingCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final TranslationFacade translationFacade;
+    private final Flavor flavor;
 
-    TranslatingCypherGremlinClient(Client client) {
+    TranslatingCypherGremlinClient(Client client, Flavor flavor) {
         this.client = client;
-        translationFacade = new TranslationFacade();
+        this.flavor = flavor;
     }
 
     @Override
@@ -40,7 +43,9 @@ final class TranslatingCypherGremlinClient implements CypherGremlinClient {
 
     @Override
     public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters) {
-        String gremlin = translationFacade.toGremlin(cypher, parameters);
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
+        Translator<String, StringPredicate> translator = flavor.getTranslator();
+        String gremlin = ast.buildTranslation(translator);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, parameters);
         return ResultSetTransformer.resultSetAsMapAsync(resultSetFuture);
     }

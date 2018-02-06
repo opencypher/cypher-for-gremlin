@@ -23,8 +23,20 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
+/**
+ * A set of translation flavors.
+ * <p>
+ * Each flavor provides a customized {@link Translator}.
+ */
 public enum Flavor {
+    /**
+     * Translation flavor that is suitable for Cosmos DB.
+     */
     COSMOSDB(TranslatorFactory::cosmos),
+
+    /**
+     * Translation flavor that is suitable for Gremlin Server or a compatible graph database.
+     */
     GREMLIN(TranslatorFactory::string);
 
     private Supplier<Translator<String, StringPredicate>> translator;
@@ -47,6 +59,11 @@ public enum Flavor {
             ));
     }
 
+    /**
+     * Creates a new translator for this flavor.
+     *
+     * @return translator for this flavor
+     */
     public Translator<String, StringPredicate> getTranslator() {
         return translator.get();
     }

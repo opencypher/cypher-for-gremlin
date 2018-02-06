@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.client;
 
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.opencypher.gremlin.translation.Flavor;
 
 /**
  * This factory creates {@link CypherGremlinClient} instances of different kind.
@@ -46,6 +47,21 @@ public class CypherGremlinClientFactory {
      * @return Cypher-enabled client
      */
     public static CypherGremlinClient translating(Client client) {
-        return new TranslatingCypherGremlinClient(client);
+        return new TranslatingCypherGremlinClient(client, Flavor.GREMLIN);
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that can send Cypher queries
+     * to any Gremlin Server or a compatible graph database.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread,
+     * before sending the query to Gremlin Server.
+     *
+     * @param client Gremlin client
+     * @param flavor Translation flavor
+     * @return Cypher-enabled client
+     */
+    public static CypherGremlinClient translating(Client client, Flavor flavor) {
+        return new TranslatingCypherGremlinClient(client, flavor);
     }
 }
