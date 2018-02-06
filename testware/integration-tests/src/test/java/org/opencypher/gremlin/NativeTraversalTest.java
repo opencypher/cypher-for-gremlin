@@ -286,6 +286,23 @@ public class NativeTraversalTest {
     }
 
     @Test
+    public void pivotsAndAggregationsColumnOrdering() {
+        String[] columnNames = {"c1", "p1", "c2", "p2"};
+
+        String cypher = "MATCH (n:Person) RETURN\n" +
+            "count(n) AS c1," +
+            "n.lastName as p1," +
+            "collect(n.email) AS c2," +
+            "n.firstName as p2;";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+
+        assertThat(cypherResults)
+            .extracting(Map::keySet)
+            .allSatisfy(columns -> assertThat(columns).containsExactly(columnNames));
+    }
+
+    @Test
     public void distinct() throws Exception {
         String[] columnNames = {"n.lastName", "type(r)"};
 
