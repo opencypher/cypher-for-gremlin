@@ -18,20 +18,21 @@ package org.opencypher.gremlin.console.jsr223;
 import org.apache.tinkerpop.gremlin.console.jsr223.DriverRemoteAcceptor;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Result;
-import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.apache.tinkerpop.gremlin.driver.Tokens;
-import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 import org.apache.tinkerpop.gremlin.jsr223.console.GremlinShellEnvironment;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteException;
+import org.opencypher.gremlin.client.CypherGremlinClient;
+import org.opencypher.gremlin.client.CypherGremlinClientFactory;
 import org.opencypher.gremlin.translation.Flavor;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.tinkerpop.gremlin.console.jsr223.DriverRemoteAcceptor.NO_TIMEOUT;
 
 /**
@@ -42,15 +43,12 @@ import static org.apache.tinkerpop.gremlin.console.jsr223.DriverRemoteAcceptor.N
 public class CypherRemoteAcceptor implements RemoteAcceptor {
 
     private DriverRemoteAcceptor delegate;
-    private Client currentClient;
     private GremlinShellEnvironment shellEnvironment;
-    private Map<String, String> aliases;
     private int timeout = NO_TIMEOUT;
 
-    private QueryHandler queryHandler;
+    private CypherGremlinClient client;
 
     private static final String TOKEN_TRANSLATE = "translate";
-    private static final int DEFAULT_BATCH_SIZE = 64;
 
     CypherRemoteAcceptor(final GremlinShellEnvironment shellEnvironment) {
         this.shellEnvironment = shellEnvironment;
@@ -59,24 +57,26 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
 
     @Override
     public Object connect(List<String> args) throws RemoteException {
-        Object connection = delegate.connect(args);
-        currentClient = getField(delegate, "currentClient");
-        aliases = getField(delegate, "aliases");
-        queryHandler = configureQueryHandler(args);
-
-        return connection;
+        Object result = delegate.connect(args);
+        Client gremlinClient = getField(delegate, "currentClient");
+        Map<String, String> aliases = getField(delegate, "aliases");
+        if (aliases != null) {
+            gremlinClient = gremlinClient.alias(aliases);
+        }
+        client = configureClient(gremlinClient, args);
+        return result;
     }
 
-    static QueryHandler configureQueryHandler(List<String> args) {
+    private static CypherGremlinClient configureClient(Client gremlinClient, List<String> args) {
         if (args.contains(TOKEN_TRANSLATE)) {
             Flavor flavor = Flavor.GREMLIN;
             int flavorParamIndex = args.indexOf(TOKEN_TRANSLATE) + 1;
             if (flavorParamIndex < args.size()) {
                 flavor = Flavor.getFlavor(args.get(flavorParamIndex));
             }
-            return new TranslatingQueryHandler(flavor);
+            return CypherGremlinClientFactory.translating(gremlinClient, flavor);
         } else {
-            return new SimpleQueryHandler();
+            return CypherGremlinClientFactory.plugin(gremlinClient);
         }
     }
 
@@ -103,19 +103,13 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
     }
 
     private List<Result> send(String query) throws Exception {
-        RequestMessage.Builder request = queryHandler.buildRequest(query)
-            .add(Tokens.ARGS_BATCH_SIZE, DEFAULT_BATCH_SIZE);
-
-        if (aliases != null && !aliases.isEmpty()) {
-            request.addArg(Tokens.ARGS_ALIASES, aliases);
-        }
-
-        RequestMessage msg = currentClient.buildMessage(request).create();
-        ResultSet rs = currentClient.submitAsync(msg).get();
-        List<Result> results = timeout > NO_TIMEOUT ? rs.all().get(timeout, TimeUnit.MILLISECONDS) : rs.all().get();
-        results = queryHandler.normalizeResults(results);
-
-        return results;
+        CompletableFuture<List<Map<String, Object>>> resultsFuture = client.submitAsync(query);
+        List<Map<String, Object>> results = (timeout > NO_TIMEOUT) ?
+            resultsFuture.get(timeout, TimeUnit.MILLISECONDS) :
+            resultsFuture.get();
+        return results.stream()
+            .map(Result::new)
+            .collect(toList());
     }
 
     @SuppressWarnings("unchecked")

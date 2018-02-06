@@ -116,7 +116,7 @@ project(':tinkerpop:cypher-gremlin-console-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile project(':tinkerpop:tinkerpop-common')
+        compile project(':tinkerpop:cypher-gremlin-server-client')
 
         compileOnly "org.apache.tinkerpop:gremlin-console:${tinkerpopVersion}"
     }
@@ -126,12 +126,14 @@ project(':testware:testware-common') {
     dependencies {
         compile project(':tinkerpop:cypher-gremlin-server-client')
         compile project(':tinkerpop:cypher-gremlin-server-plugin')
+        compile project(':tinkerpop:cypher-gremlin-console-plugin')
 
         compile "junit:junit:${junitVersion}"
         compile "org.assertj:assertj-core:${assertjVersion}"
         compile 'ch.qos.logback:logback-classic:1.2.3'
         compile "com.google.guava:guava:${guavaVersion}"
         compile "org.apache.tinkerpop:gremlin-server:${tinkerpopVersion}"
+        compile "org.apache.tinkerpop:gremlin-console:${tinkerpopVersion}"
         compile "org.apache.tinkerpop:tinkergraph-gremlin:${tinkerpopVersion}"
     }
 }
@@ -139,6 +141,9 @@ project(':testware:testware-common') {
 project(':testware:integration-tests') {
     dependencies {
         testCompile project(':testware:testware-common')
+
+        testCompile 'com.github.stefanbirkner:system-rules:1.17.1'
+        testCompile 'org.awaitility:awaitility:3.0.0'
     }
 }
 

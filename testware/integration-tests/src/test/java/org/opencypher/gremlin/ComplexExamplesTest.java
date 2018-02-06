@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 public class ComplexExamplesTest {
 
     @ClassRule
-    public static final TinkerGraphServerEmbedded gremlinServer = new TinkerGraphServerEmbedded();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     @Before
     public void setUp() {

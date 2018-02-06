@@ -22,7 +22,7 @@ import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -39,7 +39,7 @@ import static org.assertj.core.groups.FieldsOrPropertiesExtractor.extract;
 public class NativeTraversalTest {
 
     @ClassRule
-    public static final TinkerGraphServerEmbedded gremlinServer = new TinkerGraphServerEmbedded();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher);

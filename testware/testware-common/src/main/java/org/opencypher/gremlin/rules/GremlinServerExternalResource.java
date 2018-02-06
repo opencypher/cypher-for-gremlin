@@ -24,7 +24,7 @@ import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 
 import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.tinkerGraph;
 
-public class TinkerGraphServerEmbedded extends ExternalResource {
+public class GremlinServerExternalResource extends ExternalResource {
 
     private EmbeddedGremlinServer gremlinServer;
     private Client gremlinClient;

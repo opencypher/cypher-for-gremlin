@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.client.ResultSetTransformer
-import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded
+import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.tck.GremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.GremlinQueries._
 import org.opencypher.tools.tck.api._
@@ -31,7 +31,7 @@ import scala.collection.JavaConverters._
 object TinkerGraphServerEmbeddedGraph extends Graph {
   val TIME_OUT_SECONDS = 10
 
-  val tinkerGraphServerEmbedded = new TinkerGraphServerEmbedded
+  val tinkerGraphServerEmbedded = new GremlinServerExternalResource
   tinkerGraphServerEmbedded.before()
   tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
 

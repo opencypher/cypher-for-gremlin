@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.console.jsr223;
+package org.opencypher.gremlin.rules;
 
-import org.apache.tinkerpop.gremlin.driver.Result;
-import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
+import org.junit.rules.ExternalResource;
+import org.opencypher.gremlin.console.EmbeddedGremlinConsole;
 
-import java.util.List;
+public class GremlinConsoleExternalResource extends ExternalResource {
 
-public interface QueryHandler {
+    private EmbeddedGremlinConsole gremlinConsole = EmbeddedGremlinConsole.getInstance();
 
-    RequestMessage.Builder buildRequest(String query);
+    @Override
+    protected void before() throws Throwable {
+        gremlinConsole.start();
+    }
 
-    default List<Result> normalizeResults(List<Result> results) {
-        return results;
+    @Override
+    protected void after() {
+        gremlinConsole.stop();
+    }
+
+    public void writeln(String s) {
+        gremlinConsole.writeln(s);
     }
 }

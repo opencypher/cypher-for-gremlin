@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -79,11 +78,9 @@ public final class EmbeddedGremlinServer {
         }
     }
 
-    public CompletableFuture<Void> stop() {
+    public void stop() {
         System.out.println("Shutting down " + serverName);
-
-        // do not wait for server being stopped (partial tests parallelization)
-        return gremlinServer.stop();
+        gremlinServer.stop();
     }
 
     public int getPort() {

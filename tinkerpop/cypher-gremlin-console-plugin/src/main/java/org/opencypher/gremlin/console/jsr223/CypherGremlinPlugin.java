@@ -21,7 +21,7 @@ import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 
 public class CypherGremlinPlugin extends CypherPlugin {
 
-    private static final String NAME = "opencypher.gremlin";
+    public static final String NAME = "opencypher.gremlin";
 
     public CypherGremlinPlugin() {
         super(NAME, new CypherGremlinCustomizer());

@@ -58,7 +58,7 @@ public class CypherGremlinClientFactory {
      * before sending the query to Gremlin Server.
      *
      * @param client Gremlin client
-     * @param flavor Translation flavor
+     * @param flavor translation flavor
      * @return Cypher-enabled client
      */
     public static CypherGremlinClient translating(Client client, Flavor flavor) {

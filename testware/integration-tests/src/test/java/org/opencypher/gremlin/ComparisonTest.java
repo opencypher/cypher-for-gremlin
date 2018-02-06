@@ -17,7 +17,7 @@ package org.opencypher.gremlin;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class ComparisonTest {
     private static final String[] EVERYONE = new String[]{"marko", "vadas", "josh", "peter"};
 
     @ClassRule
-    public static final TinkerGraphServerEmbedded gremlinServer = new TinkerGraphServerEmbedded();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher);

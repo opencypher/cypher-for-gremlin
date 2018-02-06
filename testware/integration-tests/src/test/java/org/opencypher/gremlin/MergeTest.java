@@ -18,7 +18,7 @@ package org.opencypher.gremlin;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opencypher.gremlin.rules.TinkerGraphServerEmbedded;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.tuple;
 public class MergeTest {
 
     @ClassRule
-    public static final TinkerGraphServerEmbedded gremlinServer = new TinkerGraphServerEmbedded();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     @Before
     public void setUp() {
