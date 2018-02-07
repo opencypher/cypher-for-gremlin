@@ -53,6 +53,10 @@ public class CypherAstAssertions extends Assertions {
             return start().is(predicate);
         }
 
+        public static TranslationBuilder<String, StringPredicate> identity() {
+            return start().identity();
+        }
+
 
         public static TranslationBuilder<String, StringPredicate> choose(StringPredicate predicate,
                                                                          TranslationBuilder<String, StringPredicate> one,

@@ -107,6 +107,8 @@ public interface TranslationBuilder<T, P> {
 
     TranslationBuilder<T, P> id();
 
+    TranslationBuilder<T, P> identity();
+
     TranslationBuilder<T, P> inE(String... edgeLabels);
 
     TranslationBuilder<T, P> inV();

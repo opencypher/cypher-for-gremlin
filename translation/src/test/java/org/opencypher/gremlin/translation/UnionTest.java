@@ -71,7 +71,7 @@ public class UnionTest {
                             select("lang").
                             coalesce(
                                 __.project("lang").
-                                    by(__.as("lang_1")))
+                                    by(__.identity()))
                             , __.start().V().
                             as("s").
                             where(

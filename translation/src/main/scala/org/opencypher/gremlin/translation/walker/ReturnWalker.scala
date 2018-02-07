@@ -100,8 +100,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
     val selectIfAny = () => if (select.nonEmpty) g.select(select.toSeq: _*) else g
 
     if (pivots.nonEmpty && aggregations.nonEmpty) {
-      val pivotTraversal = g.start().project(pivots.keySet.toSeq: _*)
-      for ((_, expression) <- pivots) pivotTraversal.by(expression)
+      val pivotTraversal = getPivotTraversal(pivots)
 
       val aggregationTraversal = g.start().fold().project(all.keySet.toSeq: _*)
       for ((_, expression) <- all) aggregationTraversal.by(expression)
@@ -148,6 +147,16 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
     }
 
     g
+  }
+
+  private def getPivotTraversal(pivots: Map[String, TranslationBuilder[T, P]]) = {
+    if (pivots.size == 1) {
+      pivots.values.head
+    } else {
+      val pivotTraversal = g.start().project(pivots.keySet.toSeq: _*)
+      for ((_, expression) <- pivots) pivotTraversal.by(expression)
+      pivotTraversal
+    }
   }
 
   private def getVariableNames(items: Seq[ReturnItem]): Seq[String] = {
@@ -270,7 +279,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
     if (select) {
       subTraversal.select(varName)
     } else if (only) {
-      subTraversal.as(varName)
+      subTraversal.identity()
     }
     subTraversal
   }

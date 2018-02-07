@@ -283,6 +283,12 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
+    public TranslationBuilder<GraphTraversal, P> identity() {
+        g.identity();
+        return this;
+    }
+
+    @Override
     public TranslationBuilder<GraphTraversal, P> inE(String... edgeLabels) {
         g.inE(edgeLabels);
         return this;

@@ -258,6 +258,12 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
     }
 
     @Override
+    public TranslationBuilder<String, StringPredicate> identity() {
+        g.append(chain("identity"));
+        return this;
+    }
+
+    @Override
     public TranslationBuilder<String, StringPredicate> inE(String... edgeLabels) {
         g.append(chain("inE", (Object[]) edgeLabels));
         return this;
