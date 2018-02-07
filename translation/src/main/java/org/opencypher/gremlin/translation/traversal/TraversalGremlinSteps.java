@@ -169,6 +169,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> cap(String label) {
+        g.cap(label);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> choose(final GremlinSteps<GraphTraversal, P> traversalPredicate,
                                                   GremlinSteps<GraphTraversal, P> trueChoice,
                                                   GremlinSteps<GraphTraversal, P> falseChoice) {
@@ -327,6 +333,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> limit(long limit) {
         g.limit(limit);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> loops() {
+        g.loops();
         return this;
     }
 

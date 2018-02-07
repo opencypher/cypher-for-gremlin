@@ -20,6 +20,7 @@ import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +32,12 @@ import static java.util.function.Function.identity;
 public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
 
     private final String actualTranslation;
+
+    CypherAstAssert(CypherAstWrapper actual, TranslatorFlavor<String, GroovyPredicate> flavor) {
+        super(actual, CypherAstAssert.class);
+        Translator<String, GroovyPredicate> dsl = Translator.builder().gremlinGroovy().build(flavor);
+        actualTranslation = actual.buildTranslation(dsl);
+    }
 
     CypherAstAssert(CypherAstWrapper actual) {
         super(actual, CypherAstAssert.class);

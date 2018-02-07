@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation;
 
 import org.junit.Test;
 import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
@@ -57,10 +58,26 @@ public class UnwindTest {
                 "CREATE (n)"
         )).hasTraversalBeforeReturn(
             __
-                .inject(1, 2, 3).as("i")
+                .inject(Tokens.START).repeat(__.loops().aggregate("  GENERATED1")).times(4).cap("  GENERATED1")
+                .unfold().range(1, 4).as("i")
                 .addV().as("n")
                 .barrier().limit(0)
         );
+    }
+
+    @Test
+    public void inlineRangeCreate() throws Exception {
+        assertThat(parse(
+            "UNWIND range(1, 3) AS i " +
+                "CREATE (n)"
+            ),
+            TranslatorFlavor.cosmosdb())
+            .hasTraversalBeforeReturn(
+                __
+                    .inject(1, 2, 3).as("i")
+                    .addV().as("n")
+                    .barrier().limit(0)
+            );
     }
 
     @Test

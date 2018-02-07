@@ -113,6 +113,11 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    public GremlinSteps<T, P> cap(String label) {
+        return delegate().cap(label);
+    }
+
+    @Override
     public GremlinSteps<T, P> choose(GremlinSteps<T, P> traversalPredicate, GremlinSteps<T, P> trueChoice, GremlinSteps<T, P> falseChoice) {
         return delegate().choose(traversalPredicate, trueChoice, falseChoice);
     }
@@ -223,6 +228,16 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    public GremlinSteps<T, P> injectRange(long low, long high, String label) {
+        return delegate().injectRange(low, high, label);
+    }
+
+    @Override
+    public GremlinSteps<T, P> injectRangeInline(long low, long high, long step) {
+        return delegate().injectRangeInline(low, high, step);
+    }
+
+    @Override
     public GremlinSteps<T, P> is(P predicate) {
         return delegate().is(predicate);
     }
@@ -240,6 +255,11 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     @Override
     public GremlinSteps<T, P> limit(long limit) {
         return delegate().limit(limit);
+    }
+
+    @Override
+    public GremlinSteps<T, P> loops() {
+        return delegate().loops();
     }
 
     @Override

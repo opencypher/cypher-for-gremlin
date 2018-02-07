@@ -147,6 +147,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> cap(String label) {
+        g.append(chain("cap", label));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> choose(GremlinSteps<String, GroovyPredicate> predicate,
                                                         GremlinSteps<String, GroovyPredicate> trueChoice,
                                                         GremlinSteps<String, GroovyPredicate> falseChoice) {
@@ -302,6 +308,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @Override
     public GremlinSteps<String, GroovyPredicate> limit(long limit) {
         g.append(chain("limit", limit));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> loops() {
+        g.append(chain("loops"));
         return this;
     }
 

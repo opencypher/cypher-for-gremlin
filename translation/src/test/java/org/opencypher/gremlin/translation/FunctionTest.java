@@ -97,8 +97,8 @@ public class FunctionTest {
                 "RETURN r"
         ))
             .hasTraversalBeforeReturn(
-                __.inject(1, 2, 3).as("r")
-                    .select("r")
+                __.inject(Tokens.START).repeat(__.loops().aggregate("  GENERATED1")).times(4).cap("  GENERATED1")
+                    .unfold().range(1, 4).as("r").select("r")
             );
     }
 

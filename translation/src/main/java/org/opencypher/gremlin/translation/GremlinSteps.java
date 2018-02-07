@@ -24,6 +24,7 @@ import org.opencypher.gremlin.translation.translator.Translator;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.LongStream;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} DSL wrapper.
@@ -70,6 +71,8 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> by(GremlinSteps<T, P> traversal);
 
     GremlinSteps<T, P> by(GremlinSteps<T, P> traversal, Order order);
+
+    GremlinSteps<T, P> cap(String label);
 
     GremlinSteps<T, P> choose(GremlinSteps<T, P> traversalPredicate, GremlinSteps<T, P> trueChoice, GremlinSteps<T, P> falseChoice);
 
@@ -122,6 +125,8 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> label();
 
     GremlinSteps<T, P> limit(long limit);
+
+    GremlinSteps<T, P> loops();
 
     GremlinSteps<T, P> map(String functionName, Function<Traverser, Object> function);
 
@@ -188,4 +193,31 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> where(GremlinSteps<T, P> gremlinSteps);
 
     GremlinSteps<T, P> where(P predicate);
+
+    /**
+     * Inserts Gremlin steps that generate a list of integer values from {@code low} to {@code high} (inclusive)
+     * by an incremental step of 1.
+     * @param low the (inclusive) initial value
+     * @param high the inclusive upper bound
+     * @param label temporary unique string key
+     */
+    default GremlinSteps<T, P> injectRange(long low, long high, String label) {
+        inject(Tokens.START)
+            .repeat(start().loops().aggregate(label))
+            .times((int) (high + 1))
+            .cap(label)
+            .unfold()
+            .range(low, high + 1);
+        return this;
+    }
+
+    /**
+     * Injects a list of integer values from {@code low} to {@code high} (inclusive)
+     * by an incremental step of {@code step} into traversal stream
+     */
+    default GremlinSteps<T, P> injectRangeInline(long low, long high, long step) {
+        long limit = ((high - low)  / step ) + 1;
+        inject(LongStream.iterate(low, i -> i + step).limit(limit).boxed().toArray());
+        return this;
+    }
 }

@@ -302,6 +302,19 @@ public class CreateTest {
     @Test
     public void unwindRangeCreate() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
+            "UNWIND range(3, 7) AS i " +
+                "CREATE (n {value: i}) " +
+                "RETURN n.value"
+        );
+
+        assertThat(results)
+            .extracting("n.value")
+            .containsExactlyInAnyOrder(3L, 4L, 5L, 6L, 7L);
+    }
+
+    @Test
+    public void unwindRangeStepCreate() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
             "UNWIND range(3, 12, 4) AS i " +
                 "CREATE (n {value: i}) " +
                 "RETURN n.value"

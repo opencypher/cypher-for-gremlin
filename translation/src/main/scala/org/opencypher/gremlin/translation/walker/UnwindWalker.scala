@@ -66,7 +66,11 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
           s"Range is too big (must be less than $injectHardLimit)",
           node
         )
-        g.inject(range.asInstanceOf[Seq[Object]]: _*).as(varName)
+        if (range.step == 1) {
+          g.injectRange(range.start, range.end, context.generateName()).as(varName)
+        } else {
+          g.injectRangeInline(range.start, range.end, range.step).as(varName)
+        }
       case FunctionInvocation(_, FunctionName(fnName), _, Vector(Variable(funArg))) if "labels" == fnName.toLowerCase =>
         g.select(funArg).label().is(p.neq(Vertex.DEFAULT_LABEL)).as(varName)
     }

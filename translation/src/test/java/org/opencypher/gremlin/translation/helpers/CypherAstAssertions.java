@@ -21,10 +21,15 @@ import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class CypherAstAssertions extends Assertions {
     public static CypherAstAssert assertThat(CypherAstWrapper actual) {
         return new CypherAstAssert(actual);
+    }
+
+    public static CypherAstAssert assertThat(CypherAstWrapper actual, TranslatorFlavor<String, GroovyPredicate> flavor) {
+        return new CypherAstAssert(actual, flavor);
     }
 
     public static final GroovyGremlinPredicates P = new GroovyGremlinPredicates();
@@ -104,6 +109,10 @@ public class CypherAstAssertions extends Assertions {
 
         public static GremlinSteps<String, GroovyPredicate> inject(Object... starts) {
             return translationBuilder().inject(starts);
+        }
+
+        public static GremlinSteps<String, GroovyPredicate> loops() {
+            return start().loops();
         }
 
         public static GremlinSteps<String, GroovyPredicate> project(String... keys) {

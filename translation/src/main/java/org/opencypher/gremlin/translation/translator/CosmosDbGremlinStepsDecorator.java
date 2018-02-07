@@ -36,4 +36,9 @@ final class CosmosDbGremlinStepsDecorator<T, P> extends AbstractGremlinStepsDeco
             .hasKey(propertyKeys)
             .value();
     }
+
+    @Override
+    public GremlinSteps<T, P> injectRange(long low, long high, String label) {
+        return delegate().injectRangeInline(low, high, 1);
+    }
 }
