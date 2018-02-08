@@ -171,19 +171,26 @@ project(':testware:tck') {
     apply plugin: 'org.junit.platform.gradle.plugin'
     apply plugin: 'com.kncept.junit5.reporter'
 
-    tasks['junitHtmlReport'].onlyIf { project.hasProperty("tck") }
-    junitPlatformTest.onlyIf { project.hasProperty("tck") }
+    tasks['junitHtmlReport'].onlyIf { project.getGradle().getStartParameter().getTaskNames().contains("tck") }
+    junitPlatformTest.onlyIf { project.getGradle().getStartParameter().getTaskNames().contains("tck") }
     junitPlatformTest.finalizedBy 'junitHtmlReport'
 
-    test {
-        reports {
-            junitXml.enabled = false
-            html.enabled = true
-        }
+    task('tck', type: Exec, dependsOn: 'junitPlatformTest') {
+
     }
 
-    sourceSets.main.resources.srcDirs = ["src/main/resources", "../../../config"]
-    sourceSets.test.resources.srcDirs = ["src/test/resources", "../../../config"]
+    task('tckRegression', type: JavaExec) {
+        main = 'org.opencypher.gremlin.tck.regression.TckResultsComparator'
+        classpath = sourceSets.test.runtimeClasspath
+    }
+
+    task('tckSaveReport', type: Copy) {
+        from 'build/test-results/junit-platform/TEST-junit-jupiter.xml'
+        into 'build/test-results/junit-platform/'
+        rename { String fileName ->
+            fileName.replace('.xml', '-before.xml')
+        }
+    }
 
     dependencies {
         compile project(':testware:testware-common')
@@ -193,5 +200,7 @@ project(':testware:tck') {
         testCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
         testCompile 'org.opencypher:tck-api:1.0.0-M09'
+        testCompile 'org.freemarker:freemarker:2.3.23'
+        testCompile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.0"
     }
 }
