@@ -14,7 +14,7 @@ To translate a Cypher query to a Gremlin query:
 ```java
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 TranslationFacade cfog = new TranslationFacade();
-String gremlin = cfog.toGremlin(cypher);
+String gremlin = cfog.toGremlinGroovy(cypher);
 ```
 
 A bit more verbose version of the above, demonstrating several extension points:
@@ -22,7 +22,7 @@ A bit more verbose version of the above, demonstrating several extension points:
 ```java
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
-Translator<String, StringPredicate> translator = TranslatorFactory.string();
+Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
 String gremlin = ast.buildTranslation(translator);
 ```
 
@@ -31,15 +31,13 @@ Note that `Translator` instances are not reusable. A new one has to be created f
 Custom translation targets can be provided by implementing `TranslationBuilder` and `PredicateFactory`:
 
 ```java
-Translator<String, StringPredicate> translator = new Translator<>(
-    new MyTranslationBuilder(),
-    new MyPredicateFactory()
-); 
+Translator.builder()
+    .custom(
+        new MyTranslationBuilder(),
+        new MyPredicateFactory()
+    )
+    .build();
 ```
-
-This is how all the different translation pieces fit together:
-
-![](assets/translation-module.png)
 
 Consult the Javadoc for more information.
 

@@ -16,7 +16,8 @@
 package org.opencypher.gremlin.client;
 
 import org.apache.tinkerpop.gremlin.driver.Client;
-import org.opencypher.gremlin.translation.Flavor;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 
 /**
  * This factory creates {@link CypherGremlinClient} instances of different kind.
@@ -47,7 +48,7 @@ public class CypherGremlinClientFactory {
      * @return Cypher-enabled client
      */
     public static CypherGremlinClient translating(Client client) {
-        return new TranslatingCypherGremlinClient(client, Flavor.GREMLIN);
+        return new TranslatingCypherGremlinClient(client, TranslatorFlavor.gremlinServer());
     }
 
     /**
@@ -61,7 +62,7 @@ public class CypherGremlinClientFactory {
      * @param flavor translation flavor
      * @return Cypher-enabled client
      */
-    public static CypherGremlinClient translating(Client client, Flavor flavor) {
+    public static CypherGremlinClient translating(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
         return new TranslatingCypherGremlinClient(client, flavor);
     }
 }

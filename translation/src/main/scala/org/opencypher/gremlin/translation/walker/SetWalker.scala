@@ -18,8 +18,8 @@ package org.opencypher.gremlin.translation.walker
 import java.util
 
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.NULL
-import org.opencypher.gremlin.translation.TranslationBuilder
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 
 import scala.collection.JavaConverters._
@@ -31,12 +31,12 @@ import scala.compat.java8.FunctionConverters._
   * of the `SET` clause nodes in the Cypher AST.
   */
 object SetWalker {
-  def walkClause[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: Clause) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Clause) {
     new SetWalker(context, g).walkClause(node)
   }
 }
 
-private class SetWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Clause) {
     node match {
@@ -77,7 +77,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: TranslationBui
     }
   }
 
-  private def applySideEffect(variable: String, setter: TranslationBuilder[T, P] => Unit) {
+  private def applySideEffect(variable: String, setter: GremlinSteps[T, P] => Unit) {
     val p = context.dsl.predicateFactory()
     val sideEffect = g
       .start()
@@ -89,7 +89,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: TranslationBui
     g.choose(p.neq(NULL), sideEffect)
   }
 
-  private def setProperty(g: TranslationBuilder[T, P], key: String, value: Any) {
+  private def setProperty(g: GremlinSteps[T, P], key: String, value: Any) {
     value match {
       case null =>
         g.properties(key).drop()
@@ -103,7 +103,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: TranslationBui
     }
   }
 
-  private def setProperties(g: TranslationBuilder[T, P], items: Seq[(PropertyKeyName, Expression)]) {
+  private def setProperties(g: GremlinSteps[T, P], items: Seq[(PropertyKeyName, Expression)]) {
     for ((PropertyKeyName(key), expression) <- items) {
       val value = expressionValue(expression, context)
       setProperty(g, key, value)

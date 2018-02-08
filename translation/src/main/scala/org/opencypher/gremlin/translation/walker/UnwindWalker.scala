@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
-import org.opencypher.gremlin.translation.{Tokens, TranslationBuilder}
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
 import scala.collection.immutable.NumericRange
 
@@ -28,12 +28,12 @@ import scala.collection.immutable.NumericRange
   */
 object UnwindWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: Unwind) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Unwind) {
     new UnwindWalker(context, g).walkClause(node)
   }
 }
 
-private class UnwindWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   private val injectHardLimit = 10000
 

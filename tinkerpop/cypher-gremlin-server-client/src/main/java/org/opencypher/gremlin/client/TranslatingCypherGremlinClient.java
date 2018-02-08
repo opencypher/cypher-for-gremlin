@@ -18,9 +18,9 @@ package org.opencypher.gremlin.client;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.Flavor;
-import org.opencypher.gremlin.translation.Translator;
-import org.opencypher.gremlin.translation.string.StringPredicate;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 import java.util.List;
 import java.util.Map;
@@ -29,9 +29,9 @@ import java.util.concurrent.CompletableFuture;
 final class TranslatingCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final Flavor flavor;
+    private final TranslatorFlavor<String, GroovyPredicate> flavor;
 
-    TranslatingCypherGremlinClient(Client client, Flavor flavor) {
+    TranslatingCypherGremlinClient(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
         this.client = client;
         this.flavor = flavor;
     }
@@ -44,7 +44,7 @@ final class TranslatingCypherGremlinClient implements CypherGremlinClient {
     @Override
     public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
-        Translator<String, StringPredicate> translator = flavor.getTranslator();
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build(flavor);
         String gremlin = ast.buildTranslation(translator);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, parameters);
         return ResultSetTransformer.resultSetAsMapAsync(resultSetFuture);

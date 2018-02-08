@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.neo4j.cypher.internal.frontend.v3_2.SemanticDirection.{BOTH, INCOMING, OUTGOING}
 import org.neo4j.cypher.internal.frontend.v3_2.ast.{UnsignedDecimalIntegerLiteral => UDIL, _}
-import org.opencypher.gremlin.translation.TranslationBuilder
+import org.opencypher.gremlin.translation.GremlinSteps
 
 /**
   * AST walker that handles translation
@@ -26,16 +26,16 @@ import org.opencypher.gremlin.translation.TranslationBuilder
   */
 object RelationshipPatternWalker {
 
-  def walk[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: RelationshipPattern) {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: RelationshipPattern) {
     new RelationshipPatternWalker(context, g).walk(node)
   }
 }
 
-class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   val traversalStepsHardLimit: Int = context.lowerBound(10)
 
-  type TraversalFunction = TranslationBuilder[T, P] => TranslationBuilder[T, P]
+  type TraversalFunction = GremlinSteps[T, P] => GremlinSteps[T, P]
 
   def walk(node: RelationshipPattern) {
     val RelationshipPattern(variableOption, types, length, _, direction, _) = node

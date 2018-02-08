@@ -19,7 +19,7 @@ import java.util
 
 import org.apache.tinkerpop.gremlin.structure.util.detached.{DetachedProperty, DetachedVertexProperty}
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
-import org.opencypher.gremlin.translation.{Tokens, TranslationBuilder}
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
 import scala.collection.JavaConverters._
 
@@ -119,10 +119,7 @@ object NodeUtils {
     }
   }
 
-  def appendNode[T, P](
-      name: String,
-      g: TranslationBuilder[T, P],
-      context: StatementContext[T, P]): TranslationBuilder[T, P] = {
+  def appendNode[T, P](name: String, g: GremlinSteps[T, P], context: StatementContext[T, P]): GremlinSteps[T, P] = {
     val p = context.dsl.predicateFactory()
     if (context.matchedOrCreatedNodes.contains(name)) {
       val previousAlias = g.alias(name)

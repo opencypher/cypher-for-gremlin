@@ -15,7 +15,8 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.opencypher.gremlin.translation.{TranslationBuilder, Translator}
+import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.translator.Translator
 
 import scala.collection.mutable
 
@@ -43,7 +44,7 @@ sealed class StatementContext[T, P](
 
   private var midTraversals = 0
 
-  def midTraversal(g: TranslationBuilder[T, P]) {
+  def midTraversal(g: GremlinSteps[T, P]) {
     midTraversals += 1
     g.V()
   }

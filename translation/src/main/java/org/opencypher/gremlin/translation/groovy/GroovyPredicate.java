@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.string;
+package org.opencypher.gremlin.translation.groovy;
 
-import static org.opencypher.gremlin.translation.string.StringTranslationUtils.apply;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
 
-public class StringPredicate {
+public class GroovyPredicate {
 
     private final String operator;
     private final Object[] arguments;
 
-    StringPredicate(String operator, Object... arguments) {
+    GroovyPredicate(String operator, Object... arguments) {
         this.operator = operator;
         this.arguments = arguments;
     }

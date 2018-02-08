@@ -22,20 +22,20 @@ import org.opencypher.gremlin.translation.walker.NodeUtils._
 
 object MatchWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: Match) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Match) {
     new MatchWalker(context, g).walkClause(node)
   }
 
   def walkPatternParts[T, P](
       context: StatementContext[T, P],
-      g: TranslationBuilder[T, P],
+      g: GremlinSteps[T, P],
       patternParts: Seq[PatternPart],
       whereOption: Option[Where]) {
     new MatchWalker(context, g).walkPatternParts(patternParts, whereOption)
   }
 }
 
-private class MatchWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Match) {
     val Match(optional, Pattern(patternParts), _, whereOption) = node

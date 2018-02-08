@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation;
+package org.opencypher.gremlin.translation.translator;
 
-public final class Tokens {
-    private Tokens() {
+import org.opencypher.gremlin.translation.GremlinSteps;
+
+final class CosmosDbGremlinStepsDecorator<T, P> extends AbstractGremlinStepsDecorator<T, P> {
+
+    private final GremlinSteps<T, P> delegate;
+
+    CosmosDbGremlinStepsDecorator(GremlinSteps<T, P> delegate) {
+        this.delegate = delegate;
     }
 
-    public static final String START = "  cypher.start";
-    public static final String NULL = "  cypher.null";
+    @Override
+    protected GremlinSteps<T, P> delegate() {
+        return delegate;
+    }
 
+    @Override
+    public GremlinSteps<T, P> values(String... propertyKeys) {
+        return properties()
+            .hasKey(propertyKeys)
+            .value();
+    }
 }

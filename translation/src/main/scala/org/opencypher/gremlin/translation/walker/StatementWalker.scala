@@ -32,7 +32,7 @@ object StatementWalker {
   }
 }
 
-class StatementWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walk(node: Statement) {
     node match {
@@ -52,7 +52,7 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: TranslationBuild
       g.inject(START)
     }
 
-    val subGs = mutable.ArrayBuffer.empty[TranslationBuilder[T, P]]
+    val subGs = mutable.ArrayBuffer.empty[GremlinSteps[T, P]]
     for (query <- flattenUnion(Vector(), node)) {
       val subG = g.start()
       new StatementWalker(context, subG).walkSingle(query)

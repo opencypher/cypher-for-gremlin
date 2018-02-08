@@ -38,14 +38,14 @@ public class UnionTest {
                 __.inject(START).
                     union(
                         __.coalesce(
-                                __.project("name").
-                                    by(__.constant("john"))),
+                            __.project("name").
+                                by(__.constant("john"))),
                         __.coalesce(
-                                __.project("name").
-                                    by(__.constant("jane"))),
+                            __.project("name").
+                                by(__.constant("jane"))),
                         __.coalesce(
-                                __.project("name").
-                                    by(__.constant("john"))))
+                            __.project("name").
+                                by(__.constant("john"))))
             );
     }
 
@@ -65,14 +65,14 @@ public class UnionTest {
                             coalesce(
                                 __.project("lang").
                                     by(__.constant("clojure")))
-                            , __.is(P.neq(START)).
+                        , __.is(P.neq(START)).
                             inject("java", "scala").
                             as("lang").
                             select("lang").
                             coalesce(
                                 __.project("lang").
                                     by(__.identity()))
-                            , __.start().V().
+                        , __.start().V().
                             as("s").
                             where(
                                 __.select("s").
@@ -81,7 +81,7 @@ public class UnionTest {
                             coalesce(
                                 __.project("lang").
                                     by(__.choose(P.neq("  cypher.null"), __.coalesce(__.values("lang"), __.constant("  cypher.null")), __.constant("  cypher.null"))))
-                            ).
+                    ).
                     dedup()
             );
     }

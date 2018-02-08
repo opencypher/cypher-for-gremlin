@@ -18,7 +18,7 @@ package org.opencypher.gremlin.client;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.translation.Flavor;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class TranslatingCypherGremlinClientTest {
     @Test
     public void submitToDefaultGraph() {
         TranslatingCypherGremlinClient client =
-            new TranslatingCypherGremlinClient(gremlinServer.gremlinClient(), Flavor.GREMLIN);
+            new TranslatingCypherGremlinClient(gremlinServer.gremlinClient(), TranslatorFlavor.gremlinServer());
         String cypher = "MATCH (p:person) RETURN p.name AS name";
         List<Map<String, Object>> results = client.submit(cypher);
 

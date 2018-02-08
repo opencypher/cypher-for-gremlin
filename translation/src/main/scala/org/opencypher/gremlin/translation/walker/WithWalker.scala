@@ -17,7 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
-import org.opencypher.gremlin.translation.TranslationBuilder
+import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 
 /**
@@ -26,12 +26,12 @@ import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
   */
 object WithWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: With) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: With) {
     new WithWalker(context, g).walkClause(node)
   }
 }
 
-private class WithWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: With) {
     val With(_, ReturnItems(_, items), orderByOption, _, _, _) = node

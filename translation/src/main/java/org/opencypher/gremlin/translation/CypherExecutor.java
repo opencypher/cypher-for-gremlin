@@ -19,6 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.opencypher.gremlin.translation.translator.Translator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -68,13 +69,13 @@ public final class CypherExecutor {
 
         if (ast.getOptions().contains(EXPLAIN)) {
             Map<String, Object> explanation = new LinkedHashMap<>();
-            explanation.put("translation", ast.buildTranslation(TranslatorFactory.string()));
+            explanation.put("translation", ast.buildTranslation(Translator.builder().gremlinGroovy().build()));
             explanation.put("options", ast.getOptions().toString());
             return singletonList(explanation);
         }
 
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
-        GraphTraversal<?, ?> traversal = ast.buildTranslation(TranslatorFactory.traversal(g));
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(Translator.builder().traversal(g).build());
         Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(toCypherResults());
         return normalizedTraversal.toList();
     }

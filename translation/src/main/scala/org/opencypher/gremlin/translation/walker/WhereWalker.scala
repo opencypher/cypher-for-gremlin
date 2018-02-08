@@ -29,23 +29,23 @@ import scala.collection.mutable
   * of the `WHERE` clause nodes in the Cypher AST.
   */
 object WhereWalker {
-  def walk[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: Where) {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Where) {
     new WhereWalker(context, g).walk(node)
   }
 
-  def walk[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], expression: Expression) {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], expression: Expression) {
     new WhereWalker(context, g).walk(expression)
   }
 
   def walkRelationshipChain[T, P](
       context: StatementContext[T, P],
-      g: TranslationBuilder[T, P],
+      g: GremlinSteps[T, P],
       relationshipChain: RelationshipChain) {
     new WhereWalker(context, g).walkRelationshipChain(relationshipChain: RelationshipChain)
   }
 }
 
-private class WhereWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   private val freshIds = mutable.HashMap.empty[String, String]
 
@@ -69,7 +69,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: TranslationB
     g.where(walkExpression(expression))
   }
 
-  private def walkExpression(node: ASTNode): TranslationBuilder[T, P] = {
+  private def walkExpression(node: ASTNode): GremlinSteps[T, P] = {
     val p = context.dsl.predicateFactory()
     val parameters = context.extractedParameters
     node match {
@@ -131,7 +131,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: TranslationB
     }
   }
 
-  private def walkBinaryExpression(lhs: Expression, rhs: P): TranslationBuilder[T, P] = {
+  private def walkBinaryExpression(lhs: Expression, rhs: P): GremlinSteps[T, P] = {
     lhs match {
       case Variable(lvar) =>
         g.start().select(lvar).where(rhs)
@@ -144,7 +144,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: TranslationB
     }
   }
 
-  private def walkRightUnaryOperatorExpression(expr: RightUnaryOperatorExpression): TranslationBuilder[T, P] = {
+  private def walkRightUnaryOperatorExpression(expr: RightUnaryOperatorExpression): GremlinSteps[T, P] = {
     val p = context.dsl.predicateFactory()
     expr match {
       case IsNull(subExpr) =>
@@ -164,7 +164,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: TranslationB
     }
   }
 
-  private def walkFunctionInvocation(function: FunctionInvocation): TranslationBuilder[T, P] = {
+  private def walkFunctionInvocation(function: FunctionInvocation): GremlinSteps[T, P] = {
     val p = context.dsl.predicateFactory()
     val FunctionInvocation(_, FunctionName(name), _, args) = function
     name.toLowerCase match {

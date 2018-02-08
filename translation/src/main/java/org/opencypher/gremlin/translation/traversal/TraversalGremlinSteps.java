@@ -26,8 +26,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opencypher.gremlin.translation.AliasHistory;
+import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.Tokens;
-import org.opencypher.gremlin.translation.TranslationBuilder;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -37,29 +37,29 @@ import java.util.stream.Stream;
 import static org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.list;
 
 @SuppressWarnings("unchecked")
-public class TraversalTranslationBuilder implements TranslationBuilder<GraphTraversal, P> {
+public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     private final GraphTraversal g;
-    private TraversalTranslationBuilder parent;
+    private TraversalGremlinSteps parent;
     private AliasHistory aliasHistory;
 
-    public TraversalTranslationBuilder(GraphTraversal g) {
+    public TraversalGremlinSteps(GraphTraversal g) {
         this(g, null);
     }
 
-    private TraversalTranslationBuilder(GraphTraversal g, TraversalTranslationBuilder parent) {
+    private TraversalGremlinSteps(GraphTraversal g, TraversalGremlinSteps parent) {
         this.g = g;
         this.parent = parent;
         this.aliasHistory = parent != null ? parent.aliasHistory.copy() : new AliasHistory();
     }
 
     @Override
-    public TraversalTranslationBuilder copy() {
-        return new TraversalTranslationBuilder(g.asAdmin().clone());
+    public TraversalGremlinSteps copy() {
+        return new TraversalGremlinSteps(g.asAdmin().clone());
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> mutate(Consumer<TranslationBuilder<GraphTraversal, P>> mutator) {
+    public GremlinSteps<GraphTraversal, P> mutate(Consumer<GremlinSteps<GraphTraversal, P>> mutator) {
         mutator.accept(this);
         return this;
     }
@@ -79,13 +79,13 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> start() {
+    public GremlinSteps<GraphTraversal, P> start() {
         GraphTraversal g = __.start();
-        return new TraversalTranslationBuilder(g, this);
+        return new TraversalGremlinSteps(g, this);
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> V() {
+    public GremlinSteps<GraphTraversal, P> V() {
         if (isStarted() || parent != null) {
             g.V();
         } else {
@@ -97,13 +97,13 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> addE(String edgeLabel) {
+    public GremlinSteps<GraphTraversal, P> addE(String edgeLabel) {
         g.addE(edgeLabel);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> addV() {
+    public GremlinSteps<GraphTraversal, P> addV() {
         if (isStarted()) {
             g.addV();
         } else {
@@ -115,7 +115,7 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> addV(String vertexLabel) {
+    public GremlinSteps<GraphTraversal, P> addV(String vertexLabel) {
         if (isStarted()) {
             g.addV(vertexLabel);
         } else {
@@ -127,135 +127,135 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> aggregate(String label) {
+    public GremlinSteps<GraphTraversal, P> aggregate(String label) {
         g.aggregate(label);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> and(TranslationBuilder<GraphTraversal, P>... ands) {
+    public GremlinSteps<GraphTraversal, P> and(GremlinSteps<GraphTraversal, P>... ands) {
         g.and(traversals(ands));
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> as(String label) {
+    public GremlinSteps<GraphTraversal, P> as(String label) {
         g.as(aliasHistory.next(label));
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> barrier() {
+    public GremlinSteps<GraphTraversal, P> barrier() {
         g.barrier();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> bothE(String... edgeLabels) {
+    public GremlinSteps<GraphTraversal, P> bothE(String... edgeLabels) {
         g.bothE(edgeLabels);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> by(TranslationBuilder<GraphTraversal, P> traversal, Order order) {
+    public GremlinSteps<GraphTraversal, P> by(GremlinSteps<GraphTraversal, P> traversal, Order order) {
         g.by(traversal.current(), order);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> by(TranslationBuilder<GraphTraversal, P> traversal) {
+    public GremlinSteps<GraphTraversal, P> by(GremlinSteps<GraphTraversal, P> traversal) {
         g.by(traversal.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> choose(final TranslationBuilder<GraphTraversal, P> traversalPredicate,
-                                                        TranslationBuilder<GraphTraversal, P> trueChoice,
-                                                        TranslationBuilder<GraphTraversal, P> falseChoice) {
+    public GremlinSteps<GraphTraversal, P> choose(final GremlinSteps<GraphTraversal, P> traversalPredicate,
+                                                  GremlinSteps<GraphTraversal, P> trueChoice,
+                                                  GremlinSteps<GraphTraversal, P> falseChoice) {
         g.choose(traversalPredicate.current(), trueChoice.current(), falseChoice.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> choose(P predicate, TranslationBuilder<GraphTraversal, P> trueChoice, TranslationBuilder<GraphTraversal, P> falseChoice) {
+    public GremlinSteps<GraphTraversal, P> choose(P predicate, GremlinSteps<GraphTraversal, P> trueChoice, GremlinSteps<GraphTraversal, P> falseChoice) {
         g.choose(predicate, trueChoice.current(), falseChoice.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> choose(P predicate, TranslationBuilder<GraphTraversal, P> trueChoice) {
+    public GremlinSteps<GraphTraversal, P> choose(P predicate, GremlinSteps<GraphTraversal, P> trueChoice) {
         g.choose(predicate, trueChoice.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> coalesce(TranslationBuilder<GraphTraversal, P>... traversals) {
+    public GremlinSteps<GraphTraversal, P> coalesce(GremlinSteps<GraphTraversal, P>... traversals) {
         g.coalesce(traversals(traversals));
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> constant(Object e) {
+    public GremlinSteps<GraphTraversal, P> constant(Object e) {
         g.constant(e);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> count() {
+    public GremlinSteps<GraphTraversal, P> count() {
         g.count();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> count(Scope scope) {
+    public GremlinSteps<GraphTraversal, P> count(Scope scope) {
         g.count(Scope.local);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> dedup() {
+    public GremlinSteps<GraphTraversal, P> dedup() {
         g.dedup();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> drop() {
+    public GremlinSteps<GraphTraversal, P> drop() {
         g.drop();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> emit() {
+    public GremlinSteps<GraphTraversal, P> emit() {
         g.emit();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> fold() {
+    public GremlinSteps<GraphTraversal, P> fold() {
         g.fold();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> from(String stepLabel) {
+    public GremlinSteps<GraphTraversal, P> from(String stepLabel) {
         g.from(stepLabel);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> group() {
+    public GremlinSteps<GraphTraversal, P> group() {
         g.group();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> has(String propertyKey) {
+    public GremlinSteps<GraphTraversal, P> has(String propertyKey) {
         g.has(propertyKey);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> hasKey(String... keys) {
+    public GremlinSteps<GraphTraversal, P> hasKey(String... keys) {
         if (keys.length >= 1) {
             g.hasKey(keys[0], arraySlice(keys, 1));
         }
@@ -263,7 +263,7 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> hasLabel(String... labels) {
+    public GremlinSteps<GraphTraversal, P> hasLabel(String... labels) {
         if (labels.length >= 1) {
             g.hasLabel(labels[0], arraySlice(labels, 1));
         }
@@ -271,139 +271,139 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> hasNot(String propertyKey) {
+    public GremlinSteps<GraphTraversal, P> hasNot(String propertyKey) {
         g.hasNot(propertyKey);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> id() {
+    public GremlinSteps<GraphTraversal, P> id() {
         g.id();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> identity() {
+    public GremlinSteps<GraphTraversal, P> identity() {
         g.identity();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> inE(String... edgeLabels) {
+    public GremlinSteps<GraphTraversal, P> inE(String... edgeLabels) {
         g.inE(edgeLabels);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> inV() {
+    public GremlinSteps<GraphTraversal, P> inV() {
         g.inV();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> inject(Object... injections) {
+    public GremlinSteps<GraphTraversal, P> inject(Object... injections) {
         g.inject(injections);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> is(P predicate) {
+    public GremlinSteps<GraphTraversal, P> is(P predicate) {
         g.is(predicate);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> key() {
+    public GremlinSteps<GraphTraversal, P> key() {
         g.key();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> label() {
+    public GremlinSteps<GraphTraversal, P> label() {
         g.label();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> limit(long limit) {
+    public GremlinSteps<GraphTraversal, P> limit(long limit) {
         g.limit(limit);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> map(String functionName, Function<Traverser, Object> function) {
+    public GremlinSteps<GraphTraversal, P> map(String functionName, Function<Traverser, Object> function) {
         g.map(function);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> max() {
+    public GremlinSteps<GraphTraversal, P> max() {
         g.max();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> mean() {
+    public GremlinSteps<GraphTraversal, P> mean() {
         g.mean();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> min() {
+    public GremlinSteps<GraphTraversal, P> min() {
         g.min();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> not(TranslationBuilder<GraphTraversal, P> rhs) {
+    public GremlinSteps<GraphTraversal, P> not(GremlinSteps<GraphTraversal, P> rhs) {
         g.not(rhs.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> or(TranslationBuilder<GraphTraversal, P>... ors) {
+    public GremlinSteps<GraphTraversal, P> or(GremlinSteps<GraphTraversal, P>... ors) {
         g.or(traversals(ors));
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> order() {
+    public GremlinSteps<GraphTraversal, P> order() {
         g.order();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> otherV() {
+    public GremlinSteps<GraphTraversal, P> otherV() {
         g.otherV();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> outE(String... edgeLabels) {
+    public GremlinSteps<GraphTraversal, P> outE(String... edgeLabels) {
         g.outE(edgeLabels);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> outV() {
+    public GremlinSteps<GraphTraversal, P> outV() {
         g.outV();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> path() {
+    public GremlinSteps<GraphTraversal, P> path() {
         g.path();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> properties(String... propertyKeys) {
+    public GremlinSteps<GraphTraversal, P> properties(String... propertyKeys) {
         g.properties(propertyKeys);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> property(String key, Object value) {
+    public GremlinSteps<GraphTraversal, P> property(String key, Object value) {
         if (Tokens.NULL.equals(value)) {
             // FIXME Should only work like this SET
             g.sideEffect(start().properties(key).drop().current());
@@ -414,7 +414,7 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> propertyList(String key, Collection values) {
+    public GremlinSteps<GraphTraversal, P> propertyList(String key, Collection values) {
         if (values.isEmpty()) {
             // FIXME Should only work like this SET
             g.sideEffect(start().properties(key).drop().current());
@@ -427,7 +427,7 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> project(String... keys) {
+    public GremlinSteps<GraphTraversal, P> project(String... keys) {
         if (keys.length < 1) {
             throw new IllegalArgumentException("`project()` step requires keys");
         } else if (keys.length == 1) {
@@ -441,19 +441,19 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> range(long low, long high) {
+    public GremlinSteps<GraphTraversal, P> range(long low, long high) {
         g.range(low, high);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> repeat(TranslationBuilder<GraphTraversal, P> translationBuilder) {
-        g.repeat(translationBuilder.current());
+    public GremlinSteps<GraphTraversal, P> repeat(GremlinSteps<GraphTraversal, P> gremlinSteps) {
+        g.repeat(gremlinSteps.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> select(String... stepLabels) {
+    public GremlinSteps<GraphTraversal, P> select(String... stepLabels) {
         String[] aliases = Stream.of(stepLabels)
             .map(aliasHistory::current)
             .toArray(String[]::new);
@@ -461,7 +461,7 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> selectLabels(String... stepLabels) {
+    public GremlinSteps<GraphTraversal, P> selectLabels(String... stepLabels) {
         if (stepLabels.length >= 2) {
             g.select(stepLabels[0], stepLabels[1], arraySlice(stepLabels, 2));
         } else if (stepLabels.length == 1) {
@@ -473,85 +473,85 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> select(Column column) {
+    public GremlinSteps<GraphTraversal, P> select(Column column) {
         g.select(column);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> sideEffect(TranslationBuilder<GraphTraversal, P> translationBuilder) {
-        g.sideEffect(translationBuilder.current());
+    public GremlinSteps<GraphTraversal, P> sideEffect(GremlinSteps<GraphTraversal, P> gremlinSteps) {
+        g.sideEffect(gremlinSteps.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> skip(long skip) {
+    public GremlinSteps<GraphTraversal, P> skip(long skip) {
         g.skip(skip);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> sum() {
+    public GremlinSteps<GraphTraversal, P> sum() {
         g.sum();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> times(Integer maxLoops) {
+    public GremlinSteps<GraphTraversal, P> times(Integer maxLoops) {
         g.times(maxLoops);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> to(String stepLabel) {
+    public GremlinSteps<GraphTraversal, P> to(String stepLabel) {
         g.to(stepLabel);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> unfold() {
+    public GremlinSteps<GraphTraversal, P> unfold() {
         g.unfold();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> union(TranslationBuilder<GraphTraversal, P>... translationBuilders) {
-        g.union(traversals(translationBuilders));
+    public GremlinSteps<GraphTraversal, P> union(GremlinSteps<GraphTraversal, P>... gremlinSteps) {
+        g.union(traversals(gremlinSteps));
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> until(TranslationBuilder<GraphTraversal, P> translationBuilder) {
-        g.until(translationBuilder.current());
+    public GremlinSteps<GraphTraversal, P> until(GremlinSteps<GraphTraversal, P> gremlinSteps) {
+        g.until(gremlinSteps.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> valueMap() {
+    public GremlinSteps<GraphTraversal, P> valueMap() {
         g.valueMap();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> value() {
+    public GremlinSteps<GraphTraversal, P> value() {
         g.value();
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> values(String... propertyKeys) {
+    public GremlinSteps<GraphTraversal, P> values(String... propertyKeys) {
         g.values(propertyKeys);
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> where(TranslationBuilder<GraphTraversal, P> translationBuilder) {
-        g.where(translationBuilder.current());
+    public GremlinSteps<GraphTraversal, P> where(GremlinSteps<GraphTraversal, P> gremlinSteps) {
+        g.where(gremlinSteps.current());
         return this;
     }
 
     @Override
-    public TranslationBuilder<GraphTraversal, P> where(P predicate) {
+    public GremlinSteps<GraphTraversal, P> where(P predicate) {
         g.where(predicate);
         return this;
     }
@@ -562,9 +562,9 @@ public class TraversalTranslationBuilder implements TranslationBuilder<GraphTrav
         return dest;
     }
 
-    private GraphTraversal[] traversals(TranslationBuilder<GraphTraversal, P>[] translationBuilders) {
-        return Stream.of(translationBuilders)
-            .map(TranslationBuilder::current)
+    private GraphTraversal[] traversals(GremlinSteps<GraphTraversal, P>[] gremlinSteps) {
+        return Stream.of(gremlinSteps)
+            .map(GremlinSteps::current)
             .toArray(GraphTraversal[]::new);
     }
 

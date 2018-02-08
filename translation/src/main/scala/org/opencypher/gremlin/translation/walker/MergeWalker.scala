@@ -17,8 +17,8 @@ package org.opencypher.gremlin.translation.walker
 
 import org.neo4j.cypher.internal.frontend.v3_2.InputPosition
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.START
-import org.opencypher.gremlin.translation.TranslationBuilder
 import org.opencypher.gremlin.translation.walker.NodeUtils.getPathTraversalAliases
 
 /**
@@ -27,22 +27,22 @@ import org.opencypher.gremlin.translation.walker.NodeUtils.getPathTraversalAlias
   */
 object MergeWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: Merge) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Merge) {
     new MergeWalker(context, g).walkClause(node)
   }
 }
 
-private class MergeWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
-  def walkClause(node: Merge): TranslationBuilder[T, P] = {
+  def walkClause(node: Merge): GremlinSteps[T, P] = {
     val Merge(Pattern(patternParts), actions: Seq[MergeAction]) = node
     walkMerge(g, patternParts, actions)
   }
 
   private def walkMerge(
-      g: TranslationBuilder[T, P],
+      g: GremlinSteps[T, P],
       patternParts: Seq[PatternPart],
-      actions: Seq[MergeAction]): TranslationBuilder[T, P] = {
+      actions: Seq[MergeAction]): GremlinSteps[T, P] = {
 
     if (context.isFirstStatement) {
       g.inject(START)

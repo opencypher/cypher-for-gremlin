@@ -17,15 +17,15 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.neo4j.cypher.internal.frontend.v3_2.ast.{Delete, Variable}
-import org.opencypher.gremlin.translation.{Tokens, TranslationBuilder}
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
 object DeleteWalker {
-  def walkClause[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: Delete) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Delete) {
     new DeleteWalker(context, g).walkClause(node)
   }
 }
 
-class DeleteWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+class DeleteWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Delete) {
     val Delete(expressions, _) = node

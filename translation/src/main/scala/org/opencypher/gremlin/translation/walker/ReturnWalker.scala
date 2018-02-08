@@ -20,7 +20,7 @@ import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
-import org.opencypher.gremlin.translation.{Tokens, TranslationBuilder}
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunctions
 
 import scala.collection.immutable.ListMap
@@ -31,18 +31,18 @@ import scala.collection.mutable
   * of the `RETURN` clause node in the Cypher AST.
   */
 object ReturnWalker {
-  def walk[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P], node: Return) {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Return) {
     new ReturnWalker(context, g).walk(node)
   }
 }
 
-private class ReturnWalker[T, P](context: StatementContext[T, P], g: TranslationBuilder[T, P]) {
+private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   case class SubTraversals(
       select: Seq[String],
-      all: Map[String, TranslationBuilder[T, P]],
-      pivots: Map[String, TranslationBuilder[T, P]],
-      aggregations: Map[String, TranslationBuilder[T, P]])
+      all: Map[String, GremlinSteps[T, P]],
+      pivots: Map[String, GremlinSteps[T, P]],
+      aggregations: Map[String, GremlinSteps[T, P]])
 
   sealed trait ReturnFunctionType
 
@@ -50,7 +50,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
 
   case object Pivot extends ReturnFunctionType
 
-  def walk(node: Return): TranslationBuilder[T, P] = {
+  def walk(node: Return): GremlinSteps[T, P] = {
     if (context.isFirstStatement) {
       context.markFirstStatement()
       g.inject(START)
@@ -65,9 +65,9 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
     val select = getVariableNames(items)
     val multipleVariables = select.lengthCompare(1) > 0
 
-    val pivotCollector = mutable.LinkedHashMap.empty[String, TranslationBuilder[T, P]]
-    val aggregationCollector = mutable.LinkedHashMap.empty[String, TranslationBuilder[T, P]]
-    val allCollector = mutable.LinkedHashMap.empty[String, TranslationBuilder[T, P]]
+    val pivotCollector = mutable.LinkedHashMap.empty[String, GremlinSteps[T, P]]
+    val aggregationCollector = mutable.LinkedHashMap.empty[String, GremlinSteps[T, P]]
+    val allCollector = mutable.LinkedHashMap.empty[String, GremlinSteps[T, P]]
 
     for (item <- items) {
       val AliasedReturnItem(expression, Variable(alias)) = item
@@ -95,7 +95,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
       subTraversals: SubTraversals,
       distinct: Boolean,
       skip: Option[Skip],
-      limit: Option[Limit]): TranslationBuilder[T, P] = {
+      limit: Option[Limit]): GremlinSteps[T, P] = {
     val SubTraversals(select, all, pivots, aggregations) = subTraversals
     val selectIfAny = () => if (select.nonEmpty) g.select(select.toSeq: _*) else g
 
@@ -149,7 +149,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
     g
   }
 
-  private def getPivotTraversal(pivots: Map[String, TranslationBuilder[T, P]]) = {
+  private def getPivotTraversal(pivots: Map[String, GremlinSteps[T, P]]) = {
     if (pivots.size == 1) {
       pivots.values.head
     } else {
@@ -165,9 +165,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
     dependencyNames.distinct
   }
 
-  private def nullIfNull(
-      g: TranslationBuilder[T, P],
-      trueChoice: TranslationBuilder[T, P]): TranslationBuilder[T, P] = {
+  private def nullIfNull(g: GremlinSteps[T, P], trueChoice: GremlinSteps[T, P]): GremlinSteps[T, P] = {
     val p = context.dsl.predicateFactory()
     g.choose(p.neq(Tokens.NULL), trueChoice, g.start().constant(Tokens.NULL))
   }
@@ -175,7 +173,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
   private def pivot(
       expression: Expression,
       select: Boolean,
-      unfold: Boolean): (ReturnFunctionType, TranslationBuilder[T, P]) = {
+      unfold: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
 
     val p = context.dsl.predicateFactory()
 
@@ -284,7 +282,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: Translation
     subTraversal
   }
 
-  private def aggregation(expression: Expression, select: Boolean): (ReturnFunctionType, TranslationBuilder[T, P]) = {
+  private def aggregation(expression: Expression, select: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
     val p = context.dsl.predicateFactory()
 
     expression match {

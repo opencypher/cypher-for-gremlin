@@ -16,10 +16,10 @@
 package org.opencypher.gremlin.translation.traversal;
 
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.opencypher.gremlin.translation.PredicateFactory;
+import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.traversal.CustomPredicates;
 
-public class TraversalPredicateFactory implements PredicateFactory<P> {
+public class TraversalGremlinPredicates implements GremlinPredicates<P> {
 
     @Override
     public P isEq(Object value) {

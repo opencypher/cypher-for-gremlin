@@ -17,10 +17,9 @@ package org.opencypher.gremlin.translation.helpers;
 
 import org.assertj.core.api.AbstractAssert;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.TranslationBuilder;
-import org.opencypher.gremlin.translation.Translator;
-import org.opencypher.gremlin.translation.TranslatorFactory;
-import org.opencypher.gremlin.translation.string.StringPredicate;
+import org.opencypher.gremlin.translation.GremlinSteps;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -35,7 +34,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
 
     CypherAstAssert(CypherAstWrapper actual) {
         super(actual, CypherAstAssert.class);
-        Translator<String, StringPredicate> dsl = TranslatorFactory.string();
+        Translator<String, GroovyPredicate> dsl = Translator.builder().gremlinGroovy().build();
         actualTranslation = actual.buildTranslation(dsl);
     }
 
@@ -51,7 +50,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
         return this;
     }
 
-    public CypherAstAssert hasTraversal(TranslationBuilder traversal) {
+    public CypherAstAssert hasTraversal(GremlinSteps traversal) {
         return hasTraversal(traversal, identity());
     }
 
@@ -60,7 +59,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
      * It might need to be modified if {@code RETURN} translation changes.
      *
      * @see org.opencypher.gremlin.translation.walker.ReturnWalker
-     * @see #hasTraversalBeforeReturn(TranslationBuilder)
+     * @see #hasTraversalBeforeReturn(GremlinSteps)
      */
     private static final Pattern RETURN_START = Pattern.compile(
         "\\.(" +
@@ -70,12 +69,12 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
             ").*$"
     );
 
-    public CypherAstAssert hasTraversalBeforeReturn(TranslationBuilder traversal) {
+    public CypherAstAssert hasTraversalBeforeReturn(GremlinSteps traversal) {
         // Extract everything up to the start of the RETURN clause translation
         return hasTraversal(traversal, t -> RETURN_START.matcher(t).replaceFirst(""));
     }
 
-    private CypherAstAssert hasTraversal(TranslationBuilder traversal,
+    private CypherAstAssert hasTraversal(GremlinSteps traversal,
                                          Function<String, String> extractor) {
         isNotNull();
 

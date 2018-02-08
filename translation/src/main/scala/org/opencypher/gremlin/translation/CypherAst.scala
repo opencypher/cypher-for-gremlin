@@ -27,6 +27,7 @@ import org.opencypher.gremlin.translation.preparser.{
   PreParsedStatement,
   PreParserOption
 }
+import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.translation.walker.{StatementContext, StatementWalker}
 
 import scala.collection.JavaConverters._
@@ -46,7 +47,7 @@ class CypherAst(val statement: Statement, val extractedParameters: Map[String, A
     * Create a translation by passing the wrapped AST, parameters, and options
     * to [[StatementWalker.walk]].
     *
-    * @param dsl Instance of [[Translator]] (e.g. Gremlin traversal or string)
+    * @param dsl Instance of [[Translator]]
     * @return to-Gremlin translation
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {

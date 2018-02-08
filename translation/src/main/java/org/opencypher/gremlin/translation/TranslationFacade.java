@@ -15,7 +15,8 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.opencypher.gremlin.translation.string.StringPredicate;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
 
 import java.util.Map;
 
@@ -28,31 +29,31 @@ import static java.util.Collections.emptyMap;
  * <pre>{@code
  * String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
  * TranslationFacade cfog = new TranslationFacade();
- * String gremlin = cfog.toGremlin(cypher);
+ * String gremlin = cfog.toGremlinGroovy(cypher);
  * }</pre>
  */
 public class TranslationFacade {
 
     /**
-     * Translates a Cypher query to Gremlin.
+     * Translates a Cypher query to Gremlin Groovy.
      *
      * @param cypher Cypher query
-     * @return Gremlin query
+     * @return Gremlin Groovy query
      */
-    public String toGremlin(String cypher) {
-        return toGremlin(cypher, emptyMap());
+    public String toGremlinGroovy(String cypher) {
+        return toGremlinGroovy(cypher, emptyMap());
     }
 
     /**
-     * Translates a Cypher query to Gremlin.
+     * Translates a Cypher query to Gremlin Groovy.
      *
-     * @param cypher Cypher query
+     * @param cypher     Cypher query
      * @param parameters query parameters
-     * @return Gremlin query
+     * @return Gremlin Groovy query
      */
-    public String toGremlin(String cypher, Map<String, Object> parameters) {
+    public String toGremlinGroovy(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
-        Translator<String, StringPredicate> translator = TranslatorFactory.string();
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
         return ast.buildTranslation(translator);
     }
 }

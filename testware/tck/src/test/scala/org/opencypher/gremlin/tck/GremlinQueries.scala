@@ -15,10 +15,10 @@
  */
 package org.opencypher.gremlin.tck
 
-import org.opencypher.gremlin.translation.string.StringTranslationBuilder
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps
 
 object GremlinQueries {
-  val dropQuery: String = new StringTranslationBuilder().V().drop().toString
+  val dropQuery: String = new GroovyGremlinSteps().V().drop().toString
 
   // TODO Remove after https://github.com/opencypher/openCypher/pull/295 is released
   private val nodePropsQuery =
@@ -35,7 +35,7 @@ object GremlinQueries {
       |RETURN id(r) AS relId, key, properties[key] AS value""".stripMargin
 
   private val getNodeProperties = {
-    val b = new StringTranslationBuilder()
+    val b = new GroovyGremlinSteps()
     b.V()
       .as("V")
       .properties()
@@ -49,7 +49,7 @@ object GremlinQueries {
   }
 
   private val getRelProperties = {
-    val b = new StringTranslationBuilder()
+    val b = new GroovyGremlinSteps()
     b.V()
       .outE()
       .as("E")

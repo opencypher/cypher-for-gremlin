@@ -13,47 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.string;
+package org.opencypher.gremlin.translation.groovy;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.AliasHistory;
+import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.Tokens;
-import org.opencypher.gremlin.translation.TranslationBuilder;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.opencypher.gremlin.translation.string.StringTranslationUtils.chain;
-import static org.opencypher.gremlin.translation.string.StringTranslationUtils.unquoted;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
 
-public class StringTranslationBuilder implements TranslationBuilder<String, StringPredicate> {
+public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate> {
 
     private final StringBuilder g;
-    private StringTranslationBuilder parent;
+    private GroovyGremlinSteps parent;
     private AliasHistory aliasHistory;
 
-    public StringTranslationBuilder() {
+    public GroovyGremlinSteps() {
         this("g", null);
     }
 
-    protected StringTranslationBuilder(String start, StringTranslationBuilder parent) {
+    protected GroovyGremlinSteps(String start, GroovyGremlinSteps parent) {
         g = new StringBuilder(start);
         this.parent = parent;
         this.aliasHistory = parent != null ? parent.aliasHistory.copy() : new AliasHistory();
     }
 
     @Override
-    public StringTranslationBuilder copy() {
-        return new StringTranslationBuilder(g.toString(), parent);
+    public GroovyGremlinSteps copy() {
+        return new GroovyGremlinSteps(g.toString(), parent);
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> mutate(Consumer<TranslationBuilder<String, StringPredicate>> mutator) {
+    public GremlinSteps<String, GroovyPredicate> mutate(Consumer<GremlinSteps<String, GroovyPredicate>> mutator) {
         mutator.accept(this);
         return this;
     }
@@ -74,312 +74,312 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> start() {
-        return new StringTranslationBuilder("__", this);
+    public GremlinSteps<String, GroovyPredicate> start() {
+        return new GroovyGremlinSteps("__", this);
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> V() {
+    public GremlinSteps<String, GroovyPredicate> V() {
         g.append(chain("V"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> addE(String edgeLabel) {
+    public GremlinSteps<String, GroovyPredicate> addE(String edgeLabel) {
         g.append(chain("addE", edgeLabel));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> addV() {
+    public GremlinSteps<String, GroovyPredicate> addV() {
         g.append(chain("addV"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> addV(String vertexLabel) {
+    public GremlinSteps<String, GroovyPredicate> addV(String vertexLabel) {
         g.append(chain("addV", vertexLabel));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> aggregate(String label) {
+    public GremlinSteps<String, GroovyPredicate> aggregate(String label) {
         g.append(chain("aggregate", label));
         return this;
     }
 
     @SafeVarargs
     @Override
-    public final TranslationBuilder<String, StringPredicate> and(TranslationBuilder<String, StringPredicate>... ands) {
+    public final GremlinSteps<String, GroovyPredicate> and(GremlinSteps<String, GroovyPredicate>... ands) {
         g.append(chain("and", (Object[]) ands));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> as(String label) {
+    public GremlinSteps<String, GroovyPredicate> as(String label) {
         g.append(chain("as", aliasHistory.next(label)));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> barrier() {
+    public GremlinSteps<String, GroovyPredicate> barrier() {
         g.append(chain("barrier"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> bothE(String... edgeLabels) {
+    public GremlinSteps<String, GroovyPredicate> bothE(String... edgeLabels) {
         g.append(chain("bothE", (Object[]) edgeLabels));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> by(TranslationBuilder<String, StringPredicate> traversal) {
+    public GremlinSteps<String, GroovyPredicate> by(GremlinSteps<String, GroovyPredicate> traversal) {
         g.append(chain("by", traversal));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> by(TranslationBuilder<String, StringPredicate> traversal,
-                                                          Order order) {
+    public GremlinSteps<String, GroovyPredicate> by(GremlinSteps<String, GroovyPredicate> traversal,
+                                                    Order order) {
         g.append(chain("by", traversal, order));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> choose(TranslationBuilder<String, StringPredicate> predicate,
-                                                              TranslationBuilder<String, StringPredicate> trueChoice,
-                                                              TranslationBuilder<String, StringPredicate> falseChoice) {
+    public GremlinSteps<String, GroovyPredicate> choose(GremlinSteps<String, GroovyPredicate> predicate,
+                                                        GremlinSteps<String, GroovyPredicate> trueChoice,
+                                                        GremlinSteps<String, GroovyPredicate> falseChoice) {
         g.append(chain("choose", predicate, trueChoice, falseChoice));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> choose(StringPredicate predicate, TranslationBuilder<String, StringPredicate> trueChoice, TranslationBuilder<String, StringPredicate> falseChoice) {
+    public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate, GremlinSteps<String, GroovyPredicate> trueChoice, GremlinSteps<String, GroovyPredicate> falseChoice) {
         g.append(chain("choose", predicate, trueChoice, falseChoice));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> choose(StringPredicate predicate, TranslationBuilder<String, StringPredicate> trueChoice) {
+    public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate, GremlinSteps<String, GroovyPredicate> trueChoice) {
         g.append(chain("choose", predicate, trueChoice));
         return this;
     }
 
     @SafeVarargs
     @Override
-    public final TranslationBuilder<String, StringPredicate> coalesce(TranslationBuilder<String, StringPredicate>... traversals) {
+    public final GremlinSteps<String, GroovyPredicate> coalesce(GremlinSteps<String, GroovyPredicate>... traversals) {
         g.append(chain("coalesce", (Object[]) traversals));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> constant(Object e) {
+    public GremlinSteps<String, GroovyPredicate> constant(Object e) {
         g.append(chain("constant", e));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> count() {
+    public GremlinSteps<String, GroovyPredicate> count() {
         g.append(chain("count"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> count(Scope scope) {
+    public GremlinSteps<String, GroovyPredicate> count(Scope scope) {
         g.append(chain("count", scope));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> dedup() {
+    public GremlinSteps<String, GroovyPredicate> dedup() {
         g.append(chain("dedup"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> drop() {
+    public GremlinSteps<String, GroovyPredicate> drop() {
         g.append(chain("drop"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> emit() {
+    public GremlinSteps<String, GroovyPredicate> emit() {
         g.append(chain("emit"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> fold() {
+    public GremlinSteps<String, GroovyPredicate> fold() {
         g.append(chain("fold"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> from(String stepLabel) {
+    public GremlinSteps<String, GroovyPredicate> from(String stepLabel) {
         g.append(chain("from", stepLabel));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> group() {
+    public GremlinSteps<String, GroovyPredicate> group() {
         g.append(chain("group"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> has(String propertyKey) {
+    public GremlinSteps<String, GroovyPredicate> has(String propertyKey) {
         g.append(chain("has", propertyKey));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> hasKey(String... key) {
+    public GremlinSteps<String, GroovyPredicate> hasKey(String... key) {
         g.append(chain("hasKey", (Object[]) key));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> hasLabel(String... labels) {
+    public GremlinSteps<String, GroovyPredicate> hasLabel(String... labels) {
         g.append(chain("hasLabel", (Object[]) labels));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> hasNot(String propertyKey) {
+    public GremlinSteps<String, GroovyPredicate> hasNot(String propertyKey) {
         g.append(chain("hasNot", propertyKey));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> id() {
+    public GremlinSteps<String, GroovyPredicate> id() {
         g.append(chain("id"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> identity() {
+    public GremlinSteps<String, GroovyPredicate> identity() {
         g.append(chain("identity"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> inE(String... edgeLabels) {
+    public GremlinSteps<String, GroovyPredicate> inE(String... edgeLabels) {
         g.append(chain("inE", (Object[]) edgeLabels));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> inV() {
+    public GremlinSteps<String, GroovyPredicate> inV() {
         g.append(chain("inV"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> inject(Object... injections) {
+    public GremlinSteps<String, GroovyPredicate> inject(Object... injections) {
         g.append(chain("inject", injections));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> is(StringPredicate predicate) {
+    public GremlinSteps<String, GroovyPredicate> is(GroovyPredicate predicate) {
         g.append(chain("is", predicate));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> key() {
+    public GremlinSteps<String, GroovyPredicate> key() {
         g.append(chain("key"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> label() {
+    public GremlinSteps<String, GroovyPredicate> label() {
         g.append(chain("label"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> limit(long limit) {
+    public GremlinSteps<String, GroovyPredicate> limit(long limit) {
         g.append(chain("limit", limit));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> map(String functionName, Function<Traverser, Object> function) {
+    public GremlinSteps<String, GroovyPredicate> map(String functionName, Function<Traverser, Object> function) {
         g.append(".map(").append(functionName).append("())");
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> max() {
+    public GremlinSteps<String, GroovyPredicate> max() {
         g.append(chain("max"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> mean() {
+    public GremlinSteps<String, GroovyPredicate> mean() {
         g.append(chain("mean"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> min() {
+    public GremlinSteps<String, GroovyPredicate> min() {
         g.append(chain("min"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> not(TranslationBuilder<String, StringPredicate> rhs) {
+    public GremlinSteps<String, GroovyPredicate> not(GremlinSteps<String, GroovyPredicate> rhs) {
         g.append(chain("not", rhs));
         return this;
     }
 
     @SafeVarargs
     @Override
-    public final TranslationBuilder<String, StringPredicate> or(TranslationBuilder<String, StringPredicate>... ors) {
+    public final GremlinSteps<String, GroovyPredicate> or(GremlinSteps<String, GroovyPredicate>... ors) {
         g.append(chain("or", (Object[]) ors));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> order() {
+    public GremlinSteps<String, GroovyPredicate> order() {
         g.append(chain("order"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> otherV() {
+    public GremlinSteps<String, GroovyPredicate> otherV() {
         g.append(chain("otherV"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> outE(String... edgeLabels) {
+    public GremlinSteps<String, GroovyPredicate> outE(String... edgeLabels) {
         g.append(chain("outE", (Object[]) edgeLabels));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> outV() {
+    public GremlinSteps<String, GroovyPredicate> outV() {
         g.append(chain("outV"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> path() {
+    public GremlinSteps<String, GroovyPredicate> path() {
         g.append(chain("path"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> properties(String... propertyKeys) {
+    public GremlinSteps<String, GroovyPredicate> properties(String... propertyKeys) {
         g.append(chain("properties", (Object[]) propertyKeys));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> property(String key, Object value) {
+    public GremlinSteps<String, GroovyPredicate> property(String key, Object value) {
         if (Tokens.NULL.equals(value)) {
             // FIXME Should only work like this SET
             sideEffect(start().properties(key).drop());
@@ -390,13 +390,13 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> project(String... keys) {
+    public GremlinSteps<String, GroovyPredicate> project(String... keys) {
         g.append(chain("project", (Object[]) keys));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> propertyList(String key, Collection values) {
+    public GremlinSteps<String, GroovyPredicate> propertyList(String key, Collection values) {
         if (values.isEmpty()) {
             // FIXME Should only work like this SET
             sideEffect(start().properties(key).drop());
@@ -409,19 +409,19 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> range(long low, long high) {
+    public GremlinSteps<String, GroovyPredicate> range(long low, long high) {
         g.append(chain("range", low, high));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> repeat(TranslationBuilder<String, StringPredicate> translationBuilder) {
-        g.append(chain("repeat", translationBuilder));
+    public GremlinSteps<String, GroovyPredicate> repeat(GremlinSteps<String, GroovyPredicate> gremlinSteps) {
+        g.append(chain("repeat", gremlinSteps));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> select(String... stepLabels) {
+    public GremlinSteps<String, GroovyPredicate> select(String... stepLabels) {
         String[] aliases = Stream.of(stepLabels)
             .map(aliasHistory::current)
             .toArray(String[]::new);
@@ -429,92 +429,92 @@ public class StringTranslationBuilder implements TranslationBuilder<String, Stri
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> selectLabels(String... stepLabels) {
+    public GremlinSteps<String, GroovyPredicate> selectLabels(String... stepLabels) {
         g.append(chain("select", (Object[]) stepLabels));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> select(Column column) {
+    public GremlinSteps<String, GroovyPredicate> select(Column column) {
         g.append(chain("select", column));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> sideEffect(TranslationBuilder<String, StringPredicate> translationBuilder) {
-        g.append(chain("sideEffect", translationBuilder));
+    public GremlinSteps<String, GroovyPredicate> sideEffect(GremlinSteps<String, GroovyPredicate> gremlinSteps) {
+        g.append(chain("sideEffect", gremlinSteps));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> skip(long skip) {
+    public GremlinSteps<String, GroovyPredicate> skip(long skip) {
         g.append(chain("skip", skip));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> sum() {
+    public GremlinSteps<String, GroovyPredicate> sum() {
         g.append(chain("sum"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> times(Integer maxLoops) {
+    public GremlinSteps<String, GroovyPredicate> times(Integer maxLoops) {
         g.append(chain("times", maxLoops));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> to(String stepLabel) {
+    public GremlinSteps<String, GroovyPredicate> to(String stepLabel) {
         g.append(chain("to", stepLabel));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> unfold() {
+    public GremlinSteps<String, GroovyPredicate> unfold() {
         g.append(chain("unfold"));
         return this;
     }
 
     @SafeVarargs
     @Override
-    public final TranslationBuilder<String, StringPredicate> union(TranslationBuilder<String, StringPredicate>... translationBuilders) {
-        g.append(chain("union", (Object[]) translationBuilders));
+    public final GremlinSteps<String, GroovyPredicate> union(GremlinSteps<String, GroovyPredicate>... gremlinSteps) {
+        g.append(chain("union", (Object[]) gremlinSteps));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> until(TranslationBuilder<String, StringPredicate> translationBuilder) {
-        g.append(chain("until", translationBuilder));
+    public GremlinSteps<String, GroovyPredicate> until(GremlinSteps<String, GroovyPredicate> gremlinSteps) {
+        g.append(chain("until", gremlinSteps));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> value() {
+    public GremlinSteps<String, GroovyPredicate> value() {
         g.append(chain("value"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> valueMap() {
+    public GremlinSteps<String, GroovyPredicate> valueMap() {
         g.append(chain("valueMap"));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> values(String... propertyKeys) {
+    public GremlinSteps<String, GroovyPredicate> values(String... propertyKeys) {
         g.append(chain("values", (Object[]) propertyKeys));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> where(TranslationBuilder<String, StringPredicate> translationBuilder) {
-        g.append(chain("where", translationBuilder));
+    public GremlinSteps<String, GroovyPredicate> where(GremlinSteps<String, GroovyPredicate> gremlinSteps) {
+        g.append(chain("where", gremlinSteps));
         return this;
     }
 
     @Override
-    public TranslationBuilder<String, StringPredicate> where(StringPredicate predicate) {
+    public GremlinSteps<String, GroovyPredicate> where(GroovyPredicate predicate) {
         g.append(chain("where", predicate));
         return this;
     }
