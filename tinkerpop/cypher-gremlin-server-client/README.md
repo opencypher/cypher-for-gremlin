@@ -12,7 +12,7 @@ To send Cypher queries to a Cypher-enabled Gremlin Server and get Cypher-style r
 ```java
 Cluster cluster = Cluster.open();
 Client gremlinClient = cluster.connect();
-CypherGremlinClient cypherGremlinClient = CypherGremlinClientFactory.plugin(gremlinClient);
+CypherGremlinClient cypherGremlinClient = CypherGremlinClients.plugin(gremlinClient);
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 List<Map<String, Object>> results = cypherGremlinClient.submit(cypher);
 ```
@@ -30,7 +30,17 @@ future.thenAccept(results -> {
 If the target Gremlin Server does not have the [Cypher plugin](../cypher-gremlin-server-plugin) installed, translation can be done on the client's thread:
 
 ```java
-CypherGremlinClient cypherGremlinClient = CypherGremlinClientFactory.translating(gremlinClient);
+CypherGremlinClient cypherGremlinClient = CypherGremlinClients.translating(gremlinClient);
+```
+
+You can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
+
+```java
+TinkerGraph graph = TinkerFactory.createModern();
+GraphTraversalSource traversal = graph.traversal();
+CypherGremlinClient cypherGremlinClient = CypherGremlinClients.inMemory(traversal);
+String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
+List<Map<String, Object>> results = cypherGremlinClient.submit(cypher);
 ```
 
 Consult the Javadoc for more information.

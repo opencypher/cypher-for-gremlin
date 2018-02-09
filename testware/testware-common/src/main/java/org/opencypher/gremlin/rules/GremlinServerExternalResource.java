@@ -18,7 +18,7 @@ package org.opencypher.gremlin.rules;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
-import org.opencypher.gremlin.client.CypherGremlinClientFactory;
+import org.opencypher.gremlin.client.CypherGremlinClients;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 
@@ -36,7 +36,7 @@ public class GremlinServerExternalResource extends ExternalResource {
         gremlinServer.start();
         int port = gremlinServer.getPort();
         gremlinClient = GremlinClientFactory.create(port);
-        cypherGremlinClient = CypherGremlinClientFactory.plugin(gremlinClient);
+        cypherGremlinClient = CypherGremlinClients.plugin(gremlinClient);
     }
 
     @Override

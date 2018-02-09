@@ -22,7 +22,7 @@ import org.apache.tinkerpop.gremlin.jsr223.console.GremlinShellEnvironment;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteException;
 import org.opencypher.gremlin.client.CypherGremlinClient;
-import org.opencypher.gremlin.client.CypherGremlinClientFactory;
+import org.opencypher.gremlin.client.CypherGremlinClients;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 
@@ -75,9 +75,9 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
             if (flavorParamIndex < args.size()) {
                 flavor = flavorByName(args.get(flavorParamIndex));
             }
-            return CypherGremlinClientFactory.translating(gremlinClient, flavor);
+            return CypherGremlinClients.translating(gremlinClient, flavor);
         } else {
-            return CypherGremlinClientFactory.plugin(gremlinClient);
+            return CypherGremlinClients.plugin(gremlinClient);
         }
     }
 

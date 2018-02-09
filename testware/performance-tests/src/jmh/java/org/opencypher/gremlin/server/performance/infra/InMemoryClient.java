@@ -17,23 +17,24 @@ package org.opencypher.gremlin.server.performance.infra;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.opencypher.gremlin.translation.CypherExecutor;
+import org.opencypher.gremlin.client.CypherGremlinClient;
+import org.opencypher.gremlin.client.CypherGremlinClients;
 import org.openjdk.jmh.infra.Blackhole;
 
 public class InMemoryClient implements CypherClient {
 
     private final Blackhole blackhole;
-    private final CypherExecutor cypherExecutor;
+    private final CypherGremlinClient client;
 
     public InMemoryClient(Blackhole blackhole) {
         this.blackhole = blackhole;
         GraphTraversalSource traversal = TinkerGraph.open().traversal();
-        cypherExecutor = new CypherExecutor(traversal);
+        client = CypherGremlinClients.inMemory(traversal);
     }
 
     @Override
     public void run(String cypher) {
-        cypherExecutor.execute(cypher).forEach(blackhole::consume);
+        client.submit(cypher).forEach(blackhole::consume);
     }
 
     @Override

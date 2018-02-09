@@ -16,14 +16,16 @@
 package org.opencypher.gremlin.client;
 
 import org.apache.tinkerpop.gremlin.driver.Client;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 /**
  * This factory creates {@link CypherGremlinClient} instances of different kind.
  */
-public class CypherGremlinClientFactory {
-    private CypherGremlinClientFactory() {
+public class CypherGremlinClients {
+    private CypherGremlinClients() {
     }
 
     /**
@@ -64,5 +66,19 @@ public class CypherGremlinClientFactory {
      */
     public static CypherGremlinClient translating(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
         return new TranslatingCypherGremlinClient(client, flavor);
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that executes Cypher queries
+     * directly on the configured {@link GraphTraversalSource}.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread.
+     * Graph traversal execution is not synchronized.
+     *
+     * @param gts source of {@link GraphTraversal} to translate to
+     * @return Cypher-enabled client
+     */
+    public static CypherGremlinClient inMemory(GraphTraversalSource gts) {
+        return new InMemoryCypherGremlinClient(gts);
     }
 }

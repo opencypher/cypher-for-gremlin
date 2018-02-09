@@ -13,70 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation;
+package org.opencypher.gremlin.client;
 
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.translator.Translator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.toCypherResults;
 
-/**
- * Simple Cypher executor that is intended for in-memory Gremlin graphs.
- * <p>
- * Note: if you want to run Cypher queries against a Gremlin Server, use the Cypher for Gremlin plugin instead.
- */
-public final class CypherExecutor {
+final class InMemoryCypherGremlinClient implements CypherGremlinClient {
 
     private final GraphTraversalSource gts;
 
-    /**
-     * Creates a new instance that will build {@link GraphTraversal} from the provided source.
-     *
-     * @param gts source of {@link GraphTraversal} to translate to
-     */
-    public CypherExecutor(GraphTraversalSource gts) {
+    InMemoryCypherGremlinClient(GraphTraversalSource gts) {
         this.gts = gts;
     }
 
-    /**
-     * Executes a Cypher query on the configured {@link GraphTraversalSource}.
-     *
-     * @param cypher Cypher query
-     * @return query result
-     */
-    public List<Map<String, Object>> execute(String cypher) {
-        return execute(cypher, null);
+    @Override
+    public void close() {
+        // nothing to close
     }
 
-    /**
-     * Executes a Cypher query on the configured {@link GraphTraversalSource}.
-     *
-     * @param cypher     Cypher query
-     * @param parameters query parameters
-     * @return query result
-     */
-    public List<Map<String, Object>> execute(String cypher, Map<String, Object> parameters) {
+    @Override
+    public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
 
         if (ast.getOptions().contains(EXPLAIN)) {
             Map<String, Object> explanation = new LinkedHashMap<>();
             explanation.put("translation", ast.buildTranslation(Translator.builder().gremlinGroovy().build()));
             explanation.put("options", ast.getOptions().toString());
-            return singletonList(explanation);
+            return completedFuture(singletonList(explanation));
         }
 
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
         GraphTraversal<?, ?> traversal = ast.buildTranslation(Translator.builder().traversal(g).build());
-        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(toCypherResults());
-        return normalizedTraversal.toList();
+        List<Map<String, Object>> results = traversal.map(toCypherResults()).toList();
+        return completedFuture(results);
     }
 }

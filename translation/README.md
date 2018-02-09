@@ -7,8 +7,6 @@ The translation module provides facilities to:
 
 ## Usage
 
-### Translating Cypher
-
 To translate a Cypher query to a Gremlin query:
 
 ```java
@@ -41,16 +39,6 @@ Translator.builder()
 
 Consult the Javadoc for more information.
 
-### Running Cypher
+## Running Cypher
 
-You can use `TranslationFacade` to translate Cypher to Gremlin as a string, but you can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
-
-```java
-TinkerGraph graph = TinkerFactory.createModern();
-GraphTraversalSource traversal = graph.traversal();
-CypherExecutor cypherExecutor = new CypherExecutor(traversal);
-String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
-List<Map<String, Object>> results = cypherExecutor.execute(cypher);
-```
-
-If you want to send queries to a remote Gremlin Server, you might be interested in the [Cypher client for Gremlin Server](../tinkerpop/cypher-gremlin-server-client).
+If you want to run queries, not just translate them, you might be interested in the [Cypher client for Gremlin Server](../tinkerpop/cypher-gremlin-server-client).

@@ -18,7 +18,8 @@ package org.opencypher.gremlin;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
-import org.opencypher.gremlin.translation.CypherExecutor;
+import org.opencypher.gremlin.client.CypherGremlinClient;
+import org.opencypher.gremlin.client.CypherGremlinClients;
 
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,9 @@ public class EmbeddedTinkerGraphTest {
 
     @Test
     public void createAndMatch() {
-        CypherExecutor executor = new CypherExecutor(graph.traversal());
-        executor.execute("CREATE (:L {foo: 'bar'})");
-        List<Map<String, Object>> results = executor.execute("MATCH (n:L) return n.foo");
+        CypherGremlinClient client = CypherGremlinClients.inMemory(graph.traversal());
+        client.submit("CREATE (:L {foo: 'bar'})");
+        List<Map<String, Object>> results = client.submit("MATCH (n:L) return n.foo");
 
         assertThat(results)
             .extracting("n.foo")

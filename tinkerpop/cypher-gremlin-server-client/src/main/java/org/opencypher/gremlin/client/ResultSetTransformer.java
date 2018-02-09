@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.toList;
 
-public class ResultSetTransformer {
+public final class ResultSetTransformer {
     private ResultSetTransformer() {
     }
 
