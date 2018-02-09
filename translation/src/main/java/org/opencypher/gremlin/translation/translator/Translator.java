@@ -28,6 +28,8 @@ import org.opencypher.gremlin.translation.traversal.TraversalGremlinSteps;
 /**
  * Abstraction over the process of building a translation
  * for different targets.
+ * <p>
+ * Translator instances are not reusable.
  */
 public final class Translator<T, P> {
     private final GremlinSteps<T, P> gremlinSteps;

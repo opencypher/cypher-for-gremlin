@@ -28,13 +28,13 @@ String gremlin = ast.buildTranslation(translator);
 
 Note that `Translator` instances are not reusable. A new one has to be created for each `buildTranslation` call. `TranslationFacade` handles this for you.
 
-Custom translation targets can be provided by implementing `TranslationBuilder` and `PredicateFactory`:
+Custom translation targets can be provided by implementing `GremlinSteps` and `GremlinPredicates`:
 
 ```java
 Translator.builder()
     .custom(
-        new MyTranslationBuilder(),
-        new MyPredicateFactory()
+        new MyGremlinSteps(),
+        new MyGremlinPredicates()
     )
     .build();
 ```
