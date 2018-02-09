@@ -1,0 +1,7 @@
+#!/bin/sh
+git stash -q --keep-index
+echo "Running code checks..."
+./gradlew spotlessCheck >/dev/null
+RESULT=$?
+git stash pop -q
+exit $RESULT

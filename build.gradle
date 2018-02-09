@@ -31,6 +31,11 @@ allprojects {
     version '1.0-SNAPSHOT'
 }
 
+task gitHooks(type: Copy) {
+    from "${rootDir}/hooks"
+    into "${rootDir}/.git/hooks"
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'com.diffplug.gradle.spotless'
@@ -68,6 +73,8 @@ subprojects {
             scalafmt('1.4.0').configFile("${rootDir}/.scalafmt.conf")
         }
     }
+
+    build.dependsOn gitHooks
 }
 
 project(':translation') {
