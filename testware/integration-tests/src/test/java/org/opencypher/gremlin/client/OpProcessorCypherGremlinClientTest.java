@@ -35,7 +35,7 @@ public class OpProcessorCypherGremlinClientTest {
     public void submitToDefaultGraph() {
         OpProcessorCypherGremlinClient client = new OpProcessorCypherGremlinClient(gremlinServer.gremlinClient());
         String cypher = "MATCH (p:person) RETURN p.name AS name";
-        List<Map<String, Object>> results = client.submit(cypher);
+        List<Map<String, Object>> results = client.submit(cypher).all();
 
         assertThat(results)
             .extracting("name")
@@ -56,7 +56,7 @@ public class OpProcessorCypherGremlinClientTest {
         Client gremlinClient = gremlinServer.gremlinClient().alias(alias);
         OpProcessorCypherGremlinClient client = new OpProcessorCypherGremlinClient(gremlinClient);
         String cypher = "MATCH (p:person) RETURN p.name AS name";
-        List<Map<String, Object>> results = client.submit(cypher);
+        List<Map<String, Object>> results = client.submit(cypher).all();
 
         assertThat(results)
             .extracting("name")
@@ -69,7 +69,7 @@ public class OpProcessorCypherGremlinClientTest {
         OpProcessorCypherGremlinClient client = new OpProcessorCypherGremlinClient(gremlinClient);
         String cypher = "MATCH (p:person) RETURN p.name AS name";
 
-        assertThatThrownBy(() -> client.submit(cypher))
+        assertThatThrownBy(() -> client.submit(cypher).all())
             .hasMessageContaining("Traversable alias 'does_not_exist' not found");
     }
 }

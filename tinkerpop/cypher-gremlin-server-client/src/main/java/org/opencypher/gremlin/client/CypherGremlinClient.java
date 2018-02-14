@@ -16,9 +16,12 @@
 package org.opencypher.gremlin.client;
 
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 import java.io.Closeable;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,6 +33,61 @@ import static java.util.Collections.emptyMap;
  * to a Gremlin Server.
  */
 public interface CypherGremlinClient extends Closeable {
+
+    /**
+     * Creates a {@link CypherGremlinClient} that can send Cypher queries
+     * to a remote Gremlin Server with Cypher plugin.
+     *
+     * @param client Gremlin client
+     * @return Cypher-enabled client
+     */
+    static CypherGremlinClient plugin(Client client) {
+        return new OpProcessorCypherGremlinClient(client);
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that can send Cypher queries
+     * to any Gremlin Server or a compatible graph database.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread,
+     * before sending the query to Gremlin Server.
+     *
+     * @param client Gremlin client
+     * @return Cypher-enabled client
+     */
+    static CypherGremlinClient translating(Client client) {
+        return new TranslatingCypherGremlinClient(client, TranslatorFlavor.gremlinServer());
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that can send Cypher queries
+     * to any Gremlin Server or a compatible graph database.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread,
+     * before sending the query to Gremlin Server.
+     *
+     * @param client Gremlin client
+     * @param flavor translation flavor
+     * @return Cypher-enabled client
+     */
+    static CypherGremlinClient translating(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
+        return new TranslatingCypherGremlinClient(client, flavor);
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that executes Cypher queries
+     * directly on the configured {@link GraphTraversalSource}.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread.
+     * Graph traversal execution is not synchronized.
+     *
+     * @param gts source of {@link GraphTraversal} to translate to
+     * @return Cypher-enabled client
+     */
+    static CypherGremlinClient inMemory(GraphTraversalSource gts) {
+        return new InMemoryCypherGremlinClient(gts);
+    }
+
     /**
      * Closes the underlying Gremlin client.
      */
@@ -42,7 +100,7 @@ public interface CypherGremlinClient extends Closeable {
      * @param cypher query text
      * @return Cypher-style results
      */
-    default List<Map<String, Object>> submit(String cypher) {
+    default CypherResultSet submit(String cypher) {
         return submitAsync(cypher, emptyMap()).join();
     }
 
@@ -53,7 +111,7 @@ public interface CypherGremlinClient extends Closeable {
      * @param parameters query parameters
      * @return Cypher-style results
      */
-    default List<Map<String, Object>> submit(String cypher, Map<String, Object> parameters) {
+    default CypherResultSet submit(String cypher, Map<String, Object> parameters) {
         return submitAsync(cypher, parameters).join();
     }
 
@@ -63,7 +121,7 @@ public interface CypherGremlinClient extends Closeable {
      * @param cypher query text
      * @return Cypher-style results
      */
-    default CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher) {
+    default CompletableFuture<CypherResultSet> submitAsync(String cypher) {
         return submitAsync(cypher, emptyMap());
     }
 
@@ -75,5 +133,5 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-style results
      * @see org.opencypher.gremlin.ClientServerCommunication
      */
-    CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters);
+    CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters);
 }

@@ -19,7 +19,6 @@ import java.util
 import java.util.concurrent.TimeUnit.SECONDS
 
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
-import org.opencypher.gremlin.client.ResultSetTransformer
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.tck.GremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.GremlinQueries._
@@ -39,7 +38,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
     queryType match {
       case SideEffectQuery if cypherToGremlinQueries.isDefinedAt(query) =>
         val resultSet = tinkerGraphServerEmbedded.gremlinClient().submit(cypherToGremlinQueries(query))
-        toCypherValueRecords(query, ResultSetTransformer.resultSetAsMap(resultSet))
+        toCypherValueRecords(query, ResultTransformer.resultSetAsMaps(resultSet))
 
       case ExecQuery | InitQuery | SideEffectQuery =>
         val paramsJava: util.Map[String, Object] = toGremlinParams(params)
@@ -48,6 +47,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
             .cypherGremlinClient()
             .submitAsync(query, paramsJava)
             .get(TIME_OUT_SECONDS, SECONDS)
+            .all()
           toCypherValueRecords(query, results)
         } catch {
           case e: Exception => toExecutionFailed(e)

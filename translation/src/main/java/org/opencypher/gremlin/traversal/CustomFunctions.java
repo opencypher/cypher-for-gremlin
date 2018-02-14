@@ -205,10 +205,6 @@ public class CustomFunctions {
             (long) ((Collection) traverser.get()).size();
     }
 
-    public static Function<Traverser<Object>, Map<String, Object>> toCypherResults() {
-        return ReturnNormalizer.toCypherResults();
-    }
-
     private static Object flatten(Object element) {
         return element instanceof Collection ? ((Collection) element).stream() : Stream.of(element);
     }

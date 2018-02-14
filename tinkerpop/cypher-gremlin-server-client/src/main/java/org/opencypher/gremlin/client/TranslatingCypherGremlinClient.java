@@ -22,7 +22,6 @@ import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -42,11 +41,13 @@ final class TranslatingCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters) {
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build(flavor);
         String gremlin = ast.buildTranslation(translator);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, parameters);
-        return ResultSetTransformer.resultSetAsMapAsync(resultSetFuture);
+        return resultSetFuture
+            .thenApply(ResultSet::iterator)
+            .thenApply(CypherResultSet::new);
     }
 }

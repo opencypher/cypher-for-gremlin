@@ -38,7 +38,7 @@ public class MergeTest {
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.cypherGremlinClient().submit(cypher);
+        return gremlinServer.cypherGremlinClient().submit(cypher).all();
     }
 
     @Test

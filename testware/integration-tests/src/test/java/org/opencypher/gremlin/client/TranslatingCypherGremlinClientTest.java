@@ -35,7 +35,7 @@ public class TranslatingCypherGremlinClientTest {
         TranslatingCypherGremlinClient client =
             new TranslatingCypherGremlinClient(gremlinServer.gremlinClient(), TranslatorFlavor.gremlinServer());
         String cypher = "MATCH (p:person) RETURN p.name AS name";
-        List<Map<String, Object>> results = client.submit(cypher);
+        List<Map<String, Object>> results = client.submit(cypher).all();
 
         assertThat(results)
             .extracting("name")

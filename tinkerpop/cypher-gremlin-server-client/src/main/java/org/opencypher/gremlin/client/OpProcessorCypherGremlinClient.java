@@ -19,7 +19,6 @@ import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,9 +38,11 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters) {
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters) {
         RequestMessage requestMessage = buildRequest(cypher, parameters).create();
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(requestMessage);
-        return ResultSetTransformer.resultSetAsMapAsync(resultSetFuture);
+        return resultSetFuture
+            .thenApply(ResultSet::iterator)
+            .thenApply(CypherResultSet::new);
     }
 }

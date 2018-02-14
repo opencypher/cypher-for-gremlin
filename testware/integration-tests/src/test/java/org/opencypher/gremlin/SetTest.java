@@ -35,7 +35,7 @@ public class SetTest {
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.cypherGremlinClient().submit(cypher);
+        return gremlinServer.cypherGremlinClient().submit(cypher).all();
     }
 
     @Test

@@ -34,8 +34,9 @@ import org.apache.tinkerpop.gremlin.server.op.OpProcessorException;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -48,7 +49,6 @@ import static java.util.Optional.empty;
 import static org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode.SERVER_ERROR;
 import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.toCypherResults;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -106,7 +106,10 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder().traversal(g).build();
         GraphTraversal<?, ?> traversal = ast.buildTranslation(traversalTranslator);
-        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(toCypherResults());
+        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(traverser -> {
+            Map row = (Map) traverser.get();
+            return ReturnNormalizer.normalize(row);
+        });
         inTransaction(gts, () -> handleIterator(context, normalizedTraversal));
     }
 

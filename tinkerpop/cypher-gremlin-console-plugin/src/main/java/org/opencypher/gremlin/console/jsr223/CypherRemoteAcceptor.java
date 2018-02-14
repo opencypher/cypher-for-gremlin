@@ -22,9 +22,9 @@ import org.apache.tinkerpop.gremlin.jsr223.console.GremlinShellEnvironment;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteException;
 import org.opencypher.gremlin.client.CypherGremlinClient;
-import org.opencypher.gremlin.client.CypherGremlinClients;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.client.CypherResultSet;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -75,9 +75,9 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
             if (flavorParamIndex < args.size()) {
                 flavor = flavorByName(args.get(flavorParamIndex));
             }
-            return CypherGremlinClients.translating(gremlinClient, flavor);
+            return CypherGremlinClient.translating(gremlinClient, flavor);
         } else {
-            return CypherGremlinClients.plugin(gremlinClient);
+            return CypherGremlinClient.plugin(gremlinClient);
         }
     }
 
@@ -114,11 +114,11 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
     }
 
     private List<Result> send(String query) throws Exception {
-        CompletableFuture<List<Map<String, Object>>> resultsFuture = client.submitAsync(query);
-        List<Map<String, Object>> results = (timeout > NO_TIMEOUT) ?
+        CompletableFuture<CypherResultSet> resultsFuture = client.submitAsync(query);
+        CypherResultSet resultSet = (timeout > NO_TIMEOUT) ?
             resultsFuture.get(timeout, TimeUnit.MILLISECONDS) :
             resultsFuture.get();
-        return results.stream()
+        return resultSet.stream()
             .map(Result::new)
             .collect(toList());
     }

@@ -15,21 +15,23 @@
  */
 package org.opencypher.gremlin.client;
 
+import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static java.util.stream.Collectors.toList;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.toCypherResults;
 
 final class InMemoryCypherGremlinClient implements CypherGremlinClient {
 
@@ -45,19 +47,24 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<List<Map<String, Object>>> submitAsync(String cypher, Map<String, Object> parameters) {
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
 
         if (ast.getOptions().contains(EXPLAIN)) {
             Map<String, Object> explanation = new LinkedHashMap<>();
             explanation.put("translation", ast.buildTranslation(Translator.builder().gremlinGroovy().build()));
             explanation.put("options", ast.getOptions().toString());
-            return completedFuture(singletonList(explanation));
+            List<Result> results = Collections.singletonList(new Result(explanation));
+            return completedFuture(new CypherResultSet(results.iterator()));
         }
 
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
         GraphTraversal<?, ?> traversal = ast.buildTranslation(Translator.builder().traversal(g).build());
-        List<Map<String, Object>> results = traversal.map(toCypherResults()).toList();
-        return completedFuture(results);
+        List<Result> results = traversal.toStream()
+            .map(result -> (Map) result)
+            .map(ReturnNormalizer::normalize)
+            .map(Result::new)
+            .collect(toList());
+        return completedFuture(new CypherResultSet(results.iterator()));
     }
 }

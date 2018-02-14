@@ -16,7 +16,6 @@
 package org.opencypher.gremlin.traversal;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
@@ -28,21 +27,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ReturnNormalizer {
-
-    @SuppressWarnings("unchecked")
-    public static <S> Function<Traverser<S>, Map<String, Object>> toCypherResults() {
-        return traverser -> {
-            Map row = (Map) traverser.get();
-            return normalize(row);
-        };
+public final class ReturnNormalizer {
+    private ReturnNormalizer() {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> normalize(Map<String, ?> row) {
+    public static Map<String, Object> normalize(Map row) {
         return (Map<String, Object>) normalizeValue(row);
     }
 
