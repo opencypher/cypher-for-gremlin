@@ -129,6 +129,13 @@ project(':tinkerpop:cypher-gremlin-console-plugin') {
     }
 }
 
+project(':tinkerpop:cypher-gremlin-neo4j-driver') {
+    dependencies {
+        compile project(':tinkerpop:cypher-gremlin-server-client')
+        compile 'org.neo4j.driver:neo4j-java-driver:1.4.4'
+    }
+}
+
 project(':testware:testware-common') {
     dependencies {
         compile project(':tinkerpop:cypher-gremlin-server-client')
@@ -148,6 +155,7 @@ project(':testware:testware-common') {
 project(':testware:integration-tests') {
     dependencies {
         testCompile project(':testware:testware-common')
+        testCompile project(':tinkerpop:cypher-gremlin-neo4j-driver')
 
         testCompile 'com.github.stefanbirkner:system-rules:1.17.1'
         testCompile 'org.awaitility:awaitility:3.0.0'
