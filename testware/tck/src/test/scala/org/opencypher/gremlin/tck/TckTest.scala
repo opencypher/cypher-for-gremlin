@@ -67,7 +67,7 @@ class TckTest {
     runScenarios(scenarios)
   }
 
-  private def runScenarios(scenarios: Seq[Scenario]) = {
+  def runScenarios(scenarios: Seq[Scenario]) = {
     def createTestGraph() = TinkerGraphServerEmbeddedGraph
 
     val dynamicTests = scenarios.map { scenario =>

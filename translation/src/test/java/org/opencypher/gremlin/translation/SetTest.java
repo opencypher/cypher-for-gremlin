@@ -15,13 +15,12 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
-
-import static java.util.Arrays.asList;
 import static org.opencypher.gremlin.translation.Tokens.NULL;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+
+import org.junit.Test;
+import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 
 public class SetTest {
 
@@ -56,26 +55,6 @@ public class SetTest {
                     )
                 )
                 .barrier().limit(0)
-        );
-    }
-
-    @Test
-    public void updatePropertyWithList() {
-        assertThat(CypherAstWrapper.parse(
-            "MATCH (n:A) SET n.x = [1, 2, 3] RETURN n.x as x"
-        )).hasTraversalBeforeReturn(
-            __.V().as("n").where(
-                __.select("n").hasLabel("A")
-            ).choose(P.neq(NULL),
-                __.start().sideEffect(
-                    __.select("n").properties("x").drop()
-                )
-            ).choose(P.neq(NULL),
-                __.start().sideEffect(
-                    __.select("n")
-                        .propertyList("x", asList(1, 2, 3))
-                )
-            ).select("n")
         );
     }
 

@@ -21,7 +21,7 @@ import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
-import org.opencypher.gremlin.traversal.CustomFunctions
+import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
@@ -189,14 +189,14 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
           case "keys"   => traversal.valueMap().select(Column.keys)
           case "exists" =>
             g.start().coalesce(traversal.is(p.neq(Tokens.NULL)).constant(true), g.start().constant(false))
-          case "tostring"      => traversal.map("convertToString", CustomFunctions.convertToString())
-          case "tointeger"     => traversal.map("convertToInteger", CustomFunctions.convertToInteger())
-          case "tofloat"       => traversal.map("convertToFloat", CustomFunctions.convertToFloat())
-          case "toboolean"     => traversal.map("convertToBoolean", CustomFunctions.convertToBoolean())
-          case "length"        => traversal.map("length", CustomFunctions.length())
-          case "nodes"         => traversal.map("nodes", CustomFunctions.nodes())
-          case "relationships" => traversal.map("relationships", CustomFunctions.relationships())
-          case "size"          => traversal.map("size", CustomFunctions.size())
+          case "tostring"      => traversal.map(CustomFunction.convertToString())
+          case "tointeger"     => traversal.map(CustomFunction.convertToInteger())
+          case "tofloat"       => traversal.map(CustomFunction.convertToFloat())
+          case "toboolean"     => traversal.map(CustomFunction.convertToBoolean())
+          case "length"        => traversal.map(CustomFunction.length())
+          case "nodes"         => traversal.map(CustomFunction.nodes())
+          case "relationships" => traversal.map(CustomFunction.relationships())
+          case "size"          => traversal.map(CustomFunction.size())
           case _ =>
             return aggregation(expression, select)
         }
@@ -210,24 +210,24 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
         val (_, traversal) = pivot(target, select, unfold)
         val (_, functionTraversal) = pivot(function, select, unfold)
 
-        (Pivot, traversal.map("listComprehension", CustomFunctions.listComprehension(functionTraversal.current())))
+        (Pivot, traversal.map(CustomFunction.listComprehension(functionTraversal.current())))
       case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybeExpression, projection, _) =>
         val varName = walkPatternComprehension(relationshipChain, maybeExpression, projection)
         val traversal = g.start().select(varName)
 
         projection match {
           case PathExpression(_) =>
-            (Pivot, traversal.map("pathComprehension", CustomFunctions.pathComprehension()))
+            (Pivot, traversal.map(CustomFunction.pathComprehension()))
           case function: Expression =>
             val (_, functionTraversal) = pivot(function, select, unfold)
-            (Pivot, traversal.map("listComprehension", CustomFunctions.listComprehension(functionTraversal.current())))
+            (Pivot, traversal.map(CustomFunction.listComprehension(functionTraversal.current())))
         }
 
       case ContainerIndex(expr, idx) =>
         val (_, traversal) = pivot(expr, select, unfold)
 
         val index = expressionValue(idx, context)
-        (Pivot, traversal.map("containerIndex", CustomFunctions.containerIndex(index)))
+        (Pivot, traversal.map(CustomFunction.containerIndex(index)))
       case IsNotNull(expr) =>
         val (_, traversal) = pivot(expr, select, unfold)
 

@@ -15,16 +15,14 @@
  */
 package org.opencypher.gremlin.translation;
 
+import java.util.function.Consumer;
+import java.util.stream.LongStream;
+
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.translator.Translator;
-
-import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.LongStream;
+import org.opencypher.gremlin.traversal.CustomFunction;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} DSL wrapper.
@@ -128,7 +126,7 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> loops();
 
-    GremlinSteps<T, P> map(String functionName, Function<Traverser, Object> function);
+    GremlinSteps<T, P> map(CustomFunction function);
 
     GremlinSteps<T, P> max();
 
@@ -154,9 +152,9 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> property(String key, Object value);
 
-    GremlinSteps<T, P> project(String... keys);
+    GremlinSteps<T, P> property(String key, GremlinSteps<T, P> builder);
 
-    GremlinSteps<T, P> propertyList(String key, Collection values);
+    GremlinSteps<T, P> project(String... keys);
 
     GremlinSteps<T, P> range(long low, long high);
 

@@ -15,15 +15,13 @@
  */
 package org.opencypher.gremlin.translation.translator;
 
+import java.util.function.Consumer;
+
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.GremlinSteps;
-
-import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import org.opencypher.gremlin.traversal.CustomFunction;
 
 abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P> {
 
@@ -263,8 +261,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> map(String functionName, Function<Traverser, Object> function) {
-        return delegate().map(functionName, function);
+    public GremlinSteps<T, P> map(CustomFunction function) {
+        return delegate().map(function);
     }
 
     @Override
@@ -328,13 +326,13 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> project(String... keys) {
-        return delegate().project(keys);
+    public GremlinSteps<T, P> property(String key, GremlinSteps<T, P> builder) {
+        return delegate().property(key, builder);
     }
 
     @Override
-    public GremlinSteps<T, P> propertyList(String key, Collection values) {
-        return delegate().propertyList(key, values);
+    public GremlinSteps<T, P> project(String... keys) {
+        return delegate().project(keys);
     }
 
     @Override

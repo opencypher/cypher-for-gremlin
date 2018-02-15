@@ -15,10 +15,9 @@
  */
 package org.opencypher.gremlin.translation.translator;
 
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.opencypher.gremlin.translation.GremlinSteps;
+import org.opencypher.gremlin.traversal.CustomFunction;
 
-import java.util.function.Function;
 
 final class CustomFunctionsGremlinStepsDecorator<T, P> extends AbstractGremlinStepsDecorator<T, P> {
 
@@ -34,7 +33,7 @@ final class CustomFunctionsGremlinStepsDecorator<T, P> extends AbstractGremlinSt
     }
 
     @Override
-    public GremlinSteps<T, P> map(String functionName, Function<Traverser, Object> function) {
-        throw new IllegalArgumentException("Custom functions are not supported: " + functionName);
+    public GremlinSteps<T, P> map(CustomFunction function) {
+        throw new IllegalArgumentException("Custom functions are not supported: " + function.getName());
     }
 }

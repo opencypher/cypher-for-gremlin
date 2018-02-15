@@ -15,12 +15,12 @@
  */
 package org.opencypher.gremlin.translation;
 
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
+
 import org.junit.Test;
 import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
-
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 public class UnwindTest {
 
@@ -46,7 +46,7 @@ public class UnwindTest {
             __
                 .inject(1, 2, 3).as("i")
                 .addV().as("n")
-                .property("num", __.select("i").current())
+                .property("num", __.select("i"))
                 .barrier().limit(0)
         );
     }

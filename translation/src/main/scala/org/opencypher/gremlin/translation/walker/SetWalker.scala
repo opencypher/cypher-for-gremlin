@@ -20,10 +20,8 @@ import java.util
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.NULL
-import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
+import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, setProperty}
 
-import scala.collection.JavaConverters._
-import scala.collection.immutable.Vector
 import scala.compat.java8.FunctionConverters._
 
 /**
@@ -87,20 +85,6 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
           .mutate(setter.asJava)
       )
     g.choose(p.neq(NULL), sideEffect)
-  }
-
-  private def setProperty(g: GremlinSteps[T, P], key: String, value: Any) {
-    value match {
-      case null =>
-        g.properties(key).drop()
-      case vector: Vector[_] =>
-        val collection = new util.ArrayList[Any](vector.asJava)
-        g.propertyList(key, collection)
-      case list: java.util.Collection[_] =>
-        g.propertyList(key, list)
-      case _ =>
-        g.property(key, value)
-    }
   }
 
   private def setProperties(g: GremlinSteps[T, P], items: Seq[(PropertyKeyName, Expression)]) {

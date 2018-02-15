@@ -131,4 +131,28 @@ object NodeUtils {
       g.as(name)
     }
   }
+
+  def setProperty[T, P](g: GremlinSteps[T, P], key: String, value: Any) {
+    value match {
+      case builder: GremlinSteps[T, P] =>
+        g.property(key, builder)
+      case null =>
+        drop(g, key)
+      case s: String if s.equals(Tokens.NULL) =>
+        drop(g, key)
+      case v: Vector[_] if v.isEmpty =>
+        drop(g, key)
+      case c: java.util.Collection[_] if c.isEmpty =>
+        drop(g, key)
+      case vector: Vector[_] =>
+        val collection = new util.ArrayList[Any](vector.asJava)
+        g.property(key, collection)
+      case _ =>
+        g.property(key, value)
+    }
+  }
+
+  private def drop[T, P](g: GremlinSteps[T, P], key: String) = {
+    g.sideEffect(g.start().properties(key).drop())
+  }
 }

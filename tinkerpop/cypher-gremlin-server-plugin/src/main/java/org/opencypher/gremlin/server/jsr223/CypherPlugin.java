@@ -15,20 +15,20 @@
  */
 package org.opencypher.gremlin.server.jsr223;
 
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.jsr223.Customizer;
 import org.apache.tinkerpop.gremlin.jsr223.DefaultImportCustomizer;
 import org.apache.tinkerpop.gremlin.jsr223.GremlinPlugin;
 import org.apache.tinkerpop.gremlin.jsr223.ImportCustomizer;
-import org.opencypher.gremlin.traversal.CustomFunctions;
+import org.opencypher.gremlin.traversal.CustomFunction;
 import org.opencypher.gremlin.traversal.CustomPredicates;
-
-import java.util.Optional;
 
 public class CypherPlugin implements GremlinPlugin {
 
     private static final ImportCustomizer imports = DefaultImportCustomizer.build()
         .addMethodImports(CustomPredicates.class.getDeclaredMethods())
-        .addMethodImports(CustomFunctions.class.getDeclaredMethods())
+        .addMethodImports(CustomFunction.class.getDeclaredMethods())
         .create();
 
     @Override

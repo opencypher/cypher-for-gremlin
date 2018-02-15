@@ -15,10 +15,13 @@
  */
 package org.opencypher.gremlin.translation.traversal;
 
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AddVertexStartStep;
@@ -27,14 +30,7 @@ import org.apache.tinkerpop.gremlin.structure.Column;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opencypher.gremlin.translation.AliasHistory;
 import org.opencypher.gremlin.translation.GremlinSteps;
-import org.opencypher.gremlin.translation.Tokens;
-
-import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
-import static org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.list;
+import org.opencypher.gremlin.traversal.CustomFunction;
 
 @SuppressWarnings("unchecked")
 public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
@@ -343,7 +339,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> map(String functionName, Function<Traverser, Object> function) {
+    public GremlinSteps<GraphTraversal, P> map(CustomFunction function) {
         g.map(function);
         return this;
     }
@@ -416,26 +412,13 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> property(String key, Object value) {
-        if (Tokens.NULL.equals(value)) {
-            // FIXME Should only work like this SET
-            g.sideEffect(start().properties(key).drop().current());
-        } else {
-            g.property(key, value);
-        }
+        g.property(key, value);
         return this;
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> propertyList(String key, Collection values) {
-        if (values.isEmpty()) {
-            // FIXME Should only work like this SET
-            g.sideEffect(start().properties(key).drop().current());
-        } else {
-            for (Object value : values) {
-                g.property(list, key, value);
-            }
-        }
-        return this;
+    public GremlinSteps<GraphTraversal, P> property(String key, GremlinSteps<GraphTraversal, P> builder) {
+        return property(key, builder.current());
     }
 
     @Override

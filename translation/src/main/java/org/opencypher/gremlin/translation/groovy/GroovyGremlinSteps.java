@@ -15,21 +15,19 @@
  */
 package org.opencypher.gremlin.translation.groovy;
 
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.AliasHistory;
 import org.opencypher.gremlin.translation.GremlinSteps;
-import org.opencypher.gremlin.translation.Tokens;
-
-import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
+import org.opencypher.gremlin.traversal.CustomFunction;
 
 public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate> {
 
@@ -318,8 +316,13 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
-    public GremlinSteps<String, GroovyPredicate> map(String functionName, Function<Traverser, Object> function) {
-        g.append(".map(").append(functionName).append("())");
+    public GremlinSteps<String, GroovyPredicate> map(CustomFunction function) {
+        g.append(chain(
+            "map",
+            unquoted(
+                apply(function.getName(), function.getArgs())
+            )
+        ));
         return this;
     }
 
@@ -392,31 +395,19 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> property(String key, Object value) {
-        if (Tokens.NULL.equals(value)) {
-            // FIXME Should only work like this SET
-            sideEffect(start().properties(key).drop());
-        } else {
-            g.append(chain("property", key, value));
-        }
+        g.append(chain("property", key, value));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> property(String key, GremlinSteps<String, GroovyPredicate> builder) {
+        g.append(chain("property", key, unquoted(builder.current())));
         return this;
     }
 
     @Override
     public GremlinSteps<String, GroovyPredicate> project(String... keys) {
         g.append(chain("project", (Object[]) keys));
-        return this;
-    }
-
-    @Override
-    public GremlinSteps<String, GroovyPredicate> propertyList(String key, Collection values) {
-        if (values.isEmpty()) {
-            // FIXME Should only work like this SET
-            sideEffect(start().properties(key).drop());
-        } else {
-            for (Object value : values) {
-                g.append(chain("property", unquoted("list"), key, value));
-            }
-        }
         return this;
     }
 

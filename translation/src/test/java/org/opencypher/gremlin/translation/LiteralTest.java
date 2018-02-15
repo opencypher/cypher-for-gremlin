@@ -15,9 +15,12 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.opencypher.gremlin.translation.Tokens.NULL;
+import static org.opencypher.gremlin.translation.Tokens.START;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
@@ -26,12 +29,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static org.opencypher.gremlin.translation.Tokens.NULL;
-import static org.opencypher.gremlin.translation.Tokens.START;
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
+import org.junit.Before;
+import org.junit.Test;
+import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 
 public class LiteralTest {
 
@@ -91,7 +91,7 @@ public class LiteralTest {
                     .property("n7", false)
                     .property("n8", true)
                     .property("n9", false)
-                    .property("n11", emptyList())
+                    .sideEffect(__.properties("n11").drop())
                     .property("n12", nestedList)
                     .barrier().limit(0)
             );
