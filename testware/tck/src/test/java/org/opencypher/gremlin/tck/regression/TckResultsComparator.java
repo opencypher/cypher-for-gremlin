@@ -42,8 +42,8 @@ import freemarker.template.TemplateException;
 
 public class TckResultsComparator {
     public static void main(String[] args) throws IOException, TemplateException {
-        Features before = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter.xml");
-        Features now = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter-before.xml");
+        Features before = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter-before.xml");
+        Features now = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter.xml");
         Diff diff = now.compare(before);
         TckRegressionReport.generate(diff);
 
