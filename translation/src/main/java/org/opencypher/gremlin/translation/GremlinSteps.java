@@ -15,14 +15,14 @@
  */
 package org.opencypher.gremlin.translation;
 
-import java.util.function.Consumer;
-import java.util.stream.LongStream;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.CustomFunction;
+
+import java.util.function.Consumer;
+import java.util.stream.LongStream;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} DSL wrapper.
@@ -161,8 +161,6 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> repeat(GremlinSteps<T, P> gremlinSteps);
 
     GremlinSteps<T, P> select(String... stepLabels);
-
-    GremlinSteps<T, P> selectLabels(String... stepLabels);
 
     GremlinSteps<T, P> select(Column column);
 

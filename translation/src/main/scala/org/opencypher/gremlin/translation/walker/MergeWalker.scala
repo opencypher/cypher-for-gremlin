@@ -69,11 +69,9 @@ private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
 
     val pathAliases = getPathTraversalAliases(patternParts.head.element)
     if (pathAliases.length > 1) {
-      pathAliases.foreach(createSubG.as)
-      pathAliases.foreach(matchSubG.as)
       g.coalesce(
-        matchSubG.selectLabels(pathAliases: _*),
-        createSubG.selectLabels(pathAliases: _*)
+        matchSubG.select(pathAliases: _*),
+        createSubG.select(pathAliases: _*)
       )
     } else {
       g.coalesce(matchSubG, createSubG).as(pathAliases.head)

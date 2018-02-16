@@ -16,9 +16,6 @@
 package org.opencypher.gremlin.translation.traversal;
 
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
@@ -31,6 +28,9 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opencypher.gremlin.translation.AliasHistory;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unchecked")
 public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
@@ -452,15 +452,10 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
         String[] aliases = Stream.of(stepLabels)
             .map(aliasHistory::current)
             .toArray(String[]::new);
-        return selectLabels(aliases);
-    }
-
-    @Override
-    public GremlinSteps<GraphTraversal, P> selectLabels(String... stepLabels) {
-        if (stepLabels.length >= 2) {
-            g.select(stepLabels[0], stepLabels[1], arraySlice(stepLabels, 2));
-        } else if (stepLabels.length == 1) {
-            g.select(stepLabels[0]);
+        if (aliases.length >= 2) {
+            g.select(aliases[0], aliases[1], arraySlice(aliases, 2));
+        } else if (aliases.length == 1) {
+            g.select(aliases[0]);
         } else {
             throw new IllegalArgumentException("Select step should have arguments");
         }

@@ -15,13 +15,13 @@
  */
 package org.opencypher.gremlin.translation.translator;
 
-import java.util.function.Consumer;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
+
+import java.util.function.Consumer;
 
 abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P> {
 
@@ -348,11 +348,6 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     @Override
     public GremlinSteps<T, P> select(String... stepLabels) {
         return delegate().select(stepLabels);
-    }
-
-    @Override
-    public GremlinSteps<T, P> selectLabels(String... stepLabels) {
-        return delegate().selectLabels(stepLabels);
     }
 
     @Override

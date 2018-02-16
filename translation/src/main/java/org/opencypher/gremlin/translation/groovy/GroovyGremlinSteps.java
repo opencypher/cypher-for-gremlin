@@ -15,19 +15,19 @@
  */
 package org.opencypher.gremlin.translation.groovy;
 
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
-
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.AliasHistory;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
 
 public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate> {
 
@@ -428,12 +428,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
         String[] aliases = Stream.of(stepLabels)
             .map(aliasHistory::current)
             .toArray(String[]::new);
-        return selectLabels(aliases);
-    }
-
-    @Override
-    public GremlinSteps<String, GroovyPredicate> selectLabels(String... stepLabels) {
-        g.append(chain("select", (Object[]) stepLabels));
+        g.append(chain("select", (Object[]) aliases));
         return this;
     }
 
