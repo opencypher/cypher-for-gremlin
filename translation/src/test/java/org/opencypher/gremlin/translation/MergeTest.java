@@ -222,10 +222,9 @@ public class MergeTest {
                         .where(
                             __.select("r").values("weight").is(P.eq(0.1))
                         )
-                        .as("a_2").as("r_1").as("b_2")
-                        .select("a", "r", "b"),
+                        .select("a_1", "r", "b_1"),
                     __.start()
-                        .addE("TYPE").from("a").to("b").as("r").property("weight", 0.1).as("a_1").as("r_1").as("b_1")
+                        .addE("TYPE").from("a").to("b").as("r").property("weight", 0.1)
                         .select("a", "r", "b")
                 )
                 .select("r")
