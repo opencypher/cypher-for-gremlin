@@ -15,12 +15,12 @@
  */
 package org.opencypher.gremlin.translation;
 
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
-
 import org.junit.Test;
 import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 public class UnwindTest {
 

@@ -15,8 +15,13 @@
  */
 package org.opencypher.gremlin.tck.regression;
 
-import static freemarker.template.Configuration.VERSION_2_3_23;
-import static freemarker.template.TemplateExceptionHandler.RETHROW_HANDLER;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import org.opencypher.gremlin.tck.regression.TckResultsComparator.Diff;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -26,13 +31,8 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-import freemarker.cache.FileTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import org.opencypher.gremlin.tck.regression.TckResultsComparator.Diff;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static freemarker.template.Configuration.VERSION_2_3_23;
+import static freemarker.template.TemplateExceptionHandler.RETHROW_HANDLER;
 
 public class TckRegressionReport {
     private static final Logger logger = LoggerFactory.getLogger(TckRegressionReport.class);

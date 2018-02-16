@@ -15,12 +15,9 @@
  */
 package org.opencypher.gremlin.translation;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static org.opencypher.gremlin.translation.Tokens.NULL;
-import static org.opencypher.gremlin.translation.Tokens.START;
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
+import org.junit.Before;
+import org.junit.Test;
+import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 
 import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
@@ -29,9 +26,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.opencypher.gremlin.translation.Tokens.NULL;
+import static org.opencypher.gremlin.translation.Tokens.START;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 public class LiteralTest {
 

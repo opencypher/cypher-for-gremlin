@@ -40,10 +40,9 @@ public class Config {
     /**
      * @return A config with all default settings
      */
-    public static Config defaultConfig()
-        {
-            return Config.build().toConfig();
-        }
+    public static Config defaultConfig() {
+        return Config.build().toConfig();
+    }
 
     /**
      * @return {@link TranslatorFlavor} if {@link #translationEnabled()}, null otherwise
@@ -61,6 +60,7 @@ public class Config {
 
     /**
      * Return a {@link ConfigBuilder} instance.
+     *
      * @return a {@link ConfigBuilder} instance
      */
     public static ConfigBuilder build() {
@@ -78,6 +78,7 @@ public class Config {
 
         /**
          * Translate Cypher query to Gremlin before sending it to Gremlin Server.
+         *
          * @return a {@link ConfigBuilder} instance
          */
         public ConfigBuilder withTranslation() {
@@ -87,6 +88,7 @@ public class Config {
 
         /**
          * Translate Cypher query to Gremlin before sending it to Gremlin Server.
+         *
          * @param flavor {@link TranslatorFlavor} of translation
          * @return a {@link ConfigBuilder} instance
          */
@@ -97,6 +99,7 @@ public class Config {
 
         /**
          * Create a config instance from this builder.
+         *
          * @return a {@link Config} instance
          */
         public Config toConfig() {

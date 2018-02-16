@@ -15,9 +15,14 @@
  */
 package org.opencypher.gremlin.traversal;
 
-import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.opencypher.gremlin.translation.Tokens;
+import org.opencypher.gremlin.translation.exception.TypeException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,14 +32,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.opencypher.gremlin.translation.Tokens;
-import org.opencypher.gremlin.translation.exception.TypeException;
+import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("unchecked")
 public class CustomFunction implements Function<Traverser, Object> {

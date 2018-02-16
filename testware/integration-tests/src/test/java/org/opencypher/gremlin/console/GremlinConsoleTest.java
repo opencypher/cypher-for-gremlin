@@ -43,7 +43,7 @@ public class GremlinConsoleTest {
     public final GremlinConsoleExternalResource console = new GremlinConsoleExternalResource();
 
     @Rule
-    public final SystemOutRule systemOut = new SystemOutRule().enableLog();;
+    public final SystemOutRule systemOut = new SystemOutRule().enableLog();
 
     @Rule
     public final TemporaryFolder tempFolder = new TemporaryFolder();

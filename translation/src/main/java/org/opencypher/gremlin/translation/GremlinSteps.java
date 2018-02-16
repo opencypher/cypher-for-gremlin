@@ -193,8 +193,9 @@ public interface GremlinSteps<T, P> {
     /**
      * Inserts Gremlin steps that generate a list of integer values from {@code low} to {@code high} (inclusive)
      * by an incremental step of 1.
-     * @param low the (inclusive) initial value
-     * @param high the inclusive upper bound
+     *
+     * @param low   the (inclusive) initial value
+     * @param high  the inclusive upper bound
      * @param label temporary unique string key
      */
     default GremlinSteps<T, P> injectRange(long low, long high, String label) {
@@ -212,7 +213,7 @@ public interface GremlinSteps<T, P> {
      * by an incremental step of {@code step} into traversal stream
      */
     default GremlinSteps<T, P> injectRangeInline(long low, long high, long step) {
-        long limit = ((high - low)  / step ) + 1;
+        long limit = ((high - low) / step) + 1;
         inject(LongStream.iterate(low, i -> i + step).limit(limit).boxed().toArray());
         return this;
     }

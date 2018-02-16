@@ -15,20 +15,6 @@
  */
 package org.opencypher.gremlin.tck.regression;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Collections2.filter;
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.collections.ListUtils.subtract;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -39,6 +25,20 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import freemarker.template.TemplateException;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Collections2.filter;
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.collections.ListUtils.subtract;
 
 public class TckResultsComparator {
     public static void main(String[] args) throws IOException, TemplateException {

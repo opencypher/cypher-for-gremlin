@@ -15,7 +15,11 @@
  */
 package org.opencypher;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
+import org.neo4j.driver.v1.Statement;
+import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.exceptions.NoSuchRecordException;
+import org.opencypher.GremlinServerDriver.GremlinServerInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,11 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.neo4j.driver.v1.Statement;
-import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.exceptions.NoSuchRecordException;
-import org.opencypher.GremlinServerDriver.GremlinServerInfo;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GremlinServerStatementResultTest {
     static final Statement statement = new Statement("RETURN 1;");

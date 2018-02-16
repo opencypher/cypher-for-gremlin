@@ -15,14 +15,14 @@
  */
 package org.opencypher.gremlin.server.jsr223;
 
-import java.util.Optional;
-
 import org.apache.tinkerpop.gremlin.jsr223.Customizer;
 import org.apache.tinkerpop.gremlin.jsr223.DefaultImportCustomizer;
 import org.apache.tinkerpop.gremlin.jsr223.GremlinPlugin;
 import org.apache.tinkerpop.gremlin.jsr223.ImportCustomizer;
 import org.opencypher.gremlin.traversal.CustomFunction;
 import org.opencypher.gremlin.traversal.CustomPredicates;
+
+import java.util.Optional;
 
 public class CypherPlugin implements GremlinPlugin {
 
