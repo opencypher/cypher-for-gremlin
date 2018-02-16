@@ -15,13 +15,17 @@
  */
 package org.opencypher.gremlin.rules;
 
+import static org.opencypher.gremlin.client.GremlinClientFactory.TOKEN_TRANSLATE;
+import static org.opencypher.gremlin.client.GremlinClientFactory.flavorByName;
+import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.tinkerGraph;
+
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
-
-import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.tinkerGraph;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class GremlinServerExternalResource extends ExternalResource {
 
@@ -35,7 +39,14 @@ public class GremlinServerExternalResource extends ExternalResource {
         gremlinServer.start();
         int port = gremlinServer.getPort();
         gremlinClient = GremlinClientFactory.create(port);
-        cypherGremlinClient = CypherGremlinClient.plugin(gremlinClient);
+
+        String translate = System.getProperty(TOKEN_TRANSLATE);
+        if (translate != null) {
+            TranslatorFlavor<String, GroovyPredicate> flavor = flavorByName(translate);
+            cypherGremlinClient = CypherGremlinClient.translating(gremlinClient, flavor);
+        } else {
+            cypherGremlinClient = CypherGremlinClient.plugin(gremlinClient);
+        }
     }
 
     @Override

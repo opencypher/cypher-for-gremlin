@@ -15,19 +15,21 @@
  */
 package org.opencypher.gremlin;
 
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ComplexExamplesTest {
 
@@ -43,7 +45,11 @@ public class ComplexExamplesTest {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
     }
 
+    /**
+     * Issue created
+     */
     @Test
+    @Category(SkipWithGremlinGroovy.class)
     public void returnDuplicateNode() throws Exception {
         submitAndGet(
             "CREATE (x:root)-[:r]->(y)\n" +

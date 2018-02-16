@@ -15,6 +15,18 @@
  */
 package org.opencypher.gremlin;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -22,15 +34,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.tuple;
 
 public class CreateTest {
 
@@ -367,10 +370,8 @@ public class CreateTest {
     public void createRelationshipInvalidSyntax() throws Exception {
         assertThatThrownBy(() -> submitAndGet("CREATE ({id: 2})-[r:KNOWS]-({id: 1}) RETURN r"))
             .satisfies(t -> {
-                Throwable initialCause = getInitialCause(t);
-                assertThat(initialCause).isInstanceOf(ResponseException.class);
-                ResponseException ex = (ResponseException) initialCause;
-                assertThat(ex.getRemoteStackTrace()).hasValueSatisfying(stackTrace ->
+                Optional<String> getStackTrace = getInitialCause(t);
+                assertThat(getStackTrace).hasValueSatisfying(stackTrace ->
                     assertThat(stackTrace).contains("SyntaxException")
                 );
             });
@@ -381,21 +382,28 @@ public class CreateTest {
         assertThatThrownBy(() -> submitAndGet("CREATE (n:Foo)\n" +
             "CREATE (n:Bar)-[:OWNS]->(:Dog)"))
             .satisfies(t -> {
-                Throwable initialCause = getInitialCause(t);
-                assertThat(initialCause).isInstanceOf(ResponseException.class);
-                ResponseException ex = (ResponseException) initialCause;
-                assertThat(ex.getRemoteStackTrace()).hasValueSatisfying(stackTrace ->
+                Optional<String> getStackTrace = getInitialCause(t);
+                assertThat(getStackTrace).hasValueSatisfying(stackTrace ->
                     assertThat(stackTrace).contains("SyntaxException")
                 );
             });
     }
 
-    private static Throwable getInitialCause(Throwable throwable) {
+    private static Optional<String> getInitialCause(Throwable throwable) {
         Throwable lastThrowable;
         do {
             lastThrowable = throwable;
             throwable = throwable.getCause();
         } while (throwable != null);
-        return lastThrowable;
+
+        if (lastThrowable instanceof ResponseException) {
+            ResponseException ex = (ResponseException) lastThrowable;
+            return ex.getRemoteStackTrace();
+        } else {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            lastThrowable.printStackTrace(pw);
+            return Optional.of(sw.toString());
+        }
     }
 }

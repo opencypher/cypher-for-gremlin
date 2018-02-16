@@ -160,6 +160,16 @@ project(':testware:integration-tests') {
         testCompile 'com.github.stefanbirkner:system-rules:1.17.1'
         testCompile 'org.awaitility:awaitility:3.0.0'
     }
+
+    task('testGremlinGroovyTranslation', type: Test) {
+        systemProperty 'translate', 'gremlin'
+
+        useJUnit {
+            excludeCategories 'org.opencypher.gremlin.groups.SkipWithGremlinGroovy'
+        }
+    }
+
+    test.finalizedBy 'testGremlinGroovyTranslation'
 }
 
 project(':testware:performance-tests') {

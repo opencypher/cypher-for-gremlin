@@ -15,14 +15,16 @@
  */
 package org.opencypher.gremlin;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ContainerIndexTest {
 
@@ -55,7 +57,11 @@ public class ContainerIndexTest {
             .containsExactly("2");
     }
 
+    /**
+     * Maps don't work in Gremlin Groovy translation
+     */
     @Test
+    @Category(SkipWithGremlinGroovy.class)
     public void mapIndexInReturn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
@@ -66,7 +72,11 @@ public class ContainerIndexTest {
             .containsExactly(2L);
     }
 
+    /**
+     * Maps don't work in Gremlin Groovy translation
+     */
     @Test
+    @Category(SkipWithGremlinGroovy.class)
     public void mapIndexInReturnFunction() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +

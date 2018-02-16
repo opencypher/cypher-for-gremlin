@@ -19,8 +19,12 @@ import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.apache.tinkerpop.gremlin.driver.MessageSerializer;
 import org.apache.tinkerpop.gremlin.driver.ser.Serializers;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public final class GremlinClientFactory {
+    public static final String TOKEN_TRANSLATE = "translate";
+
     private GremlinClientFactory() {
     }
 
@@ -34,5 +38,15 @@ public final class GremlinClientFactory {
             .serializer(serializer)
             .create()
             .connect();
+    }
+
+    public static TranslatorFlavor<String, GroovyPredicate> flavorByName(String name) {
+        if (name.equals("cosmosdb")) {
+            return TranslatorFlavor.cosmosdb();
+        } else if (name.equals("gremlin")) {
+            return TranslatorFlavor.gremlinServer();
+        } else {
+            throw new IllegalArgumentException("Unknown name: " + name);
+        }
     }
 }

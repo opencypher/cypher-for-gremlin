@@ -15,15 +15,17 @@
  */
 package org.opencypher.gremlin;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class WithTest {
 
@@ -34,7 +36,11 @@ public class WithTest {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
     }
 
+    /**
+     * Maps don't work in Gremlin Groovy translation
+     */
     @Test
+    @Category(SkipWithGremlinGroovy.class)
     public void withMap() throws Exception {
         assertThat(returnWith("map").toString()).isEqualTo("{name=Mats}");
         assertThat(returnWith("map.name")).isEqualTo("Mats");
@@ -48,7 +54,11 @@ public class WithTest {
         return getResult(format(queryTemplate, returnExpression));
     }
 
+    /**
+     * Maps don't work in Gremlin Groovy translation
+     */
     @Test
+    @Category(SkipWithGremlinGroovy.class)
     public void withMapWithNullValue() throws Exception {
         String query = "WITH {notName: 0, notName2: null} AS map " +
             "RETURN exists(map.notName2) AS result";
