@@ -134,7 +134,7 @@ object NodeUtils {
 
   def setProperty[T, P](g: GremlinSteps[T, P], key: String, value: Any) {
     value match {
-      case builder: GremlinSteps[T, P] =>
+      case builder: GremlinSteps[T @unchecked, P @unchecked] =>
         g.property(key, builder)
       case null =>
         drop(g, key)

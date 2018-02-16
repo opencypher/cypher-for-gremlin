@@ -200,7 +200,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         // do nothing = no resources to release
     }
 

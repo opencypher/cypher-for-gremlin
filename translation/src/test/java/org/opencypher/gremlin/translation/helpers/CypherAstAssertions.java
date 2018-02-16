@@ -127,14 +127,6 @@ public class CypherAstAssertions extends Assertions {
             return start().as(key);
         }
 
-        public static GremlinSteps<String, GroovyPredicate> fold() {
-            return start().fold();
-        }
-
-        public static GremlinSteps<String, GroovyPredicate> unfold() {
-            return start().unfold();
-        }
-
         private static GremlinSteps<String, GroovyPredicate> translationBuilder() {
             return Translator.builder().gremlinGroovy().build().translationBuilder();
         }
