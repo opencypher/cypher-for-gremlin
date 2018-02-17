@@ -19,6 +19,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.neo4j.cypher.internal.frontend.v3_2.SemanticDirection.{BOTH, INCOMING, OUTGOING}
 import org.neo4j.cypher.internal.frontend.v3_2.ast.{UnsignedDecimalIntegerLiteral => UDIL, _}
 import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.walker.NodeUtils._
 
 /**
   * AST walker that handles translation
@@ -43,7 +45,7 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
 
     val addVariableName: TraversalFunction = (g) =>
       variableOption match {
-        case Some(Variable(name)) => g.as(name)
+        case Some(Variable(name)) => asUniqueName(name, g, context)
         case None                 => g
     }
     val addDirection: TraversalFunction = (g) =>
@@ -54,7 +56,6 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
     }
 
     val p = context.dsl.predicateFactory()
-    val varPathDirection = addDirection(g.start())
     val pathLength: TraversalFunction = _.start().path().count(Scope.local)
     length match {
       case None =>
@@ -63,7 +64,7 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
       case Some(None | Some(Range(None, None))) =>
         // -[*]->
         // -[*..]->
-        g.repeat(varPathDirection)
+        g.repeat(addDirection(g.start()))
           .emit()
           .until(pathLength(g).is(p.gte(traversalStepsHardLimit)))
       case Some(Some(range)) =>
@@ -72,26 +73,26 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
             // -[*m..]->
             val lowerBound = context.lowerBound(lower.toInt)
             g.emit()
-              .repeat(varPathDirection)
+              .repeat(addDirection(g.start()))
               .until(pathLength(g).is(p.gte(traversalStepsHardLimit)))
               .where(pathLength(g).is(p.gte(lowerBound)))
           case Range(None, Some(UDIL(upper))) =>
             // -[*..n]->
             val upperBound = context.upperBound(upper.toInt)
-            g.repeat(varPathDirection)
+            g.repeat(addDirection(g.start()))
               .emit()
               .until(pathLength(g).is(p.gte(upperBound)))
               .where(pathLength(g).is(p.lte(upperBound)))
           case Range(Some(UDIL(lower)), Some(UDIL(upper))) if lower == upper =>
             // -[*n]->
             g.times(lower.toInt)
-              .repeat(varPathDirection)
+              .repeat(addDirection(g.start()))
           case Range(Some(UDIL(lower)), Some(UDIL(upper))) =>
             // -[*m..n]->
             val lowerBound = context.lowerBound(lower.toInt)
             val upperBound = context.upperBound(upper.toInt)
             g.emit()
-              .repeat(varPathDirection)
+              .repeat(addDirection(g.start()))
               .until(pathLength(g).is(p.gte(upperBound)))
               .where(pathLength(g).is(p.between(lowerBound, upperBound + 1)))
         }

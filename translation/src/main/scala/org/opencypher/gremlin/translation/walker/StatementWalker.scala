@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation._
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 
 import scala.collection.mutable

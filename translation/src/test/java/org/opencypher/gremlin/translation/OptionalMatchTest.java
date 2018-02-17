@@ -83,14 +83,14 @@ public class OptionalMatchTest {
                 __.V().as("p")
                     .where(__.select("p").hasLabel("person"))
                     .coalesce(
-                        __.start().V().as("p_1")
-                            .where(__.select("p_1").where(P.eq("p")))
+                        __.start().V().as("  GENERATED1")
+                            .where(__.select("  GENERATED1").where(P.eq("p")))
                             .outE("created").as("c").inV().as("s")
                             .where(__.select("s").hasLabel("software"))
-                            .select("p_1", "c", "s"),
+                            .select("p", "c", "s"),
                         __.constant(NULL)
-                            .as("p_1").as("c").as("s")
-                            .select("p_1", "c", "s")
+                            .as("  GENERATED2").as("c").as("s")
+                            .select("  GENERATED2", "c", "s")
                     )
                     .select("p")
             );

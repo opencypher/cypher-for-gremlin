@@ -36,6 +36,41 @@ public class WithTest {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
     }
 
+    @Test
+    public void rename() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (s:software) WITH s.name AS x RETURN x"
+        );
+
+        assertThat(results)
+            .extracting("x")
+            .containsExactlyInAnyOrder("lop", "ripple");
+    }
+
+    @Test
+    public void aliasShadow() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (s:software) WITH s.name AS s RETURN s"
+        );
+
+        assertThat(results)
+            .extracting("s")
+            .containsExactlyInAnyOrder("lop", "ripple");
+    }
+
+    @Test
+    public void where() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person) " +
+                "WITH p WHERE p.age < 30 " +
+                "RETURN p.name"
+        );
+
+        assertThat(results)
+            .extracting("p.name")
+            .containsExactlyInAnyOrder("marko", "vadas");
+    }
+
     /**
      * Maps don't work in Gremlin Groovy translation
      */

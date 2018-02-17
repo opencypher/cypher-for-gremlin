@@ -18,12 +18,10 @@ package org.opencypher.gremlin.translation.groovy;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
-import org.opencypher.gremlin.translation.AliasHistory;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
 
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
@@ -32,22 +30,18 @@ import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.u
 public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate> {
 
     private final StringBuilder g;
-    private GroovyGremlinSteps parent;
-    private AliasHistory aliasHistory;
 
     public GroovyGremlinSteps() {
-        this("g", null);
+        this("g");
     }
 
-    protected GroovyGremlinSteps(String start, GroovyGremlinSteps parent) {
+    protected GroovyGremlinSteps(String start) {
         g = new StringBuilder(start);
-        this.parent = parent;
-        this.aliasHistory = parent != null ? parent.aliasHistory.copy() : new AliasHistory();
     }
 
     @Override
     public GroovyGremlinSteps copy() {
-        return new GroovyGremlinSteps(g.toString(), parent);
+        return new GroovyGremlinSteps(g.toString());
     }
 
     @Override
@@ -67,13 +61,8 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
-    public String alias(String label) {
-        return aliasHistory.current(label);
-    }
-
-    @Override
     public GremlinSteps<String, GroovyPredicate> start() {
-        return new GroovyGremlinSteps("__", this);
+        return new GroovyGremlinSteps("__");
     }
 
     @Override
@@ -115,7 +104,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> as(String label) {
-        g.append(chain("as", aliasHistory.next(label)));
+        g.append(chain("as", label));
         return this;
     }
 
@@ -425,10 +414,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> select(String... stepLabels) {
-        String[] aliases = Stream.of(stepLabels)
-            .map(aliasHistory::current)
-            .toArray(String[]::new);
-        g.append(chain("select", (Object[]) aliases));
+        g.append(chain("select", (Object[]) stepLabels));
         return this;
     }
 

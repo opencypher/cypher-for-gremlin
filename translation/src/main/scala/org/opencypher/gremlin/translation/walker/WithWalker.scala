@@ -18,7 +18,8 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
+import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.walker.NodeUtils._
 
 /**
   * AST walker that handles translation
@@ -42,7 +43,7 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
           g.select(varName).values(keyName).as(alias)
         case Variable(varName) =>
           if (varName != alias) {
-            context.matchedOrCreatedNodes.add(alias)
+            context.referencedAliases.add(alias)
             g.select(varName).as(alias)
           }
         case Parameter(name, _) =>

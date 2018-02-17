@@ -36,11 +36,6 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public String alias(String label) {
-        return delegate().alias(label);
-    }
-
-    @Override
     public GremlinSteps<T, P> start() {
         return delegate().start();
     }

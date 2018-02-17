@@ -53,8 +53,8 @@ public class WithTest {
             "MATCH (n) WITH n.name AS n RETURN n"
         )).hasTraversalBeforeReturn(
             __.V().as("n")
-                .select("n").values("name").as("n_1")
-                .select("n_1")
+                .select("n").values("name").as("n")
+                .select("n")
         );
     }
 

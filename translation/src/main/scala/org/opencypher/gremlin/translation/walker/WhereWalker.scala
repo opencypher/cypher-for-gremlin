@@ -20,6 +20,7 @@ import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.neo4j.cypher.internal.frontend.v3_2.symbols.{BooleanType, ListType}
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation._
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 
 import scala.collection.mutable
@@ -203,7 +204,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
             if (firstNode) {
               g.select(name)
             } else {
-              appendNode(name, g, context)
+              asUniqueName(name, g, context)
             }
         }
         firstNode = false

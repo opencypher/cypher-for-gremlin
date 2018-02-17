@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.Tokens._
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
@@ -320,16 +321,16 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       relationshipChain: RelationshipChain,
       maybePredicate: Option[Expression],
       projection: Expression): String = {
-    val name = context.generateName()
-
     val select = g.start()
-    WhereWalker.walkRelationshipChain(context, select, relationshipChain)
-    maybePredicate.foreach(WhereWalker.walk(context, select, _))
+    val contextWhere = context.copy()
+    WhereWalker.walkRelationshipChain(contextWhere, select, relationshipChain)
+    maybePredicate.foreach(WhereWalker.walk(contextWhere, select, _))
 
     if (projection.isInstanceOf[PathExpression]) {
       select.path()
     }
 
+    val name = contextWhere.generateName()
     g.sideEffect(
       select.aggregate(name)
     )

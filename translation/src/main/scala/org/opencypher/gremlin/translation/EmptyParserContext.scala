@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation
 import org.neo4j.cypher.internal.frontend.v3_2.phases._
 import org.neo4j.cypher.internal.frontend.v3_2.{CypherException, InputPosition, SyntaxException}
 
-class EmptyContext(queryText: String, offset: Option[InputPosition]) extends BaseContext {
+class EmptyParserContext(queryText: String, offset: Option[InputPosition]) extends BaseContext {
   override val tracer: CompilationPhaseTracer = CompilationPhaseTracer.NO_TRACING
 
   override val notificationLogger: InternalNotificationLogger = devNullLogger
@@ -32,7 +32,7 @@ class EmptyContext(queryText: String, offset: Option[InputPosition]) extends Bas
   override def monitors: Monitors = ???
 }
 
-object EmptyContext {
-  def apply(queryText: String, offset: Option[InputPosition]): EmptyContext =
-    new EmptyContext(queryText, offset)
+object EmptyParserContext {
+  def apply(queryText: String, offset: Option[InputPosition]): EmptyParserContext =
+    new EmptyParserContext(queryText, offset)
 }

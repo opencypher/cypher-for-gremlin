@@ -40,8 +40,6 @@ import java.util.stream.LongStream;
 public interface GremlinSteps<T, P> {
     T current();
 
-    String alias(String label);
-
     GremlinSteps<T, P> start();
 
     GremlinSteps<T, P> copy();

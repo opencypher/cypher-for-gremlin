@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.walker
+package org.opencypher.gremlin.translation.context
 
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.translator.Translator
@@ -35,12 +35,12 @@ object StatementContext {
   *
   * @param dsl                   reference to [[Translator]] implementation in use
   * @param extractedParameters   Cypher query parameters
-  * @param matchedOrCreatedNodes tracks node aliases referenced in translation
+  * @param referencedAliases tracks node aliases referenced in translation
   */
 sealed class StatementContext[T, P](
     val dsl: Translator[T, P],
     val extractedParameters: Map[String, Any],
-    val matchedOrCreatedNodes: mutable.HashSet[String]) {
+    val referencedAliases: mutable.HashSet[String]) {
 
   private var midTraversals = 0
 
@@ -73,16 +73,16 @@ sealed class StatementContext[T, P](
     firstStatement = false
   }
 
-  private var nameCounter = 0
+  private var nameGenerator = new NameGenerator()
 
   def generateName(): String = {
-    nameCounter += 1
-    s"  GENERATED$nameCounter"
+    nameGenerator.next()
   }
 
   def copy(): StatementContext[T, P] = {
     val result = StatementContext(dsl, extractedParameters)
-    result.matchedOrCreatedNodes ++= matchedOrCreatedNodes
+    result.referencedAliases ++= referencedAliases
+    result.nameGenerator = nameGenerator
     result
   }
 }

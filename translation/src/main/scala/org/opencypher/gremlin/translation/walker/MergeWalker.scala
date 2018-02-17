@@ -19,6 +19,7 @@ import org.neo4j.cypher.internal.frontend.v3_2.InputPosition
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.START
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils.getPathTraversalAliases
 
 /**
@@ -46,6 +47,7 @@ private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
 
     if (context.isFirstStatement) {
       g.inject(START)
+      context.markFirstStatement()
     }
 
     val whereExpressions = patternParts.flatMap(extractWhereExpressions)

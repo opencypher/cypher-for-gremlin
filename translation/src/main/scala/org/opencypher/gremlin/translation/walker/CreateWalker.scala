@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.neo4j.cypher.internal.frontend.v3_2.SemanticDirection.INCOMING
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, setProperty}
 
@@ -68,11 +69,11 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       case NodePattern(Some(Variable(name)), labels, propertiesOption) =>
         nodeHistory.push(name)
 
-        if (context.matchedOrCreatedNodes.contains(name)) {
+        if (context.referencedAliases.contains(name)) {
           validateDeclaredNode(name, labels, propertiesOption)
           return
         }
-        context.matchedOrCreatedNodes.add(name)
+        context.referencedAliases.add(name)
 
         val properties = getPropertiesMap(propertiesOption)
 

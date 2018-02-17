@@ -19,6 +19,7 @@ import java.util
 
 import org.apache.tinkerpop.gremlin.structure.util.detached.{DetachedProperty, DetachedVertexProperty}
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
 import scala.collection.JavaConverters._
@@ -119,16 +120,22 @@ object NodeUtils {
     }
   }
 
-  def appendNode[T, P](name: String, g: GremlinSteps[T, P], context: StatementContext[T, P]): GremlinSteps[T, P] = {
+  def asUniqueName[T, P](name: String, g: GremlinSteps[T, P], context: StatementContext[T, P]): GremlinSteps[T, P] = {
     val p = context.dsl.predicateFactory()
-    if (context.matchedOrCreatedNodes.contains(name)) {
-      val previousAlias = g.alias(name)
-      g.as(name)
-      val nextAlias = g.alias(name)
-      g.where(g.start().select(nextAlias).where(p.isEq(previousAlias)))
+    if (context.referencedAliases.contains(name)) {
+      val generated = context.generateName()
+      g.as(generated).where(g.start().select(generated).where(p.isEq(name)))
     } else {
-      context.matchedOrCreatedNodes.add(name)
+      context.referencedAliases.add(name)
       g.as(name)
+    }
+  }
+
+  def ensureUniqueName[T, P](name: String, context: StatementContext[T, P]): String = {
+    if (context.referencedAliases.contains(name)) {
+      context.generateName()
+    } else {
+      name
     }
   }
 

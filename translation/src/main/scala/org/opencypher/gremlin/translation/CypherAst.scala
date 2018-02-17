@@ -21,6 +21,7 @@ import org.neo4j.cypher.internal.frontend.v3_2.CypherException
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.neo4j.cypher.internal.frontend.v3_2.helpers.rewriting.RewriterStepSequencer
 import org.neo4j.cypher.internal.frontend.v3_2.phases._
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.preparser.{
   CypherPreParser,
   ExplainOption,
@@ -28,7 +29,7 @@ import org.opencypher.gremlin.translation.preparser.{
   PreParserOption
 }
 import org.opencypher.gremlin.translation.translator.Translator
-import org.opencypher.gremlin.translation.walker.{StatementContext, StatementWalker}
+import org.opencypher.gremlin.translation.walker.StatementWalker
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -114,7 +115,7 @@ object CypherAst {
     val state = CompilationPhases
       .parsing(RewriterStepSequencer.newPlain)
       .andThen(Normalization)
-      .transform(startState, EmptyContext(preParsedQueryText, Some(offset)))
+      .transform(startState, EmptyParserContext(preParsedQueryText, Some(offset)))
 
     val params = passedParams ++ state.extractedParams()
 

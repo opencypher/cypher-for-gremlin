@@ -59,9 +59,9 @@ public class MatchTest {
         )).hasTraversalBeforeReturn(
             __.V().as("a")
                 .outE().as("r").inV()
-                .as("a_1")
-                .where(__.select("a_1").where(P.eq("a")))
-                .select("a_1")
+                .as("  GENERATED1")
+                .where(__.select("  GENERATED1").where(P.eq("a")))
+                .select("a")
         );
     }
 
@@ -74,10 +74,10 @@ public class MatchTest {
                 .outE().as("r1").inV()
                 .as("b")
                 .outE().as("r2").inV()
-                .as("b_1")
-                .where(__.select("b_1").where(P.eq("b")))
+                .as("  GENERATED1")
+                .where(__.select("  GENERATED1").where(P.eq("b")))
                 .where(__.select("r1").where(P.neq("r2")))
-                .select("b_1")
+                .select("b")
         );
     }
 
@@ -89,13 +89,13 @@ public class MatchTest {
             __.V().as("a")
                 .outE().as("r1").inV()
                 .as("b")
-                .V().as("b_1")
-                .where(__.select("b_1").where(P.eq("b")))
+                .V().as("  GENERATED1")
+                .where(__.select("  GENERATED1").where(P.eq("b")))
                 .outE().as("r2").inV()
-                .as("b_2")
-                .where(__.select("b_2").where(P.eq("b_1")))
+                .as("  GENERATED2")
+                .where(__.select("  GENERATED2").where(P.eq("b")))
                 .where(__.select("r1").where(P.neq("r2")))
-                .select("b_2")
+                .select("b")
         );
     }
 
@@ -231,8 +231,8 @@ public class MatchTest {
                             __.select("n").hasLabel("person")
                         )
                     )
-                    .V().as("n_1")
-                    .where(__.select("n_1").where(P.eq("n")))
+                    .V().as("  GENERATED1")
+                    .where(__.select("  GENERATED1").where(P.eq("n")))
                     .outE("created").as("r1").inV()
                     .as("lop")
                     .inE("created").as("r2").outV()
@@ -323,8 +323,8 @@ public class MatchTest {
                         )
                     )
 
-                    .V().as("j_1")
-                    .where(__.select("j_1").where(P.eq("j")))
+                    .V().as("  GENERATED1")
+                    .where(__.select("  GENERATED1").where(P.eq("j")))
                     .inE("knows").as("k")
                     .outV().as("m")
                     .outE("created").as("c2").inV().as("s")
@@ -349,11 +349,11 @@ public class MatchTest {
             .hasTraversalBeforeReturn(
                 __.V().as("p")
                     .where(__.select("p").hasLabel("person"))
-                    .V().as("p_1")
-                    .where(__.select("p_1").where(P.eq("p")))
+                    .V().as("  GENERATED1")
+                    .where(__.select("  GENERATED1").where(P.eq("p")))
                     .inE("knows").as("k").outV().as("m")
                     .where(__.select("m").hasLabel("person"))
-                    .select("p_1")
+                    .select("p")
             );
     }
 
@@ -385,10 +385,10 @@ public class MatchTest {
                 __
                     .V().as("p").where(__.select("p").hasLabel("person"))
                     .V().as("s").where(__.select("s").hasLabel("software"))
-                    .V().as("p_1").where(__.select("p_1").where(P.eq("p")))
+                    .V().as("  GENERATED1").where(__.select("  GENERATED1").where(P.eq("p")))
                     .inE("knows").as("k").outV()
                     .as("m").where(__.select("m").hasLabel("person"))
-                    .select("p_1")
+                    .select("p")
             );
     }
 
@@ -493,13 +493,13 @@ public class MatchTest {
                         __.select("c").values("name").is(P.eq("C"))
                     )
                 )
-                .V().as("a_1")
+                .V().as("  GENERATED1")
                 .where(
-                    __.select("a_1").where(P.eq("a"))
+                    __.select("  GENERATED1").where(P.eq("a"))
                 )
                 .outE().as("r").inV()
                 .as("b")
-                .select("a_1", "b", "c")
+                .select("a", "b", "c")
         );
     }
 

@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.neo4j.cypher.internal.frontend.v3_2.ast.{Delete, Variable}
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
 object DeleteWalker {

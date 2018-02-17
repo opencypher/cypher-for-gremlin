@@ -58,17 +58,6 @@ public class MatchTest {
     }
 
     @Test
-    public void aliasShadow() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "MATCH (n:person) WITH n.name AS n RETURN n"
-        );
-
-        assertThat(results)
-            .extracting("n")
-            .containsExactlyInAnyOrder("marko", "vadas", "josh", "peter");
-    }
-
-    @Test
     public void matchComplex() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person {name: \"marko\"})\n" +

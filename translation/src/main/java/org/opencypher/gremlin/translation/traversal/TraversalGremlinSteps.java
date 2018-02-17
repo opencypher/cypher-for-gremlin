@@ -25,7 +25,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.map.AddVertexStartSte
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.opencypher.gremlin.translation.AliasHistory;
+import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
 
@@ -36,17 +36,9 @@ import java.util.stream.Stream;
 public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     private final GraphTraversal g;
-    private TraversalGremlinSteps parent;
-    private AliasHistory aliasHistory;
 
     public TraversalGremlinSteps(GraphTraversal g) {
-        this(g, null);
-    }
-
-    private TraversalGremlinSteps(GraphTraversal g, TraversalGremlinSteps parent) {
         this.g = g;
-        this.parent = parent;
-        this.aliasHistory = parent != null ? parent.aliasHistory.copy() : new AliasHistory();
     }
 
     @Override
@@ -65,24 +57,25 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
         return g;
     }
 
-    @Override
-    public String alias(String label) {
-        return aliasHistory.current(label);
-    }
-
     private boolean isStarted() {
         return g.asAdmin().getSteps().size() > 0;
+    }
+
+    private boolean isSubTraversal() {
+        return g.asAdmin().getGraph()
+            .filter(graph -> graph instanceof EmptyGraph)
+            .isPresent();
     }
 
     @Override
     public GremlinSteps<GraphTraversal, P> start() {
         GraphTraversal g = __.start();
-        return new TraversalGremlinSteps(g, this);
+        return new TraversalGremlinSteps(g);
     }
 
     @Override
     public GremlinSteps<GraphTraversal, P> V() {
-        if (isStarted() || parent != null) {
+        if (isStarted() || isSubTraversal()) {
             g.V();
         } else {
             // Workaround for constructing `GraphStep` with `isStart == true`
@@ -136,7 +129,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> as(String label) {
-        g.as(aliasHistory.next(label));
+        g.as(label);
         return this;
     }
 
@@ -449,13 +442,10 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> select(String... stepLabels) {
-        String[] aliases = Stream.of(stepLabels)
-            .map(aliasHistory::current)
-            .toArray(String[]::new);
-        if (aliases.length >= 2) {
-            g.select(aliases[0], aliases[1], arraySlice(aliases, 2));
-        } else if (aliases.length == 1) {
-            g.select(aliases[0]);
+        if (stepLabels.length >= 2) {
+            g.select(stepLabels[0], stepLabels[1], arraySlice(stepLabels, 2));
+        } else if (stepLabels.length == 1) {
+            g.select(stepLabels[0]);
         } else {
             throw new IllegalArgumentException("Select step should have arguments");
         }

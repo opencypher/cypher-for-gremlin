@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 public class OptionalMatchTest {
 
@@ -59,6 +60,19 @@ public class OptionalMatchTest {
     }
 
     @Test
+    public void optionalMatchNotReferenced() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person) " +
+                "OPTIONAL MATCH (p)-[c:created]->(s:software) " +
+                "RETURN p.name AS name"
+        );
+
+        assertThat(results)
+            .extracting("name")
+            .containsExactlyInAnyOrder("marko", "vadas", "josh", "josh", "peter");
+    }
+
+    @Test
     public void nullPath() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (p:person {name: 'vadas'}) " +
@@ -69,6 +83,34 @@ public class OptionalMatchTest {
         assertThat(results)
             .extracting("path")
             .containsExactly((Object) null);
+    }
+
+    @Test
+    public void allNullMatches() {
+        List<Map<String, Object>> results = submitAndGet(
+            "OPTIONAL MATCH (a:NotThere) " +
+                "OPTIONAL MATCH (b:NotThere) " +
+                "WITH a, b " +
+                "OPTIONAL MATCH (b)-[r:NOR_THIS]->(a) " +
+                "RETURN a, b, r"
+        );
+
+        assertThat(results)
+            .extracting("a", "b", "r")
+            .containsExactly(tuple(null, null, null));
+    }
+
+    @Test
+    public void matchNullNode() {
+        List<Map<String, Object>> results = submitAndGet(
+            "OPTIONAL MATCH (a:Label) " +
+                "WITH a " +
+                "MATCH (a)-->(b) " +
+                "RETURN b"
+        );
+
+        assertThat(results)
+            .isEmpty();
     }
 
     @Test

@@ -215,4 +215,19 @@ public class ComplexExamplesTest {
             .extracting("b.n")
             .containsExactly(1L);
     }
+
+    @Test
+    public void matchAndReverseOptionalMatch() throws Exception {
+        submitAndGet("CREATE (:A {name: 'A'})-[:T {name: 'T'}]->(:B {name: 'B'})");
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a1)-[r]->() " +
+                "WITH r, a1 " +
+                "OPTIONAL MATCH (a1)<-[r]-(b2) " +
+                "RETURN a1.name, r.name, b2.name"
+        );
+
+        assertThat(results)
+            .extracting("a1.name", "r.name", "b2.name")
+            .containsExactly(tuple("A", "T", null));
+    }
 }

@@ -206,23 +206,23 @@ public class MergeTest {
                 )
                 .coalesce(
                     __.start()
-                        .V().as("a_1")
+                        .V().as("  GENERATED1")
                         .where(
-                            __.select("a_1").where(
+                            __.select("  GENERATED1").where(
                                 P.eq("a")
                             )
                         )
                         .outE("TYPE").as("r")
-                        .inV().as("b_1")
+                        .inV().as("  GENERATED2")
                         .where(
-                            __.select("b_1").where(
+                            __.select("  GENERATED2").where(
                                 P.eq("b")
                             )
                         )
                         .where(
                             __.select("r").values("weight").is(P.eq(0.1))
                         )
-                        .select("a_1", "r", "b_1"),
+                        .select("a", "r", "b"),
                     __.start()
                         .addE("TYPE").from("a").to("b").as("r").property("weight", 0.1)
                         .select("a", "r", "b")

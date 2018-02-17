@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.Tokens.{NULL, START}
 import org.opencypher.gremlin.translation._
+import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 
 object MatchWalker {
@@ -48,13 +49,16 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
 
   private def walkOptionalMatch(patternParts: Seq[PatternPart], whereOption: Option[Where]) {
     if (context.isFirstStatement) {
+      context.markFirstStatement()
       g.inject(START)
     }
 
     val subG = g.start()
-    MatchWalker.walkPatternParts(context, subG, patternParts, whereOption)
+    val contextSubG = context.copy()
+    MatchWalker.walkPatternParts(contextSubG, subG, patternParts, whereOption)
 
     val nullG = g.start().constant(NULL)
+    val contextNullG = context.copy()
 
     val pathAliases = patternParts.head match {
       case EveryPath(patternElement) =>
@@ -66,10 +70,12 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
 
     if (pathAliases.length > 1) {
-      pathAliases.foreach(nullG.as)
-      g.coalesce(subG.select(pathAliases: _*), nullG.select(pathAliases: _*))
+      val nullAliases = pathAliases.map(ensureUniqueName(_, contextNullG))
+      nullAliases.foreach(nullG.as)
+      g.coalesce(subG.select(pathAliases: _*), nullG.select(nullAliases: _*))
     } else {
-      g.coalesce(subG, nullG).as(pathAliases.head)
+      g.coalesce(subG, nullG)
+      asUniqueName(pathAliases.head, g, context)
     }
   }
 
@@ -96,7 +102,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
     flattenRelationshipChain(patternElement).foreach {
       case NodePattern(Some(Variable(name)), _, _) =>
-        appendNode(name, g, context)
+        asUniqueName(name, g, context)
       case r: RelationshipPattern =>
         RelationshipPatternWalker.walk(context, g, r)
       case n =>
