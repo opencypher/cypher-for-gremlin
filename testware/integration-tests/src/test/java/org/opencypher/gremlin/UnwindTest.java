@@ -46,4 +46,41 @@ public class UnwindTest {
                 "software"
             );
     }
+
+    @Test
+    public void injectRange() {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND range(1, 9) AS i " +
+                "RETURN sum(i) AS sum"
+        );
+
+        assertThat(results)
+            .extracting("sum")
+            .containsExactly(45L);
+
+    }
+
+    @Test
+    public void injectRangeWithStep() {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND range(1, 9, 2) AS i " +
+                "RETURN sum(i) AS sum"
+        );
+
+        assertThat(results)
+            .extracting("sum")
+            .containsExactly(25L);
+    }
+
+    @Test
+    public void injectLargeRange() {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND range(10001, 20000) AS i " +
+                "RETURN sum(i) AS sum"
+        );
+
+        assertThat(results)
+            .extracting("sum")
+            .containsExactly(150005000L);
+    }
 }

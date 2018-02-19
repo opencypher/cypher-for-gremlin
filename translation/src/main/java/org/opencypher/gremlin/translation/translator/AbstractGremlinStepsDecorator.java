@@ -221,16 +221,6 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> injectRange(long low, long high, String label) {
-        return delegate().injectRange(low, high, label);
-    }
-
-    @Override
-    public GremlinSteps<T, P> injectRangeInline(long low, long high, long step) {
-        return delegate().injectRangeInline(low, high, step);
-    }
-
-    @Override
     public GremlinSteps<T, P> is(P predicate) {
         return delegate().is(predicate);
     }

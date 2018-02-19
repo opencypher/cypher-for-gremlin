@@ -105,4 +105,17 @@ public class WithTest {
         return results.iterator().next().get("result");
     }
 
+    @Test
+    public void skipAndLimit() {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND [1, 2, 3, 4, 5] AS i " +
+                "WITH i SKIP 1 LIMIT 3 " +
+                "RETURN i"
+        );
+
+        assertThat(results)
+            .extracting("i")
+            .containsExactly(2L, 3L, 4L);
+    }
+
 }

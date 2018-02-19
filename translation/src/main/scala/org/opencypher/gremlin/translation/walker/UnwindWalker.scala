@@ -62,18 +62,31 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
           case Seq(start: IntegerLiteral, end: IntegerLiteral, step: IntegerLiteral) =>
             NumericRange.inclusive(start.value, end.value, step.value)
         }
-        context.precondition(
-          range.length < injectHardLimit,
-          s"Range is too big (must be less than $injectHardLimit)",
-          node
-        )
-        if (range.step == 1) {
-          g.injectRange(range.start, range.end, context.generateName()).as(varName)
-        } else {
-          g.injectRangeInline(range.start, range.end, range.step).as(varName)
-        }
+        walkRange(range, varName)
       case FunctionInvocation(_, FunctionName(fnName), _, Vector(Variable(funArg))) if "labels" == fnName.toLowerCase =>
         g.select(funArg).label().is(p.neq(Vertex.DEFAULT_LABEL)).as(varName)
+    }
+  }
+
+  private def walkRange(range: NumericRange[Long], varName: String) = {
+    context.precondition(
+      range.length <= injectHardLimit,
+      s"Range is too big (must be less than or equal to $injectHardLimit)",
+      range
+    )
+
+    if (range.step == 1) {
+      val rangeLabel = context.generateName()
+      g.inject(Tokens.START)
+        .repeat(g.start().loops().aggregate(rangeLabel))
+        .times((range.end + 1).toInt)
+        .cap(rangeLabel)
+        .unfold()
+        .range(range.start, range.end + 1)
+        .as(varName)
+    } else {
+      val numbers = range.asInstanceOf[Seq[Object]]
+      g.inject(numbers: _*).as(varName)
     }
   }
 }

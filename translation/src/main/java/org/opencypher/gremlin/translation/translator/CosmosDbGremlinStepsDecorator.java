@@ -31,14 +31,14 @@ final class CosmosDbGremlinStepsDecorator<T, P> extends AbstractGremlinStepsDeco
     }
 
     @Override
+    public GremlinSteps<T, P> loops() {
+        throw new IllegalArgumentException("Step not supported in Cosmos DB translation: loops()");
+    }
+
+    @Override
     public GremlinSteps<T, P> values(String... propertyKeys) {
         return properties()
             .hasKey(propertyKeys)
             .value();
-    }
-
-    @Override
-    public GremlinSteps<T, P> injectRange(long low, long high, String label) {
-        return delegate().injectRangeInline(low, high, 1);
     }
 }

@@ -22,7 +22,6 @@ import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.CustomFunction;
 
 import java.util.function.Consumer;
-import java.util.stream.LongStream;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} DSL wrapper.
@@ -187,32 +186,4 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> where(GremlinSteps<T, P> gremlinSteps);
 
     GremlinSteps<T, P> where(P predicate);
-
-    /**
-     * Inserts Gremlin steps that generate a list of integer values from {@code low} to {@code high} (inclusive)
-     * by an incremental step of 1.
-     *
-     * @param low   the (inclusive) initial value
-     * @param high  the inclusive upper bound
-     * @param label temporary unique string key
-     */
-    default GremlinSteps<T, P> injectRange(long low, long high, String label) {
-        inject(Tokens.START)
-            .repeat(start().loops().aggregate(label))
-            .times((int) (high + 1))
-            .cap(label)
-            .unfold()
-            .range(low, high + 1);
-        return this;
-    }
-
-    /**
-     * Injects a list of integer values from {@code low} to {@code high} (inclusive)
-     * by an incremental step of {@code step} into traversal stream
-     */
-    default GremlinSteps<T, P> injectRangeInline(long low, long high, long step) {
-        long limit = ((high - low) / step) + 1;
-        inject(LongStream.iterate(low, i -> i + step).limit(limit).boxed().toArray());
-        return this;
-    }
 }

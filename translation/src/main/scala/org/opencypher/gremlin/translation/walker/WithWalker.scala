@@ -35,7 +35,7 @@ object WithWalker {
 private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: With) {
-    val With(_, ReturnItems(_, items), orderByOption, _, _, _) = node
+    val With(_, ReturnItems(_, items), orderByOption, skip, limit, _) = node
     for (item <- items) {
       val AliasedReturnItem(expression, Variable(alias)) = item
       expression match {
@@ -56,10 +56,14 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
     if (orderByOption.isDefined) {
       sort(node)
     }
+
+    if (skip.isDefined || limit.isDefined) {
+      range(skip, limit)
+    }
   }
 
   private def sort(node: Clause) {
-    val With(_, ReturnItems(_, items), Some(OrderBy(sortItems)), skip, limit, _) = node
+    val With(_, ReturnItems(_, items), Some(OrderBy(sortItems)), _, _, _) = node
     val aliases = items.map(_.asInstanceOf[AliasedReturnItem]).map(_.name)
     g.select(aliases: _*).order()
     for (sortItem <- sortItems) {
@@ -75,9 +79,6 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
         case _ =>
           context.unsupported("sort expression", sortItem.expression)
       }
-    }
-    if (skip.isDefined || limit.isDefined) {
-      range(skip, limit)
     }
   }
 
