@@ -27,6 +27,7 @@ public class GremlinDatabase {
      * Returns a driver for a Gremlin Server instance.
      *
      * @param uri the URL to a Gremlin Server instance
+     * @return driver
      */
     public static Driver driver(String uri) {
         return driver(URI.create(uri));
@@ -36,6 +37,7 @@ public class GremlinDatabase {
      * Returns a driver for a Gremlin Server instance.
      *
      * @param uri the URL to a Gremlin Server instance
+     * @return driver
      */
     public static Driver driver(URI uri) {
         Cluster cluster = Cluster.build()
@@ -50,6 +52,7 @@ public class GremlinDatabase {
      * Returns a driver for a Gremlin Server instance.
      *
      * @param cluster Gremlin Server cluster
+     * @return driver
      */
     public static Driver driver(Cluster cluster) {
         return new GremlinServerDriver(cluster, Config.defaultConfig());
@@ -60,6 +63,7 @@ public class GremlinDatabase {
      *
      * @param uri    the URL to a Gremlin Server instance
      * @param config configuration
+     * @return driver
      */
     public static Driver driver(String uri, Config config) {
         return driver(URI.create(uri), config);
@@ -70,6 +74,7 @@ public class GremlinDatabase {
      *
      * @param uri    the URL to a Gremlin Server instance
      * @param config configuration
+     * @return driver
      */
     public static Driver driver(URI uri, Config config) {
         Cluster cluster = Cluster.build()
@@ -85,6 +90,7 @@ public class GremlinDatabase {
      *
      * @param cluster Gremlin Server cluster
      * @param config  configuration
+     * @return driver
      */
     public static Driver driver(Cluster cluster, Config config) {
         return new GremlinServerDriver(cluster, config);

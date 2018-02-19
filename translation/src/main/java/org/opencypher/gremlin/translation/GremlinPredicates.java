@@ -19,9 +19,10 @@ import org.opencypher.gremlin.translation.translator.Translator;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.P} predicate abstraction.
+ * For DSL details, see
+ * <a href="https://tinkerpop.apache.org/docs/current/reference/#a-note-on-predicates">A Note on Predicates</a>.
  *
  * @param <T> translation predicate type
- * @see <a href="https://tinkerpop.apache.org/docs/current/reference/#a-note-on-predicates">A Note on Predicates</a>
  * @see Translator
  */
 public interface GremlinPredicates<T> {

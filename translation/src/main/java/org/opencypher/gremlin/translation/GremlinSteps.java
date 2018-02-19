@@ -23,6 +23,8 @@ import org.opencypher.gremlin.traversal.CustomFunction;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} DSL wrapper.
+ * For DSL details, see
+ * <a href="https://tinkerpop.apache.org/docs/current/reference/#graph-traversal-steps">Graph Traversal Steps</a>.
  * <p>
  * Implementations define a translation target that can be built with
  * {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} steps.
@@ -31,12 +33,21 @@ import org.opencypher.gremlin.traversal.CustomFunction;
  *
  * @param <T> translation target type
  * @param <P> predicate target type
- * @see <a href="https://tinkerpop.apache.org/docs/current/reference/#graph-traversal-steps">Graph Traversal Steps</a>
  * @see Translator
  */
 public interface GremlinSteps<T, P> {
+    /**
+     * Returns a copy of current translation.
+     *
+     * @return current translation
+     */
     T current();
 
+    /**
+     * Spawns a new anonymous traversal wrapper.
+     *
+     * @return anonymous traversal wrapper
+     */
     GremlinSteps<T, P> start();
 
     GremlinSteps<T, P> V();
