@@ -68,7 +68,7 @@ public final class Translator<T, P> {
      * @return translation
      */
     public T translate() {
-        return gremlinSteps.copy().current();
+        return gremlinSteps.current();
     }
 
     /**

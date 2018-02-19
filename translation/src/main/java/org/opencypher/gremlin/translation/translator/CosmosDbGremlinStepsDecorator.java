@@ -31,6 +31,11 @@ final class CosmosDbGremlinStepsDecorator<T, P> extends AbstractGremlinStepsDeco
     }
 
     @Override
+    protected GremlinSteps<T, P> decorate(GremlinSteps<T, P> delegate) {
+        return new CosmosDbGremlinStepsDecorator<>(delegate);
+    }
+
+    @Override
     public GremlinSteps<T, P> loops() {
         throw new IllegalArgumentException("Step not supported in Cosmos DB translation: loops()");
     }

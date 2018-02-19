@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.translator;
 
-import java.util.function.Consumer;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
@@ -29,6 +28,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
 
     protected abstract GremlinSteps<T, P> delegate();
 
+    protected abstract GremlinSteps<T, P> decorate(GremlinSteps<T, P> delegate);
+
     @Override
     public T current() {
         return delegate().current();
@@ -36,17 +37,7 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
 
     @Override
     public GremlinSteps<T, P> start() {
-        return delegate().start();
-    }
-
-    @Override
-    public GremlinSteps<T, P> copy() {
-        return delegate().copy();
-    }
-
-    @Override
-    public GremlinSteps<T, P> mutate(Consumer<GremlinSteps<T, P>> mutator) {
-        return delegate().mutate(mutator);
+        return decorate(delegate().start());
     }
 
     @Override

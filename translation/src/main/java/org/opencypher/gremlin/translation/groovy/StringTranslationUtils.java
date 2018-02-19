@@ -27,6 +27,8 @@ import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
 
 final class StringTranslationUtils {
+    private StringTranslationUtils() {
+    }
 
     static String apply(String name, Object... arguments) {
         String joined = Stream.of(arguments)
@@ -47,7 +49,7 @@ final class StringTranslationUtils {
         }
         if (argument instanceof DetachedVertexProperty) {
             Map<String, Object> map = new HashMap<>();
-            Iterator<Property<Object>> properties = ((DetachedVertexProperty) argument).properties();
+            Iterator<Property<Object>> properties = ((DetachedVertexProperty<?>) argument).properties();
             properties
                 .forEachRemaining(e -> map.put(e.key(), e.value()));
             return toLiteral(map);

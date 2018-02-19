@@ -33,6 +33,11 @@ final class CustomFunctionsGremlinStepsDecorator<T, P> extends AbstractGremlinSt
     }
 
     @Override
+    protected GremlinSteps<T, P> decorate(GremlinSteps<T, P> delegate) {
+        return new CustomFunctionsGremlinStepsDecorator<>(delegate);
+    }
+
+    @Override
     public GremlinSteps<T, P> map(CustomFunction function) {
         throw new IllegalArgumentException("Custom functions are not supported: " + function.getName());
     }

@@ -19,7 +19,6 @@ import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.a
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
 
-import java.util.function.Consumer;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
@@ -36,17 +35,6 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     protected GroovyGremlinSteps(String start) {
         g = new StringBuilder(start);
-    }
-
-    @Override
-    public GroovyGremlinSteps copy() {
-        return new GroovyGremlinSteps(g.toString());
-    }
-
-    @Override
-    public GremlinSteps<String, GroovyPredicate> mutate(Consumer<GremlinSteps<String, GroovyPredicate>> mutator) {
-        mutator.accept(this);
-        return this;
     }
 
     @Override

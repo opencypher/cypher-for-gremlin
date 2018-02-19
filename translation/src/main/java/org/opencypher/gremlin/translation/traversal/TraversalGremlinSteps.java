@@ -15,8 +15,6 @@
  */
 package org.opencypher.gremlin.translation.traversal;
 
-
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -41,19 +39,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public TraversalGremlinSteps copy() {
-        return new TraversalGremlinSteps(g.asAdmin().clone());
-    }
-
-    @Override
-    public GremlinSteps<GraphTraversal, P> mutate(Consumer<GremlinSteps<GraphTraversal, P>> mutator) {
-        mutator.accept(this);
-        return this;
-    }
-
-    @Override
     public GraphTraversal current() {
-        return g;
+        return g.asAdmin().clone();
     }
 
     private boolean isStarted() {
@@ -251,7 +238,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> hasKey(String... keys) {
         if (keys.length >= 1) {
-            g.hasKey(keys[0], arraySlice(keys, 1));
+            g.hasKey(keys[0], argumentsSlice(keys, 1));
         }
         return this;
     }
@@ -259,7 +246,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> hasLabel(String... labels) {
         if (labels.length >= 1) {
-            g.hasLabel(labels[0], arraySlice(labels, 1));
+            g.hasLabel(labels[0], argumentsSlice(labels, 1));
         }
         return this;
     }
@@ -415,14 +402,10 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> project(String... keys) {
-        if (keys.length < 1) {
-            throw new IllegalArgumentException("`project()` step requires keys");
-        } else if (keys.length == 1) {
-            g.project(keys[0]);
+        if (keys.length >= 1) {
+            g.project(keys[0], argumentsSlice(keys, 1));
         } else {
-            String[] hack = new String[keys.length - 1];
-            System.arraycopy(keys, 1, hack, 0, keys.length - 1);
-            g.project(keys[0], hack);
+            throw new IllegalArgumentException("`project()` step requires keys");
         }
         return this;
     }
@@ -442,7 +425,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> select(String... stepLabels) {
         if (stepLabels.length >= 2) {
-            g.select(stepLabels[0], stepLabels[1], arraySlice(stepLabels, 2));
+            g.select(stepLabels[0], stepLabels[1], argumentsSlice(stepLabels, 2));
         } else if (stepLabels.length == 1) {
             g.select(stepLabels[0]);
         } else {
@@ -535,13 +518,13 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
         return this;
     }
 
-    private static String[] arraySlice(String[] array, int start) {
-        String[] dest = new String[array.length - start];
-        System.arraycopy(array, start, dest, 0, array.length - start);
+    private static String[] argumentsSlice(String[] arguments, int start) {
+        String[] dest = new String[arguments.length - start];
+        System.arraycopy(arguments, start, dest, 0, arguments.length - start);
         return dest;
     }
 
-    private GraphTraversal[] traversals(GremlinSteps<GraphTraversal, P>[] gremlinSteps) {
+    private static GraphTraversal[] traversals(GremlinSteps<GraphTraversal, P>[] gremlinSteps) {
         return Stream.of(gremlinSteps)
             .map(GremlinSteps::current)
             .toArray(GraphTraversal[]::new);

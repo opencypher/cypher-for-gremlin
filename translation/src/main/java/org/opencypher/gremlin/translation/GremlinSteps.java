@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation;
 
-import java.util.function.Consumer;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
@@ -39,10 +38,6 @@ public interface GremlinSteps<T, P> {
     T current();
 
     GremlinSteps<T, P> start();
-
-    GremlinSteps<T, P> copy();
-
-    GremlinSteps<T, P> mutate(Consumer<GremlinSteps<T, P>> mutator);
 
     GremlinSteps<T, P> V();
 

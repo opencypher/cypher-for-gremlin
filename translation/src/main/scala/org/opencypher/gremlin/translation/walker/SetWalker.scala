@@ -23,8 +23,6 @@ import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, setProperty}
 
-import scala.compat.java8.FunctionConverters._
-
 /**
   * AST walker that handles translation
   * of the `SET` clause nodes in the Cypher AST.
@@ -78,14 +76,9 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
 
   private def applySideEffect(variable: String, setter: GremlinSteps[T, P] => Unit) {
     val p = context.dsl.predicateFactory()
-    val sideEffect = g
-      .start()
-      .sideEffect(
-        g.start()
-          .select(variable)
-          .mutate(setter.asJava)
-      )
-    g.choose(p.neq(NULL), sideEffect)
+    val sideEffect = g.start().select(variable)
+    setter(sideEffect)
+    g.choose(p.neq(NULL), g.start().sideEffect(sideEffect))
   }
 
   private def setProperties(g: GremlinSteps[T, P], items: Seq[(PropertyKeyName, Expression)]) {
