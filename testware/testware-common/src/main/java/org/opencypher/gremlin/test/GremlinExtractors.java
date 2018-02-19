@@ -15,18 +15,17 @@
  */
 package org.opencypher.gremlin.test;
 
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Property;
-import org.assertj.core.api.iterable.Extractor;
-import org.assertj.core.groups.Tuple;
+import static com.google.common.collect.Streams.stream;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static com.google.common.collect.Streams.stream;
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.groups.Tuple.tuple;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.assertj.core.api.iterable.Extractor;
+import org.assertj.core.groups.Tuple;
 
 public final class GremlinExtractors {
 

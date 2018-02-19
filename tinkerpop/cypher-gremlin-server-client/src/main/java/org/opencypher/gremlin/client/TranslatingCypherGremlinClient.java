@@ -15,15 +15,14 @@
  */
 package org.opencypher.gremlin.client;
 
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
-
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 final class TranslatingCypherGremlinClient implements CypherGremlinClient {
 

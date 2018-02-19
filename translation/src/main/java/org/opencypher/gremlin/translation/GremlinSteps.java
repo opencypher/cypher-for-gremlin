@@ -15,13 +15,12 @@
  */
 package org.opencypher.gremlin.translation;
 
+import java.util.function.Consumer;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.CustomFunction;
-
-import java.util.function.Consumer;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal} DSL wrapper.

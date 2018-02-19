@@ -15,6 +15,10 @@
  */
 package org.opencypher.gremlin.neo4jadapter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.neo4j.driver.v1.Values.parameters;
+
+import java.util.List;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -25,11 +29,6 @@ import org.opencypher.Config;
 import org.opencypher.GremlinDatabase;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.neo4j.driver.v1.Values.parameters;
 
 public class GremlinNeo4jDriverTest {
     @ClassRule

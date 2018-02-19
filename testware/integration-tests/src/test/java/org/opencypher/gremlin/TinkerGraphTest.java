@@ -15,6 +15,10 @@
  */
 package org.opencypher.gremlin;
 
+import static org.apache.tinkerpop.gremlin.structure.io.IoCore.gryo;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Property;
@@ -23,11 +27,6 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Test;
-
-import java.util.List;
-
-import static org.apache.tinkerpop.gremlin.structure.io.IoCore.gryo;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class TinkerGraphTest {
 

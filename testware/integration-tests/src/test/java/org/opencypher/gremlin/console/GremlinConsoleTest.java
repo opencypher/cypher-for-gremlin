@@ -15,7 +15,13 @@
  */
 package org.opencypher.gremlin.console;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.opencypher.gremlin.console.jsr223.CypherGremlinPlugin.NAME;
+
 import com.google.common.io.Files;
+import java.io.File;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.Before;
@@ -26,13 +32,6 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.junit.rules.TemporaryFolder;
 import org.opencypher.gremlin.rules.GremlinConsoleExternalResource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-
-import java.io.File;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.opencypher.gremlin.console.jsr223.CypherGremlinPlugin.NAME;
 
 public class GremlinConsoleTest {
 

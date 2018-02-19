@@ -15,19 +15,18 @@
  */
 package org.opencypher.gremlin.translation.helpers;
 
+import static java.util.function.Function.identity;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractAssert;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-
-import static java.util.function.Function.identity;
 
 public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
 

@@ -15,17 +15,16 @@
  */
 package org.opencypher.gremlin.server;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
+
+import java.util.ArrayList;
+import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.MessageSerializer;
 import org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0;
 import org.apache.tinkerpop.gremlin.server.Settings.SerializerSettings;
 import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0;
-
-import java.util.ArrayList;
-import java.util.Map;
-
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 
 
 public final class EmbeddedGremlinServerFactory {

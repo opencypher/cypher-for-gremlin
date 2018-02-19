@@ -15,12 +15,10 @@
  */
 package org.opencypher.gremlin;
 
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.util.Lists.newArrayList;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,11 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.assertj.core.util.Lists.newArrayList;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class VariableLengthPathTest {
 

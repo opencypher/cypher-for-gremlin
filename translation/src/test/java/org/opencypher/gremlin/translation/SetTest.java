@@ -15,12 +15,12 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
-
 import static org.opencypher.gremlin.translation.Tokens.NULL;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+
+import org.junit.Test;
+import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 
 public class SetTest {
 

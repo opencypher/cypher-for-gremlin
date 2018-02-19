@@ -15,11 +15,10 @@
  */
 package org.opencypher.gremlin.translation.structure;
 
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.opencypher.gremlin.translation.exception.TypeException;
-
 import java.util.Map;
 import java.util.Set;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.opencypher.gremlin.translation.exception.TypeException;
 
 public interface ElementAccessor {
 

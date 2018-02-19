@@ -15,14 +15,13 @@
  */
 package org.opencypher.gremlin;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Rule;
+import org.junit.Test;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class DeleteTest {
 

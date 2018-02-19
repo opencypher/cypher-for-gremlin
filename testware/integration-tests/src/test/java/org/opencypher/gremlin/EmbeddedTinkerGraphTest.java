@@ -15,15 +15,14 @@
  */
 package org.opencypher.gremlin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Map;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
 import org.opencypher.gremlin.client.CypherGremlinClient;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class EmbeddedTinkerGraphTest {
 

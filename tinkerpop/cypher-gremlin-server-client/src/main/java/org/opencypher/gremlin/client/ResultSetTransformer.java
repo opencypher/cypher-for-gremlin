@@ -15,15 +15,14 @@
  */
 package org.opencypher.gremlin.client;
 
-import org.apache.tinkerpop.gremlin.driver.Result;
-import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import static java.util.stream.Collectors.toList;
+import org.apache.tinkerpop.gremlin.driver.Result;
+import org.apache.tinkerpop.gremlin.driver.ResultSet;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 public final class ResultSetTransformer {
     private ResultSetTransformer() {

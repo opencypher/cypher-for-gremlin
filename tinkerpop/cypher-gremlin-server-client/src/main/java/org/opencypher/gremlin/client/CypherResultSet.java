@@ -15,8 +15,10 @@
  */
 package org.opencypher.gremlin.client;
 
-import org.apache.tinkerpop.gremlin.driver.Result;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.NONNULL;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Iterator;
 import java.util.List;
@@ -24,11 +26,8 @@ import java.util.Map;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static java.util.Spliterator.IMMUTABLE;
-import static java.util.Spliterator.NONNULL;
-import static java.util.Spliterators.spliteratorUnknownSize;
-import static java.util.stream.Collectors.toList;
+import org.apache.tinkerpop.gremlin.driver.Result;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 /**
  * A Gremlin query result iterator wrapper.

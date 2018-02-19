@@ -15,8 +15,7 @@
  */
 package org.opencypher.gremlin.translation.groovy;
 
-import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
+import static java.util.stream.Collectors.joining;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.joining;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
 
 final class StringTranslationUtils {
 

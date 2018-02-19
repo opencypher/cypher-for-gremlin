@@ -15,19 +15,18 @@
  */
 package org.opencypher.gremlin;
 
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-
-import java.util.List;
-import java.util.Map;
-
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Map;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class SetTest {
 

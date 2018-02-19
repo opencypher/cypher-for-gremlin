@@ -15,17 +15,16 @@
  */
 package org.opencypher.gremlin;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class CastTest {
 

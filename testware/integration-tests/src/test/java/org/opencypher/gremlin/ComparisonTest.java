@@ -15,15 +15,14 @@
  */
 package org.opencypher.gremlin;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ComparisonTest {
 

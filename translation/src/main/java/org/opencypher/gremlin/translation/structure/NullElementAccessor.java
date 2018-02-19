@@ -15,9 +15,9 @@
  */
 package org.opencypher.gremlin.translation.structure;
 
-import java.util.Set;
-
 import static java.util.Collections.emptySet;
+
+import java.util.Set;
 
 public class NullElementAccessor implements ElementAccessor {
 

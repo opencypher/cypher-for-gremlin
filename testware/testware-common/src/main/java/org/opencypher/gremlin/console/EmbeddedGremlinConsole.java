@@ -16,15 +16,14 @@
 package org.opencypher.gremlin.console;
 
 import com.google.common.base.Preconditions;
-import org.apache.tinkerpop.gremlin.console.Console;
-import org.codehaus.groovy.tools.shell.IO;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import org.apache.tinkerpop.gremlin.console.Console;
+import org.codehaus.groovy.tools.shell.IO;
 
 public final class EmbeddedGremlinConsole {
 

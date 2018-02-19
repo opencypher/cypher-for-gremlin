@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.server.performance.benchmark;
 
+import static org.opencypher.gremlin.server.performance.IOUtils.readFile;
+
 import org.opencypher.gremlin.server.performance.infra.CypherClient;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
@@ -22,8 +24,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.infra.Blackhole;
-
-import static org.opencypher.gremlin.server.performance.IOUtils.readFile;
 
 @State(Scope.Thread)
 public abstract class AbstractBenchmark {

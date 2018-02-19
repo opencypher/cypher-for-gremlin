@@ -15,14 +15,13 @@
  */
 package org.opencypher.gremlin.client;
 
-import org.apache.tinkerpop.gremlin.driver.Client;
-import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
+import static org.opencypher.gremlin.ClientServerCommunication.buildRequest;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import static org.opencypher.gremlin.ClientServerCommunication.buildRequest;
+import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.driver.ResultSet;
+import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 
 final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
 

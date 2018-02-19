@@ -15,7 +15,18 @@
  */
 package org.opencypher.gremlin.server.op.cypher;
 
+import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
+import static org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode.SERVER_ERROR;
+import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
+import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import io.netty.channel.ChannelHandlerContext;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.Tokens;
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 import org.apache.tinkerpop.gremlin.driver.message.ResponseMessage;
@@ -38,18 +49,6 @@ import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 import org.slf4j.Logger;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.util.Collections.singletonList;
-import static java.util.Optional.empty;
-import static org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode.SERVER_ERROR;
-import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
-import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * {@link OpProcessor} implementation for processing Cypher {@link RequestMessage}s:

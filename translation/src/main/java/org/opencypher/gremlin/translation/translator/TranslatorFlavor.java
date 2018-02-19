@@ -15,11 +15,10 @@
  */
 package org.opencypher.gremlin.translation.translator;
 
-import org.opencypher.gremlin.translation.GremlinSteps;
+import static java.util.function.Function.identity;
 
 import java.util.function.Function;
-
-import static java.util.function.Function.identity;
+import org.opencypher.gremlin.translation.GremlinSteps;
 
 /**
  * A flavor defines specialized behavior of a {@link Translator}.

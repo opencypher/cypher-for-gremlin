@@ -15,13 +15,12 @@
  */
 package org.opencypher.gremlin.tck;
 
-import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
+import org.apache.tinkerpop.gremlin.driver.ResultSet;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 final class ResultTransformer {
     private ResultTransformer() {

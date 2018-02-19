@@ -15,10 +15,10 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.junit.Test;
-
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
+
+import org.junit.Test;
 
 public class AstRewriterTest {
 

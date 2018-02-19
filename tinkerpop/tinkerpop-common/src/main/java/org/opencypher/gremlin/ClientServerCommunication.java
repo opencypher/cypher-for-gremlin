@@ -15,12 +15,11 @@
  */
 package org.opencypher.gremlin;
 
-import org.apache.tinkerpop.gremlin.driver.Tokens;
-import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
+import static java.util.Collections.emptyMap;
 
 import java.util.Map;
-
-import static java.util.Collections.emptyMap;
+import org.apache.tinkerpop.gremlin.driver.Tokens;
+import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 
 public final class ClientServerCommunication {
     public static final String CYPHER_OP_PROCESSOR_NAME = "cypher";

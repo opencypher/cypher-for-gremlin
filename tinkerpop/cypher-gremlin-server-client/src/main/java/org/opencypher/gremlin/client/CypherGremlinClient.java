@@ -15,17 +15,16 @@
  */
 package org.opencypher.gremlin.client;
 
+import static java.util.Collections.emptyMap;
+
+import java.io.Closeable;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
-
-import java.io.Closeable;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import static java.util.Collections.emptyMap;
 
 /**
  * This is a convenience wrapper around a Gremlin {@link Client}

@@ -15,13 +15,13 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
-
 import static org.opencypher.gremlin.translation.Tokens.NULL;
 import static org.opencypher.gremlin.translation.Tokens.START;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+
+import org.junit.Test;
+import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 
 @SuppressWarnings("unchecked")
 public class OptionalMatchTest {

@@ -15,10 +15,9 @@
  */
 package org.opencypher;
 
+import java.net.URI;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.neo4j.driver.v1.Driver;
-
-import java.net.URI;
 
 /**
  * Creates {@link Driver drivers}, optionally letting you {@link #driver(URI, Config)} to configure them.

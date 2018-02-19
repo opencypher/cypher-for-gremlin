@@ -15,12 +15,11 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.opencypher.gremlin.translation.translator.Translator;
+import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 import java.util.Set;
-
-import static java.util.Collections.emptyMap;
+import org.opencypher.gremlin.translation.translator.Translator;
 
 /**
  * Parsed Cypher AST wrapper that can transform it in a suitable format

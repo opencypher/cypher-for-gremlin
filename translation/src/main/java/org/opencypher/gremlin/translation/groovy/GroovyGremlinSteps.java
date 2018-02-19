@@ -15,17 +15,16 @@
  */
 package org.opencypher.gremlin.translation.groovy;
 
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
+import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
+
+import java.util.function.Consumer;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
-
-import java.util.function.Consumer;
-
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
 
 public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate> {
 

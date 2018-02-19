@@ -15,9 +15,8 @@
  */
 package org.opencypher.gremlin.traversal;
 
-import org.apache.tinkerpop.gremlin.process.traversal.P;
-
 import java.util.function.BiPredicate;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 
 public class CustomPredicates {
     public static <V> P<V> startsWith(final V prefix) {

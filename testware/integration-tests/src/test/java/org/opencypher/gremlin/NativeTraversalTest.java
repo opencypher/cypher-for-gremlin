@@ -15,9 +15,20 @@
  */
 package org.opencypher.gremlin;
 
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.extractor.Extractors.byName;
+import static org.assertj.core.groups.FieldsOrPropertiesExtractor.extract;
+
 import com.google.common.base.Charsets;
 import com.google.common.collect.Streams;
 import com.google.common.io.Resources;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -25,18 +36,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.assertj.core.extractor.Extractors.byName;
-import static org.assertj.core.groups.FieldsOrPropertiesExtractor.extract;
 
 public class NativeTraversalTest {
 

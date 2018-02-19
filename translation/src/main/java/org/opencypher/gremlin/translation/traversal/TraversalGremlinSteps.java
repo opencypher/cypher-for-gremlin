@@ -16,6 +16,8 @@
 package org.opencypher.gremlin.translation.traversal;
 
 
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
@@ -28,9 +30,6 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
-
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 @SuppressWarnings("unchecked")
 public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {

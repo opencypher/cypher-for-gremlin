@@ -15,11 +15,10 @@
  */
 package org.opencypher.gremlin.translation.helpers;
 
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import static java.util.Collections.emptyMap;
 
 import java.util.Map;
-
-import static java.util.Collections.emptyMap;
+import org.opencypher.gremlin.translation.CypherAstWrapper;
 
 public final class CypherAstHelpers {
     private CypherAstHelpers() {

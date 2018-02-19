@@ -17,7 +17,6 @@ package org.opencypher.gremlin.server.performance;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-
 import java.io.IOException;
 import java.net.URL;
 

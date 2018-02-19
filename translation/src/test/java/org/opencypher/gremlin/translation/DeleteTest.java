@@ -15,13 +15,13 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.apache.tinkerpop.gremlin.structure.Column;
-import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
-
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
+
+import org.apache.tinkerpop.gremlin.structure.Column;
+import org.junit.Test;
+import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
 
 public class DeleteTest {
 

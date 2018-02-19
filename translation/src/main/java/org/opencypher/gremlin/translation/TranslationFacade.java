@@ -15,12 +15,11 @@
  */
 package org.opencypher.gremlin.translation;
 
-import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
-import org.opencypher.gremlin.translation.translator.Translator;
+import static java.util.Collections.emptyMap;
 
 import java.util.Map;
-
-import static java.util.Collections.emptyMap;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
 
 /**
  * Cypher to Gremlin translation facade.

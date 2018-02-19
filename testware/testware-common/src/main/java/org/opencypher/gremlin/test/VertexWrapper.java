@@ -15,12 +15,11 @@
  */
 package org.opencypher.gremlin.test;
 
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
+import static com.google.common.base.MoreObjects.toStringHelper;
 
 import java.util.Objects;
-
-import static com.google.common.base.MoreObjects.toStringHelper;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
 
 public final class VertexWrapper extends DetachedVertex {
 
