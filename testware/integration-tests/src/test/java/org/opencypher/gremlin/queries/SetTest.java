@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation;
+package org.opencypher.gremlin.queries;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;

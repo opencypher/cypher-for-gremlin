@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation;
+package org.opencypher.gremlin.queries;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,12 +21,9 @@ import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
-public class ContainerIndexTest {
-
+public class UnwindTest {
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
@@ -35,54 +32,54 @@ public class ContainerIndexTest {
     }
 
     @Test
-    public void listIndexInReturn() throws Exception {
+    public void unwindLabels() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list\n" +
-                "RETURN list[1] AS i"
+            "MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label"
         );
+
         assertThat(results)
-            .extracting("i")
-            .containsExactly(2L);
+            .hasSize(2)
+            .extracting("label")
+            .containsExactlyInAnyOrder(
+                "person",
+                "software"
+            );
     }
 
     @Test
-    public void listIndexInReturnFunction() throws Exception {
+    public void injectRange() {
         List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list\n" +
-                "RETURN toString(list[1]) AS s"
+            "UNWIND range(1, 9) AS i " +
+                "RETURN sum(i) AS sum"
         );
+
         assertThat(results)
-            .extracting("s")
-            .containsExactly("2");
+            .extracting("sum")
+            .containsExactly(45L);
+
     }
 
-    /**
-     * Maps don't work in Gremlin Groovy translation
-     */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
-    public void mapIndexInReturn() throws Exception {
+    public void injectRangeWithStep() {
         List<Map<String, Object>> results = submitAndGet(
-            "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
-                "RETURN map['bar'] AS i"
+            "UNWIND range(1, 9, 2) AS i " +
+                "RETURN sum(i) AS sum"
         );
+
         assertThat(results)
-            .extracting("i")
-            .containsExactly(2L);
+            .extracting("sum")
+            .containsExactly(25L);
     }
 
-    /**
-     * Maps don't work in Gremlin Groovy translation
-     */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
-    public void mapIndexInReturnFunction() throws Exception {
+    public void injectLargeRange() {
         List<Map<String, Object>> results = submitAndGet(
-            "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
-                "RETURN toString(map['bar']) AS s"
+            "UNWIND range(10001, 20000) AS i " +
+                "RETURN sum(i) AS sum"
         );
+
         assertThat(results)
-            .extracting("s")
-            .containsExactly("2");
+            .extracting("sum")
+            .containsExactly(150005000L);
     }
 }

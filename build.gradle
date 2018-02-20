@@ -171,13 +171,14 @@ project(':testware:integration-tests') {
         systemProperty 'translate', 'gremlin'
 
         useJUnit {
-            include 'org/opencypher/gremlin/translation/**'
+            include 'org/opencypher/gremlin/queries/**'
 
             excludeCategories 'org.opencypher.gremlin.groups.SkipWithGremlinGroovy'
         }
+
     }
 
-    test.finalizedBy 'testGremlinGroovyTranslation'
+    check.dependsOn testGremlinGroovyTranslation
 }
 
 project(':testware:performance-tests') {
