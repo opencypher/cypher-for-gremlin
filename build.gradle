@@ -171,6 +171,8 @@ project(':testware:integration-tests') {
         systemProperty 'translate', 'gremlin'
 
         useJUnit {
+            include 'org/opencypher/gremlin/translation/**'
+
             excludeCategories 'org.opencypher.gremlin.groups.SkipWithGremlinGroovy'
         }
     }
