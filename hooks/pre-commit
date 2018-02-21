@@ -1,4 +1,19 @@
 #!/bin/sh
+
+export PATH=$PATH:$PWD/build/freshreadme/
+
+if ! hash freshreadme 2>/dev/null; then
+  echo "Temporarily downloading freshreadme, consider installing it https://github.com/dmi3/freshreadme/"
+  mkdir -p build/freshreadme
+  curl --progress-bar -L https://github.com/dmi3/freshreadme/releases/download/v0.5-beta.2/freshreadme-linux-v0.5-beta.2.tar.gz | tar --strip=1 -xz -C build/freshreadme/
+fi
+
+for f in $(git ls-files "*.md"); do
+  echo "Updating $f"
+  freshreadme "$f"
+  git add "$f"
+done
+
 git stash -q --keep-index --include-untracked
 git clean -q -f -d
 echo "Running code checks..."

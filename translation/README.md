@@ -9,6 +9,7 @@ The translation module provides facilities to:
 
 To translate a Cypher query to a Gremlin query:
 
+<!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#translate) -->
 ```java
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 TranslationFacade cfog = new TranslationFacade();
@@ -17,6 +18,7 @@ String gremlin = cfog.toGremlinGroovy(cypher);
 
 A bit more verbose version of the above, demonstrating several extension points:
 
+<!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#verbose) -->
 ```java
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
@@ -28,6 +30,7 @@ Note that `Translator` instances are not reusable. A new one has to be created f
 
 Custom translation targets can be provided by implementing `GremlinSteps` and `GremlinPredicates`:
 
+<!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#custom) -->
 ```java
 Translator.builder()
     .custom(
