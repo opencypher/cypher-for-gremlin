@@ -47,7 +47,6 @@ import org.neo4j.driver.v1.summary.SummaryCounters;
 import org.neo4j.driver.v1.types.TypeSystem;
 import org.neo4j.driver.v1.util.Function;
 import org.opencypher.gremlin.client.CypherGremlinClient;
-import org.opencypher.gremlin.client.CypherGremlinClients;
 
 class GremlinServerDriver implements Driver {
     private final Cluster cluster;
@@ -70,9 +69,9 @@ class GremlinServerDriver implements Driver {
     public Session session() {
         Client gremlinClient = cluster.connect();
 
-        CypherGremlinClient cypherGremlinClient = config.translationEnabled() ?
-            CypherGremlinClients.translating(gremlinClient, config.flavor()) :
-            CypherGremlinClients.plugin(gremlinClient);
+        CypherGremlinClient cypherGremlinClient = config.translationEnabled()
+            ? CypherGremlinClient.translating(gremlinClient, config.flavor())
+            : CypherGremlinClient.plugin(gremlinClient);
 
         return new GremlinServerSession(serverInfo, cypherGremlinClient);
     }
