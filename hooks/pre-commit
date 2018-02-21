@@ -1,4 +1,6 @@
-#!/bin/sh
+# Stash all changes unrelated to commit
+git stash -q --keep-index --include-untracked
+git clean -q -f -d
 
 export PATH=$PATH:$PWD/build/freshreadme/
 
@@ -14,10 +16,9 @@ for f in $(git ls-files "*.md"); do
   git add "$f"
 done
 
-git stash -q --keep-index --include-untracked
-git clean -q -f -d
 echo "Running code checks..."
 ./gradlew spotlessCheck >/dev/null
 RESULT=$?
+
 git stash pop -q
 exit $RESULT
