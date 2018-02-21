@@ -66,6 +66,7 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public GremlinSteps<T, P> and(GremlinSteps<T, P>... ands) {
         return delegate().and(ands);
     }
@@ -116,6 +117,7 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public GremlinSteps<T, P> coalesce(GremlinSteps<T, P>... traversals) {
         return delegate().coalesce(traversals);
     }
@@ -261,6 +263,7 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public GremlinSteps<T, P> or(GremlinSteps<T, P>... ors) {
         return delegate().or(ors);
     }
@@ -361,6 +364,7 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public GremlinSteps<T, P> union(GremlinSteps<T, P>... gremlinSteps) {
         return delegate().union(gremlinSteps);
     }

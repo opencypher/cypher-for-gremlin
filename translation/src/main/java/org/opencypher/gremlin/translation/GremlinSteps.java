@@ -60,6 +60,7 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> aggregate(String label);
 
+    @SuppressWarnings("unchecked")
     GremlinSteps<T, P> and(GremlinSteps<T, P>... ands);
 
     GremlinSteps<T, P> as(String label);
@@ -80,6 +81,7 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> choose(P predicate, GremlinSteps<T, P> trueChoice);
 
+    @SuppressWarnings("unchecked")
     GremlinSteps<T, P> coalesce(GremlinSteps<T, P>... traversals);
 
     GremlinSteps<T, P> constant(Object e);
@@ -138,6 +140,7 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> not(GremlinSteps<T, P> rhs);
 
+    @SuppressWarnings("unchecked")
     GremlinSteps<T, P> or(GremlinSteps<T, P>... ors);
 
     GremlinSteps<T, P> order();
@@ -178,6 +181,7 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> unfold();
 
+    @SuppressWarnings("unchecked")
     GremlinSteps<T, P> union(GremlinSteps<T, P>... gremlinSteps);
 
     GremlinSteps<T, P> until(GremlinSteps<T, P> gremlinSteps);

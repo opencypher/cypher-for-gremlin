@@ -53,6 +53,9 @@ subprojects {
         options.compilerArgs += '-Werror'
     }
     tasks.withType(ScalaCompile) {
+        options.encoding = 'UTF-8'
+        options.compilerArgs += '-Xlint:deprecation,unchecked'
+        options.compilerArgs += '-Werror'
         scalaCompileOptions.additionalParameters = [
             '-Xfatal-warnings'
         ]
