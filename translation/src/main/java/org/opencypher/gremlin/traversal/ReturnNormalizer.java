@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
@@ -33,7 +34,7 @@ public final class ReturnNormalizer {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> normalize(Map row) {
+    public static Map<String, Object> normalize(Object row) {
         return (Map<String, Object>) normalizeValue(row);
     }
 
@@ -50,6 +51,8 @@ public final class ReturnNormalizer {
             return null;
         } else if (value instanceof Path) {
             return new ArrayList<>(((Path) value).objects());
+        } else if (value instanceof Traverser) {
+            return normalize(((Traverser) value).get());
         }
         return value;
     }

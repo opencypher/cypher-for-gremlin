@@ -105,10 +105,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder().traversal(g).build();
         GraphTraversal<?, ?> traversal = ast.buildTranslation(traversalTranslator);
-        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(traverser -> {
-            Map row = (Map) traverser.get();
-            return ReturnNormalizer.normalize(row);
-        });
+        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(ReturnNormalizer::normalize);
         inTransaction(gts, () -> handleIterator(context, normalizedTraversal));
     }
 

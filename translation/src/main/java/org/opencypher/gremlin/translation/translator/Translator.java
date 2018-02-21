@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.translator;
 
 
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.translation.GremlinSteps;
@@ -99,7 +100,19 @@ public final class Translator<T, P> {
 
         /**
          * Builds a {@link Translator} that translates Cypher queries
-         * to native Gremlin {@code Traversal} that can be iterated to yield results
+         * to Gremlin anonymous {@code GraphTraversal}.
+         * <p>
+         * See: https://tinkerpop.apache.org/docs/current/reference/#traversal
+         *
+         * @return builder for translator to Gremlin traversal
+         */
+        public FlavorBuilder<GraphTraversal, org.apache.tinkerpop.gremlin.process.traversal.P> traversal() {
+            return traversal(new DefaultGraphTraversal());
+        }
+
+        /**
+         * Builds a {@link Translator} that translates Cypher queries
+         * to Gremlin {@code GraphTraversal} that can be iterated to yield results
          * for its source.
          * <p>
          * See: https://tinkerpop.apache.org/docs/current/reference/#traversal

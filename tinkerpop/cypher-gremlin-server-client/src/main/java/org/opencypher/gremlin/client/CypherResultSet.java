@@ -90,7 +90,7 @@ public final class CypherResultSet implements Iterable<Map<String, Object>> {
             @Override
             public Map<String, Object> next() {
                 Result result = resultIterator.next();
-                Map row = result.get(Map.class);
+                Object row = result.getObject();
                 return ReturnNormalizer.normalize(row);
             }
         };
