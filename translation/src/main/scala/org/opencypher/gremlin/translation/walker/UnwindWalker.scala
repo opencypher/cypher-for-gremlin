@@ -39,12 +39,12 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
   private val injectHardLimit = 10000
 
   def walkClause(node: Unwind) {
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
 
     if (context.isFirstStatement) {
       context.markFirstStatement()
     } else {
-      val p = context.dsl.predicateFactory()
+      val p = context.dsl.predicates()
       g.is(p.neq(Tokens.START))
     }
 
@@ -82,7 +82,8 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
         .times((range.end + 1).toInt)
         .cap(rangeLabel)
         .unfold()
-        .range(range.start, range.end + 1)
+        .skip(range.start)
+        .limit(range.end - range.start + 1)
         .as(varName)
     } else {
       val numbers = range.asInstanceOf[Seq[Object]]

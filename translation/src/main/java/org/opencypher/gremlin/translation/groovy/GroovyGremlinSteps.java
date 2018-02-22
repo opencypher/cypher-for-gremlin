@@ -17,7 +17,6 @@ package org.opencypher.gremlin.translation.groovy;
 
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.unquoted;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
@@ -295,7 +294,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     public GremlinSteps<String, GroovyPredicate> map(CustomFunction function) {
         g.append(chain(
             "map",
-            unquoted(
+            Verbatim.of(
                 apply(function.getName(), function.getArgs())
             )
         ));
@@ -377,19 +376,13 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> property(String key, GremlinSteps<String, GroovyPredicate> builder) {
-        g.append(chain("property", key, unquoted(builder.current())));
+        g.append(chain("property", key, Verbatim.of(builder.current())));
         return this;
     }
 
     @Override
     public GremlinSteps<String, GroovyPredicate> project(String... keys) {
         g.append(chain("project", (Object[]) keys));
-        return this;
-    }
-
-    @Override
-    public GremlinSteps<String, GroovyPredicate> range(long low, long high) {
-        g.append(chain("range", low, high));
         return this;
     }
 
@@ -430,7 +423,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
-    public GremlinSteps<String, GroovyPredicate> times(Integer maxLoops) {
+    public GremlinSteps<String, GroovyPredicate> times(int maxLoops) {
         g.append(chain("times", maxLoops));
         return this;
     }

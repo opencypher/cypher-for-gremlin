@@ -37,7 +37,7 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters) {
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         RequestMessage requestMessage = buildRequest(cypher, parameters).create();
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(requestMessage);
         return resultSetFuture

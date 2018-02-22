@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.helpers;
+package org.opencypher.gremlin.translation.groovy;
 
-import org.assertj.core.api.Assertions;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+final class Verbatim {
+    private final String value;
 
-public class CypherAstAssertions extends Assertions {
-    public static CypherAstAssert assertThat(CypherAstWrapper actual) {
-        return new CypherAstAssert(actual);
+    private Verbatim(String value) {
+        this.value = value;
     }
 
-    public static CypherAstAssert assertThat(CypherAstWrapper actual, TranslatorFlavor<String, GroovyPredicate> flavor) {
-        return new CypherAstAssert(actual, flavor);
+    static Verbatim of(String value) {
+        return new Verbatim(value);
+    }
+
+    String getValue() {
+        return value;
     }
 }

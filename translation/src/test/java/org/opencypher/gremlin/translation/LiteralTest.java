@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 
 public class LiteralTest {
 

@@ -20,6 +20,7 @@ import static org.opencypher.gremlin.client.GremlinClientFactory.flavorByName;
 import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.tinkerGraph;
 
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.assertj.core.util.Strings;
 import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
@@ -41,7 +42,7 @@ public class GremlinServerExternalResource extends ExternalResource {
         gremlinClient = GremlinClientFactory.create(port);
 
         String translate = System.getProperty(TOKEN_TRANSLATE);
-        if (translate != null) {
+        if (!Strings.isNullOrEmpty(translate)) {
             TranslatorFlavor<String, GroovyPredicate> flavor = flavorByName(translate);
             cypherGremlinClient = CypherGremlinClient.translating(gremlinClient, flavor);
         } else {

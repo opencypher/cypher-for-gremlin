@@ -47,7 +47,9 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
             g.select(varName).as(alias)
           }
         case Parameter(name, _) =>
-          g.constant(context.extractedParameters(name)).as(alias)
+          g.constant(context.parameter(name)).as(alias)
+        case l: Literal =>
+          g.constant(inlineExpressionValue(l, context)).as(alias)
         case expression: Expression =>
           WhereWalker.walk(context, g, expression)
       }
@@ -57,8 +59,17 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
       sort(node)
     }
 
-    if (skip.isDefined || limit.isDefined) {
-      range(skip, limit)
+    for (s <- skip) {
+      val Skip(expression) = s
+      val value = inlineExpressionValue(expression, context).asInstanceOf[Number].longValue()
+      if (value != 0L) {
+        g.skip(value)
+      }
+    }
+
+    for (l <- limit) {
+      val Limit(expression) = l
+      g.limit(inlineExpressionValue(expression, context).asInstanceOf[Number].longValue())
     }
   }
 
@@ -80,13 +91,5 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
           context.unsupported("sort expression", sortItem.expression)
       }
     }
-  }
-
-  private def range(skip: Option[Skip], limit: Option[Limit]) {
-    val extract: (ASTSlicingPhrase => Long) = ast =>
-      expressionValue(ast.expression, context).asInstanceOf[Number].longValue()
-    val low = skip.map(extract).getOrElse(0L)
-    val high = low + limit.map(extract).getOrElse(-1L)
-    g.range(low, high)
   }
 }

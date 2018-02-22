@@ -19,6 +19,7 @@ import java.util
 
 import org.neo4j.cypher.internal.frontend.v3_2.CypherException
 import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.neo4j.cypher.internal.frontend.v3_2.ast.rewriters.Never
 import org.neo4j.cypher.internal.frontend.v3_2.helpers.rewriting.RewriterStepSequencer
 import org.neo4j.cypher.internal.frontend.v3_2.phases._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -57,12 +58,32 @@ class CypherAst(val statement: Statement, val extractedParameters: Map[String, A
     context.dsl.translate()
   }
 
-  private val statementOptions: Set[StatementOption] = options.flatMap {
+  private val javaExtractedParameters: util.Map[String, Object] =
+    new util.HashMap(extractedParameters.mapValues(deepToJava).asJava)
+
+  private def deepToJava(value: Any): Object = {
+    value match {
+      case null =>
+        Tokens.NULL
+      case seq: Seq[_] =>
+        val mappedSeq = seq.map(deepToJava)
+        new util.ArrayList(mappedSeq.asJava)
+      case map: Map[_, _] =>
+        val mappedMap = map.mapValues(deepToJava)
+        new util.LinkedHashMap[Any, Any](mappedMap.asJava)
+      case v =>
+        v.asInstanceOf[Object]
+    }
+  }
+
+  def getExtractedParameters: util.Map[String, Object] = new util.HashMap(javaExtractedParameters)
+
+  private val javaOptions: util.Set[StatementOption] = options.flatMap {
     case ExplainOption => Some(StatementOption.EXPLAIN)
     case _             => None // ignore unknown
-  }.toSet
+  }.toSet.asJava
 
-  def getOptions: util.Set[StatementOption] = new util.HashSet(statementOptions.asJava)
+  def getOptions: util.Set[StatementOption] = new util.HashSet(javaOptions)
 
   override def toString: String = {
     val acc = mutable.ArrayBuffer.empty[(String, Int)]
@@ -101,23 +122,23 @@ class CypherAst(val statement: Statement, val extractedParameters: Map[String, A
 object CypherAst {
 
   @throws[CypherException]
-  def parse(queryText: String, passedParams: util.Map[String, Any]): CypherAst = {
-    val params = Option(passedParams)
+  def parse(queryText: String, parameters: util.Map[String, _]): CypherAst = {
+    val scalaParameters = Option(parameters)
       .map(_.asScala.toMap)
       .getOrElse(Map())
-    parse(queryText, params)
+    parse(queryText, scalaParameters)
   }
 
   @throws[CypherException]
-  private def parse(queryText: String, passedParams: Map[String, Any]): CypherAst = {
+  private def parse(queryText: String, parameters: Map[String, Any]): CypherAst = {
     val PreParsedStatement(preParsedQueryText, options, offset) = CypherPreParser(queryText)
     val startState = BaseStateImpl(preParsedQueryText, Some(offset), EmptyPlannerName)
     val state = CompilationPhases
-      .parsing(RewriterStepSequencer.newPlain)
+      .parsing(RewriterStepSequencer.newPlain, Never)
       .andThen(Normalization)
       .transform(startState, EmptyParserContext(preParsedQueryText, Some(offset)))
 
-    val params = passedParams ++ state.extractedParams()
+    val params = parameters ++ state.extractedParams()
 
     new CypherAst(state.statement(), params, options)
   }

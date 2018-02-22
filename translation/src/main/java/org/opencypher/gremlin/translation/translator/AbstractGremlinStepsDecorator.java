@@ -314,11 +314,6 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> range(long low, long high) {
-        return delegate().range(low, high);
-    }
-
-    @Override
     public GremlinSteps<T, P> repeat(GremlinSteps<T, P> gremlinSteps) {
         return delegate().repeat(gremlinSteps);
     }
@@ -349,7 +344,7 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> times(Integer maxLoops) {
+    public GremlinSteps<T, P> times(int maxLoops) {
         return delegate().times(maxLoops);
     }
 

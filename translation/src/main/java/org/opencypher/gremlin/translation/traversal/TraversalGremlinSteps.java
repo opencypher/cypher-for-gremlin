@@ -411,12 +411,6 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> range(long low, long high) {
-        g.range(low, high);
-        return this;
-    }
-
-    @Override
     public GremlinSteps<GraphTraversal, P> repeat(GremlinSteps<GraphTraversal, P> gremlinSteps) {
         g.repeat(gremlinSteps.current());
         return this;
@@ -459,7 +453,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> times(Integer maxLoops) {
+    public GremlinSteps<GraphTraversal, P> times(int maxLoops) {
         g.times(maxLoops);
         return this;
     }

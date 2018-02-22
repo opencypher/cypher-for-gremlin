@@ -18,11 +18,14 @@ package org.opencypher.gremlin.translation.translator;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.opencypher.gremlin.translation.GremlinParameters;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.translation.GremlinSteps;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinParameters;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.traversal.TraversalGremlinParameters;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinPredicates;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinSteps;
 
@@ -33,34 +36,50 @@ import org.opencypher.gremlin.translation.traversal.TraversalGremlinSteps;
  * Translator instances are not reusable.
  */
 public final class Translator<T, P> {
-    private final GremlinSteps<T, P> gremlinSteps;
-    private final GremlinPredicates<P> gremlinPredicates;
+    private final GremlinSteps<T, P> steps;
+    private final GremlinPredicates<P> predicates;
+    private final GremlinParameters parameters;
 
-    private Translator(GremlinSteps<T, P> gremlinSteps,
-                       GremlinPredicates<P> gremlinPredicates,
+    private Translator(GremlinSteps<T, P> steps,
+                       GremlinPredicates<P> predicates,
+                       GremlinParameters parameters,
                        TranslatorFlavor<T, P> flavor) {
-        this.gremlinSteps = flavor.decorateTranslationBuilder(gremlinSteps);
-        this.gremlinPredicates = gremlinPredicates;
+        this.steps = flavor.decorateTranslationBuilder(steps);
+        this.predicates = predicates;
+        this.parameters = parameters;
     }
 
     /**
      * Provides access to the traversal DSL.
      *
      * @return traversal DSL
-     * @see #predicateFactory()
+     * @see #predicates()
+     * @see #parameters()
      */
-    public GremlinSteps<T, P> translationBuilder() {
-        return gremlinSteps;
+    public GremlinSteps<T, P> steps() {
+        return steps;
     }
 
     /**
      * Returns a factory for traversal predicates for use with the traversal DSL.
      *
      * @return factory for traversal predicates
-     * @see #translationBuilder()
+     * @see #steps()
+     * @see #parameters()
      */
-    public GremlinPredicates<P> predicateFactory() {
-        return gremlinPredicates;
+    public GremlinPredicates<P> predicates() {
+        return predicates;
+    }
+
+    /**
+     * Returns a strategy for working with query parameters.
+     *
+     * @return strategy for query parameters
+     * @see #steps()
+     * @see #predicates()
+     */
+    public GremlinParameters parameters() {
+        return parameters;
     }
 
     /**
@@ -69,7 +88,7 @@ public final class Translator<T, P> {
      * @return translation
      */
     public T translate() {
-        return gremlinSteps.current();
+        return steps.current();
     }
 
     /**
@@ -94,7 +113,8 @@ public final class Translator<T, P> {
         public FlavorBuilder<String, GroovyPredicate> gremlinGroovy() {
             return new FlavorBuilder<>(
                 new GroovyGremlinSteps(),
-                new GroovyGremlinPredicates()
+                new GroovyGremlinPredicates(),
+                new GroovyGremlinParameters()
             );
         }
 
@@ -123,7 +143,8 @@ public final class Translator<T, P> {
         public FlavorBuilder<GraphTraversal, org.apache.tinkerpop.gremlin.process.traversal.P> traversal(GraphTraversal g) {
             return new FlavorBuilder<>(
                 new TraversalGremlinSteps(g),
-                new TraversalGremlinPredicates()
+                new TraversalGremlinPredicates(),
+                new TraversalGremlinParameters()
             );
         }
 
@@ -131,31 +152,37 @@ public final class Translator<T, P> {
          * Builds a {@link Translator} that translates Cypher queries
          * to custom format via the provided steps and predicates implementation.
          *
-         * @param gremlinSteps      Gremlin steps implementation
-         * @param gremlinPredicates Gremlin predicates implementation
-         * @param <T>               translation target type
-         * @param <P>               predicate target type
+         * @param steps      Gremlin steps implementation
+         * @param predicates Gremlin predicates implementation
+         * @param parameters Parameters strategy implementation
+         * @param <T>        translation target type
+         * @param <P>        predicate target type
          * @return builder for translator to custom format
          */
         public <T, P> FlavorBuilder<T, P> custom(
-            GremlinSteps<T, P> gremlinSteps,
-            GremlinPredicates<P> gremlinPredicates
+            GremlinSteps<T, P> steps,
+            GremlinPredicates<P> predicates,
+            GremlinParameters parameters
         ) {
             return new FlavorBuilder<>(
-                gremlinSteps,
-                gremlinPredicates
+                steps,
+                predicates,
+                parameters
             );
         }
     }
 
     public static final class FlavorBuilder<T, P> {
-        private final GremlinSteps<T, P> gremlinSteps;
-        private final GremlinPredicates<P> gremlinPredicates;
+        private final GremlinSteps<T, P> steps;
+        private final GremlinPredicates<P> predicates;
+        private final GremlinParameters parameters;
 
-        private FlavorBuilder(GremlinSteps<T, P> gremlinSteps,
-                              GremlinPredicates<P> gremlinPredicates) {
-            this.gremlinSteps = gremlinSteps;
-            this.gremlinPredicates = gremlinPredicates;
+        private FlavorBuilder(GremlinSteps<T, P> steps,
+                              GremlinPredicates<P> predicates,
+                              GremlinParameters parameters) {
+            this.steps = steps;
+            this.predicates = predicates;
+            this.parameters = parameters;
         }
 
         /**
@@ -165,8 +192,9 @@ public final class Translator<T, P> {
          */
         public Translator<T, P> build() {
             return new Translator<>(
-                gremlinSteps,
-                gremlinPredicates,
+                steps,
+                predicates,
+                parameters,
                 TranslatorFlavor.gremlinServer()
             );
         }
@@ -179,8 +207,9 @@ public final class Translator<T, P> {
          */
         public Translator<T, P> build(TranslatorFlavor<T, P> flavor) {
             return new Translator<>(
-                gremlinSteps,
-                gremlinPredicates,
+                steps,
+                predicates,
+                parameters,
                 flavor
             );
         }

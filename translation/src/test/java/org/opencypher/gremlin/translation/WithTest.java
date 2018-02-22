@@ -15,13 +15,13 @@
  */
 package org.opencypher.gremlin.translation;
 
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 
 public class WithTest {
 
@@ -181,7 +181,8 @@ public class WithTest {
                 .select("a").values("name").as("  FRESHID26")
                 .select("  FRESHID26")
                 .order().by(__.select("  FRESHID26"), Order.incr)
-                .range(1, 3)
+                .skip(1)
+                .limit(2)
                 .select("  FRESHID26")
         );
     }

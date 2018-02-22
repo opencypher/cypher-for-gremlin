@@ -20,7 +20,7 @@ import org.neo4j.cypher.internal.frontend.v3_2.ast._
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
-import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
+import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 
@@ -134,17 +134,17 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       g.dedup()
     }
 
-    for (l <- limit) {
-      val Limit(expression) = l
-      g.limit(expressionValue(expression, context).asInstanceOf[Long])
-    }
-
     for (s <- skip) {
       val Skip(expression) = s
-      val value = expressionValue(expression, context).asInstanceOf[Long]
+      val value = inlineExpressionValue(expression, context).asInstanceOf[Number].longValue()
       if (value != 0L) {
         g.skip(value)
       }
+    }
+
+    for (l <- limit) {
+      val Limit(expression) = l
+      g.limit(inlineExpressionValue(expression, context).asInstanceOf[Number].longValue())
     }
 
     g
@@ -167,7 +167,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
   }
 
   private def nullIfNull(g: GremlinSteps[T, P], trueChoice: GremlinSteps[T, P]): GremlinSteps[T, P] = {
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
     g.choose(p.neq(Tokens.NULL), trueChoice, g.start().constant(Tokens.NULL))
   }
 
@@ -176,7 +176,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       select: Boolean,
       unfold: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
 
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
 
     expression match {
       case node: FunctionInvocation =>
@@ -237,7 +237,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
         val (_, traversal) = pivot(expr, select, unfold)
 
         (Pivot, g.start().coalesce(traversal.is(p.neq(Tokens.NULL)).constant(false), g.start().constant(true)))
-      case node @ (_: Parameter | _: ListLiteral | _: MapExpression | _: Null) =>
+      case node @ (_: Parameter | _: Literal | _: ListLiteral | _: MapExpression | _: Null) =>
         (Pivot, g.start().constant(expressionValue(node, context)))
       case Property(Variable(varName), PropertyKeyName(keyName: String)) =>
         (
@@ -284,7 +284,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
   }
 
   private def aggregation(expression: Expression, select: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
 
     expression match {
       case node: FunctionInvocation =>

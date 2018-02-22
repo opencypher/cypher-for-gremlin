@@ -15,11 +15,11 @@
  */
 package org.opencypher.gremlin.translation;
 
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 
 public class FunctionTest {
 
@@ -98,7 +98,7 @@ public class FunctionTest {
         ))
             .hasTraversalBeforeReturn(
                 __.inject(Tokens.START).repeat(__.loops().aggregate("  GENERATED1")).times(4).cap("  GENERATED1")
-                    .unfold().range(1, 4).as("r").select("r")
+                    .unfold().skip(1).limit(3).as("r").select("r")
             );
     }
 

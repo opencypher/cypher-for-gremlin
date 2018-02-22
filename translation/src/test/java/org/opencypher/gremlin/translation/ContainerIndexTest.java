@@ -20,7 +20,7 @@ import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.ass
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 
 public class ContainerIndexTest {
 

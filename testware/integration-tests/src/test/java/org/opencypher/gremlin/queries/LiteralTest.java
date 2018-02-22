@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.client;
+package org.opencypher.gremlin.queries;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -22,22 +24,37 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
-public class TranslatingCypherGremlinClientTest {
+public class LiteralTest {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
+    private List<Map<String, Object>> submitAndGet(String cypher) {
+        return gremlinServer.cypherGremlinClient().submit(cypher).all();
+    }
+
     @Test
-    public void submitToDefaultGraph() {
-        TranslatingCypherGremlinClient client =
-            new TranslatingCypherGremlinClient(gremlinServer.gremlinClient(), TranslatorFlavor.gremlinServer());
-        String cypher = "MATCH (p:person) RETURN p.name AS name";
-        List<Map<String, Object>> results = client.submit(cypher).all();
+    public void literals() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN [" +
+                "13, -40000," +
+                "'Hello', \"World\"," +
+                "true, false, TRUE, FALSE," +
+                "null," +
+                "[], [13, 'Hello', true, null]" +
+                "] AS literals"
+        );
 
         assertThat(results)
-            .extracting("name")
-            .containsExactlyInAnyOrder("marko", "vadas", "josh", "peter");
+            .extracting("literals")
+            .containsExactly(asList(
+                13L, -40000L,
+                "Hello", "World",
+                true, false, true, false,
+                null,
+                emptyList(), asList(13L, "Hello", true, null)
+            ));
     }
+
 }

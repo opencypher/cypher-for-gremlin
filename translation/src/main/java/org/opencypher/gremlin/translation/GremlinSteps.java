@@ -161,8 +161,6 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> project(String... keys);
 
-    GremlinSteps<T, P> range(long low, long high);
-
     GremlinSteps<T, P> repeat(GremlinSteps<T, P> gremlinSteps);
 
     GremlinSteps<T, P> select(String... stepLabels);
@@ -175,7 +173,7 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> sum();
 
-    GremlinSteps<T, P> times(Integer maxLoops);
+    GremlinSteps<T, P> times(int maxLoops);
 
     GremlinSteps<T, P> to(String stepLabel);
 

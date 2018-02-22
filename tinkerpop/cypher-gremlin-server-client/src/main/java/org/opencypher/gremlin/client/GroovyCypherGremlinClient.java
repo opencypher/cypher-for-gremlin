@@ -24,12 +24,12 @@ import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
-final class TranslatingCypherGremlinClient implements CypherGremlinClient {
+final class GroovyCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
     private final TranslatorFlavor<String, GroovyPredicate> flavor;
 
-    TranslatingCypherGremlinClient(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
+    GroovyCypherGremlinClient(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
         this.client = client;
         this.flavor = flavor;
     }
@@ -40,11 +40,12 @@ final class TranslatingCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters) {
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build(flavor);
         String gremlin = ast.buildTranslation(translator);
-        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, parameters);
+        Map<String, Object> extractedParameters = ast.getExtractedParameters();
+        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, extractedParameters);
         return resultSetFuture
             .thenApply(ResultSet::iterator)
             .thenApply(CypherResultSet::new);

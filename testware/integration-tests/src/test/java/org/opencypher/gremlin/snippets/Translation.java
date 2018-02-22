@@ -17,11 +17,15 @@ package org.opencypher.gremlin.snippets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
+import java.util.Set;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.StatementOption;
 import org.opencypher.gremlin.translation.TranslationFacade;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinParameters;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
@@ -61,6 +65,8 @@ public class Translation {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
         String gremlin = ast.buildTranslation(translator);
+        Map<String, Object> extractedParameters = ast.getExtractedParameters();
+        Set<StatementOption> options = ast.getOptions();
         // freshReadmeSnippet: verbose
 
         assertThat(gremlin).isEqualTo("g.V()." +
@@ -83,7 +89,8 @@ public class Translation {
         Translator.builder()
             .custom(
                 new MyGremlinSteps(),
-                new MyGremlinPredicates()
+                new MyGremlinPredicates(),
+                new MyGremlinParameters()
             )
             .build();
         // freshReadmeSnippet: custom
@@ -94,5 +101,8 @@ public class Translation {
     }
 
     private class MyGremlinPredicates extends GroovyGremlinPredicates {
+    }
+
+    private class MyGremlinParameters extends GroovyGremlinParameters {
     }
 }

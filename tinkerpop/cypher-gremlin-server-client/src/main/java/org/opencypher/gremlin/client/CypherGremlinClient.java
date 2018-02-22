@@ -56,7 +56,7 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-enabled client
      */
     static CypherGremlinClient translating(Client client) {
-        return new TranslatingCypherGremlinClient(client, TranslatorFlavor.gremlinServer());
+        return new GroovyCypherGremlinClient(client, TranslatorFlavor.gremlinServer());
     }
 
     /**
@@ -71,7 +71,7 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-enabled client
      */
     static CypherGremlinClient translating(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
-        return new TranslatingCypherGremlinClient(client, flavor);
+        return new GroovyCypherGremlinClient(client, flavor);
     }
 
     /**
@@ -140,7 +140,7 @@ public interface CypherGremlinClient extends Closeable {
      * @param parameters query parameters
      * @return Cypher-style results
      */
-    default CypherResultSet submit(String cypher, Map<String, Object> parameters) {
+    default CypherResultSet submit(String cypher, Map<String, ?> parameters) {
         return submitAsync(cypher, parameters).join();
     }
 
@@ -162,5 +162,5 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-style results
      * @see org.opencypher.gremlin.ClientServerCommunication
      */
-    CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters);
+    CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters);
 }

@@ -31,13 +31,13 @@ public final class ClientServerCommunication {
         return buildRequest(cypher, emptyMap(), CYPHER_OP_PROCESSOR_NAME);
     }
 
-    public static RequestMessage.Builder buildRequest(String cypher, Map<String, Object> parameters) {
+    public static RequestMessage.Builder buildRequest(String cypher, Map<String, ?> parameters) {
         return buildRequest(cypher, parameters, CYPHER_OP_PROCESSOR_NAME);
     }
 
     public static RequestMessage.Builder buildRequest(
         String query,
-        Map<String, Object> parameters,
+        Map<String, ?> parameters,
         String opProcessor
     ) {
         RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)

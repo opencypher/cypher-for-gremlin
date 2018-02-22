@@ -24,7 +24,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
-public class OrderBySkipLimitTest {
+public class OrderByTest {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
@@ -33,12 +33,6 @@ public class OrderBySkipLimitTest {
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
-    }
-
-    @Test
-    public void precondition() throws Exception {
-        List<Map<String, Object>> results = submitAndGet("MATCH (n) RETURN n");
-        assertThat(results).hasSize(VERTICES_COUNT);
     }
 
     @Test
@@ -96,6 +90,18 @@ public class OrderBySkipLimitTest {
     public void limitOutOfSize() throws Exception {
         List<Map<String, Object>> results = submitAndGet("MATCH (n) RETURN n.name LIMIT 10");
         assertThat(results).hasSize(VERTICES_COUNT);
+    }
+
+    @Test
+    public void projections() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person) " +
+                "WITH p, 0 AS relevance " +
+                "RETURN p.age AS age " +
+                "ORDER BY relevance, p.age"
+        );
+
+        System.out.println(results);
     }
 
 }

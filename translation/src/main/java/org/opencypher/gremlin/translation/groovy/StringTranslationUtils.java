@@ -41,7 +41,7 @@ final class StringTranslationUtils {
         return "." + apply(name, arguments);
     }
 
-    private static String toLiteral(Object argument) {
+    static String toLiteral(Object argument) {
         if (argument instanceof List) {
             return ((List<?>) argument).stream()
                 .map(StringTranslationUtils::toLiteral)
@@ -69,8 +69,8 @@ final class StringTranslationUtils {
         if (argument == null) {
             return "null";
         }
-        if (argument instanceof Unquoted) {
-            return ((Unquoted) argument).value;
+        if (argument instanceof Verbatim) {
+            return ((Verbatim) argument).getValue();
         }
 
         return argument.toString();
@@ -78,18 +78,6 @@ final class StringTranslationUtils {
 
     private static String toStringLiteral(String agrument) {
         return "'" + agrument.replaceAll("(['\\\\])", "\\\\$1") + "'";
-    }
-
-    static Unquoted unquoted(String value) {
-        return new Unquoted(value);
-    }
-
-    private static class Unquoted {
-        String value;
-
-        Unquoted(String value) {
-            this.value = value;
-        }
     }
 
 }

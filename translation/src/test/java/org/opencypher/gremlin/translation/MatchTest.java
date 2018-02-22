@@ -15,15 +15,16 @@
  */
 package org.opencypher.gremlin.translation;
 
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parameter;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 import java.util.HashMap;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 
 public class MatchTest {
 
@@ -418,8 +419,8 @@ public class MatchTest {
             .outV().as("a")
             .where(
                 __.and(
-                    __.select("advertiser").values("id").is(P.eq(param1)),
-                    __.select("a").values("id").is(P.eq(param2)),
+                    __.select("advertiser").values("id").is(P.eq(parameter("1"))),
+                    __.select("a").values("id").is(P.eq(parameter("2"))),
                     __.select("red").values("name").is(P.eq("red")),
                     __.select("out").values("name").is(P.eq("product1"))
                 )

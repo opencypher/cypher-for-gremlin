@@ -75,7 +75,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
   }
 
   private def applySideEffect(variable: String, setter: GremlinSteps[T, P] => Unit) {
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
     val sideEffect = g.start().select(variable)
     setter(sideEffect)
     g.choose(p.neq(NULL), g.start().sideEffect(sideEffect))

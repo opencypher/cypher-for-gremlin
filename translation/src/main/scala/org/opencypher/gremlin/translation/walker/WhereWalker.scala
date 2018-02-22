@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.neo4j.cypher.internal.frontend.v3_2.ast.{BooleanLiteral, _}
 import org.neo4j.cypher.internal.frontend.v3_2.symbols.{BooleanType, ListType}
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation._
@@ -71,8 +71,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   }
 
   private def walkExpression(node: ASTNode): GremlinSteps[T, P] = {
-    val p = context.dsl.predicateFactory()
-    val parameters = context.extractedParameters
+    val p = context.dsl.predicates()
     node match {
       case AllIterablePredicate(FilterScope(Variable(freshId), Some(expr)), Variable(varName)) =>
         freshIds(freshId) = varName
@@ -110,8 +109,8 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       case In(lhs, ListLiteral(list)) =>
         walkBinaryExpression(lhs, p.within(list.map(walkRhs): _*))
       case In(lhs, Parameter(name, _: ListType)) =>
-        val list: Seq[AnyRef] = context.extractedParameters(name).asInstanceOf[Seq[AnyRef]]
-        walkBinaryExpression(lhs, p.within(list: _*))
+        val list = context.parameter(name)
+        walkBinaryExpression(lhs, p.within(list))
       case expr: RightUnaryOperatorExpression =>
         walkRightUnaryOperatorExpression(expr)
       case expr: FunctionInvocation =>
@@ -122,7 +121,9 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
         }
         g.start().select(name).hasLabel(labels: _*)
       case Parameter(name, BooleanType.instance) =>
-        g.start().constant(parameters(name)).is(p.isEq(true))
+        g.start().constant(context.parameter(name)).is(p.isEq(true))
+      case l: BooleanLiteral =>
+        g.start().constant(walkRhs(l)).is(p.isEq(true))
       case PatternExpression(RelationshipsPattern(relationshipChain)) =>
         val traversal = g.start()
         WhereWalker.walkRelationshipChain(context, traversal, relationshipChain)
@@ -146,7 +147,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   }
 
   private def walkRightUnaryOperatorExpression(expr: RightUnaryOperatorExpression): GremlinSteps[T, P] = {
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
     expr match {
       case IsNull(subExpr) =>
         subExpr match {
@@ -166,7 +167,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   }
 
   private def walkFunctionInvocation(function: FunctionInvocation): GremlinSteps[T, P] = {
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
     val FunctionInvocation(_, FunctionName(name), _, args) = function
     name.toLowerCase match {
       case "exists" =>

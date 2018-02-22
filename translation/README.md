@@ -24,18 +24,21 @@ String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
 Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
 String gremlin = ast.buildTranslation(translator);
+Map<String, Object> extractedParameters = ast.getExtractedParameters();
+Set<StatementOption> options = ast.getOptions();
 ```
 
 Note that `Translator` instances are not reusable. A new one has to be created for each `buildTranslation` call. `TranslationFacade` handles this for you.
 
-Custom translation targets can be provided by implementing `GremlinSteps` and `GremlinPredicates`:
+Custom translation targets can be provided by implementing `GremlinSteps`, `GremlinPredicates`, and `GremlinParameters`:
 
 <!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#custom) -->
 ```java
 Translator.builder()
     .custom(
         new MyGremlinSteps(),
-        new MyGremlinPredicates()
+        new MyGremlinPredicates(),
+        new MyGremlinParameters()
     )
     .build();
 ```

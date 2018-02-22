@@ -17,6 +17,8 @@ package org.opencypher.gremlin.translation.context
 
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.gremlin.translation.walker.NodeUtils
+import org.opencypher.gremlin.translation.walker.NodeUtils.traversalValueToJava
 
 import scala.collection.mutable
 
@@ -33,14 +35,22 @@ object StatementContext {
 /**
   * Context used by AST walkers to share global translation state.
   *
-  * @param dsl                   reference to [[Translator]] implementation in use
-  * @param extractedParameters   Cypher query parameters
-  * @param referencedAliases tracks node aliases referenced in translation
+  * @param dsl                 reference to [[Translator]] implementation in use
+  * @param extractedParameters Cypher query parameters
+  * @param referencedAliases   tracks node aliases referenced in translation
   */
 sealed class StatementContext[T, P](
     val dsl: Translator[T, P],
-    val extractedParameters: Map[String, Any],
+    private val extractedParameters: Map[String, Any],
     val referencedAliases: mutable.HashSet[String]) {
+
+  def parameter(name: String, inline: Boolean = false): Object = {
+    var value = extractedParameters.get(name).orNull
+    if (!inline) {
+      value = dsl.parameters().parametrize(name, value)
+    }
+    traversalValueToJava(value, this, inline).asInstanceOf[Object]
+  }
 
   private var midTraversals = 0
 

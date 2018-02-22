@@ -79,7 +79,8 @@ subprojects {
             removeUnusedImports()
         }
         scala {
-            scalafmt('1.4.0').configFile("${rootDir}/.scalafmt.conf")
+            scalafmt('1.4.0').
+                configFile("${rootDir}/.scalafmt.conf")
         }
     }
 
@@ -170,6 +171,10 @@ project(':testware:integration-tests') {
         testCompile 'org.awaitility:awaitility:3.0.0'
     }
 
+    test {
+        systemProperty 'translate', System.getProperty('translate')
+    }
+
     task('testGremlinGroovyTranslation', type: Test) {
         systemProperty 'translate', 'gremlin'
 
@@ -208,8 +213,18 @@ project(':testware:tck') {
     apply plugin: 'org.junit.platform.gradle.plugin'
     apply plugin: 'com.kncept.junit5.reporter'
 
-    tasks['junitHtmlReport'].onlyIf { project.getGradle().getStartParameter().getTaskNames().contains("tck") }
-    junitPlatformTest.onlyIf { project.getGradle().getStartParameter().getTaskNames().contains("tck") }
+    tasks['junitHtmlReport'].onlyIf {
+        project.getGradle().
+            getStartParameter().
+            getTaskNames().
+            contains("tck")
+    }
+    junitPlatformTest.onlyIf {
+        project.getGradle().
+            getStartParameter().
+            getTaskNames().
+            contains("tck")
+    }
     junitPlatformTest.finalizedBy 'junitHtmlReport'
 
     task('tck', type: Exec, dependsOn: 'junitPlatformTest') {

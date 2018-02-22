@@ -42,7 +42,7 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters) {
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
         Translator<GraphTraversal, P> translator = Translator.builder().traversal().build(flavor);
         Bytecode bytecode = ast.buildTranslation(translator).asAdmin().getBytecode();

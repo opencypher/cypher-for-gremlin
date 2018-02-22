@@ -16,11 +16,11 @@
 package org.opencypher.gremlin.translation;
 
 import static org.opencypher.gremlin.translation.Tokens.NULL;
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 
 public class SetTest {
 

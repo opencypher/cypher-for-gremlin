@@ -26,26 +26,40 @@ import scala.collection.JavaConverters._
 
 object NodeUtils {
   def expressionValue[T, P](node: Expression, context: StatementContext[T, P]): Any = {
-    val parameters = context.extractedParameters
-    val value = node match {
+    traversalValueToJava(node, context, inline = false)
+  }
+
+  def inlineExpressionValue[T, P, R](node: Expression, context: StatementContext[T, P]): R = {
+    traversalValueToJava(node, context, inline = true).asInstanceOf[R]
+  }
+
+  def traversalValueToJava[T, P](value: Any, context: StatementContext[T, P], inline: Boolean): Any = {
+    value match {
       case Variable(varName) =>
         varName
       case Parameter(name, _) =>
-        parameters(name)
+        context.parameter(name, inline)
       case Null() =>
         Tokens.NULL
       case ListComprehension(_, Parameter(name, _)) =>
-        parameters(name)
+        context.parameter(name, inline)
       case l: Literal =>
         l.value
       case ListLiteral(expressions) =>
-        expressions.map(expressionValue(_, context))
+        traversalValueToJava(expressions, context, inline)
       case MapExpression(items) =>
         asDetachedVertex(items, context)
       case FunctionInvocation(_, _, _, Seq(args)) =>
         expressionValue(args, context)
+      case seq: Seq[_] =>
+        val mappedSeq = seq.map(traversalValueToJava(_, context, inline))
+        new util.ArrayList(mappedSeq.asJava)
+      case map: Map[_, _] =>
+        val mappedMap = map.mapValues(traversalValueToJava(_, context, inline))
+        new util.LinkedHashMap[Any, Any](mappedMap.asJava)
+      case n =>
+        n
     }
-    traversalValueToJava(value)
   }
 
   private def asDetachedVertex[T, P](
@@ -55,25 +69,11 @@ object NodeUtils {
 
     items.foreach(item => {
       val (PropertyKeyName(name), expression) = item
-      val value = placeholderMapper.apply(expressionValue(expression, context))
-
+      val value = expressionValue(expression, context)
       builder.addProperty(new DetachedProperty[Any](name, value))
     })
 
     builder.create()
-  }
-
-  private def traversalValueToJava(value: Any): Any = {
-    value match {
-      case seq: Seq[_] =>
-        val seqWithPlaceholders = mapPlaceholders(seq)
-        new util.ArrayList(seqWithPlaceholders.asJava)
-      case map: Map[_, _] =>
-        val mapWithPlaceholders = mapPlaceholders(map)
-        new util.LinkedHashMap[Any, Any](mapWithPlaceholders.asJava)
-      case _ =>
-        value
-    }
   }
 
   def getPathTraversalAliases(patternElement: PatternElement): Vector[String] = {
@@ -87,21 +87,6 @@ object NodeUtils {
           acc
       }
     }
-  }
-
-  private def mapPlaceholders(seq: Seq[_]): Seq[_] = {
-    seq.map(placeholderMapper)
-  }
-
-  private def mapPlaceholders(map: Map[_, _]): Map[_, _] = {
-    map.mapValues(placeholderMapper)
-  }
-
-  private val placeholderMapper: PartialFunction[Any, Any] = {
-    case null           => Tokens.NULL
-    case seq: Seq[_]    => mapPlaceholders(seq)
-    case map: Map[_, _] => mapPlaceholders(map)
-    case v              => v
   }
 
   def flattenRelationshipChain(node: ASTNode): Vector[ASTNode] = {
@@ -121,7 +106,7 @@ object NodeUtils {
   }
 
   def asUniqueName[T, P](name: String, g: GremlinSteps[T, P], context: StatementContext[T, P]): GremlinSteps[T, P] = {
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
     if (context.referencedAliases.contains(name)) {
       val generated = context.generateName()
       g.as(generated).where(g.start().select(generated).where(p.isEq(name)))

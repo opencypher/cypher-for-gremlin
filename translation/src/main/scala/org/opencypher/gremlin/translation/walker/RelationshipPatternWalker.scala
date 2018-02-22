@@ -55,7 +55,7 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
         case OUTGOING => addVariableName(g.outE(typeNames: _*)).inV()
     }
 
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
     val pathLength: TraversalFunction = _.start().path().count(Scope.local)
     length match {
       case None =>

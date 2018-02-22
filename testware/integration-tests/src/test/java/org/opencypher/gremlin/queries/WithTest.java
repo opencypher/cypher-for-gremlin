@@ -17,6 +17,7 @@ package org.opencypher.gremlin.queries;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.List;
 import java.util.Map;
@@ -115,6 +116,18 @@ public class WithTest {
         assertThat(results)
             .extracting("i")
             .containsExactly(2L, 3L, 4L);
+    }
+
+    @Test
+    public void literals() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH 1 AS one, 'marko' AS marko, true AS yes " +
+                "RETURN one, marko, yes"
+        );
+
+        assertThat(results)
+            .extracting("one", "marko", "yes")
+            .containsExactly(tuple(1L, "marko", true));
     }
 
 }

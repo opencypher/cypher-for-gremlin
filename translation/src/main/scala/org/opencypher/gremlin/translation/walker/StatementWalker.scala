@@ -28,7 +28,7 @@ import scala.collection.mutable
   */
 object StatementWalker {
   def walk[T, P](context: StatementContext[T, P], node: Statement) {
-    val g = context.dsl.translationBuilder()
+    val g = context.dsl.steps()
     new StatementWalker(context, g).walk(node)
   }
 }

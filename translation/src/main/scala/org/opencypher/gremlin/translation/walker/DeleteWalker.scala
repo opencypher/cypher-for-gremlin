@@ -37,7 +37,7 @@ class DeleteWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P])
         context.unsupported("delete expression", n)
     }
 
-    val p = context.dsl.predicateFactory()
+    val p = context.dsl.predicates()
 
     val traversal = g.start().select(aliases: _*)
     if (aliases.length > 1) {

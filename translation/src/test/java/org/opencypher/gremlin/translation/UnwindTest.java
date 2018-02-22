@@ -20,7 +20,7 @@ import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.ass
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstAssertions.__;
+import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 
 public class UnwindTest {
 
@@ -59,7 +59,7 @@ public class UnwindTest {
         )).hasTraversalBeforeReturn(
             __
                 .inject(START).repeat(__.loops().aggregate("  GENERATED1")).times(4).cap("  GENERATED1")
-                .unfold().range(1, 4).as("i")
+                .unfold().skip(1).limit(3).as("i")
                 .addV().as("n")
                 .barrier().limit(0)
         );
@@ -77,7 +77,7 @@ public class UnwindTest {
                 .times(4)
                 .cap("  GENERATED1")
                 .unfold()
-                .range(1, 4).as("i")
+                .skip(1).limit(3).as("i")
                 .addV().as("n")
                 .barrier().limit(0)
         );

@@ -45,17 +45,17 @@ public class CypherAstWrapper {
     /**
      * Constructs a new Cypher AST from the provided query.
      *
-     * @param queryText    Cypher query
-     * @param passedParams Cypher query parameters
+     * @param queryText  Cypher query
+     * @param parameters Cypher query parameters
      * @return Cypher AST wrapper
      */
-    public static CypherAstWrapper parse(String queryText, Map<String, Object> passedParams) {
-        CypherAst ast = CypherAst.parse(queryText, passedParams);
+    public static CypherAstWrapper parse(String queryText, Map<String, ?> parameters) {
+        CypherAst ast = CypherAst.parse(queryText, parameters);
         return new CypherAstWrapper(ast);
     }
 
     /**
-     * Create a translation to Gremlin.
+     * Creates a translation to Gremlin.
      *
      * @param translator {@link Translator} configuration
      * @param <T>        translation target type
@@ -67,7 +67,16 @@ public class CypherAstWrapper {
     }
 
     /**
-     * Get declared options for this query.
+     * Gets extracted parameters for this query.
+     *
+     * @return map of extracted parameters
+     */
+    public Map<String, Object> getExtractedParameters() {
+        return ast.getExtractedParameters();
+    }
+
+    /**
+     * Gets declared options for this query.
      *
      * @return set of statement options
      */

@@ -46,7 +46,7 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, Object> parameters) {
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
 
         if (ast.getOptions().contains(EXPLAIN)) {
