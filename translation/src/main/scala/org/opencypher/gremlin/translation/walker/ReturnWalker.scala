@@ -98,7 +98,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       skip: Option[Skip],
       limit: Option[Limit]): GremlinSteps[T, P] = {
     val SubTraversals(select, all, pivots, aggregations) = subTraversals
-    val selectIfAny = () => if (select.nonEmpty) g.select(select.toSeq: _*) else g
+    val selectIfAny = () => if (select.nonEmpty) g.select(select: _*) else g
 
     if (pivots.nonEmpty && aggregations.nonEmpty) {
       val pivotTraversal = getPivotTraversal(pivots)
@@ -136,7 +136,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
 
     for (s <- skip) {
       val Skip(expression) = s
-      val value = inlineExpressionValue(expression, context).asInstanceOf[Number].longValue()
+      val value = inlineExpressionValue(expression, context, classOf[Number]).longValue()
       if (value != 0L) {
         g.skip(value)
       }
@@ -144,7 +144,8 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
 
     for (l <- limit) {
       val Limit(expression) = l
-      g.limit(inlineExpressionValue(expression, context).asInstanceOf[Number].longValue())
+      val value = inlineExpressionValue(expression, context, classOf[Number]).longValue()
+      g.limit(value)
     }
 
     g

@@ -26,36 +26,41 @@ import scala.collection.JavaConverters._
 
 object NodeUtils {
   def expressionValue[T, P](node: Expression, context: StatementContext[T, P]): Any = {
-    traversalValueToJava(node, context, inline = false)
+    traversalValueToJava(node, context, context.parameter)
   }
 
-  def inlineExpressionValue[T, P, R](node: Expression, context: StatementContext[T, P]): R = {
-    traversalValueToJava(node, context, inline = true).asInstanceOf[R]
+  def inlineExpressionValue[T, P](node: Expression, context: StatementContext[T, P]): Any = {
+    inlineExpressionValue(node, context, classOf[Any])
   }
 
-  def traversalValueToJava[T, P](value: Any, context: StatementContext[T, P], inline: Boolean): Any = {
+  def inlineExpressionValue[T, P, R](node: Expression, context: StatementContext[T, P], klass: Class[R]): R = {
+    val parameterHandler = (name: String) => context.inlineParameter(name, klass)
+    traversalValueToJava(node, context, parameterHandler).asInstanceOf[R]
+  }
+
+  def traversalValueToJava[T, P](value: Any, context: StatementContext[T, P], parameterHandler: String => Any): Any = {
     value match {
       case Variable(varName) =>
         varName
       case Parameter(name, _) =>
-        context.parameter(name, inline)
+        parameterHandler(name)
       case Null() =>
         Tokens.NULL
       case ListComprehension(_, Parameter(name, _)) =>
-        context.parameter(name, inline)
+        parameterHandler(name)
       case l: Literal =>
         l.value
       case ListLiteral(expressions) =>
-        traversalValueToJava(expressions, context, inline)
+        traversalValueToJava(expressions, context, parameterHandler)
       case MapExpression(items) =>
         asDetachedVertex(items, context)
       case FunctionInvocation(_, _, _, Seq(args)) =>
         expressionValue(args, context)
       case seq: Seq[_] =>
-        val mappedSeq = seq.map(traversalValueToJava(_, context, inline))
+        val mappedSeq = seq.map(traversalValueToJava(_, context, parameterHandler))
         new util.ArrayList(mappedSeq.asJava)
       case map: Map[_, _] =>
-        val mappedMap = map.mapValues(traversalValueToJava(_, context, inline))
+        val mappedMap = map.mapValues(traversalValueToJava(_, context, parameterHandler))
         new util.LinkedHashMap[Any, Any](mappedMap.asJava)
       case n =>
         n

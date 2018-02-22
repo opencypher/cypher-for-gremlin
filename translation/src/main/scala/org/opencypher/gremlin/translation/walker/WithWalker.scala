@@ -61,7 +61,7 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
 
     for (s <- skip) {
       val Skip(expression) = s
-      val value = inlineExpressionValue(expression, context).asInstanceOf[Number].longValue()
+      val value = inlineExpressionValue(expression, context, classOf[Number]).longValue()
       if (value != 0L) {
         g.skip(value)
       }
@@ -69,7 +69,8 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
 
     for (l <- limit) {
       val Limit(expression) = l
-      g.limit(inlineExpressionValue(expression, context).asInstanceOf[Number].longValue())
+      val value = inlineExpressionValue(expression, context, classOf[Number]).longValue()
+      g.limit(value)
     }
   }
 

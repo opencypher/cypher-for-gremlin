@@ -44,12 +44,19 @@ sealed class StatementContext[T, P](
     private val extractedParameters: Map[String, Any],
     val referencedAliases: mutable.HashSet[String]) {
 
-  def parameter(name: String, inline: Boolean = false): Object = {
-    var value = extractedParameters.get(name).orNull
-    if (!inline) {
-      value = dsl.parameters().parametrize(name, value)
+  def parameter(name: String): Object = {
+    val value = extractedParameters.get(name).orNull
+    val parameter = dsl.parameters().parametrize(name, value)
+    parameter.asInstanceOf[Object]
+  }
+
+  def inlineParameter[R](name: String, klass: Class[R]): R = {
+    val value = extractedParameters.get(name).orNull
+    if (klass.isInstance(value)) {
+      value.asInstanceOf[R]
+    } else {
+      unsupported("inlined parameter", value)
     }
-    traversalValueToJava(value, this, inline).asInstanceOf[Object]
   }
 
   private var midTraversals = 0
@@ -63,7 +70,7 @@ sealed class StatementContext[T, P](
 
   def upperBound(edges: Int): Int = lowerBound(edges) + midTraversals
 
-  def unsupported[A](description: String, node: Any): A = {
+  def unsupported(description: String, node: Any): Nothing = {
     throw new UnsupportedOperationException(s"Unsupported $description: $node")
   }
 

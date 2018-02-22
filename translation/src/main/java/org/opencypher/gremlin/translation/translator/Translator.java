@@ -111,10 +111,21 @@ public final class Translator<T, P> {
          * @return builder for translator to Gremlin Groovy string
          */
         public FlavorBuilder<String, GroovyPredicate> gremlinGroovy() {
+            return gremlinGroovy(false);
+        }
+
+        /**
+         * Builds a {@link Translator} that translates Cypher queries
+         * to strings of Gremlin-Groovy.
+         *
+         * @param inlineParameters if true, inline provided parameter values
+         * @return builder for translator to Gremlin Groovy string
+         */
+        public FlavorBuilder<String, GroovyPredicate> gremlinGroovy(boolean inlineParameters) {
             return new FlavorBuilder<>(
                 new GroovyGremlinSteps(),
                 new GroovyGremlinPredicates(),
-                new GroovyGremlinParameters()
+                inlineParameters ? new TraversalGremlinParameters() : new GroovyGremlinParameters()
             );
         }
 

@@ -17,13 +17,10 @@ package org.opencypher.gremlin.snippets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Map;
-import java.util.Set;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.StatementOption;
 import org.opencypher.gremlin.translation.TranslationFacade;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinParameters;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
@@ -65,8 +62,6 @@ public class Translation {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
         String gremlin = ast.buildTranslation(translator);
-        Map<String, Object> extractedParameters = ast.getExtractedParameters();
-        Set<StatementOption> options = ast.getOptions();
         // freshReadmeSnippet: verbose
 
         assertThat(gremlin).isEqualTo("g.V()." +

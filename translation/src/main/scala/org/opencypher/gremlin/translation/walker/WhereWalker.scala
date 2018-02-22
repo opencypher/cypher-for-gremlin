@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import java.util
+
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.neo4j.cypher.internal.frontend.v3_2.ast.{BooleanLiteral, _}
 import org.neo4j.cypher.internal.frontend.v3_2.symbols.{BooleanType, ListType}
@@ -23,6 +25,7 @@ import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
@@ -108,9 +111,10 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
         walkBinaryExpression(lhs, p.contains(walkRhs(rhs)))
       case In(lhs, ListLiteral(list)) =>
         walkBinaryExpression(lhs, p.within(list.map(walkRhs): _*))
-      case In(lhs, Parameter(name, _: ListType)) =>
-        val list = context.parameter(name)
-        walkBinaryExpression(lhs, p.within(list))
+      case In(lhs, Parameter(name, _)) =>
+        val coll = context.inlineParameter(name, classOf[util.Collection[_]])
+        val args = coll.asScala.toSeq.asInstanceOf[Seq[Object]]
+        walkBinaryExpression(lhs, p.within(args: _*))
       case expr: RightUnaryOperatorExpression =>
         walkRightUnaryOperatorExpression(expr)
       case expr: FunctionInvocation =>
@@ -120,7 +124,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
           case LabelName(labelName) => labelName
         }
         g.start().select(name).hasLabel(labels: _*)
-      case Parameter(name, BooleanType.instance) =>
+      case Parameter(name, _: BooleanType) =>
         g.start().constant(context.parameter(name)).is(p.isEq(true))
       case l: BooleanLiteral =>
         g.start().constant(walkRhs(l)).is(p.isEq(true))

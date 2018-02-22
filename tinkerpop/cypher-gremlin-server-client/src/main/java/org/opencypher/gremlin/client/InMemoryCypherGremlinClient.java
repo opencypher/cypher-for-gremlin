@@ -51,7 +51,7 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
 
         if (ast.getOptions().contains(EXPLAIN)) {
             Map<String, Object> explanation = new LinkedHashMap<>();
-            explanation.put("translation", ast.buildTranslation(Translator.builder().gremlinGroovy().build()));
+            explanation.put("translation", ast.buildTranslation(Translator.builder().gremlinGroovy(true).build()));
             explanation.put("options", ast.getOptions().toString());
             List<Result> results = Collections.singletonList(new Result(explanation));
             return completedFuture(new CypherResultSet(results.iterator()));

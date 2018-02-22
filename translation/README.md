@@ -24,8 +24,6 @@ String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
 Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
 String gremlin = ast.buildTranslation(translator);
-Map<String, Object> extractedParameters = ast.getExtractedParameters();
-Set<StatementOption> options = ast.getOptions();
 ```
 
 Note that `Translator` instances are not reusable. A new one has to be created for each `buildTranslation` call. `TranslationFacade` handles this for you.
