@@ -94,7 +94,10 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         Map<String, Object> parameters = getParameters(args);
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
 
-        Translator<String, GroovyPredicate> stringTranslator = Translator.builder().gremlinGroovy(true).build();
+        Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
+            .gremlinGroovy()
+            .inlineParameters()
+            .build();
         String gremlin = ast.buildTranslation(stringTranslator);
         logger.info("Gremlin: {}", gremlin);
 

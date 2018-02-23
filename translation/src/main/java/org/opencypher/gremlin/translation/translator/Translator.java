@@ -108,24 +108,13 @@ public final class Translator<T, P> {
          * Builds a {@link Translator} that translates Cypher queries
          * to strings of Gremlin-Groovy.
          *
-         * @return builder for translator to Gremlin Groovy string
+         * @return builder for translator to Gremlin-Groovy string
          */
-        public FlavorBuilder<String, GroovyPredicate> gremlinGroovy() {
-            return gremlinGroovy(false);
-        }
-
-        /**
-         * Builds a {@link Translator} that translates Cypher queries
-         * to strings of Gremlin-Groovy.
-         *
-         * @param inlineParameters if true, inline provided parameter values
-         * @return builder for translator to Gremlin Groovy string
-         */
-        public FlavorBuilder<String, GroovyPredicate> gremlinGroovy(boolean inlineParameters) {
-            return new FlavorBuilder<>(
+        public GremlinGroovyFlavorBuilder gremlinGroovy() {
+            return new GremlinGroovyFlavorBuilder(
                 new GroovyGremlinSteps(),
                 new GroovyGremlinPredicates(),
-                inlineParameters ? new TraversalGremlinParameters() : new GroovyGremlinParameters()
+                new GroovyGremlinParameters()
             );
         }
 
@@ -183,10 +172,10 @@ public final class Translator<T, P> {
         }
     }
 
-    public static final class FlavorBuilder<T, P> {
+    public static class FlavorBuilder<T, P> {
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
-        private final GremlinParameters parameters;
+        protected GremlinParameters parameters;
 
         private FlavorBuilder(GremlinSteps<T, P> steps,
                               GremlinPredicates<P> predicates,
@@ -223,6 +212,24 @@ public final class Translator<T, P> {
                 parameters,
                 flavor
             );
+        }
+    }
+
+    public static final class GremlinGroovyFlavorBuilder extends FlavorBuilder<String, GroovyPredicate> {
+        private GremlinGroovyFlavorBuilder(GremlinSteps<String, GroovyPredicate> steps,
+                                           GremlinPredicates<GroovyPredicate> predicates,
+                                           GremlinParameters parameters) {
+            super(steps, predicates, parameters);
+        }
+
+        /**
+         * Builds a {@link Translator} that inlines query parameters.
+         *
+         * @return builder for translator to Gremlin-Groovy string
+         */
+        public FlavorBuilder<String, GroovyPredicate> inlineParameters() {
+            parameters = new TraversalGremlinParameters();
+            return this;
         }
     }
 }
