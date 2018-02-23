@@ -62,8 +62,8 @@ object NodeUtils {
       case map: Map[_, _] =>
         val mappedMap = map.mapValues(traversalValueToJava(_, context, parameterHandler))
         new util.LinkedHashMap[Any, Any](mappedMap.asJava)
-      case n =>
-        n
+      case _ =>
+        context.unsupported("value expression", value)
     }
   }
 

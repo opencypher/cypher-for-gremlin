@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
@@ -92,34 +91,6 @@ public class ComplexExamplesTest {
             .extracting("a")
             .extracting(byElementProperty("name"))
             .containsExactly("Andres");
-    }
-
-    @Test
-    @Ignore("Bug")
-    public void handleComparisonBetweenNodeProperties() throws Exception {
-        submitAndGet(
-            "CREATE (a:A {animal: 'monkey'}),\n" +
-                "(b:B {animal: 'cow'}),\n" +
-                "(c:C {animal: 'monkey'}),\n" +
-                "(d:D {animal: 'cow'}),\n" +
-                "(a)-[:KNOWS]->(b),\n" +
-                "(a)-[:KNOWS]->(c),\n" +
-                "(d)-[:KNOWS]->(b),\n" +
-                "(d)-[:KNOWS]->(c)"
-        );
-        List<Map<String, Object>> results = submitAndGet(
-            "MATCH (n)-[rel]->(x)\n" +
-                "WHERE n.animal = x.animal\n" +
-                "RETURN n.animal, x.animal"
-        );
-
-        assertThat(results)
-            .hasSize(2)
-            .extracting("n.animal", "x.animal")
-            .containsExactlyInAnyOrder(
-                tuple("monkey", "monkey"),
-                tuple("cow", "cow")
-            );
     }
 
     @Test
