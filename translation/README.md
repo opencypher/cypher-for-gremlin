@@ -5,6 +5,12 @@ The translation module provides facilities to:
 - produce a translation to Gremlin,
 - transform results to a format that is accepted by the target Gremlin Server implementation.
 
+## Getting Started
+
+Translation module releases are not yet available on Maven Central, but will be soon! For now, you can [build the snapshot](../README.md#development) from source. The built translation artifact will be in `translation/build/libs`.
+
+You can then install it manually.
+
 ## Usage
 
 To translate a Cypher query to a Gremlin query:

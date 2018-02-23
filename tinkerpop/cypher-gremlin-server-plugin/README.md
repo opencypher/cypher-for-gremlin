@@ -9,6 +9,8 @@ This is an [`OpProcessor`](https://tinkerpop.apache.org/docs/current/reference/#
 
 ## Installation
 
+Run the following commands from project root.
+
 1. Build the plugin JAR file:
    ```sh
    ./gradlew :tinkerpop:cypher-gremlin-server-plugin:shadowJar

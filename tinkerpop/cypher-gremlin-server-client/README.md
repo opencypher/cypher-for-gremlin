@@ -5,6 +5,12 @@ This is a convenience Gremlin Server client for Java that can send queries via a
 - to a remote Gremlin Server (with [Cypher plugin](../cypher-gremlin-server-plugin)),
 - to any Gremlin Server or a compatible graph database, with client-side translation.
 
+## Getting Started
+
+Cypher Client for Gremlin Server module releases are not yet available on Maven Central, but will be soon! For now, you can [build the snapshot](../../README.md#development) from source. The built translation artifact will be in `tinkerpop/cypher-gremlin-server-client/build/libs`.
+
+You can then install it manually.
+
 ## Usage
 
 To send Cypher queries to a Cypher-enabled Gremlin Server and get Cypher-style results:
@@ -61,3 +67,7 @@ List<Map<String, Object>> results = cypherGremlinClient.submit(cypher).all();
 ```
 
 Consult the Javadoc for more information.
+
+## Neo4j driver-like API
+
+If you want to use a Neo4j driver-like API, take a look at the [Cypher Gremlin Neo4j Driver](../cypher-gremlin-neo4j-driver).

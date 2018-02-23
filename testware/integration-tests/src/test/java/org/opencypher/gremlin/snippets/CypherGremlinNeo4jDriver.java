@@ -45,8 +45,7 @@ public class CypherGremlinNeo4jDriver {
             .create();
         Driver driver1 = GremlinDatabase.driver(cluster1);
 
-        //...
-
+        // Or:
         Cluster cluster2 = Cluster.open(pathToGremlinConfiguration);
 
         Driver driver2 = GremlinDatabase.driver(cluster2);

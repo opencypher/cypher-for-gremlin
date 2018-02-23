@@ -21,8 +21,8 @@ Clauses          | Other       | Patterns                       | Functions
 `OPTIONAL MATCH` | `ORDER BY`  | `()-[r:L {k: ‘v’}]-()`         | `nodes`, `relationships`
 `WITH`           | `SKIP`      | `(n)-[r]-(m)`                  | `size`
 `UNION`          | `LIMIT`     | `()-[]-()-[]-()`               | `type`, `exists`
-`CREATE`         | `DISTINCT`  | `()-[*n..m]-()`                | type conversions
-`MERGE`          |             | <code>[x IN … &#124; …]</code> | string matching
+`CREATE`         | `DISTINCT`  | <code>[x IN … &#124; …]</code> | type conversions
+`MERGE`          |             |                                | string matching
 `SET`            |             |                                |
 `DETACH DELETE`  |             |                                |
 
@@ -41,7 +41,7 @@ To build and run unit and integration tests:
 ./gradlew build
 ```
 
-To automatically fix formatting errors:
+To automatically fix formatting errors in your changes:
 
 ```
 ./gradlew spotlessApply

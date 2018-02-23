@@ -6,10 +6,12 @@ The plugin can work with any Gremlin Server and perform translation to Gremlin i
 
 ## Prerequisites
 
-- Gremlin Console
-- A running Gremlin Server or a compatible graph database
+- [Gremlin Console](https://tinkerpop.apache.org/)
+- A running [Gremlin Server](https://tinkerpop.apache.org/) or a compatible graph database
 
 ### Installation
+
+Run the following commands from project root.
 
 1. Build the plugin JAR file:
     ```sh
