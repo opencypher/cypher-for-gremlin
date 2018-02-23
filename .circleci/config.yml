@@ -8,7 +8,7 @@ jobs:
     working_directory: ~/repo
 
     environment:
-      JVM_OPTS: -Xmx256m -XshowSettings:vm
+      JVM_OPTS: -Xmx3200m -XshowSettings:vm
       TERM: dumb
 
     steps:
@@ -16,28 +16,24 @@ jobs:
 
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "build.gradle" }}
-          - v2-dependencies-
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          - v1-dependencies-
 
       - run:
-          command: gradle dependencies
+          command: ./gradlew --no-daemon dependencies
 
       - save_cache:
           paths:
-            - ~/.m2
-          key: v2-dependencies-{{ checksum "build.gradle" }}
-
-      - run:
-          name: Check formatting
-          command: gradle spotlessCheck
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
 
       - run:
           name: Run all tests and checks
-          command: gradle check
+          command: ./gradlew --no-daemon check
 
       - run:
           name: Compile JMH benchmark sources
-          command: gradle :testware:performance-tests:jmhClasses
+          command: ./gradlew --no-daemon :testware:performance-tests:jmhClasses
 
       - run:
           name: Collect test result files in single folder
@@ -48,12 +44,6 @@ jobs:
 
       - store_test_results:
           path: ~/repo/build/junit
-
-workflows:
-  version: 2
-  all:
-    jobs:
-      - build
 
 experimental:
   notify:
