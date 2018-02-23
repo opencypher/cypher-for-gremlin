@@ -8,7 +8,7 @@ jobs:
     working_directory: ~/repo
 
     environment:
-      JVM_OPTS: -Xmx3200m -XshowSettings:vm
+      JAVA_OPTS: -Xmx256m
       TERM: dumb
 
     steps:
@@ -20,7 +20,8 @@ jobs:
           - v1-dependencies-
 
       - run:
-          command: ./gradlew --no-daemon dependencies
+          name: Fetch dependencies
+          command: ./gradlew --no-daemon -Pci dependencies
 
       - save_cache:
           paths:
@@ -29,11 +30,11 @@ jobs:
 
       - run:
           name: Run all tests and checks
-          command: ./gradlew --no-daemon check
+          command: ./gradlew --no-daemon -Pci check
 
       - run:
           name: Compile JMH benchmark sources
-          command: ./gradlew --no-daemon :testware:performance-tests:jmhClasses
+          command: ./gradlew --no-daemon -Pci :testware:performance-tests:jmhClasses
 
       - run:
           name: Collect test result files in single folder

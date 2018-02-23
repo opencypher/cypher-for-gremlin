@@ -67,6 +67,14 @@ subprojects {
         testCompile 'org.mockito:mockito-all:1.10.19'
     }
 
+    if (project.hasProperty('ci')) {
+        test {
+            testLogging.showStandardStreams = true
+            minHeapSize = '128m'
+            maxHeapSize = '256m'
+        }
+    }
+
     spotless {
         format 'misc', {
             target '**/*.java', '**/*.scala'
@@ -154,6 +162,7 @@ project(':testware:testware-common') {
 
         compile "junit:junit:${junitVersion}"
         compile "org.assertj:assertj-core:${assertjVersion}"
+        compile 'org.slf4j:slf4j-api:1.7.25'
         compile 'ch.qos.logback:logback-classic:1.2.3'
         compile "com.google.guava:guava:${guavaVersion}"
         compile "org.apache.tinkerpop:gremlin-server:${tinkerpopVersion}"
@@ -177,6 +186,12 @@ project(':testware:integration-tests') {
 
     task('testGremlinGroovyTranslation', type: Test) {
         systemProperty 'translate', 'gremlin'
+
+        if (project.hasProperty('ci')) {
+            testLogging.showStandardStreams = true
+            minHeapSize = '128m'
+            maxHeapSize = '256m'
+        }
 
         useJUnit {
             include 'org/opencypher/gremlin/queries/**'

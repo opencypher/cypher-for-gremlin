@@ -19,82 +19,58 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toList;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.tinkerpop.gremlin.driver.MessageSerializer;
 import org.apache.tinkerpop.gremlin.server.GremlinServer;
 import org.apache.tinkerpop.gremlin.server.Settings;
+import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class EmbeddedGremlinServer {
 
-    private final GremlinServer gremlinServer;
+    private Logger logger = LoggerFactory.getLogger(EmbeddedGremlinServer.class);
+    private GremlinServer gremlinServer;
+    private final Settings settings;
 
-    private final int port;
-
-    private String serverName = getClass().getSimpleName();
-
-    private EmbeddedGremlinServer(Builder builder) {
-        Settings settings = new Settings();
-        if (builder.port != null) {
-            port = builder.port;
-        } else {
-            port = findAvailablePort();
-        }
-
-        settings.port = port;
-        settings.graphs = singletonMap("graph", checkFile(builder.propertiesPath));
-
-        Settings.ScriptEngineSettings gremlinGroovy = settings.scriptEngines.get("gremlin-groovy");
-        gremlinGroovy.imports.add("java.lang.Math");
-        gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin", emptyMap());
-        gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin", emptyMap());
-        gremlinGroovy.plugins.put("org.opencypher.gremlin.server.jsr223.CypherPlugin", emptyMap());
-        gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin", singletonMap("files", singletonList(builder.scriptPath)));
-        gremlinGroovy.staticImports.add("java.lang.Math.PI");
-
-        if (builder.updater != null) {
-            builder.updater.accept(settings);
-        }
-        gremlinServer = new GremlinServer(settings);
-    }
-
-    private String checkFile(String fileName) {
-        File file = new File(fileName);
-        Preconditions.checkState(file.exists(), format("File %s doesn't exist", file.getAbsolutePath()));
-        return fileName;
+    private EmbeddedGremlinServer(Settings settings) {
+        this.settings = settings;
     }
 
     public void start() {
+        if (gremlinServer != null) {
+            throw new IllegalStateException("EmbeddedGremlinServer already started!");
+        }
         try {
-            gremlinServer.start().get();
-            System.out.println(format(serverName + " started (port %s)", port));
+            gremlinServer = new GremlinServer(settings);
+            gremlinServer.start().join();
+            logger.info("EmbeddedGremlinServer started (port {})", getPort());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public void stop() {
-        System.out.println("Shutting down " + serverName);
+        if (gremlinServer == null) {
+            throw new IllegalStateException("EmbeddedGremlinServer not started!");
+        }
+        logger.info("Shutting down EmbeddedGremlinServer");
         gremlinServer.stop();
+        gremlinServer = null;
     }
 
     public int getPort() {
-        return port;
-    }
-
-    private static int findAvailablePort() {
-        try {
-            ServerSocket server = new ServerSocket(0);
-            int result = server.getLocalPort();
-            server.close();
-            return result;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return settings.port;
     }
 
     public static Builder builder() {
@@ -102,16 +78,16 @@ public final class EmbeddedGremlinServer {
     }
 
     public static final class Builder {
-
-        private Integer port;
+        private int port;
         private String propertiesPath;
         private String scriptPath;
-        private Consumer<Settings> updater;
+        private Multimap<Class<? extends MessageSerializer>, Class<? extends IoRegistry>> serializers =
+            HashMultimap.create();
 
         private Builder() {
         }
 
-        public Builder port(Integer port) {
+        public Builder port(int port) {
             this.port = port;
             return this;
         }
@@ -126,15 +102,53 @@ public final class EmbeddedGremlinServer {
             return this;
         }
 
-        public Builder settingsUpdater(Consumer<Settings> updater) {
-            this.updater = updater;
+        public Builder serializer(Class<? extends MessageSerializer> serializer,
+                                  List<Class<? extends IoRegistry>> ioRegistries) {
+            serializers.putAll(serializer, ioRegistries);
             return this;
         }
 
         public EmbeddedGremlinServer build() {
-            Preconditions.checkNotNull(propertiesPath, "propertiesPath is required");
-            Preconditions.checkNotNull(scriptPath, "scriptPath is required");
-            return new EmbeddedGremlinServer(this);
+            checkFile("propertiesPath", propertiesPath);
+            checkFile("scriptPath", scriptPath);
+
+            Settings settings = new Settings();
+            settings.port = getFreePort();
+            settings.graphs = singletonMap("graph", propertiesPath);
+
+            Settings.ScriptEngineSettings gremlinGroovy = settings.scriptEngines.get("gremlin-groovy");
+            gremlinGroovy.imports.add("java.lang.Math");
+            gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin", emptyMap());
+            gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin", emptyMap());
+            gremlinGroovy.plugins.put("org.opencypher.gremlin.server.jsr223.CypherPlugin", emptyMap());
+            gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin", singletonMap("files", singletonList(scriptPath)));
+            gremlinGroovy.staticImports.add("java.lang.Math.PI");
+
+            settings.serializers = new ArrayList<>(settings.serializers);
+            serializers.asMap().forEach((serializer, ioRegistries) -> {
+                Settings.SerializerSettings serializerSettings = new Settings.SerializerSettings();
+                serializerSettings.className = serializer.getCanonicalName();
+                serializerSettings.config = singletonMap("ioRegistries", ioRegistries.stream()
+                    .map(Class::getCanonicalName)
+                    .collect(toList()));
+                settings.serializers.add(serializerSettings);
+            });
+
+            return new EmbeddedGremlinServer(settings);
+        }
+
+        private static void checkFile(String key, String path) {
+            Preconditions.checkNotNull(path, key + " is required");
+            File file = new File(path);
+            Preconditions.checkState(file.exists(), format("file %s doesn't exist", file.getAbsolutePath()));
+        }
+
+        private int getFreePort() {
+            try (ServerSocket socket = new ServerSocket(port)) {
+                return socket.getLocalPort();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
     }
 }
