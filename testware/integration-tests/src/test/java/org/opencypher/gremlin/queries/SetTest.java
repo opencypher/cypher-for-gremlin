@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
@@ -53,7 +52,6 @@ public class SetTest {
     }
 
     @Test
-    @Ignore("https://trello.com/c/b9vaFznT/223")
     public void setAndGetList() throws Exception {
         assertThat(setAndGetProperty("[1, 2, 3]")).containsExactly(asList(1L, 2L, 3L));
     }
