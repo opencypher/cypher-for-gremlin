@@ -20,7 +20,7 @@ To compare TCK results with some baseline TCK run use these tasks:
 The usual workflow is:
 
 1. Start with a stable state
-1. `gradle --continue clean tck tckSaveReport`
+1. `./gradlew --continue clean tck tckSaveReport`
 1. Make changes
-1. `gradle --continue tck tckRegression`
+1. `./gradlew --continue tck tckRegression`
   - The `clean` target is not used here because it will remove `TEST-junit-jupiter-before.xml`, which is required for `tckRegression`.
