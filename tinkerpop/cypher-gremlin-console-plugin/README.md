@@ -25,7 +25,10 @@ Run the following commands from project root.
     ```sh
     export JAVA_OPTIONS="-Dplugins=v3d3"
     ```
-1. Launch Gremlin Console.
+1. Launch Gremlin Console:
+    ```sh
+    ./bin/gremlin.sh
+    ```
 1. If the plugin has been installed correctly, you should see it among the plugin list:
     ```
     gremlin> :plugin list
@@ -42,7 +45,7 @@ Run the following commands from project root.
 1. Connect to Gremlin Server.
    * With server-side translation ([Cypher plugin](../cypher-gremlin-server-plugin) required):
     ```
-    gremlin> :remote connect opencypher.gremlin conf/remote.yaml
+    gremlin> :remote connect opencypher.gremlin conf/remote-objects.yaml
     ==>Configured localhost/127.0.0.1:8182
     ```
    * With translation in Console:
@@ -50,7 +53,7 @@ Run the following commands from project root.
      Append `translate [flavor]` option to the `connect` command:
 
      ```
-     gremlin> :remote connect opencypher.gremlin conf/remote.yaml translate gremlin
+     gremlin> :remote connect opencypher.gremlin conf/remote-objects.yaml translate gremlin
      ==>Configured localhost/127.0.0.1:8182
      ```
 
