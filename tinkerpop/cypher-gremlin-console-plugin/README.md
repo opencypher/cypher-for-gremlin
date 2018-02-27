@@ -13,11 +13,11 @@ The plugin can work with any Gremlin Server and perform translation to Gremlin i
 
 Run the following commands from project root.
 
-1. Build the plugin JAR file:
+1. Download [the latest release](https://github.com/opencypher/cypher-for-gremlin/releases) or build the plugin JAR file:
     ```sh
     ./gradlew :tinkerpop:cypher-gremlin-console-plugin:shadowJar
     ```
-1. Copy plugin shadow JAR file to Gremlin Console `lib/` directory:
+1. Copy plugin JAR file to Gremlin Console `lib/` directory:
     ```sh
     cp tinkerpop/cypher-gremlin-console-plugin/build/libs/cypher-gremlin-console-plugin-*-all.jar /path/to/gremlin-console/lib/
     ```

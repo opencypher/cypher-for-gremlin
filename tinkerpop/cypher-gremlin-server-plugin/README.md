@@ -11,11 +11,11 @@ This is an [`OpProcessor`](https://tinkerpop.apache.org/docs/current/reference/#
 
 Run the following commands from project root.
 
-1. Build the plugin JAR file:
+1. Download [the latest release](https://github.com/opencypher/cypher-for-gremlin/releases) or build the plugin JAR file:
    ```sh
    ./gradlew :tinkerpop:cypher-gremlin-server-plugin:shadowJar
    ```
-1. Copy plugin shadow JAR file to Gremlin Server `lib/` directory:
+1. Copy plugin JAR file to Gremlin Server `lib/` directory:
    ```sh
    cp tinkerpop/cypher-gremlin-server-plugin/build/libs/cypher-gremlin-server-plugin-*-all.jar /path/to/gremlin-server/lib/
    ```
