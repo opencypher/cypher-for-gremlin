@@ -68,3 +68,8 @@ Run the following commands from project root.
    ==>josh
    ==>peter
    ```
+
+## Troubleshooting
+
+* Executing a Cypher query causes an error: java.lang.ClassCastException: java.lang.String cannot be cast to java.util.Map.
+  - Make sure that Gremlin Console has `org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0` serializer with `serializeResultToString` disabled.
