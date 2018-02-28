@@ -58,11 +58,6 @@ github {
     ]
 }
 
-allprojects {
-    group 'org.opencypher.gremlin'
-    version scmVersion.version
-}
-
 task gitHooks(type: Copy) {
     from "${rootDir}/hooks"
     into "${rootDir}/.git/hooks"
@@ -124,10 +119,28 @@ subprojects {
         }
     }
 
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
     build.dependsOn gitHooks
 }
 
 project(':translation') {
+    ext.releaseToMavenCentral = true
+    ext.title = 'Cypher for Gremlin: Translation'
+    description 'Cypher to Gremlin translation library for Java'
+
     apply plugin: 'scala'
 
     sourceSets.main.scala.srcDir "src/main/java"
@@ -142,6 +155,10 @@ project(':translation') {
 }
 
 project(':tinkerpop:tinkerpop-common') {
+    ext.releaseToMavenCentral = true
+    ext.title = 'Cypher for Gremlin: TinkerPop Common'
+    description 'Cypher for Gremlin common classes'
+
     dependencies {
         compile project(':translation')
 
@@ -152,6 +169,10 @@ project(':tinkerpop:tinkerpop-common') {
 }
 
 project(':tinkerpop:cypher-gremlin-server-client') {
+    ext.releaseToMavenCentral = true
+    ext.title = 'Cypher for Gremlin: Cypher Client for Gremlin Server'
+    description 'Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server'
+
     dependencies {
         compile project(':tinkerpop:tinkerpop-common')
 
@@ -162,6 +183,10 @@ project(':tinkerpop:cypher-gremlin-server-client') {
 }
 
 project(':tinkerpop:cypher-gremlin-server-plugin') {
+    ext.releaseToMavenCentral = true
+    ext.title = 'Cypher for Gremlin: Gremlin Server Cypher Plugin'
+    description 'Gremlin Server plugin that enables Cypher query processing'
+
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
@@ -170,6 +195,10 @@ project(':tinkerpop:cypher-gremlin-server-plugin') {
 }
 
 project(':tinkerpop:cypher-gremlin-console-plugin') {
+    ext.releaseToMavenCentral = true
+    ext.title = 'Cypher for Gremlin: Gremlin Console Cypher Plugin'
+    description 'Gremlin Console plugin that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server'
+
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
@@ -187,6 +216,10 @@ project(':tinkerpop:cypher-gremlin-console-plugin') {
 }
 
 project(':tinkerpop:cypher-gremlin-neo4j-driver') {
+    ext.releaseToMavenCentral = true
+    ext.title = 'Cypher for Gremlin: Cypher Gremlin Neo4j Driver for Java'
+    description 'Run Cypher queries via Neo4j Java API on Gremlin Server or a compatible graph database'
+
     dependencies {
         compile project(':tinkerpop:cypher-gremlin-server-client')
         compile 'org.neo4j.driver:neo4j-java-driver:1.4.4'
@@ -308,5 +341,61 @@ project(':testware:tck') {
         testCompile 'org.opencypher:tck-api:1.0.0-M09'
         testCompile 'org.freemarker:freemarker:2.3.23'
         testCompile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.0"
+    }
+}
+
+allprojects {
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+
+    group 'org.opencypher.gremlin'
+    version scmVersion.version
+
+    if (project.hasProperty('releaseToMavenCentral')) {
+
+        signing {
+            sign configurations.archives
+        }
+
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: project.findProperty('ossrhUsername'),
+                            password: project.findProperty('ossrhPassword'))
+                    }
+
+                    pom.project {
+                        def githubProject = "opencypher/cypher-for-gremlin"
+
+                        name project.title
+                        description project.description
+                        url "https://github.com/${githubProject}"
+                        packaging 'jar'
+
+                        scm {
+                            connection "scm:git:https://github.com/${githubProject}.git"
+                            developerConnection "scm:git:git@github.com:${githubProject}.git"
+                            url "https://github.com/${githubProject}.git"
+                        }
+
+                        licenses {
+                            license {
+                                name 'The Apache License, Version 2.0'
+                                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            }
+                        }
+                        developers {
+                            developer {
+                                name 'The Cypher for Gremlin team'
+                                email 'opencypher@googlegroups.com'
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
