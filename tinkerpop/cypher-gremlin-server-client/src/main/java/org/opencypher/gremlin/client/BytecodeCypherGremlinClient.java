@@ -15,6 +15,10 @@
  */
 package org.opencypher.gremlin.client;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static org.opencypher.gremlin.client.ExplainTranslation.getExplanation;
+import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
@@ -44,6 +48,11 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
+
+        if (ast.getOptions().contains(EXPLAIN)) {
+            return completedFuture(getExplanation(ast));
+        }
+
         Translator<GraphTraversal, P> translator = Translator.builder().traversal().build(flavor);
         Bytecode bytecode = ast.buildTranslation(translator).asAdmin().getBytecode();
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(bytecode);

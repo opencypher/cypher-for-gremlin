@@ -17,10 +17,9 @@ package org.opencypher.gremlin.client;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
+import static org.opencypher.gremlin.client.ExplainTranslation.getExplanation;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +28,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTrav
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
@@ -51,15 +49,7 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
 
         if (ast.getOptions().contains(EXPLAIN)) {
-            Map<String, Object> explanation = new LinkedHashMap<>();
-            Translator<String, GroovyPredicate> translator = Translator.builder()
-                .gremlinGroovy()
-                .inlineParameters()
-                .build();
-            explanation.put("translation", ast.buildTranslation(translator));
-            explanation.put("options", ast.getOptions().toString());
-            List<Result> results = Collections.singletonList(new Result(explanation));
-            return completedFuture(new CypherResultSet(results.iterator()));
+            return completedFuture(getExplanation(ast));
         }
 
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());

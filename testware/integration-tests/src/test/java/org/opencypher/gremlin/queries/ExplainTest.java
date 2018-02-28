@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ExplainTest {
@@ -34,11 +32,7 @@ public class ExplainTest {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
     }
 
-    /**
-     * Explain only works with `cypher-gremlin-server-plugin`
-     */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
     public void explainIntegration() throws Exception {
         String cypher = "EXPLAIN\n" +
             "MATCH (s)-[:MEMBER_OF]->(ss)\n" +
