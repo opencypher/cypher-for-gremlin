@@ -17,6 +17,7 @@ package org.opencypher.gremlin.client;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
@@ -67,5 +68,13 @@ public class GroovyCypherGremlinClientTest {
         assertThat(results)
             .extracting("name")
             .containsExactlyInAnyOrder("marko");
+    }
+
+    @Test
+    public void invalidSyntax() {
+        Throwable throwable = catchThrowable(() -> client.submit("INVALID"));
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid input");
     }
 }

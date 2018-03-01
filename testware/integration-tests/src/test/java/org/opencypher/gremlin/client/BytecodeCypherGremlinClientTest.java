@@ -16,10 +16,12 @@
 package org.opencypher.gremlin.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
@@ -30,16 +32,29 @@ public class BytecodeCypherGremlinClientTest {
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
+    private BytecodeCypherGremlinClient client;
+
+    @Before
+    public void setUp() {
+        Client aliasedClient = gremlinServer.gremlinClient().alias("g");
+        client = new BytecodeCypherGremlinClient(aliasedClient, TranslatorFlavor.gremlinServer());
+    }
+
     @Test
     public void submitToDefaultGraph() {
-        Client aliasedClient = gremlinServer.gremlinClient().alias("g");
-        BytecodeCypherGremlinClient client =
-            new BytecodeCypherGremlinClient(aliasedClient, TranslatorFlavor.gremlinServer());
         String cypher = "MATCH (p:person) RETURN p.name AS name";
         List<Map<String, Object>> results = client.submit(cypher).all();
 
         assertThat(results)
             .extracting("name")
             .containsExactlyInAnyOrder("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
+    public void invalidSyntax() {
+        Throwable throwable = catchThrowable(() -> client.submit("INVALID"));
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid input");
     }
 }

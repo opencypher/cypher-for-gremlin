@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation
 
-import org.neo4j.cypher.internal.frontend.v3_2.PlannerName
+import org.neo4j.cypher.internal.frontend.v3_3.PlannerName
 
 case object EmptyPlannerName extends PlannerName {
   val name = ""

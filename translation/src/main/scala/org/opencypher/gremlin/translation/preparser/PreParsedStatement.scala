@@ -15,6 +15,6 @@
  */
 package org.opencypher.gremlin.translation.preparser
 
-import org.neo4j.cypher.internal.frontend.v3_2.InputPosition
+import org.neo4j.cypher.internal.frontend.v3_3.InputPosition
 
 final case class PreParsedStatement(statement: String, options: Seq[PreParserOption], offset: InputPosition)

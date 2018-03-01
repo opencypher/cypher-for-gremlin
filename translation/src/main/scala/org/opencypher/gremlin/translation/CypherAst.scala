@@ -17,11 +17,11 @@ package org.opencypher.gremlin.translation
 
 import java.util
 
-import org.neo4j.cypher.internal.frontend.v3_2.CypherException
-import org.neo4j.cypher.internal.frontend.v3_2.ast._
-import org.neo4j.cypher.internal.frontend.v3_2.ast.rewriters.Never
-import org.neo4j.cypher.internal.frontend.v3_2.helpers.rewriting.RewriterStepSequencer
-import org.neo4j.cypher.internal.frontend.v3_2.phases._
+import org.neo4j.cypher.internal.frontend.v3_3.CypherException
+import org.neo4j.cypher.internal.frontend.v3_3.ast._
+import org.neo4j.cypher.internal.frontend.v3_3.ast.rewriters.Never
+import org.neo4j.cypher.internal.frontend.v3_3.helpers.rewriting.RewriterStepSequencer
+import org.neo4j.cypher.internal.frontend.v3_3.phases._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.preparser.{
   CypherPreParser,

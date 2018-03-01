@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
-import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
@@ -57,7 +57,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       g.inject(START)
     }
 
-    val Return(distinct, ReturnItems(_, items), _, skip, limit, _) = node
+    val Return(distinct, ReturnItems(_, items), _, _, skip, limit, _) = node
     val subTraversals = returnSubTraversals(items)
     applyReturnTraversal(node, subTraversals, distinct, skip, limit)
   }

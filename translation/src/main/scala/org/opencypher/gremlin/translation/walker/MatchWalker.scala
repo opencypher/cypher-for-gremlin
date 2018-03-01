@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.Tokens.{NULL, START}
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext

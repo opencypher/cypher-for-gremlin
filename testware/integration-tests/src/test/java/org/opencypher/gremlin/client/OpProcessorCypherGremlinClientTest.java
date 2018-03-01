@@ -17,6 +17,7 @@ package org.opencypher.gremlin.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
@@ -70,5 +71,16 @@ public class OpProcessorCypherGremlinClientTest {
 
         assertThatThrownBy(() -> client.submit(cypher).all())
             .hasMessageContaining("Traversable alias 'does_not_exist' not found");
+    }
+
+    @Test
+    public void invalidSyntax() {
+        Client gremlinClient = gremlinServer.gremlinClient();
+        OpProcessorCypherGremlinClient client = new OpProcessorCypherGremlinClient(gremlinClient);
+        CypherResultSet resultSet = client.submit("INVALID");
+        Throwable throwable = catchThrowable(resultSet::all);
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid input");
     }
 }

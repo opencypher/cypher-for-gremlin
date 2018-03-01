@@ -18,8 +18,8 @@ package org.opencypher.gremlin.translation.walker
 import java.util
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.neo4j.cypher.internal.frontend.v3_2.ast.{BooleanLiteral, _}
-import org.neo4j.cypher.internal.frontend.v3_2.symbols.{BooleanType, ListType}
+import org.neo4j.cypher.internal.frontend.v3_3.ast.{BooleanLiteral, _}
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.{BooleanType, ListType}
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext

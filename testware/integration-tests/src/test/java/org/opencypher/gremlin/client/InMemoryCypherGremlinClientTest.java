@@ -13,34 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin;
+package org.opencypher.gremlin.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
-import org.opencypher.gremlin.client.CypherGremlinClient;
 
-public class EmbeddedTinkerGraphTest {
+public class InMemoryCypherGremlinClientTest {
 
-    private TinkerGraph graph;
+    private InMemoryCypherGremlinClient client;
 
     @Before
     public void setUp() {
-        graph = TinkerGraph.open();
+        TinkerGraph graph = TinkerGraph.open();
+        client = new InMemoryCypherGremlinClient(graph.traversal());
     }
 
     @Test
     public void createAndMatch() {
-        CypherGremlinClient client = CypherGremlinClient.inMemory(graph.traversal());
         client.submit("CREATE (:L {foo: 'bar'})");
         List<Map<String, Object>> results = client.submit("MATCH (n:L) return n.foo").all();
 
         assertThat(results)
             .extracting("n.foo")
             .containsExactly("bar");
+    }
+
+    @Test
+    public void invalidSyntax() {
+        Throwable throwable = catchThrowable(() -> client.submit("INVALID"));
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid input");
     }
 }

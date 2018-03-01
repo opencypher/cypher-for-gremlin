@@ -15,8 +15,8 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.neo4j.cypher.internal.frontend.v3_2.InputPosition
-import org.neo4j.cypher.internal.frontend.v3_2.ast._
+import org.neo4j.cypher.internal.frontend.v3_3.InputPosition
+import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -36,7 +36,7 @@ object MergeWalker {
 private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Merge): GremlinSteps[T, P] = {
-    val Merge(Pattern(patternParts), actions: Seq[MergeAction]) = node
+    val Merge(Pattern(patternParts), actions: Seq[MergeAction], _) = node
     walkMerge(g, patternParts, actions)
   }
 
