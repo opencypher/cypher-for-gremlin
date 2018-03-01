@@ -1,5 +1,7 @@
 # Cypher Client for Gremlin Server
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/cypher-gremlin-server-client/badge.svg?style=shield)](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/cypher-gremlin-server-client)
+
 This is a convenience Gremlin Server client for Java that can send queries via a [Gremlin `Client`](https://tinkerpop.apache.org/docs/current/reference/#connecting-via-java) instance:
 
 - to a remote Gremlin Server (with [Cypher plugin](../cypher-gremlin-server-plugin)),
@@ -7,9 +9,27 @@ This is a convenience Gremlin Server client for Java that can send queries via a
 
 ## Getting Started
 
-Cypher Client for Gremlin Server module releases are not yet available on Maven Central, but will be soon! For now, you can [build the snapshot](../../README.md#development) from source. The built translation artifact will be in `tinkerpop/cypher-gremlin-server-client/build/libs`.
+Cypher Client for Gremlin Server module latest release is 0.9.0.
 
-You can then install it manually.
+To add a dependency using Maven:
+
+```xml
+<dependency>
+    <groupId>org.opencypher.gremlin</groupId>
+    <artifactId>cypher-gremlin-server-client</artifactId>
+    <version>0.9.0</version>
+</dependency>
+```
+
+To add a dependency using Gradle:
+
+```
+dependencies {
+  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.0'
+}
+```
+
+You can also [build the snapshot](../README.md#development) from source.
 
 ## Usage
 

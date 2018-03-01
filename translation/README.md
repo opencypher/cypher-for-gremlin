@@ -1,5 +1,7 @@
 # Cypher to Gremlin Translation
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/translation/badge.svg?style=shield)](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/translation)
+
 The translation module provides facilities to:
 - parse Cypher queries using the Cypher frontend,
 - produce a translation to Gremlin,
@@ -7,9 +9,27 @@ The translation module provides facilities to:
 
 ## Getting Started
 
-Translation module releases are not yet available on Maven Central, but will be soon! For now, you can [build the snapshot](../README.md#development) from source. The built translation artifact will be in `translation/build/libs`.
+Translation module latest release is 0.9.0.
 
-You can then install it manually.
+To add a dependency using Maven:
+
+```xml
+<dependency>
+    <groupId>org.opencypher.gremlin</groupId>
+    <artifactId>translation</artifactId>
+    <version>0.9.0</version>
+</dependency>
+```
+
+To add a dependency using Gradle:
+
+```
+dependencies {
+  compile 'org.opencypher.gremlin:translation:0.9.0'
+}
+```
+
+You can also [build the snapshot](../README.md#development) from source.
 
 ## Usage
 

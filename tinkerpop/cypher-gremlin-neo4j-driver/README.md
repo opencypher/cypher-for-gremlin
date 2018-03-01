@@ -1,5 +1,7 @@
 # Cypher Gremlin Neo4j Driver for Java
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/cypher-gremlin-neo4j-driver/badge.svg?style=shield)](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/cypher-gremlin-neo4j-driver)
+
 This module provides Cypher for Gremlin implementation of Neo4j driver interfaces.
 
 It could be used as a drop in replacement to run Cypher queries via [Neo4j Java API](https://neo4j.com/developer/java/) on [Gremlin Server](https://tinkerpop.apache.org/) or a compatible graph database.
@@ -11,9 +13,27 @@ It could be used as a drop in replacement to run Cypher queries via [Neo4j Java 
 
 ## Getting Started
 
-Cypher Gremlin Neo4j Driver module releases are not yet available on Maven Central, but will be soon! For now, you can [build the snapshot](../../README.md#development) from source. The built translation artifact will be in `tinkerpop/cypher-gremlin-neo4j-driver/build/libs`.
+Cypher Gremlin Neo4j Driver module latest release is 0.9.0.
 
-You can then install it manually.
+To add a dependency using Maven:
+
+```xml
+<dependency>
+    <groupId>org.opencypher.gremlin</groupId>
+    <artifactId>cypher-gremlin-neo4j-driver</artifactId>
+    <version>0.9.0</version>
+</dependency>
+```
+
+To add a dependency using Gradle:
+
+```
+dependencies {
+  compile 'org.opencypher.gremlin:cypher-gremlin-neo4j-driver:0.9.0'
+}
+```
+
+You can also [build the snapshot](../README.md#development) from source.
 
 ## Usage
 

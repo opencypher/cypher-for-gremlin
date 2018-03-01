@@ -1,5 +1,7 @@
 # Gremlin Console Cypher plugin
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/cypher-gremlin-console-plugin/badge.svg?style=shield)](https://maven-badges.herokuapp.com/maven-central/org.opencypher.gremlin/cypher-gremlin-console-plugin)
+
 This plugin enables Cypher queries in [Gremlin Console](https://tinkerpop.apache.org/docs/current/tutorials/the-gremlin-console/).
 
 The plugin can work with any Gremlin Server and perform translation to Gremlin in the Console. Alternatively, if a Gremlin Server has the [Cypher plugin](../cypher-gremlin-server-plugin) installed, the plugin can let the server handle the translation.
