@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.neo4jadapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.neo4j.driver.v1.Values.parameters;
 
 import java.util.List;
@@ -89,6 +90,36 @@ public class GremlinNeo4jDriverTest {
             StatementResult result = session.run("MATCH (n:person) RETURN count(n) as count");
             int count = result.single().get("count").asInt();
             assertThat(count).isEqualTo(4);
+        }
+    }
+
+    @Test
+    public void invalidSyntax() {
+        Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort());
+
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("INVALID");
+            Throwable throwable = catchThrowable(result::list);
+
+            assertThat(throwable)
+                .hasMessageContaining("Invalid input");
+        }
+    }
+
+    @Test
+    public void invalidSyntaxInTranslation() {
+        Config config = Config.build()
+            .withTranslation(TranslatorFlavor.gremlinServer())
+            .toConfig();
+
+        Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort(), config);
+
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("INVALID");
+            Throwable throwable = catchThrowable(result::list);
+
+            assertThat(throwable)
+                .hasMessageContaining("Invalid input");
         }
     }
 }

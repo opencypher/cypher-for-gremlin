@@ -46,7 +46,8 @@ public class InMemoryCypherGremlinClientTest {
 
     @Test
     public void invalidSyntax() {
-        Throwable throwable = catchThrowable(() -> client.submit("INVALID"));
+        CypherResultSet resultSet = client.submit("INVALID");
+        Throwable throwable = catchThrowable(resultSet::all);
 
         assertThat(throwable)
             .hasMessageContaining("Invalid input");

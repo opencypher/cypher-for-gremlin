@@ -15,17 +15,21 @@
  */
 package org.opencypher.gremlin.client;
 
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Result;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 
-class ExplainTranslation {
-    static CypherResultSet getExplanation(CypherAstWrapper ast) {
+final class CommonResultSets {
+    private CommonResultSets() {
+    }
+
+    static CypherResultSet explain(CypherAstWrapper ast) {
         Map<String, Object> explanation = new LinkedHashMap<>();
         Translator<String, GroovyPredicate> translator = Translator.builder()
             .gremlinGroovy()
@@ -33,7 +37,33 @@ class ExplainTranslation {
             .build();
         explanation.put("translation", ast.buildTranslation(translator));
         explanation.put("options", ast.getOptions().toString());
-        List<Result> results = Collections.singletonList(new Result(explanation));
-        return new CypherResultSet(results.iterator());
+        Iterator<Result> iterator = singletonIterator(() -> new Result(explanation));
+        return new CypherResultSet(iterator);
+    }
+
+    static CypherResultSet exceptional(Throwable throwable) {
+        return new CypherResultSet(singletonIterator(() -> {
+            throw new RuntimeException(throwable);
+        }));
+    }
+
+    private static <R> Iterator<R> singletonIterator(Supplier<R> supplier) {
+        return new Iterator<R>() {
+            private boolean done;
+
+            @Override
+            public boolean hasNext() {
+                return !done;
+            }
+
+            @Override
+            public R next() {
+                if (done) {
+                    throw new NoSuchElementException();
+                }
+                done = true;
+                return supplier.get();
+            }
+        };
     }
 }

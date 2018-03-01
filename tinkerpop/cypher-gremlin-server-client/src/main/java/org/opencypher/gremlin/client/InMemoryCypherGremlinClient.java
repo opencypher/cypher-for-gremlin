@@ -17,13 +17,15 @@ package org.opencypher.gremlin.client;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
-import static org.opencypher.gremlin.client.ExplainTranslation.getExplanation;
+import static org.opencypher.gremlin.client.CommonResultSets.exceptional;
+import static org.opencypher.gremlin.client.CommonResultSets.explain;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Result;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -46,14 +48,20 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
 
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
+        CypherAstWrapper ast;
+        try {
+            ast = CypherAstWrapper.parse(cypher, parameters);
+        } catch (Exception e) {
+            return completedFuture(exceptional(e));
+        }
 
         if (ast.getOptions().contains(EXPLAIN)) {
-            return completedFuture(getExplanation(ast));
+            return completedFuture(explain(ast));
         }
 
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
-        GraphTraversal<?, ?> traversal = ast.buildTranslation(Translator.builder().traversal(g).build());
+        Translator<GraphTraversal, P> translator = Translator.builder().traversal(g).build();
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(translator);
         List<Result> results = traversal.toStream()
             .map(ReturnNormalizer::normalize)
             .map(Result::new)
