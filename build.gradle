@@ -31,7 +31,6 @@ buildscript {
 }
 
 apply plugin: 'pl.allegro.tech.build.axion-release'
-apply plugin: 'co.riiid.gradle'
 
 scmVersion {
     tag {
@@ -43,21 +42,6 @@ scmVersion {
 }
 
 project.version = scmVersion.version
-
-github {
-    owner 'opencypher'
-    repo 'cypher-for-gremlin'
-    token = project.findProperty('githubToken') ?: "undefined"
-    tagName "${tagPrefix}${project.version}"
-    name = "${project.version}"
-    body = ''
-    draft true
-    assets = [
-        "tinkerpop/cypher-gremlin-server-plugin/build/libs/cypher-gremlin-server-plugin-${project.version}-all.jar",
-        "tinkerpop/cypher-gremlin-console-plugin/build/libs/cypher-gremlin-console-plugin-${project.version}-all.jar",
-        "tinkerpop/cypher-gremlin-console-plugin/build/dist/cypher-gremlin-console-${tinkerpopVersion}.zip"
-    ]
-}
 
 task gitHooks(type: Copy) {
     from "${rootDir}/hooks"
@@ -118,20 +102,6 @@ subprojects {
             scalafmt('1.4.0').
                 configFile("${rootDir}/.scalafmt.conf")
         }
-    }
-
-    task javadocJar(type: Jar) {
-        classifier = 'javadoc'
-        from javadoc
-    }
-
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives javadocJar, sourcesJar
     }
 
     build.dependsOn gitHooks
@@ -350,15 +320,30 @@ project(':testware:tck') {
 }
 
 allprojects {
-    apply plugin: 'maven'
-    apply plugin: 'signing'
-
     group 'org.opencypher.gremlin'
     version scmVersion.version
+    ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-    if (project.hasProperty('releaseToMavenCentral')) {
+    if (isReleaseVersion && project.hasProperty('releaseToMavenCentral')) {
+        apply plugin: 'maven'
+        apply plugin: 'signing'
+
+        task javadocJar(type: Jar) {
+            classifier = 'javadoc'
+            from javadoc
+        }
+
+        task sourcesJar(type: Jar) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives javadocJar, sourcesJar
+        }
 
         signing {
+            required { gradle.taskGraph.hasTask("uploadArchives") }
             sign configurations.archives
         }
 
@@ -403,4 +388,21 @@ allprojects {
             }
         }
     }
+}
+
+apply plugin: 'co.riiid.gradle'
+
+github {
+    owner 'opencypher'
+    repo 'cypher-for-gremlin'
+    token = project.findProperty('githubToken') ?: "undefined"
+    tagName "${tagPrefix}${project.version}"
+    name = "${project.version}"
+    body = ''
+    draft true
+    assets = [
+        "tinkerpop/cypher-gremlin-server-plugin/build/libs/cypher-gremlin-server-plugin-${project.version}-all.jar",
+        "tinkerpop/cypher-gremlin-console-plugin/build/libs/cypher-gremlin-console-plugin-${project.version}-all.jar",
+        "tinkerpop/cypher-gremlin-console-plugin/build/dist/cypher-gremlin-console-${tinkerpopVersion}.zip"
+    ]
 }
