@@ -22,6 +22,7 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
@@ -57,10 +58,13 @@ public class ContainerIndexTest {
     }
 
     /**
-     * Maps don't work in Gremlin Groovy translation
+     * Maps don't work in client-side translations
      */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void mapIndexInReturn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
@@ -72,10 +76,13 @@ public class ContainerIndexTest {
     }
 
     /**
-     * Maps don't work in Gremlin Groovy translation
+     * Maps don't work in client-side translations
      */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void mapIndexInReturnFunction() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +

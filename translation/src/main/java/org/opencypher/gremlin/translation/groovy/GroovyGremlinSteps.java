@@ -135,13 +135,16 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
-    public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate, GremlinSteps<String, GroovyPredicate> trueChoice, GremlinSteps<String, GroovyPredicate> falseChoice) {
+    public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate,
+                                                        GremlinSteps<String, GroovyPredicate> trueChoice,
+                                                        GremlinSteps<String, GroovyPredicate> falseChoice) {
         g.append(chain("choose", predicate, traversal(trueChoice), traversal(falseChoice)));
         return this;
     }
 
     @Override
-    public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate, GremlinSteps<String, GroovyPredicate> trueChoice) {
+    public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate,
+                                                        GremlinSteps<String, GroovyPredicate> trueChoice) {
         g.append(chain("choose", predicate, traversal(trueChoice)));
         return this;
     }

@@ -75,8 +75,7 @@ public class CastTest {
         List<Throwable> throwables = Stream.of(
             "true",
             "false",
-            "[]",
-            "{}"
+            "[]"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [1, " + literal + "] AS list\n" +
@@ -113,8 +112,7 @@ public class CastTest {
         List<Throwable> throwables = Stream.of(
             "true",
             "false",
-            "[]",
-            "{}"
+            "[]"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [1.0, " + literal + "] AS list\n" +
@@ -153,8 +151,7 @@ public class CastTest {
         List<Throwable> throwables = Stream.of(
             "13",
             "3.14",
-            "[]",
-            "{}"
+            "[]"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [true, " + literal + "] AS list\n" +

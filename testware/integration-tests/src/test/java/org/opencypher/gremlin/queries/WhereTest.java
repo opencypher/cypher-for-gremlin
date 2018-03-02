@@ -23,6 +23,8 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class WhereTest {
@@ -156,7 +158,11 @@ public class WhereTest {
             .containsExactlyInAnyOrder("marko", "josh", "peter");
     }
 
+    /**
+     * Custom predicate deserialization is not implemented
+     */
     @Test
+    @Category(SkipWithBytecode.class)
     public void constantsCustomPredicate() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:software) " +

@@ -13,71 +13,88 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.traversal;
+package org.opencypher.gremlin.translation.bytecode;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.stream.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Bytecode.Binding;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.traversal.CustomPredicate;
 
-public class TraversalGremlinPredicates implements GremlinPredicates<P> {
+public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
 
     @Override
     public P isEq(Object value) {
-        return P.eq(value);
+        return P.eq(inlineParameter(value));
     }
 
     @Override
     public P gt(Object value) {
-        return P.gt(value);
+        return P.gt(inlineParameter(value));
     }
 
     @Override
     public P gte(Object value) {
-        return P.gte(value);
+        return P.gte(inlineParameter(value));
     }
 
     @Override
     public P lt(Object value) {
-        return P.lt(value);
+        return P.lt(inlineParameter(value));
     }
 
     @Override
     public P lte(Object value) {
-        return P.lte(value);
+        return P.lte(inlineParameter(value));
     }
 
     @Override
     public P neq(Object value) {
-        return P.neq(value);
+        return P.neq(inlineParameter(value));
     }
 
     @Override
     public P between(Object first, Object second) {
-        return P.between(first, second);
+        return P.between(inlineParameter(first), inlineParameter(second));
     }
 
     @Override
     public P within(Object... values) {
-        return P.within(values);
+        return P.within(inlineParameters(values));
     }
 
     @Override
     public P without(Object... values) {
-        return P.without(values);
+        return P.without(inlineParameters(values));
     }
 
     @Override
     public P startsWith(Object value) {
-        return CustomPredicate.startsWith(value);
+        return CustomPredicate.startsWith(inlineParameter(value));
     }
 
     @Override
     public P endsWith(Object value) {
-        return CustomPredicate.endsWith(value);
+        return CustomPredicate.endsWith(inlineParameter(value));
     }
 
     @Override
     public P contains(Object value) {
-        return CustomPredicate.contains(value);
+        return CustomPredicate.contains(inlineParameter(value));
+    }
+
+    private static Object inlineParameters(Object... values) {
+        return Stream.of(values)
+            .map(BytecodeGremlinPredicates::inlineParameter)
+            .collect(toList());
+    }
+
+    private static Object inlineParameter(Object value) {
+        if (value instanceof Binding) {
+            return ((Binding) value).value();
+        }
+        return value;
     }
 }

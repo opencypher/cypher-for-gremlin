@@ -16,11 +16,15 @@
 package org.opencypher.gremlin.translation.translator;
 
 
+import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.opencypher.gremlin.translation.GremlinBindings;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.translation.GremlinSteps;
+import org.opencypher.gremlin.translation.bytecode.BytecodeGremlinBindings;
+import org.opencypher.gremlin.translation.bytecode.BytecodeGremlinPredicates;
+import org.opencypher.gremlin.translation.bytecode.BytecodeGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
@@ -110,11 +114,25 @@ public final class Translator<T, P> {
          *
          * @return builder for translator to Gremlin-Groovy string
          */
-        public GremlinGroovyFlavorBuilder gremlinGroovy() {
-            return new GremlinGroovyFlavorBuilder(
+        public ParametrizedFlavorBuilder<String, GroovyPredicate> gremlinGroovy() {
+            return new ParametrizedFlavorBuilder<>(
                 new GroovyGremlinSteps(),
                 new GroovyGremlinPredicates(),
                 new GroovyGremlinBindings()
+            );
+        }
+
+        /**
+         * Builds a {@link Translator} that translates Cypher queries
+         * to Gremlin bytecode.
+         *
+         * @return builder for translator to Gremlin bytecode.
+         */
+        public ParametrizedFlavorBuilder<Bytecode, org.apache.tinkerpop.gremlin.process.traversal.P> bytecode() {
+            return new ParametrizedFlavorBuilder<>(
+                new BytecodeGremlinSteps(),
+                new BytecodeGremlinPredicates(),
+                new BytecodeGremlinBindings()
             );
         }
 
@@ -215,10 +233,10 @@ public final class Translator<T, P> {
         }
     }
 
-    public static final class GremlinGroovyFlavorBuilder extends FlavorBuilder<String, GroovyPredicate> {
-        private GremlinGroovyFlavorBuilder(GremlinSteps<String, GroovyPredicate> steps,
-                                           GremlinPredicates<GroovyPredicate> predicates,
-                                           GremlinBindings bindings) {
+    public static final class ParametrizedFlavorBuilder<T, P> extends FlavorBuilder<T, P> {
+        private ParametrizedFlavorBuilder(GremlinSteps<T, P> steps,
+                                          GremlinPredicates<P> predicates,
+                                          GremlinBindings bindings) {
             super(steps, predicates, bindings);
         }
 
@@ -227,7 +245,7 @@ public final class Translator<T, P> {
          *
          * @return builder for translator to Gremlin-Groovy string
          */
-        public FlavorBuilder<String, GroovyPredicate> inlineParameters() {
+        public FlavorBuilder<T, P> inlineParameters() {
             bindings = new TraversalGremlinBindings();
             return this;
         }

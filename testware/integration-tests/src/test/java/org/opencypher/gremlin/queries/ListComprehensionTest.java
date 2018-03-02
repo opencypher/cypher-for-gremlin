@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
@@ -43,10 +44,13 @@ public class ListComprehensionTest {
     }
 
     /**
-     * List Comprehension don't work in Gremlin Groovy translation
+     * List comprehensions don't work in client-side translations
      */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void listComprehensionInFirstReturnStatement() throws Exception {
         String cypher = "RETURN [x IN [1, 2.3, true, 'apa'] | toString(x) ] AS list";
 
@@ -59,10 +63,13 @@ public class ListComprehensionTest {
     }
 
     /**
-     * List Comprehension don't work in Gremlin Groovy translation
+     * List comprehensions don't work in client-side translations
      */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void simplestCaseOfListComprehension() throws Exception {
         String cypher = "WITH [2, 2.9] AS numbers\n" +
             " RETURN [n IN numbers | toInteger(n)] AS int_numbers";
@@ -76,10 +83,13 @@ public class ListComprehensionTest {
     }
 
     /**
-     * List Comprehension don't work in Gremlin Groovy translation
+     * List comprehensions don't work in client-side translations
      */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void applyMultipleFunctions() throws Exception {
         String cypher = "WITH [2, 2.9] AS numbers\n" +
             " RETURN [n IN numbers | toString(toInteger(n))] AS int_numbers";
@@ -93,10 +103,13 @@ public class ListComprehensionTest {
     }
 
     /**
-     * List Comprehension don't work in Gremlin Groovy translation
+     * List comprehensions don't work in client-side translations
      */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void patternComprehension() throws Exception {
         submitAndGet("CREATE (a:Person { name: 'Charlie Sheen' })\n" +
             "CREATE (m1:Movie { name: 'Wall Street', year: 1987 })\n" +

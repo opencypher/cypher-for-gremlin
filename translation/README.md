@@ -52,6 +52,24 @@ String gremlin = ast.buildTranslation(translator);
 
 Note that `Translator` instances are not reusable. A new one has to be created for each `buildTranslation` call. `TranslationFacade` handles this for you.
 
+`Translator` instances support other common translation targets out of the box, like Gremlin bytecode:
+
+<!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#bytecode) -->
+```java
+Translator<Bytecode, P> translator = Translator.builder()
+    .bytecode()
+    .build();
+```
+
+Some translation targets can be customized with a flavor, like Azure Cosmos DB:
+
+<!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#cosmosdb) -->
+```java
+Translator<String, GroovyPredicate> translator = Translator.builder()
+    .gremlinGroovy()
+    .build(TranslatorFlavor.cosmosdb());
+```
+
 Custom translation targets can be provided by implementing `GremlinSteps`, `GremlinPredicates`, and `GremlinParameters`:
 
 <!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#custom) -->

@@ -17,6 +17,8 @@ package org.opencypher.gremlin.snippets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
@@ -27,6 +29,7 @@ import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class Translation {
 
@@ -54,6 +57,32 @@ public class Translation {
         // freshReadmeSnippet: verbose
 
         assertThat(gremlin).startsWith("g.V()");
+    }
+
+    @Test
+    public void translatorBytecode() throws Exception {
+        // freshReadmeSnippet: bytecode
+        Translator<Bytecode, P> translator = Translator.builder()
+            .bytecode()
+            .build();
+        // freshReadmeSnippet: bytecode
+
+        translator.steps().V();
+        Bytecode bytecode = translator.translate();
+        assertThat(bytecode.toString()).isEqualTo("[[], [V()]]");
+    }
+
+    @Test
+    public void translatorCosmosDb() throws Exception {
+        // freshReadmeSnippet: cosmosdb
+        Translator<String, GroovyPredicate> translator = Translator.builder()
+            .gremlinGroovy()
+            .build(TranslatorFlavor.cosmosdb());
+        // freshReadmeSnippet: cosmosdb
+
+        translator.steps().V();
+        String gremlin = translator.translate();
+        assertThat(gremlin).isEqualTo("g.V()");
     }
 
     @Test

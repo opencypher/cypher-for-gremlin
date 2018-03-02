@@ -27,6 +27,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
+import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class SetTest {
@@ -64,7 +67,14 @@ public class SetTest {
         assertThat(setAndGetProperty("[1, 2, 3]")).containsExactly(asList(1L, 2L, 3L));
     }
 
+    /**
+     * Maps don't work in client-side translations
+     */
     @Test
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void setAndGetMap() throws Exception {
         assertThat(setAndGetProperty("{key: 'value'}")).containsExactly(singletonMap("key", "value"));
     }

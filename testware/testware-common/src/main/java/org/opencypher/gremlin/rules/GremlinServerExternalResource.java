@@ -75,6 +75,8 @@ public class GremlinServerExternalResource extends ExternalResource {
                 return CypherGremlinClient.plugin(gremlinClient);
             case "gremlin":
                 return CypherGremlinClient.translating(gremlinClient);
+            case "bytecode":
+                return CypherGremlinClient.bytecode(gremlinClient.alias("g"));
             case "cosmosdb":
                 return CypherGremlinClient.translating(gremlinClient, TranslatorFlavor.cosmosdb());
             default:
