@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation;
 
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.traversal.CustomPredicate;
 
 /**
  * Gremlin {@link org.apache.tinkerpop.gremlin.process.traversal.P} predicate abstraction.
@@ -23,7 +24,7 @@ import org.opencypher.gremlin.translation.translator.Translator;
  * <a href="https://tinkerpop.apache.org/docs/current/reference/#a-note-on-predicates">A Note on Predicates</a>.
  *
  * @param <P> translation predicate type
- * @see org.opencypher.gremlin.traversal.CustomPredicates
+ * @see CustomPredicate
  * @see Translator
  */
 public interface GremlinPredicates<P> {

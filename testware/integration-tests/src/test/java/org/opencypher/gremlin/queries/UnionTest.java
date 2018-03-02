@@ -59,7 +59,7 @@ public class UnionTest {
 
         assertThat(results)
             .extracting("name")
-            .containsExactly("john", "jane", "john");
+            .containsExactlyInAnyOrder("john", "jane", "john");
     }
 
     @Test

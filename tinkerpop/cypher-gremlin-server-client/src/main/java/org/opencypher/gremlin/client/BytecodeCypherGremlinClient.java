@@ -26,7 +26,6 @@ import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
@@ -35,9 +34,9 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 final class BytecodeCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final TranslatorFlavor<GraphTraversal, P> flavor;
+    private final TranslatorFlavor<Bytecode, P> flavor;
 
-    BytecodeCypherGremlinClient(Client client, TranslatorFlavor<GraphTraversal, P> flavor) {
+    BytecodeCypherGremlinClient(Client client, TranslatorFlavor<Bytecode, P> flavor) {
         this.client = client;
         this.flavor = flavor;
     }
@@ -60,13 +59,16 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(explain(ast));
         }
 
-        Translator<GraphTraversal, P> translator = Translator.builder().traversal().build(flavor);
-        Bytecode bytecode = ast.buildTranslation(translator).asAdmin().getBytecode();
+        Translator<Bytecode, P> translator = Translator.builder().bytecode().build(flavor);
+        Bytecode bytecode = ast.buildTranslation(translator);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(bytecode);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
 
         return resultSetFuture
             .thenApply(ResultSet::iterator)
-            .thenApply(resultIterator -> new CypherResultSet(resultIterator, returnNormalizer::normalize));
+            .thenApply(resultIterator -> new CypherResultSet(
+                new TraverserIterator(resultIterator),
+                returnNormalizer::normalize
+            ));
     }
 }

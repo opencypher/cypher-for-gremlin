@@ -30,7 +30,7 @@ public final class StringTranslationUtils {
     private StringTranslationUtils() {
     }
 
-    static String apply(String name, Object... arguments) {
+    public static String apply(String name, Object... arguments) {
         String joined = Stream.of(arguments)
             .map(StringTranslationUtils::toLiteral)
             .collect(joining(", "));

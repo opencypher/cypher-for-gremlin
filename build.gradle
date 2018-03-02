@@ -244,13 +244,26 @@ project(':testware:integration-tests') {
 
         useJUnit {
             include 'org/opencypher/gremlin/queries/**'
-
             excludeCategories 'org.opencypher.gremlin.groups.SkipWithGremlinGroovy'
         }
-
     }
-
     check.dependsOn testGremlinGroovyTranslation
+
+    task('testBytecodeTranslation', type: Test) {
+        systemProperty 'translate', 'bytecode'
+
+        if (project.hasProperty('ci')) {
+            testLogging.showStandardStreams = true
+            minHeapSize = '128m'
+            maxHeapSize = '256m'
+        }
+
+        useJUnit {
+            include 'org/opencypher/gremlin/queries/**'
+            excludeCategories 'org.opencypher.gremlin.groups.SkipWithBytecode'
+        }
+    }
+    check.dependsOn testBytecodeTranslation
 }
 
 project(':testware:performance-tests') {

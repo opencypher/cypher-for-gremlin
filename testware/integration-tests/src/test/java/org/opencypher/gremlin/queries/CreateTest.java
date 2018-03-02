@@ -34,6 +34,9 @@ import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
+import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class CreateTest {
@@ -277,7 +280,14 @@ public class CreateTest {
             .containsExactly(asList(1L, 2L, 3L));
     }
 
+    /**
+     * Maps don't work in client-side translations
+     */
     @Test
+    @Category({
+        SkipWithGremlinGroovy.class,
+        SkipWithBytecode.class
+    })
     public void createMapProperty() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "CREATE (n {foo: {foo: 'bar', baz: 'qux'}}) RETURN n.foo AS f"

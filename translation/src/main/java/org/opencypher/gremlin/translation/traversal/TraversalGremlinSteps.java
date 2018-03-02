@@ -20,6 +20,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal.Symbols;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AddVertexStartStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
@@ -65,7 +66,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
             g.V();
         } else {
             // Workaround for constructing `GraphStep` with `isStart == true`
-            g.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.V);
+            g.asAdmin().getBytecode().addStep(Symbols.V);
             g.asAdmin().addStep(new GraphStep<>(g.asAdmin(), Vertex.class, true));
         }
         return this;
@@ -83,7 +84,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
             g.addV();
         } else {
             // Workaround for constructing `GraphStep` with `isStart == true`
-            g.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.addV);
+            g.asAdmin().getBytecode().addStep(Symbols.addV);
             g.asAdmin().addStep(new AddVertexStartStep(g.asAdmin(), (String) null));
         }
         return this;
@@ -95,7 +96,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
             g.addV(vertexLabel);
         } else {
             // Workaround for constructing `GraphStep` with `isStart == true`
-            g.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.addV, vertexLabel);
+            g.asAdmin().getBytecode().addStep(Symbols.addV, vertexLabel);
             g.asAdmin().addStep(new AddVertexStartStep(g.asAdmin(), vertexLabel));
         }
         return this;
@@ -158,7 +159,9 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> choose(P predicate, GremlinSteps<GraphTraversal, P> trueChoice, GremlinSteps<GraphTraversal, P> falseChoice) {
+    public GremlinSteps<GraphTraversal, P> choose(P predicate,
+                                                  GremlinSteps<GraphTraversal, P> trueChoice,
+                                                  GremlinSteps<GraphTraversal, P> falseChoice) {
         g.choose(predicate, trueChoice.current(), falseChoice.current());
         return this;
     }
@@ -189,7 +192,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> count(Scope scope) {
-        g.count(Scope.local);
+        g.count(scope);
         return this;
     }
 

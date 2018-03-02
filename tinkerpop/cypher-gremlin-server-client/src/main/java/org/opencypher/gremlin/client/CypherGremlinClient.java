@@ -21,6 +21,7 @@ import java.io.Closeable;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -99,7 +100,7 @@ public interface CypherGremlinClient extends Closeable {
      * @param flavor translation flavor
      * @return Cypher-enabled client
      */
-    static CypherGremlinClient bytecode(Client client, TranslatorFlavor<GraphTraversal, P> flavor) {
+    static CypherGremlinClient bytecode(Client client, TranslatorFlavor<Bytecode, P> flavor) {
         return new BytecodeCypherGremlinClient(client, flavor);
     }
 

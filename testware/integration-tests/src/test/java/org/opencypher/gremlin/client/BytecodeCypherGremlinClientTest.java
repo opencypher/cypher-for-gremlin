@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.client;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -41,13 +42,34 @@ public class BytecodeCypherGremlinClientTest {
     }
 
     @Test
-    public void submitToDefaultGraph() {
+    public void submit() {
         String cypher = "MATCH (p:person) RETURN p.name AS name";
         List<Map<String, Object>> results = client.submit(cypher).all();
 
         assertThat(results)
             .extracting("name")
             .containsExactlyInAnyOrder("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
+    public void submitExtractedParameters() {
+        String cypher = "MATCH (p:person) WHERE 27 <= p.age < 32 RETURN p.name AS name";
+        List<Map<String, Object>> results = client.submit(cypher).all();
+
+        assertThat(results)
+            .extracting("name")
+            .containsExactlyInAnyOrder("marko", "vadas");
+    }
+
+    @Test
+    public void submitExplicitParameters() {
+        String cypher = "MATCH (p:person) WHERE $low <= p.age < 32 RETURN p.name AS name";
+        Map<String, ?> parameters = singletonMap("low", 29);
+        List<Map<String, Object>> results = client.submit(cypher, parameters).all();
+
+        assertThat(results)
+            .extracting("name")
+            .containsExactlyInAnyOrder("marko");
     }
 
     @Test
