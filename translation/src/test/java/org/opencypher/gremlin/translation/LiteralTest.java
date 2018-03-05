@@ -162,7 +162,7 @@ public class LiteralTest {
         ))
             .hasTraversal(
                 __.inject(START)
-                    .coalesce(__
+                    .map(__
                         .project("list")
                         .by(__.constant(asList(
                             13,
@@ -195,7 +195,7 @@ public class LiteralTest {
         ))
             .hasTraversal(
                 __.inject(START)
-                    .coalesce(__
+                    .map(__
                         .project("n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10")
                         .by(__.constant(13))
                         .by(__.constant(-40000))

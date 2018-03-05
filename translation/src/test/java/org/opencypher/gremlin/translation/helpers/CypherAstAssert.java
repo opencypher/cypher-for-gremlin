@@ -70,8 +70,8 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     private static final Pattern RETURN_START = Pattern.compile(
         "\\.(" +
             "group\\(\\)\\.by\\([^)]+\\)\\.by\\([^)]+\\)|" +
-            "coalesce\\(__\\.project|" +
-            "fold\\(\\)\\.coalesce\\(__\\.project" +
+            "map\\(__\\.project|" +
+            "fold\\(\\)\\.map\\(__\\.project" +
             ").*$"
     );
 

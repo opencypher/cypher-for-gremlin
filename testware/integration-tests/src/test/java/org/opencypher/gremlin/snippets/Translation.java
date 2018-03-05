@@ -50,7 +50,7 @@ public class Translation {
             "values('age')." +
             "is(gt(25))))." +
             "select('p')." +
-            "coalesce(" +
+            "map(" +
             "__.project('p.name')." +
             "by(__.choose(neq('  cypher.null'), __.coalesce(__.values('name'), __.constant('  cypher.null')), __.constant('  cypher.null'))))");
     }
@@ -73,7 +73,7 @@ public class Translation {
             "values('age')." +
             "is(gt(25))))." +
             "select('p')." +
-            "coalesce(" +
+            "map(" +
             "__.project('p.name')." +
             "by(__.choose(neq('  cypher.null'), __.coalesce(__.values('name'), __.constant('  cypher.null')), __.constant('  cypher.null'))))");
     }

@@ -243,6 +243,11 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    public GremlinSteps<T, P> map(GremlinSteps<T, P> traversal) {
+        return delegate().map(traversal);
+    }
+
+    @Override
     public GremlinSteps<T, P> max() {
         return delegate().max();
     }

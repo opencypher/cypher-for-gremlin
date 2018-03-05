@@ -144,5 +144,9 @@ public final class CypherAstHelpers {
         private static GremlinSteps<String, GroovyPredicate> translationBuilder() {
             return Translator.builder().gremlinGroovy().build().steps();
         }
+
+        public static GremlinSteps<String, GroovyPredicate> map(GremlinSteps<String, GroovyPredicate> traversal) {
+            return start().map(traversal);
+        }
     }
 }

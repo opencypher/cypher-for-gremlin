@@ -117,7 +117,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       for ((_, expression) <- pivots) pivotTraversal.by(expression)
 
       selectIfAny()
-        .coalesce(pivotTraversal)
+        .map(pivotTraversal)
 
     } else if (aggregations.nonEmpty) {
       val aggregationTraversal = g.start().project(aggregations.keySet.toSeq: _*)
@@ -125,7 +125,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
 
       selectIfAny()
         .fold()
-        .coalesce(aggregationTraversal)
+        .map(aggregationTraversal)
     } else {
       context.unsupported("return clause", node)
     }

@@ -37,13 +37,13 @@ public class UnionTest {
             .hasTraversal(
                 __.inject(START).
                     union(
-                        __.coalesce(
+                        __.map(
                             __.project("name").
                                 by(__.constant("john"))),
-                        __.coalesce(
+                        __.map(
                             __.project("name").
                                 by(__.constant("jane"))),
-                        __.coalesce(
+                        __.map(
                             __.project("name").
                                 by(__.constant("john"))))
             );
@@ -62,14 +62,14 @@ public class UnionTest {
                 __.inject(START).
                     union(
                         __.
-                            coalesce(
+                            map(
                                 __.project("lang").
                                     by(__.constant("clojure")))
                         , __.is(P.neq(START)).
                             inject("java", "scala").
                             as("lang").
                             select("lang").
-                            coalesce(
+                            map(
                                 __.project("lang").
                                     by(__.identity()))
                         , __.start().V().
@@ -78,7 +78,7 @@ public class UnionTest {
                                 __.select("s").
                                     hasLabel("software")).
                             select("s").
-                            coalesce(
+                            map(
                                 __.project("lang").
                                     by(__.choose(P.neq("  cypher.null"), __.coalesce(__.values("lang"), __.constant("  cypher.null")), __.constant("  cypher.null"))))
                     ).

@@ -25,8 +25,6 @@ import java.util.Objects;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ComplexExamplesTest {
@@ -43,11 +41,7 @@ public class ComplexExamplesTest {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
     }
 
-    /**
-     * Issue created
-     */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
     public void returnDuplicateNode() throws Exception {
         submitAndGet(
             "CREATE (x:root)-[:r]->(y)\n" +
