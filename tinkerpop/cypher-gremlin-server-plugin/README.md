@@ -11,6 +11,19 @@ This is an [`OpProcessor`](https://tinkerpop.apache.org/docs/current/reference/#
 
 ## Installation
 
+The plugin and its dependencies can be automatically downloaded and installed into the Gremlin Server by using `bin/gremlin-server.sh install`. You can also manually "install" the plugin by copying jar file into the server classpath.
+
+### Automated Installation
+
+Run `bin/gremlin-server.sh` with `install` switch and supply the Maven coordinates of the plugin:
+```sh
+bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.1
+Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.1
+...
+```
+
+### Manual Installation
+
 Run the following commands from project root.
 
 1. Download [the latest release](https://github.com/opencypher/cypher-for-gremlin/releases) or build the plugin JAR file:

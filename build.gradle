@@ -185,7 +185,7 @@ project(':tinkerpop:cypher-gremlin-console-plugin') {
     task makeDist(type: Exec) {
         commandLine 'make'
         args = ["dist",
-                "PROJECT_VERSION=${project.version}",
+                "PROJECT_VERSION=${scmVersion.version}",
                 "TINKERPOP_VERSION=${tinkerpopVersion}"]
     }
 }

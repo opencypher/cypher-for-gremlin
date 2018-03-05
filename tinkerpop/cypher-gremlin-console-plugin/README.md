@@ -11,7 +11,30 @@ The plugin can work with any Gremlin Server and perform translation to Gremlin i
 - [Gremlin Console](https://tinkerpop.apache.org/)
 - A running [Gremlin Server](https://tinkerpop.apache.org/) or a compatible graph database
 
-### Installation
+## Installation
+
+The plugin and its dependencies can be automatically downloaded and installed into the Gremlin Console by using console `:install` command. You can also manually "install" the plugin by copying jar file into the Gremlin Console classpath.
+
+### Automated Installation
+
+1. Launch Gremlin Console:
+    ```sh
+    bin/gremlin.sh
+    ```
+
+1. Install Gremlin Console Cypher plugin:
+    ```
+    gremlin> :install org.opencypher.gremlin cypher-gremlin-console-plugin 0.9.1
+    ==>Loaded: [org.opencypher.gremlin, cypher-gremlin-console-plugin, 0.9.1] - restart the console to use [opencypher.gremlin]
+    ```
+
+1. Restart Gremlin Console
+    ```
+    gremlin> :q
+    bin/gremlin.sh
+    ```
+
+### Manual Installation
 
 Run the following commands from project root.
 
@@ -29,7 +52,7 @@ Run the following commands from project root.
     ```
 1. Launch Gremlin Console:
     ```sh
-    ./bin/gremlin.sh
+    bin/gremlin.sh
     ```
 1. If the plugin has been installed correctly, you should see it among the plugin list:
     ```
@@ -37,7 +60,7 @@ Run the following commands from project root.
     ==>opencypher.gremlin
     ```
 
-### Usage
+## Usage
 
 1. Activate `opencypher.gremlin` plugin:
     ```
