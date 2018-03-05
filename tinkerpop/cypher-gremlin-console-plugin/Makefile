@@ -2,7 +2,7 @@
 
 PWD = $(shell pwd)
 
-PROJECT_VERSION ?= 0.9.0
+PROJECT_VERSION ?= 0.9.1
 TINKERPOP_VERSION ?= 3.3.1
 
 PROJECT = $(PWD)/../..

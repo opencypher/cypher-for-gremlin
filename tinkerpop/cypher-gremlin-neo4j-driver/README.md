@@ -13,15 +13,13 @@ It could be used as a drop in replacement to run Cypher queries via [Neo4j Java 
 
 ## Getting Started
 
-Cypher Gremlin Neo4j Driver module latest release is 0.9.0.
-
 To add a dependency using Maven:
 
 ```xml
 <dependency>
     <groupId>org.opencypher.gremlin</groupId>
     <artifactId>cypher-gremlin-neo4j-driver</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
 </dependency>
 ```
 
@@ -29,7 +27,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'org.opencypher.gremlin:cypher-gremlin-neo4j-driver:0.9.0'
+  compile 'org.opencypher.gremlin:cypher-gremlin-neo4j-driver:0.9.1'
 }
 ```
 

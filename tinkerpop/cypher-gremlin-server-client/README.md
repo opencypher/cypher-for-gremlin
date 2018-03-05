@@ -9,15 +9,13 @@ This is a convenience Gremlin Server client for Java that can send queries via a
 
 ## Getting Started
 
-Cypher Client for Gremlin Server module latest release is 0.9.0.
-
 To add a dependency using Maven:
 
 ```xml
 <dependency>
     <groupId>org.opencypher.gremlin</groupId>
     <artifactId>cypher-gremlin-server-client</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
 </dependency>
 ```
 
@@ -25,7 +23,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.0'
+  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.1'
 }
 ```
 
