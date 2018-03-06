@@ -413,7 +413,7 @@ task allJavadoc(type: Javadoc, group: "Documentation") {
     source exportedProjects.collect { it.sourceSets.main.allJava }
     classpath = files(exportedProjects.collect { it.sourceSets.main.compileClasspath })
     options.links 'https://docs.oracle.com/javase/8/docs/api/'
-    options.links "http://tinkerpop.apache.org/javadocs/${tinkerpopVersion}/full/"
+    options.links "https://tinkerpop.apache.org/javadocs/${tinkerpopVersion}/full/"
     options.links "https://neo4j.com/docs/api/java-driver/1.4/"
     destinationDir = file("${buildDir}/docs/javadoc")
 }
