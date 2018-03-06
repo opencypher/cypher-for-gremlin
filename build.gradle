@@ -9,6 +9,7 @@ buildscript {
         scalaPatchVersion = '12'
         springBootVersion = '1.5.6.RELEASE'
         tinkerpopVersion = '3.3.1'
+        githubProject = "opencypher/cypher-for-gremlin"
         tagPrefix = 'v'
     }
 
@@ -26,6 +27,7 @@ buildscript {
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
         classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.2'
         classpath 'co.riiid:gradle-github-plugin:0.4.2'
+        classpath 'org.ajoberstar:gradle-git-publish:0.3.3'
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.8.3'
     }
 }
@@ -357,8 +359,6 @@ allprojects {
                     }
 
                     pom.project {
-                        def githubProject = "opencypher/cypher-for-gremlin"
-
                         name project.title
                         description project.description
                         url "https://github.com/${githubProject}"
@@ -405,3 +405,33 @@ github {
         "tinkerpop/cypher-gremlin-console-plugin/build/dist/cypher-gremlin-console-${tinkerpopVersion}.zip"
     ]
 }
+
+task allJavadoc(type: Javadoc, group: "Documentation") {
+    description = 'Generates combined Javadoc from all the modules'
+    title = "Cypher for Gremlin ${project.version} API"
+    def exportedProjects = allprojects.findAll { it.hasProperty('releaseToMavenCentral') }
+    source exportedProjects.collect { it.sourceSets.main.allJava }
+    classpath = files(exportedProjects.collect { it.sourceSets.main.compileClasspath })
+    options.links 'https://docs.oracle.com/javase/8/docs/api/'
+    options.links "http://tinkerpop.apache.org/javadocs/${tinkerpopVersion}/full/"
+    options.links "https://neo4j.com/docs/api/java-driver/1.4/"
+    destinationDir = file("${buildDir}/docs/javadoc")
+}
+
+apply plugin: 'org.ajoberstar.git-publish'
+
+gitPublish {
+    repoUri = "git@github.com:${githubProject}.git"
+    branch = 'gh-pages'
+    contents {
+        from(allJavadoc) {
+            into "api/${project.version}"
+        }
+    }
+    preserve {
+        include '**' // keep all existing files
+    }
+    commitMessage = "Publishing Javadoc ${project.version}"
+}
+
+gitPublishCopy.dependsOn allJavadoc
