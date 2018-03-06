@@ -51,7 +51,6 @@ public class TckRegressionReport {
 
         try (Writer fileWriter = new FileWriter(report)) {
             copy(resourcesDir, outputDir, "success.png");
-            copy(resourcesDir, outputDir, "failure.png");
             Template template = cfg.getTemplate("Regression.ftl");
             template.process(input, fileWriter);
             logger.info("\n\nRegression report saved to " + report.getAbsolutePath());
