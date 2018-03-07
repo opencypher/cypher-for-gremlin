@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.groovy;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.apply;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.chain;
 
+import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
@@ -84,7 +85,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @SafeVarargs
     @Override
     public final GremlinSteps<String, GroovyPredicate> and(GremlinSteps<String, GroovyPredicate>... andTraversals) {
-        g.append(chain("and", (Object[]) andTraversals));
+        g.append(chain("and", traversals(andTraversals)));
         return this;
     }
 
@@ -108,14 +109,14 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> by(GremlinSteps<String, GroovyPredicate> traversal) {
-        g.append(chain("by", traversal));
+        g.append(chain("by", traversal(traversal)));
         return this;
     }
 
     @Override
     public GremlinSteps<String, GroovyPredicate> by(GremlinSteps<String, GroovyPredicate> traversal,
                                                     Order order) {
-        g.append(chain("by", traversal, order));
+        g.append(chain("by", traversal(traversal), order));
         return this;
     }
 
@@ -129,26 +130,26 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     public GremlinSteps<String, GroovyPredicate> choose(GremlinSteps<String, GroovyPredicate> predicate,
                                                         GremlinSteps<String, GroovyPredicate> trueChoice,
                                                         GremlinSteps<String, GroovyPredicate> falseChoice) {
-        g.append(chain("choose", predicate, trueChoice, falseChoice));
+        g.append(chain("choose", traversal(predicate), traversal(trueChoice), traversal(falseChoice)));
         return this;
     }
 
     @Override
     public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate, GremlinSteps<String, GroovyPredicate> trueChoice, GremlinSteps<String, GroovyPredicate> falseChoice) {
-        g.append(chain("choose", predicate, trueChoice, falseChoice));
+        g.append(chain("choose", predicate, traversal(trueChoice), traversal(falseChoice)));
         return this;
     }
 
     @Override
     public GremlinSteps<String, GroovyPredicate> choose(GroovyPredicate predicate, GremlinSteps<String, GroovyPredicate> trueChoice) {
-        g.append(chain("choose", predicate, trueChoice));
+        g.append(chain("choose", predicate, traversal(trueChoice)));
         return this;
     }
 
     @SafeVarargs
     @Override
     public final GremlinSteps<String, GroovyPredicate> coalesce(GremlinSteps<String, GroovyPredicate>... coalesceTraversals) {
-        g.append(chain("coalesce", (Object[]) coalesceTraversals));
+        g.append(chain("coalesce", traversals(coalesceTraversals)));
         return this;
     }
 
@@ -303,7 +304,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> map(GremlinSteps<String, GroovyPredicate> traversal) {
-        g.append(chain("map", traversal));
+        g.append(chain("map", traversal(traversal)));
         return this;
     }
 
@@ -327,14 +328,14 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> not(GremlinSteps<String, GroovyPredicate> notTraversal) {
-        g.append(chain("not", notTraversal));
+        g.append(chain("not", traversal(notTraversal)));
         return this;
     }
 
     @SafeVarargs
     @Override
     public final GremlinSteps<String, GroovyPredicate> or(GremlinSteps<String, GroovyPredicate>... orTraversals) {
-        g.append(chain("or", (Object[]) orTraversals));
+        g.append(chain("or", traversals(orTraversals)));
         return this;
     }
 
@@ -382,7 +383,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> property(String key, GremlinSteps<String, GroovyPredicate> traversal) {
-        g.append(chain("property", key, Verbatim.of(traversal.current())));
+        g.append(chain("property", key, traversal(traversal)));
         return this;
     }
 
@@ -394,7 +395,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> repeat(GremlinSteps<String, GroovyPredicate> repeatTraversal) {
-        g.append(chain("repeat", repeatTraversal));
+        g.append(chain("repeat", traversal(repeatTraversal)));
         return this;
     }
 
@@ -412,7 +413,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> sideEffect(GremlinSteps<String, GroovyPredicate> sideEffectTraversal) {
-        g.append(chain("sideEffect", sideEffectTraversal));
+        g.append(chain("sideEffect", traversal(sideEffectTraversal)));
         return this;
     }
 
@@ -449,13 +450,13 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @SafeVarargs
     @Override
     public final GremlinSteps<String, GroovyPredicate> union(GremlinSteps<String, GroovyPredicate>... unionTraversals) {
-        g.append(chain("union", (Object[]) unionTraversals));
+        g.append(chain("union", traversals(unionTraversals)));
         return this;
     }
 
     @Override
     public GremlinSteps<String, GroovyPredicate> until(GremlinSteps<String, GroovyPredicate> untilTraversal) {
-        g.append(chain("until", untilTraversal));
+        g.append(chain("until", traversal(untilTraversal)));
         return this;
     }
 
@@ -479,7 +480,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
 
     @Override
     public GremlinSteps<String, GroovyPredicate> where(GremlinSteps<String, GroovyPredicate> whereTraversal) {
-        g.append(chain("where", whereTraversal));
+        g.append(chain("where", traversal(whereTraversal)));
         return this;
     }
 
@@ -487,5 +488,15 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     public GremlinSteps<String, GroovyPredicate> where(GroovyPredicate predicate) {
         g.append(chain("where", predicate));
         return this;
+    }
+
+    private static Object traversal(GremlinSteps<String, GroovyPredicate> gremlinStep) {
+        return Verbatim.of(gremlinStep.current());
+    }
+
+    private static Object[] traversals(GremlinSteps<String, GroovyPredicate>[] gremlinSteps) {
+        return Stream.of(gremlinSteps)
+            .map(GroovyGremlinSteps::traversal)
+            .toArray(Object[]::new);
     }
 }
