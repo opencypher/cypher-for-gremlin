@@ -23,6 +23,7 @@ import org.opencypher.gremlin.translation.translator.Translator;
  * <a href="https://tinkerpop.apache.org/docs/current/reference/#a-note-on-predicates">A Note on Predicates</a>.
  *
  * @param <T> translation predicate type
+ * @see org.opencypher.gremlin.traversal.CustomPredicates
  * @see Translator
  */
 public interface GremlinPredicates<T> {

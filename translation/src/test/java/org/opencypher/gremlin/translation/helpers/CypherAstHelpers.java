@@ -20,7 +20,7 @@ import static java.util.Collections.emptyMap;
 import java.util.Map;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.GremlinSteps;
-import org.opencypher.gremlin.translation.groovy.GroovyGremlinParameters;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
@@ -42,8 +42,8 @@ public final class CypherAstHelpers {
     }
 
     public static Object parameter(String name) {
-        GroovyGremlinParameters parameters = new GroovyGremlinParameters();
-        return parameters.parametrize(name, null);
+        GroovyGremlinBindings parameters = new GroovyGremlinBindings();
+        return parameters.bind(name, null);
     }
 
     public static final GroovyGremlinPredicates P = new GroovyGremlinPredicates();

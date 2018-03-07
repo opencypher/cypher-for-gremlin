@@ -19,14 +19,14 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.toLiteral;
 
 import java.util.regex.Pattern;
-import org.opencypher.gremlin.translation.GremlinParameters;
+import org.opencypher.gremlin.translation.GremlinBindings;
 
-public class GroovyGremlinParameters implements GremlinParameters {
+public class GroovyGremlinBindings implements GremlinBindings {
 
     private final Pattern simpleName = Pattern.compile("^[a-z]\\w+$", CASE_INSENSITIVE);
 
     @Override
-    public Object parametrize(String name, Object value) {
+    public Object bind(String name, Object value) {
         if (simpleName.matcher(name).matches()) {
             return Verbatim.of(name);
         } else {

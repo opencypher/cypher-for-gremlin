@@ -58,12 +58,12 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> addV(String vertexLabel);
 
-    GremlinSteps<T, P> aggregate(String label);
+    GremlinSteps<T, P> aggregate(String sideEffectKey);
 
     @SuppressWarnings("unchecked")
-    GremlinSteps<T, P> and(GremlinSteps<T, P>... ands);
+    GremlinSteps<T, P> and(GremlinSteps<T, P>... andTraversals);
 
-    GremlinSteps<T, P> as(String label);
+    GremlinSteps<T, P> as(String stepLabel);
 
     GremlinSteps<T, P> barrier();
 
@@ -73,16 +73,18 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> by(GremlinSteps<T, P> traversal, Order order);
 
-    GremlinSteps<T, P> cap(String label);
+    GremlinSteps<T, P> cap(String sideEffectKey);
 
-    GremlinSteps<T, P> choose(GremlinSteps<T, P> traversalPredicate, GremlinSteps<T, P> trueChoice, GremlinSteps<T, P> falseChoice);
+    GremlinSteps<T, P> choose(GremlinSteps<T, P> traversalPredicate,
+                              GremlinSteps<T, P> trueChoice,
+                              GremlinSteps<T, P> falseChoice);
 
     GremlinSteps<T, P> choose(P predicate, GremlinSteps<T, P> trueChoice, GremlinSteps<T, P> falseChoice);
 
     GremlinSteps<T, P> choose(P predicate, GremlinSteps<T, P> trueChoice);
 
     @SuppressWarnings("unchecked")
-    GremlinSteps<T, P> coalesce(GremlinSteps<T, P>... traversals);
+    GremlinSteps<T, P> coalesce(GremlinSteps<T, P>... coalesceTraversals);
 
     GremlinSteps<T, P> constant(Object e);
 
@@ -98,13 +100,13 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> fold();
 
-    GremlinSteps<T, P> from(String stepLabel);
+    GremlinSteps<T, P> from(String fromStepLabel);
 
     GremlinSteps<T, P> group();
 
     GremlinSteps<T, P> has(String propertyKey);
 
-    GremlinSteps<T, P> hasKey(String... keys);
+    GremlinSteps<T, P> hasKey(String... labels);
 
     GremlinSteps<T, P> hasLabel(String... labels);
 
@@ -140,10 +142,10 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> min();
 
-    GremlinSteps<T, P> not(GremlinSteps<T, P> rhs);
+    GremlinSteps<T, P> not(GremlinSteps<T, P> notTraversal);
 
     @SuppressWarnings("unchecked")
-    GremlinSteps<T, P> or(GremlinSteps<T, P>... ors);
+    GremlinSteps<T, P> or(GremlinSteps<T, P>... orTraversals);
 
     GremlinSteps<T, P> order();
 
@@ -159,17 +161,17 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> property(String key, Object value);
 
-    GremlinSteps<T, P> property(String key, GremlinSteps<T, P> builder);
+    GremlinSteps<T, P> property(String key, GremlinSteps<T, P> traversal);
 
     GremlinSteps<T, P> project(String... keys);
 
-    GremlinSteps<T, P> repeat(GremlinSteps<T, P> gremlinSteps);
+    GremlinSteps<T, P> repeat(GremlinSteps<T, P> repeatTraversal);
 
-    GremlinSteps<T, P> select(String... stepLabels);
+    GremlinSteps<T, P> select(String... selectKeys);
 
     GremlinSteps<T, P> select(Column column);
 
-    GremlinSteps<T, P> sideEffect(GremlinSteps<T, P> gremlinSteps);
+    GremlinSteps<T, P> sideEffect(GremlinSteps<T, P> sideEffectTraversal);
 
     GremlinSteps<T, P> skip(long skip);
 
@@ -177,14 +179,14 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> times(int maxLoops);
 
-    GremlinSteps<T, P> to(String stepLabel);
+    GremlinSteps<T, P> to(String toStepLabel);
 
     GremlinSteps<T, P> unfold();
 
     @SuppressWarnings("unchecked")
-    GremlinSteps<T, P> union(GremlinSteps<T, P>... gremlinSteps);
+    GremlinSteps<T, P> union(GremlinSteps<T, P>... unionTraversals);
 
-    GremlinSteps<T, P> until(GremlinSteps<T, P> gremlinSteps);
+    GremlinSteps<T, P> until(GremlinSteps<T, P> untilTraversal);
 
     GremlinSteps<T, P> value();
 
@@ -192,7 +194,7 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> values(String... propertyKeys);
 
-    GremlinSteps<T, P> where(GremlinSteps<T, P> gremlinSteps);
+    GremlinSteps<T, P> where(GremlinSteps<T, P> whereTraversal);
 
     GremlinSteps<T, P> where(P predicate);
 }

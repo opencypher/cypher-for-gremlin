@@ -46,7 +46,7 @@ sealed class StatementContext[T, P](
 
   def parameter(name: String): Object = {
     val value = extractedParameters.get(name).orNull
-    val parameter = dsl.parameters().parametrize(name, value)
+    val parameter = dsl.bindings().bind(name, value)
     parameter.asInstanceOf[Object]
   }
 

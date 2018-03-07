@@ -15,6 +15,13 @@
  */
 package org.opencypher.gremlin.translation;
 
-public interface GremlinParameters {
-    Object parametrize(String name, Object value);
+/**
+ * This abstracts Gremlin query bindings translation.
+ * For some context, see
+ * <a href="https://tinkerpop.apache.org/docs/current/reference/#_bindings">Gremlin-Python Bindings</a>.
+ *
+ * @see org.opencypher.gremlin.translation.translator.Translator
+ */
+public interface GremlinBindings {
+    Object bind(String name, Object value);
 }

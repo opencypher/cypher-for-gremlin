@@ -102,20 +102,20 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> aggregate(String label) {
-        g.aggregate(label);
+    public GremlinSteps<GraphTraversal, P> aggregate(String sideEffectKey) {
+        g.aggregate(sideEffectKey);
         return this;
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> and(GremlinSteps<GraphTraversal, P>... ands) {
-        g.and(traversals(ands));
+    public GremlinSteps<GraphTraversal, P> and(GremlinSteps<GraphTraversal, P>... andTraversals) {
+        g.and(traversals(andTraversals));
         return this;
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> as(String label) {
-        g.as(label);
+    public GremlinSteps<GraphTraversal, P> as(String stepLabel) {
+        g.as(stepLabel);
         return this;
     }
 
@@ -144,8 +144,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> cap(String label) {
-        g.cap(label);
+    public GremlinSteps<GraphTraversal, P> cap(String sideEffectKey) {
+        g.cap(sideEffectKey);
         return this;
     }
 
@@ -170,8 +170,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> coalesce(GremlinSteps<GraphTraversal, P>... traversals) {
-        g.coalesce(traversals(traversals));
+    public GremlinSteps<GraphTraversal, P> coalesce(GremlinSteps<GraphTraversal, P>... coalesceTraversals) {
+        g.coalesce(traversals(coalesceTraversals));
         return this;
     }
 
@@ -218,8 +218,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> from(String stepLabel) {
-        g.from(stepLabel);
+    public GremlinSteps<GraphTraversal, P> from(String fromStepLabel) {
+        g.from(fromStepLabel);
         return this;
     }
 
@@ -236,9 +236,9 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> hasKey(String... keys) {
-        if (keys.length >= 1) {
-            g.hasKey(keys[0], argumentsSlice(keys, 1));
+    public GremlinSteps<GraphTraversal, P> hasKey(String... labels) {
+        if (labels.length >= 1) {
+            g.hasKey(labels[0], argumentsSlice(labels, 1));
         }
         return this;
     }
@@ -348,14 +348,14 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> not(GremlinSteps<GraphTraversal, P> rhs) {
-        g.not(rhs.current());
+    public GremlinSteps<GraphTraversal, P> not(GremlinSteps<GraphTraversal, P> notTraversal) {
+        g.not(notTraversal.current());
         return this;
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> or(GremlinSteps<GraphTraversal, P>... ors) {
-        g.or(traversals(ors));
+    public GremlinSteps<GraphTraversal, P> or(GremlinSteps<GraphTraversal, P>... orTraversals) {
+        g.or(traversals(orTraversals));
         return this;
     }
 
@@ -402,8 +402,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> property(String key, GremlinSteps<GraphTraversal, P> builder) {
-        return property(key, builder.current());
+    public GremlinSteps<GraphTraversal, P> property(String key, GremlinSteps<GraphTraversal, P> traversal) {
+        return property(key, traversal.current());
     }
 
     @Override
@@ -417,17 +417,17 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> repeat(GremlinSteps<GraphTraversal, P> gremlinSteps) {
-        g.repeat(gremlinSteps.current());
+    public GremlinSteps<GraphTraversal, P> repeat(GremlinSteps<GraphTraversal, P> repeatTraversal) {
+        g.repeat(repeatTraversal.current());
         return this;
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> select(String... stepLabels) {
-        if (stepLabels.length >= 2) {
-            g.select(stepLabels[0], stepLabels[1], argumentsSlice(stepLabels, 2));
-        } else if (stepLabels.length == 1) {
-            g.select(stepLabels[0]);
+    public GremlinSteps<GraphTraversal, P> select(String... selectKeys) {
+        if (selectKeys.length >= 2) {
+            g.select(selectKeys[0], selectKeys[1], argumentsSlice(selectKeys, 2));
+        } else if (selectKeys.length == 1) {
+            g.select(selectKeys[0]);
         } else {
             throw new IllegalArgumentException("Select step should have arguments");
         }
@@ -441,8 +441,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> sideEffect(GremlinSteps<GraphTraversal, P> gremlinSteps) {
-        g.sideEffect(gremlinSteps.current());
+    public GremlinSteps<GraphTraversal, P> sideEffect(GremlinSteps<GraphTraversal, P> sideEffectTraversal) {
+        g.sideEffect(sideEffectTraversal.current());
         return this;
     }
 
@@ -465,8 +465,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> to(String stepLabel) {
-        g.to(stepLabel);
+    public GremlinSteps<GraphTraversal, P> to(String toStepLabel) {
+        g.to(toStepLabel);
         return this;
     }
 
@@ -477,14 +477,14 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> union(GremlinSteps<GraphTraversal, P>... gremlinSteps) {
-        g.union(traversals(gremlinSteps));
+    public GremlinSteps<GraphTraversal, P> union(GremlinSteps<GraphTraversal, P>... unionTraversals) {
+        g.union(traversals(unionTraversals));
         return this;
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> until(GremlinSteps<GraphTraversal, P> gremlinSteps) {
-        g.until(gremlinSteps.current());
+    public GremlinSteps<GraphTraversal, P> until(GremlinSteps<GraphTraversal, P> untilTraversal) {
+        g.until(untilTraversal.current());
         return this;
     }
 
@@ -507,8 +507,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> where(GremlinSteps<GraphTraversal, P> gremlinSteps) {
-        g.where(gremlinSteps.current());
+    public GremlinSteps<GraphTraversal, P> where(GremlinSteps<GraphTraversal, P> whereTraversal) {
+        g.where(whereTraversal.current());
         return this;
     }
 

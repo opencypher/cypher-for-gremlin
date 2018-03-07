@@ -15,11 +15,11 @@
  */
 package org.opencypher.gremlin.translation.traversal;
 
-import org.opencypher.gremlin.translation.GremlinParameters;
+import org.opencypher.gremlin.translation.GremlinBindings;
 
-public class TraversalGremlinParameters implements GremlinParameters {
+public class TraversalGremlinBindings implements GremlinBindings {
     @Override
-    public Object parametrize(String name, Object value) {
+    public Object bind(String name, Object value) {
         return value;
     }
 }

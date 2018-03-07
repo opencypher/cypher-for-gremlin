@@ -61,19 +61,19 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> aggregate(String label) {
-        return delegate().aggregate(label);
+    public GremlinSteps<T, P> aggregate(String sideEffectKey) {
+        return delegate().aggregate(sideEffectKey);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public GremlinSteps<T, P> and(GremlinSteps<T, P>... ands) {
-        return delegate().and(ands);
+    public GremlinSteps<T, P> and(GremlinSteps<T, P>... andTraversals) {
+        return delegate().and(andTraversals);
     }
 
     @Override
-    public GremlinSteps<T, P> as(String label) {
-        return delegate().as(label);
+    public GremlinSteps<T, P> as(String stepLabel) {
+        return delegate().as(stepLabel);
     }
 
     @Override
@@ -97,8 +97,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> cap(String label) {
-        return delegate().cap(label);
+    public GremlinSteps<T, P> cap(String sideEffectKey) {
+        return delegate().cap(sideEffectKey);
     }
 
     @Override
@@ -118,8 +118,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
 
     @Override
     @SuppressWarnings("unchecked")
-    public GremlinSteps<T, P> coalesce(GremlinSteps<T, P>... traversals) {
-        return delegate().coalesce(traversals);
+    public GremlinSteps<T, P> coalesce(GremlinSteps<T, P>... coalesceTraversals) {
+        return delegate().coalesce(coalesceTraversals);
     }
 
     @Override
@@ -158,8 +158,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> from(String stepLabel) {
-        return delegate().from(stepLabel);
+    public GremlinSteps<T, P> from(String fromStepLabel) {
+        return delegate().from(fromStepLabel);
     }
 
     @Override
@@ -173,8 +173,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> hasKey(String... keys) {
-        return delegate().hasKey(keys);
+    public GremlinSteps<T, P> hasKey(String... labels) {
+        return delegate().hasKey(labels);
     }
 
     @Override
@@ -263,14 +263,14 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> not(GremlinSteps<T, P> rhs) {
-        return delegate().not(rhs);
+    public GremlinSteps<T, P> not(GremlinSteps<T, P> notTraversal) {
+        return delegate().not(notTraversal);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public GremlinSteps<T, P> or(GremlinSteps<T, P>... ors) {
-        return delegate().or(ors);
+    public GremlinSteps<T, P> or(GremlinSteps<T, P>... orTraversals) {
+        return delegate().or(orTraversals);
     }
 
     @Override
@@ -309,8 +309,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> property(String key, GremlinSteps<T, P> builder) {
-        return delegate().property(key, builder);
+    public GremlinSteps<T, P> property(String key, GremlinSteps<T, P> traversal) {
+        return delegate().property(key, traversal);
     }
 
     @Override
@@ -319,13 +319,13 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> repeat(GremlinSteps<T, P> gremlinSteps) {
-        return delegate().repeat(gremlinSteps);
+    public GremlinSteps<T, P> repeat(GremlinSteps<T, P> repeatTraversal) {
+        return delegate().repeat(repeatTraversal);
     }
 
     @Override
-    public GremlinSteps<T, P> select(String... stepLabels) {
-        return delegate().select(stepLabels);
+    public GremlinSteps<T, P> select(String... selectKeys) {
+        return delegate().select(selectKeys);
     }
 
     @Override
@@ -334,8 +334,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> sideEffect(GremlinSteps<T, P> gremlinSteps) {
-        return delegate().sideEffect(gremlinSteps);
+    public GremlinSteps<T, P> sideEffect(GremlinSteps<T, P> sideEffectTraversal) {
+        return delegate().sideEffect(sideEffectTraversal);
     }
 
     @Override
@@ -354,8 +354,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> to(String stepLabel) {
-        return delegate().to(stepLabel);
+    public GremlinSteps<T, P> to(String toStepLabel) {
+        return delegate().to(toStepLabel);
     }
 
     @Override
@@ -365,13 +365,13 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
 
     @Override
     @SuppressWarnings("unchecked")
-    public GremlinSteps<T, P> union(GremlinSteps<T, P>... gremlinSteps) {
-        return delegate().union(gremlinSteps);
+    public GremlinSteps<T, P> union(GremlinSteps<T, P>... unionTraversals) {
+        return delegate().union(unionTraversals);
     }
 
     @Override
-    public GremlinSteps<T, P> until(GremlinSteps<T, P> gremlinSteps) {
-        return delegate().until(gremlinSteps);
+    public GremlinSteps<T, P> until(GremlinSteps<T, P> untilTraversal) {
+        return delegate().until(untilTraversal);
     }
 
     @Override
@@ -390,8 +390,8 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
-    public GremlinSteps<T, P> where(GremlinSteps<T, P> gremlinSteps) {
-        return delegate().where(gremlinSteps);
+    public GremlinSteps<T, P> where(GremlinSteps<T, P> whereTraversal) {
+        return delegate().where(whereTraversal);
     }
 
     @Override

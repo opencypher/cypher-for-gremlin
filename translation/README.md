@@ -60,7 +60,7 @@ Translator.builder()
     .custom(
         new MyGremlinSteps(),
         new MyGremlinPredicates(),
-        new MyGremlinParameters()
+        new MyGremlinBindings()
     )
     .build();
 ```

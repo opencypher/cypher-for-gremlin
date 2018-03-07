@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.TranslationFacade;
-import org.opencypher.gremlin.translation.groovy.GroovyGremlinParameters;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
@@ -85,7 +85,7 @@ public class Translation {
             .custom(
                 new MyGremlinSteps(),
                 new MyGremlinPredicates(),
-                new MyGremlinParameters()
+                new MyGremlinBindings()
             )
             .build();
         // freshReadmeSnippet: custom
@@ -98,6 +98,6 @@ public class Translation {
     private class MyGremlinPredicates extends GroovyGremlinPredicates {
     }
 
-    private class MyGremlinParameters extends GroovyGremlinParameters {
+    private class MyGremlinBindings extends GroovyGremlinBindings {
     }
 }

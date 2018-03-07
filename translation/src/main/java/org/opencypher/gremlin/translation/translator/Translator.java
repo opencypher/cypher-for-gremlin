@@ -18,14 +18,14 @@ package org.opencypher.gremlin.translation.translator;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.opencypher.gremlin.translation.GremlinParameters;
+import org.opencypher.gremlin.translation.GremlinBindings;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.translation.GremlinSteps;
-import org.opencypher.gremlin.translation.groovy.GroovyGremlinParameters;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
-import org.opencypher.gremlin.translation.traversal.TraversalGremlinParameters;
+import org.opencypher.gremlin.translation.traversal.TraversalGremlinBindings;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinPredicates;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinSteps;
 
@@ -38,15 +38,15 @@ import org.opencypher.gremlin.translation.traversal.TraversalGremlinSteps;
 public final class Translator<T, P> {
     private final GremlinSteps<T, P> steps;
     private final GremlinPredicates<P> predicates;
-    private final GremlinParameters parameters;
+    private final GremlinBindings bindings;
 
     private Translator(GremlinSteps<T, P> steps,
                        GremlinPredicates<P> predicates,
-                       GremlinParameters parameters,
+                       GremlinBindings bindings,
                        TranslatorFlavor<T, P> flavor) {
         this.steps = flavor.decorateTranslationBuilder(steps);
         this.predicates = predicates;
-        this.parameters = parameters;
+        this.bindings = bindings;
     }
 
     /**
@@ -54,7 +54,7 @@ public final class Translator<T, P> {
      *
      * @return traversal DSL
      * @see #predicates()
-     * @see #parameters()
+     * @see #bindings()
      */
     public GremlinSteps<T, P> steps() {
         return steps;
@@ -65,21 +65,21 @@ public final class Translator<T, P> {
      *
      * @return factory for traversal predicates
      * @see #steps()
-     * @see #parameters()
+     * @see #bindings()
      */
     public GremlinPredicates<P> predicates() {
         return predicates;
     }
 
     /**
-     * Returns a strategy for working with query parameters.
+     * Returns a strategy for working with query bindings.
      *
-     * @return strategy for query parameters
+     * @return strategy for query bindings
      * @see #steps()
      * @see #predicates()
      */
-    public GremlinParameters parameters() {
-        return parameters;
+    public GremlinBindings bindings() {
+        return bindings;
     }
 
     /**
@@ -114,7 +114,7 @@ public final class Translator<T, P> {
             return new GremlinGroovyFlavorBuilder(
                 new GroovyGremlinSteps(),
                 new GroovyGremlinPredicates(),
-                new GroovyGremlinParameters()
+                new GroovyGremlinBindings()
             );
         }
 
@@ -144,7 +144,7 @@ public final class Translator<T, P> {
             return new FlavorBuilder<>(
                 new TraversalGremlinSteps(g),
                 new TraversalGremlinPredicates(),
-                new TraversalGremlinParameters()
+                new TraversalGremlinBindings()
             );
         }
 
@@ -162,7 +162,7 @@ public final class Translator<T, P> {
         public <T, P> FlavorBuilder<T, P> custom(
             GremlinSteps<T, P> steps,
             GremlinPredicates<P> predicates,
-            GremlinParameters parameters
+            GremlinBindings parameters
         ) {
             return new FlavorBuilder<>(
                 steps,
@@ -175,14 +175,14 @@ public final class Translator<T, P> {
     public static class FlavorBuilder<T, P> {
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
-        protected GremlinParameters parameters;
+        protected GremlinBindings bindings;
 
         private FlavorBuilder(GremlinSteps<T, P> steps,
                               GremlinPredicates<P> predicates,
-                              GremlinParameters parameters) {
+                              GremlinBindings bindings) {
             this.steps = steps;
             this.predicates = predicates;
-            this.parameters = parameters;
+            this.bindings = bindings;
         }
 
         /**
@@ -194,7 +194,7 @@ public final class Translator<T, P> {
             return new Translator<>(
                 steps,
                 predicates,
-                parameters,
+                bindings,
                 TranslatorFlavor.gremlinServer()
             );
         }
@@ -209,7 +209,7 @@ public final class Translator<T, P> {
             return new Translator<>(
                 steps,
                 predicates,
-                parameters,
+                bindings,
                 flavor
             );
         }
@@ -218,8 +218,8 @@ public final class Translator<T, P> {
     public static final class GremlinGroovyFlavorBuilder extends FlavorBuilder<String, GroovyPredicate> {
         private GremlinGroovyFlavorBuilder(GremlinSteps<String, GroovyPredicate> steps,
                                            GremlinPredicates<GroovyPredicate> predicates,
-                                           GremlinParameters parameters) {
-            super(steps, predicates, parameters);
+                                           GremlinBindings bindings) {
+            super(steps, predicates, bindings);
         }
 
         /**
@@ -228,7 +228,7 @@ public final class Translator<T, P> {
          * @return builder for translator to Gremlin-Groovy string
          */
         public FlavorBuilder<String, GroovyPredicate> inlineParameters() {
-            parameters = new TraversalGremlinParameters();
+            bindings = new TraversalGremlinBindings();
             return this;
         }
     }
