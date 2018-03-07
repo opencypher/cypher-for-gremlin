@@ -16,6 +16,7 @@
 package org.opencypher;
 
 import static java.util.stream.Collectors.toList;
+import static org.opencypher.GremlinCypherValueConverter.toRecord;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
-import org.neo4j.driver.internal.InternalRecord;
 import org.neo4j.driver.v1.AccessMode;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
@@ -35,7 +35,6 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.TransactionWork;
 import org.neo4j.driver.v1.Value;
-import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.exceptions.NoSuchRecordException;
 import org.neo4j.driver.v1.summary.Notification;
 import org.neo4j.driver.v1.summary.Plan;
@@ -47,6 +46,7 @@ import org.neo4j.driver.v1.summary.SummaryCounters;
 import org.neo4j.driver.v1.types.TypeSystem;
 import org.neo4j.driver.v1.util.Function;
 import org.opencypher.gremlin.client.CypherGremlinClient;
+
 
 class GremlinServerDriver implements Driver {
     private final Cluster cluster;
@@ -217,18 +217,6 @@ class GremlinServerDriver implements Driver {
         @Override
         public Record next() {
             return toRecord(iterator.next());
-        }
-
-        private Record toRecord(Map<String, Object> map) {
-            List<String> keys = new ArrayList<>();
-            List<Value> values = new ArrayList<>();
-
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                keys.add(entry.getKey());
-                values.add(Values.value(entry.getValue()));
-            }
-
-            return new InternalRecord(keys, values.toArray(new Value[values.size()]));
         }
 
         @Override

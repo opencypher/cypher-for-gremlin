@@ -24,8 +24,12 @@ import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.types.Node;
+import org.neo4j.driver.v1.types.Path;
+import org.neo4j.driver.v1.types.Relationship;
 import org.opencypher.Config;
 import org.opencypher.GremlinDatabase;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
@@ -36,7 +40,7 @@ public class GremlinNeo4jDriverTest {
     public static final GremlinServerExternalResource server = new GremlinServerExternalResource();
 
     @Test
-    public void testSimple() {
+    public void simple() {
         Driver adam = GremlinDatabase.driver("//localhost:" + server.getPort());
 
         try (Session session = adam.session()) {
@@ -47,7 +51,7 @@ public class GremlinNeo4jDriverTest {
     }
 
     @Test
-    public void testMultipleRows() {
+    public void multipleRows() {
         Cluster cluster = Cluster.build()
             .addContactPoints("localhost")
             .port(server.getPort())
@@ -63,7 +67,7 @@ public class GremlinNeo4jDriverTest {
     }
 
     @Test
-    public void testWithParameter() {
+    public void withParameter() {
         Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort());
 
         try (Session session = driver.session()) {
@@ -79,7 +83,58 @@ public class GremlinNeo4jDriverTest {
     }
 
     @Test
-    public void testTranslating() {
+    public void returnNodeAndRelationship() {
+        Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort());
+
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("CREATE (n1:Person {name: 'Marko'})-[r:knows]->(n2:Person)" +
+                    "RETURN n1,r,n2",
+                parameters("message", "Hello"));
+
+            Record record = result.single();
+
+            Node n1 = record.get("n1").asNode();
+            Relationship r = record.get("r").asRelationship();
+            Node n2 = record.get("n2").asNode();
+
+            assertThat(n1.hasLabel("Person")).isTrue();
+            assertThat(n1.get("name").asString()).isEqualTo("Marko");
+
+            assertThat(r.hasType("knows")).isTrue();
+            assertThat(r.startNodeId()).isEqualTo(n1.id());
+            assertThat(r.endNodeId()).isEqualTo(n2.id());
+
+            assertThat(n2.hasLabel("Person")).isTrue();
+        }
+    }
+
+    @Test
+    public void returnPath() {
+        Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort());
+
+        try (Session session = driver.session()) {
+            StatementResult setup = session.run("CREATE (n1:Person {name: 'Anders'})-[r:knows]->(n2:Person)" +
+                            "RETURN n1,r,n2");
+            Record createdNodes = setup.single();
+            Node n1 = createdNodes.get("n1").asNode();
+            Node n2 = createdNodes.get("n2").asNode();
+            Relationship r = createdNodes.get("r").asRelationship();
+
+            StatementResult result = session.run("MATCH p =(b1 { name: 'Anders' })-->()" +
+                    "RETURN p");
+            Path path = result.single().get("p").asPath();
+
+            assertThat(path.contains(n1)).isTrue();
+            assertThat(path.contains(n2)).isTrue();
+            assertThat(path.contains(r)).isTrue();
+            assertThat(path.relationships()).hasSize(1);
+            assertThat(path.nodes()).hasSize(2);
+        }
+    }
+
+
+    @Test
+    public void translating() {
         Config config = Config.build()
             .withTranslation(TranslatorFlavor.gremlinServer())
             .toConfig();
