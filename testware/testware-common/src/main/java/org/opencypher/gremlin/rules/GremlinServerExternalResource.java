@@ -15,20 +15,26 @@
  */
 package org.opencypher.gremlin.rules;
 
+import static com.google.common.base.Strings.emptyToNull;
+import static org.opencypher.gremlin.GremlinQueries.CREATE_MODERN;
+import static org.opencypher.gremlin.GremlinQueries.DROP_ALL;
 import static org.opencypher.gremlin.client.GremlinClientFactory.TOKEN_TRANSLATE;
-import static org.opencypher.gremlin.client.GremlinClientFactory.flavorByName;
 import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.tinkerGraph;
 
+import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.assertj.core.util.Strings;
 import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
-import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GremlinServerExternalResource extends ExternalResource {
+    private static final Logger logger = LoggerFactory.getLogger(GremlinServerExternalResource.class);
 
     private EmbeddedGremlinServer gremlinServer;
     private Client gremlinClient;
@@ -36,28 +42,56 @@ public class GremlinServerExternalResource extends ExternalResource {
 
     @Override
     public void before() throws Throwable {
-        gremlinServer = tinkerGraph();
-        gremlinServer.start();
-        int port = gremlinServer.getPort();
-        gremlinClient = GremlinClientFactory.create(port);
+        gremlinClient = configuredGremlinClient();
+        cypherGremlinClient = configuredCypherGremlinClient();
+    }
 
-        String translate = System.getProperty(TOKEN_TRANSLATE);
-        if (!Strings.isNullOrEmpty(translate)) {
-            TranslatorFlavor<String, GroovyPredicate> flavor = flavorByName(translate);
-            cypherGremlinClient = CypherGremlinClient.translating(gremlinClient, flavor);
+    private Client configuredGremlinClient() throws Exception {
+        Client gremlinClient;
+
+        String configPath = System.getProperty(GremlinClientFactory.TOKEN_CONFIG);
+        if (!Strings.isNullOrEmpty(configPath)) {
+            logger.info("Running tests using configuration " + configPath);
+            gremlinClient = Cluster.open(configPath).connect();
+
+            gremlinClient.submit(DROP_ALL).all().get();
+            gremlinClient.submit(CREATE_MODERN).all().get();
         } else {
-            cypherGremlinClient = CypherGremlinClient.plugin(gremlinClient);
+            logger.info("Running tests using embeded TinkerGraph");
+            gremlinServer = tinkerGraph();
+            gremlinServer.start();
+            int port = gremlinServer.getPort();
+            gremlinClient = GremlinClientFactory.create(port);
+        }
+
+        return gremlinClient;
+    }
+
+    private CypherGremlinClient configuredCypherGremlinClient() {
+        String translate = emptyToNull(System.getProperty(TOKEN_TRANSLATE));
+        String clientName = Optional.ofNullable(translate).orElse("traversal");
+        switch (clientName) {
+            case "traversal":
+                return CypherGremlinClient.plugin(gremlinClient);
+            case "gremlin":
+                return CypherGremlinClient.translating(gremlinClient);
+            case "cosmosdb":
+                return CypherGremlinClient.translating(gremlinClient, TranslatorFlavor.cosmosdb());
+            default:
+                throw new IllegalArgumentException("Unknown name: " + clientName);
         }
     }
 
     @Override
     public void after() {
         cypherGremlinClient.close();
-        gremlinServer.stop();
+        if (gremlinServer != null) {
+            gremlinServer.stop();
+        }
     }
 
     public int getPort() {
-        return gremlinServer.getPort();
+        return gremlinClient.getCluster().getPort();
     }
 
     public Client gremlinClient() {
