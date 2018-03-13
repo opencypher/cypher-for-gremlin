@@ -69,11 +69,12 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       case NodePattern(Some(Variable(name)), labels, propertiesOption) =>
         nodeHistory.push(name)
 
-        if (context.referencedAliases.contains(name)) {
-          validateDeclaredNode(name, labels, propertiesOption)
-          return
+        context.alias(name) match {
+          case Some(_) =>
+            validateDeclaredNode(name, labels, propertiesOption)
+            return
+          case _ =>
         }
-        context.referencedAliases.add(name)
 
         val properties = getPropertiesMap(propertiesOption)
 

@@ -43,7 +43,7 @@ private class WithWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
           g.select(varName).values(keyName).as(alias)
         case Variable(varName) =>
           if (varName != alias) {
-            context.referencedAliases.add(alias)
+            context.alias(alias)
             g.select(varName).as(alias)
           }
         case Parameter(name, _) =>

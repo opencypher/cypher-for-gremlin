@@ -70,7 +70,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
 
     if (pathAliases.length > 1) {
-      val nullAliases = pathAliases.map(ensureUniqueName(_, contextNullG))
+      val nullAliases = pathAliases.map(name => contextNullG.alias(name).getOrElse(name))
       nullAliases.foreach(nullG.as)
       g.coalesce(subG.select(pathAliases: _*), nullG.select(nullAliases: _*))
     } else {

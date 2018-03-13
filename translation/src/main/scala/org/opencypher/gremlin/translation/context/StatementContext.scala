@@ -17,18 +17,12 @@ package org.opencypher.gremlin.translation.context
 
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.translator.Translator
-import org.opencypher.gremlin.translation.walker.NodeUtils
-import org.opencypher.gremlin.translation.walker.NodeUtils.traversalValueToJava
 
 import scala.collection.mutable
 
 object StatementContext {
   def apply[T, P](dsl: Translator[T, P], extractedParameters: Map[String, Any]): StatementContext[T, P] = {
-    new StatementContext(
-      dsl,
-      extractedParameters,
-      new mutable.HashSet[String]
-    )
+    new StatementContext(dsl, extractedParameters)
   }
 }
 
@@ -37,12 +31,8 @@ object StatementContext {
   *
   * @param dsl                 reference to [[Translator]] implementation in use
   * @param extractedParameters Cypher query parameters
-  * @param referencedAliases   tracks node aliases referenced in translation
   */
-sealed class StatementContext[T, P](
-    val dsl: Translator[T, P],
-    private val extractedParameters: Map[String, Any],
-    val referencedAliases: mutable.HashSet[String]) {
+sealed class StatementContext[T, P](val dsl: Translator[T, P], private val extractedParameters: Map[String, Any]) {
 
   def parameter(name: String): Object = {
     val value = extractedParameters.get(name).orNull
@@ -88,6 +78,25 @@ sealed class StatementContext[T, P](
 
   def markFirstStatement() {
     firstStatement = false
+  }
+
+  private val referencedAliases = mutable.HashSet.empty[String]
+
+  /**
+    * Returns a generated name if this alias already exists,
+    * otherwise remembers the provided name.
+    *
+    * @param name original name
+    * @return unique name
+    */
+  def alias(name: String): Option[String] = {
+    if (referencedAliases.contains(name)) {
+      val generated = generateName()
+      Some(generated)
+    } else {
+      referencedAliases.add(name)
+      None
+    }
   }
 
   private var nameGenerator = new NameGenerator()

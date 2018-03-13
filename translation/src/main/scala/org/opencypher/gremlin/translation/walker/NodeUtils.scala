@@ -112,20 +112,11 @@ object NodeUtils {
 
   def asUniqueName[T, P](name: String, g: GremlinSteps[T, P], context: StatementContext[T, P]): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
-    if (context.referencedAliases.contains(name)) {
-      val generated = context.generateName()
-      g.as(generated).where(g.start().select(generated).where(p.isEq(name)))
-    } else {
-      context.referencedAliases.add(name)
-      g.as(name)
-    }
-  }
-
-  def ensureUniqueName[T, P](name: String, context: StatementContext[T, P]): String = {
-    if (context.referencedAliases.contains(name)) {
-      context.generateName()
-    } else {
-      name
+    context.alias(name) match {
+      case Some(generated) =>
+        g.as(generated).where(g.start().select(generated).where(p.isEq(name)))
+      case _ =>
+        g.as(name)
     }
   }
 
