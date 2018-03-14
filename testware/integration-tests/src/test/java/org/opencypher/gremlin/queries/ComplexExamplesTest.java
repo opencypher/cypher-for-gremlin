@@ -194,4 +194,26 @@ public class ComplexExamplesTest {
             .extracting("a1.name", "r.name", "b2.name")
             .containsExactly(tuple("A", "T", null));
     }
+
+    @Test
+    public void matchRhsAliases() throws Exception {
+        submitAndGet("CREATE (h1:House {name: 'house1', animal:'cat'}), " +
+            "(h2:House {name: 'house2', animal:'dog'}), " +
+            "(h3:House {name: 'house3', animal:'cat'}), " +
+            "(h4:House {name: 'house4', animal:'cat'}), " +
+            "(h1)-[:KNOWS]->(h2), " +
+            "(h1)-[:KNOWS]->(h3), " +
+            "(h1)-[:KNOWS]->(h4)");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n)-[rel]->(x)\n" +
+                "WHERE n.animal = x.animal\n" +
+                "RETURN n.name, x.name"
+        );
+
+        assertThat(results)
+                    .extracting("n.name", "x.name")
+                    .containsExactly(tuple("house1", "house3"),
+                        tuple("house1", "house4"));
+    }
 }
