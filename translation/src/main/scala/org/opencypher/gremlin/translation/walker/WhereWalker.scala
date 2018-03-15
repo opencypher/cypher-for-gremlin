@@ -137,7 +137,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
   }
 
-  private def walkLhs(g: GremlinSteps[T, P], lhs: Expression) {
+  private def walkLhs(g: GremlinSteps[T, P], lhs: Expression): GremlinSteps[T, P] = {
     lhs match {
       case Variable(v) =>
         g.select(v)
