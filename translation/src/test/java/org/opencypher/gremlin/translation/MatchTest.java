@@ -70,13 +70,22 @@ public class MatchTest {
         assertThat(parse(
             "MATCH (a)-[r1]->(b)-[r2]->(b) RETURN b"
         )).hasTraversalBeforeReturn(
-            __.V().as("a")
-                .outE().as("r1").inV()
+            __.V()
+                .as("a")
+                .outE()
+                .as("r1")
+                .inV()
                 .as("b")
-                .outE().as("r2").inV()
+                .outE()
+                .as("r2")
+                .inV()
                 .as("  GENERATED1")
-                .where(__.select("  GENERATED1").where(P.eq("b")))
-                .where(__.select("r1").where(P.neq("r2")))
+                .where(__.select("  GENERATED1")
+                    .where(P.eq("b")))
+                .where(__.select("r2")
+                    .as("  cypher.local")
+                    .select("r1")
+                    .where(P.neq("  cypher.local")))
                 .select("b")
         );
     }
@@ -86,15 +95,26 @@ public class MatchTest {
         assertThat(parse(
             "MATCH (a)-[r1]->(b), (b)-[r2]->(b) RETURN b"
         )).hasTraversalBeforeReturn(
-            __.V().as("a")
-                .outE().as("r1").inV()
+            __.V()
+                .as("a")
+                .outE()
+                .as("r1")
+                .inV()
                 .as("b")
-                .V().as("  GENERATED1")
-                .where(__.select("  GENERATED1").where(P.eq("b")))
-                .outE().as("r2").inV()
+                .V()
+                .as("  GENERATED1")
+                .where(__.select("  GENERATED1")
+                    .where(P.eq("b")))
+                .outE()
+                .as("r2")
+                .inV()
                 .as("  GENERATED2")
-                .where(__.select("  GENERATED2").where(P.eq("b")))
-                .where(__.select("r1").where(P.neq("r2")))
+                .where(__.select("  GENERATED2")
+                    .where(P.eq("b")))
+                .where(__.select("r2")
+                    .as("  cypher.local")
+                    .select("r1")
+                    .where(P.neq("  cypher.local")))
                 .select("b")
         );
     }
@@ -225,26 +245,30 @@ public class MatchTest {
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n")
-                    .where(
-                        __.and(
-                            __.select("n").values("name").is(P.eq("marko")),
-                            __.select("n").hasLabel("person")
-                        )
-                    )
-                    .V().as("  GENERATED1")
-                    .where(__.select("  GENERATED1").where(P.eq("n")))
-                    .outE("created").as("r1").inV()
+                    .where(__.and(__.select("n")
+                        .values("name")
+                        .is(P.eq("marko")), __.select("n")
+                        .hasLabel("person")))
+                    .V()
+                    .as("  GENERATED1")
+                    .where(__.select("  GENERATED1")
+                        .where(P.eq("n")))
+                    .outE("created")
+                    .as("r1")
+                    .inV()
                     .as("lop")
-                    .inE("created").as("r2").outV()
+                    .inE("created")
+                    .as("r2")
+                    .outV()
                     .as("colleague")
-                    .where(
-                        __.and(
-                            __.select("lop").values("name").is(P.eq("lop")),
-                            __.select("lop").hasLabel("software"),
-                            __.select("colleague").hasLabel("person"),
-                            __.select("r1").where(P.neq("r2"))
-                        )
-                    )
+                    .where(__.and(__.select("lop")
+                        .values("name")
+                        .is(P.eq("lop")), __.select("lop")
+                        .hasLabel("software"), __.select("colleague")
+                        .hasLabel("person"), __.select("r2")
+                        .as("  cypher.local")
+                        .select("r1")
+                        .where(P.neq("  cypher.local"))))
                     .select("colleague")
             );
     }
@@ -270,7 +294,7 @@ public class MatchTest {
                 __.V()
                     .as("n1").inE().as("r1").outV().as("n2").outE().as("r2").inV().as("n3")
                     .path().as("p")
-                    .where(__.select("r1").where(P.neq("r2")))
+                    .where(__.select("r2").as("  cypher.local").select("r1").where(P.neq("  cypher.local")))
                     .select("p")
             );
     }
