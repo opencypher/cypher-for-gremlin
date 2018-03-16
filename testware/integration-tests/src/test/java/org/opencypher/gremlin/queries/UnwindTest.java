@@ -82,4 +82,57 @@ public class UnwindTest {
             .extracting("sum")
             .containsExactly(150005000L);
     }
+
+    @Test
+    public void listCreate() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND [1, 2, 3] AS i " +
+                "RETURN sum(i) AS sum"
+        );
+
+        assertThat(results)
+            .extracting("sum")
+            .containsExactly(6L);
+    }
+
+    @Test
+    public void listCreateProperty() throws Exception {
+        submitAndGet(
+            "UNWIND [1, 2, 3] AS i " +
+                "CREATE (n:lcp {num: i})"
+        );
+
+        List<Map<String, Object>> verification = submitAndGet(
+            "MATCH (n:lcp) RETURN sum(n.num) as sum"
+        );
+
+        assertThat(verification)
+            .extracting("sum")
+            .containsExactly(6L);
+    }
+
+    @Test
+    public void listReturn() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND [1, 2, 3] AS i " +
+                "RETURN i"
+        );
+
+        assertThat(results)
+            .extracting("i")
+            .containsExactly(1L, 2L, 3L);
+    }
+
+    @Test
+    public void listWithReturn() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND [1, 2, 3] AS i " +
+                "WITH i AS x " +
+                "RETURN x"
+        );
+
+        assertThat(results)
+            .extracting("x")
+            .containsExactly(1L, 2L, 3L);
+    }
 }

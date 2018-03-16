@@ -93,4 +93,109 @@ public class VariableLengthPathTest {
             })
             .collect(toList());
     }
+
+    @Test
+    public void anyLengthPath() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r*]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("josh",
+                "ripple",
+                "lop",
+                "lop",
+                "vadas",
+                "ripple",
+                "lop",
+                "lop");
+    }
+
+    @Test
+    public void anyLengthPathAlt() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r*..]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("josh",
+                "ripple",
+                "lop",
+                "lop",
+                "vadas",
+                "ripple",
+                "lop",
+                "lop");
+    }
+
+
+    @Test
+    public void fixedLengthPath2() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r*2]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("ripple", "lop");
+    }
+
+    @Test
+    public void lowerBoundedPath() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r*2..]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("ripple", "lop");
+    }
+
+    @Test
+    public void upperBoundedPath() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r*..3]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("josh",
+                "ripple",
+                "lop",
+                "lop",
+                "vadas",
+                "ripple",
+                "lop",
+                "lop");
+    }
+
+    @Test
+    public void rangeBoundedPath() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r*2..3]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("ripple", "lop");
+    }
+
+    @Test
+    public void chainedFirstVarPath() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r1*1]->(x)-[r2]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("ripple", "lop");
+    }
+
+    @Test
+    public void chainedSecondVarPath() {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r1]->(x)-[r2*1]->(m) RETURN m.name");
+
+        assertThat(results)
+            .extracting("m.name")
+            .contains("ripple", "lop");
+    }
+
+    @Test
+    public void varPathPredicate() throws Exception {
+        List<Map<String, Object>> results = submitAndGet("MATCH (n)-[r* {weight: 1.0}]->(m) RETURN n.name, m.name");
+
+        assertThat(results)
+            .extracting("n.name", "m.name")
+            .contains( tuple("marko", "josh"),
+                tuple("marko", "ripple"),
+                tuple("josh", "ripple"));
+    }
 }
