@@ -75,7 +75,7 @@ public class MergeTest {
 
         assertThat(match)
             .extracting("n.foo")
-            .containsExactly(1L, 2L);
+            .containsExactlyInAnyOrder(1L, 2L);
     }
 
     @Test
