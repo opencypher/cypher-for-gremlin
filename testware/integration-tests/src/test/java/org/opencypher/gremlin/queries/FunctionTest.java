@@ -69,4 +69,68 @@ public class FunctionTest {
             .containsExactly(6L);
     }
 
+    @Test
+    public void countCapitalized() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                "RETURN Count(n) as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactly(6L);
+    }
+
+    @Test
+    public void typeCapitalized() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n)-[r]->(m) " +
+                "WHERE Type(r) = 'knows' " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("marko", "marko");
+    }
+
+    @Test
+    public void existsCapitalized() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                "WHERE Exists(n.age) " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
+    public void existsInReturn() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                            "RETURN exists(n.age) as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder(true, true, false, true, false, true);
+    }
+
+    @Test
+    public void rangeCapitalized() {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND Range(1, 3) AS r " +
+                "RETURN r"
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly(1L, 2L, 3L);
+    }
+
+
+
 }
