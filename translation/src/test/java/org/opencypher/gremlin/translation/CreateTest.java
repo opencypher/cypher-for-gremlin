@@ -131,12 +131,7 @@ public class CreateTest {
                 __.addV("person").as("marko")
                     .addV("person").as("vadas")
                     .addE("knows").from("marko").to("vadas").as("r")
-                    .select("marko").as("m")
-                    .V().as("  GENERATED1")
-                    .where(__.select("  GENERATED1").where(P.isEq("m")))
-                    .outE("knows").as("r").inV()
-                    .as("friend")
-                    .select("friend")
+                    .select("marko")
             );
     }
 
