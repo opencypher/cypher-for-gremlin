@@ -41,7 +41,121 @@ public class MergeTest {
     }
 
     @Test
-    public void mergeVertex() throws Exception {
+    public void anyVertex() {
+        List<Map<String, Object>> merge1 = submitAndGet("MERGE (n) RETURN n");
+        List<Map<String, Object>> merge2 = submitAndGet("MERGE (n) RETURN n");
+        List<Map<String, Object>> match = submitAndGet("MATCH (n) RETURN n");
+
+        assertThat(merge1).hasSize(1);
+        assertThat(merge2).hasSize(1);
+        assertThat(match).hasSize(1);
+    }
+
+    @Test
+    public void anyVertexMultiple() {
+        submitAndGet("CREATE (n)");
+        submitAndGet("CREATE (n)");
+        List<Map<String, Object>> merge1 = submitAndGet("MERGE (n) RETURN n");
+        List<Map<String, Object>> merge2 = submitAndGet("MERGE (n) RETURN n");
+        List<Map<String, Object>> match = submitAndGet("MATCH (n) RETURN n");
+
+        assertThat(merge1).hasSize(2);
+        assertThat(merge2).hasSize(2);
+        assertThat(match).hasSize(2);
+    }
+
+    @Test
+    public void byProperty() {
+        submitAndGet("MERGE (n {foo: 1})");
+        submitAndGet("MERGE (n {foo: 1})");
+        submitAndGet("MERGE (n {foo: 2})");
+        List<Map<String, Object>> match = submitAndGet(
+            "MATCH (n) RETURN n.foo"
+        );
+
+        assertThat(match)
+            .extracting("n.foo")
+            .containsExactly(1L, 2L);
+    }
+
+    @Test
+    public void byMultipleProperties() {
+        submitAndGet("MERGE (n {foo: 1, bar: 1})");
+        submitAndGet("MERGE (n {foo: 1, bar: 1})");
+        submitAndGet("MERGE (n {foo: 1})");
+        submitAndGet("MERGE (n {bar: 1})");
+        submitAndGet("MERGE (n {foo: 1, bar: 2})");
+        submitAndGet("MERGE (n {foo: 2, bar: 1})");
+        List<Map<String, Object>> match = submitAndGet(
+            "MATCH (n) RETURN n.foo, n.bar"
+        );
+
+        assertThat(match)
+            .extracting("n.foo", "n.bar")
+            .containsExactlyInAnyOrder(
+                tuple(1L, 1L),
+                tuple(1L, 2L),
+                tuple(2L, 1L)
+            );
+    }
+
+    @Test
+    public void byLabel() {
+        submitAndGet("MERGE (n:Foo)");
+        submitAndGet("MERGE (n:Foo)");
+        submitAndGet("MERGE (n:Bar)");
+        List<Map<String, Object>> match = submitAndGet(
+            "MATCH (n) RETURN labels(n) AS labels"
+        );
+
+        assertThat(match)
+            .extracting("labels")
+            .containsExactlyInAnyOrder(
+                singletonList("Foo"),
+                singletonList("Bar")
+            );
+    }
+
+    @Test
+    public void byLabelAndProperties() {
+        submitAndGet("MERGE (n:Foo {foo: 1, bar: 1})");
+        submitAndGet("MERGE (n:Foo {foo: 1, bar: 1})");
+        submitAndGet("MERGE (n:Bar {foo: 1, bar: 1})");
+        submitAndGet("MERGE (n:Foo)");
+        submitAndGet("MERGE (n:Bar)");
+        submitAndGet("MERGE (n {foo: 1})");
+        submitAndGet("MERGE (n {bar: 1})");
+        submitAndGet("MERGE (n:Foo {foo: 1, bar: 2})");
+        submitAndGet("MERGE (n:Bar {foo: 2, bar: 1})");
+        List<Map<String, Object>> match = submitAndGet(
+            "MATCH (n) RETURN labels(n), n.foo, n.bar"
+        );
+
+        assertThat(match)
+            .extracting("labels(n)", "n.foo", "n.bar")
+            .containsExactlyInAnyOrder(
+                tuple(singletonList("Foo"), 1L, 1L),
+                tuple(singletonList("Bar"), 1L, 1L),
+                tuple(singletonList("Foo"), 1L, 2L),
+                tuple(singletonList("Bar"), 2L, 1L)
+            );
+    }
+
+    @Test
+    public void mergeImmediatelyAfterCreate() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "CREATE (a:X) " +
+                "CREATE (b:X) " +
+                "MERGE (c:X) " +
+                "RETURN c"
+        );
+
+        assertThat(results)
+            .hasSize(2);
+    }
+
+    @Test
+    public void vertexOn() throws Exception {
         String query = "MERGE (a:Label {prop: 'value'}) " +
             "ON MATCH SET a.action = 'on match' " +
             "ON CREATE SET a.action = 'on create' " +

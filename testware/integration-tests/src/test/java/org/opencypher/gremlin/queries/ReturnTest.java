@@ -16,6 +16,8 @@
 package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +57,7 @@ public class ReturnTest {
     }
 
     @Test
-    public void singleAggregation() throws Exception {
+    public void collect() throws Exception {
         String cypher = "MATCH (n1) RETURN collect(n1)";
         List<Map<String, Object>> results = submitAndGet(cypher);
 
@@ -172,7 +174,59 @@ public class ReturnTest {
     }
 
     @Test
-    public void labelPredicate() throws Exception {
+    public void countStar() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(results)
+            .extracting("count(*)")
+            .containsExactly(6L);
+    }
+
+    @Test
+    public void countNodes() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN count(n) AS count"
+        );
+
+        assertThat(results)
+            .extracting("count")
+            .containsExactly(6L);
+    }
+
+    @Test
+    public void countRelationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH ()-[r:created]->() RETURN count(r) AS count"
+        );
+
+        assertThat(results)
+            .extracting("count")
+            .containsExactly(4L);
+    }
+
+    @Test
+    public void labelPredicate() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                "RETURN n.name AS name, (n:software) AS software"
+        );
+
+        assertThat(results)
+            .extracting("name", "software")
+            .containsExactlyInAnyOrder(
+                tuple("marko", false),
+                tuple("vadas", false),
+                tuple("josh", false),
+                tuple("peter", false),
+                tuple("lop", true),
+                tuple("ripple", true)
+            );
+    }
+
+    @Test
+    public void labelPredicateCount() throws Exception {
         String cypher = "MATCH (n)\n" +
             "RETURN (n:person) AS person, count(*) AS count";
         List<Map<String, Object>> results = submitAndGet(cypher);
@@ -203,19 +257,28 @@ public class ReturnTest {
     }
 
     @Test
-    public void labelsFunction() throws Exception {
-        String cypher = "MATCH (n) RETURN DISTINCT labels(n) AS labels";
-        List<String> results = submitAndGet(cypher).stream()
-            .map(result -> (List) result.get("labels"))
-            .map(result -> (String) result.get(0))
-            .collect(toList());
+    public void distinctLabels() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN DISTINCT labels(n) AS labels"
+        );
 
         assertThat(results)
-            .hasSize(2)
+            .extracting("labels")
             .containsExactlyInAnyOrder(
-                "person",
-                "software"
+                singletonList("person"),
+                singletonList("software")
             );
+    }
+
+    @Test
+    public void distinctType() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH ()-[r]->() RETURN DISTINCT type(r) AS type"
+        );
+
+        assertThat(results)
+            .extracting("type")
+            .containsExactlyInAnyOrder("knows", "created");
     }
 
     @Test
@@ -286,7 +349,7 @@ public class ReturnTest {
     }
 
     @Test
-    public void returnLiterals() throws Exception {
+    public void literals() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "RETURN 42 AS foo, " +
                 "'bar' AS bar, " +
@@ -303,6 +366,29 @@ public class ReturnTest {
                 true,
                 asList(1L, 2L, 3L),
                 singletonMap("qux", 42L)
+            ));
+    }
+
+    @Test
+    public void literalsAsList() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN [" +
+                "13, -40000," +
+                "'Hello', \"World\"," +
+                "true, false, TRUE, FALSE," +
+                "null," +
+                "[], [13, 'Hello', true, null]" +
+                "] AS literals"
+        );
+
+        assertThat(results)
+            .extracting("literals")
+            .containsExactly(asList(
+                13L, -40000L,
+                "Hello", "World",
+                true, false, true, false,
+                null,
+                emptyList(), asList(13L, "Hello", true, null)
             ));
     }
 }

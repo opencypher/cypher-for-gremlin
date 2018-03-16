@@ -35,6 +35,44 @@ public class OptionalMatchTest {
     }
 
     @Test
+    public void allNodes() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "OPTIONAL MATCH (n) RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder(
+                "marko", "vadas", "peter", "josh",
+                "lop", "ripple"
+            );
+    }
+
+    @Test
+    public void allRelationships() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "OPTIONAL MATCH ()-[r]->() RETURN type(r)"
+        );
+
+        assertThat(results)
+            .extracting("type(r)")
+            .containsExactlyInAnyOrder(
+                "created", "created", "created", "created",
+                "knows", "knows"
+            );
+    }
+
+    @Test
+    public void allPaths() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "OPTIONAL MATCH p = ()-->() RETURN p"
+        );
+
+        assertThat(results)
+            .hasSize(6);
+    }
+
+    @Test
     public void nullProperties() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (p:person) " +

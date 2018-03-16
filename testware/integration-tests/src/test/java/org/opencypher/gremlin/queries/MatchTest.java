@@ -57,6 +57,38 @@ public class MatchTest {
     }
 
     @Test
+    public void relationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n)-[r {weight: 0.4}]->(m) " +
+                "RETURN n.name, type(r), m.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name", "type(r)", "m.name")
+            .containsExactlyInAnyOrder(
+                tuple("marko", "created", "lop"),
+                tuple("josh", "created", "lop")
+            );
+    }
+
+    @Test
+    public void undirectedRelationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n)-[r {weight: 0.4}]-(m) " +
+                "RETURN n.name, m.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name", "m.name")
+            .containsExactlyInAnyOrder(
+                tuple("marko", "lop"),
+                tuple("josh", "lop"),
+                tuple("lop", "marko"),
+                tuple("lop", "josh")
+            );
+    }
+
+    @Test
     public void matchComplex() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person {name: \"marko\"})\n" +
@@ -71,7 +103,7 @@ public class MatchTest {
     }
 
     @Test
-    public void multipleUnrelatedMatch() throws Exception {
+    public void multipleUnrelated() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (m:person {name: \"marko\"})\n" +
                 "MATCH (v:person {name: \"vadas\"})\n" +
@@ -84,7 +116,42 @@ public class MatchTest {
     }
 
     @Test
-    public void multipleRelatedMatch() throws Exception {
+    public void unrelatedRelationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person) " +
+                "MATCH (o)<-[k:knows]-(m:person) " +
+                "RETURN p.name AS name"
+        );
+
+        assertThat(results)
+            .extracting("name")
+            .hasSize(8)
+            .containsExactlyInAnyOrder(
+                "marko", "vadas", "peter", "josh",
+                "marko", "vadas", "peter", "josh"
+            );
+    }
+
+    @Test
+    public void unrelatedAndRelatedRelationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person) " +
+                "MATCH (s:software) " +
+                "MATCH (p)<-[k:knows]-(m:person)" +
+                "RETURN p.name AS name"
+        );
+
+        assertThat(results)
+            .extracting("name")
+            .hasSize(4)
+            .containsExactlyInAnyOrder(
+                "vadas", "josh",
+                "vadas", "josh"
+            );
+    }
+
+    @Test
+    public void multipleRelated() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (m:person {name: \"marko\"})\n" +
                 "MATCH (m:person {age: 29})\n" +
@@ -96,6 +163,19 @@ public class MatchTest {
             .extracting("m")
             .extracting(byElementProperty("name"))
             .containsExactly("marko");
+    }
+
+    @Test
+    public void nodesSeparatelyFromRelationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a {name: 'marko'}), (b {name: 'vadas'}) " +
+                "MATCH (a)-[r]->(b) " +
+                "RETURN type(r) AS rel"
+        );
+
+        assertThat(results)
+            .extracting("rel")
+            .containsExactly("knows");
     }
 
     @Test
