@@ -86,7 +86,7 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
       .map(_.asInstanceOf[Return])
 
     if (returnClauses.nonEmpty) {
-      returnClauses.foreach(ReturnWalker.walk(context, g, _))
+      returnClauses.foreach(ProjectionWalker.walk(context, g, _))
     } else {
       g.barrier().limit(0)
     }
@@ -132,7 +132,7 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
       case SetClause(_) | Remove(_) =>
         SetWalker.walkClause(context, g, node)
       case withClause: With =>
-        WithWalker.walkClause(context, g, withClause)
+        ProjectionWalker.walk(context, g, withClause)
       case _: Return => // Handled elsewhere
       case _ =>
         context.unsupported("clause", node)

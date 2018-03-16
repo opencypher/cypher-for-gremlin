@@ -104,4 +104,34 @@ public class OrderByTest {
         System.out.println(results);
     }
 
+    @Test
+    public void orderByAfterAggregation() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person)-[:created]->(s:software) " +
+                "RETURN p.name AS name, count(s) AS creations " +
+                "ORDER BY creations DESC, name ASC"
+        );
+
+        assertThat(results)
+            .extracting("name", "creations")
+            .containsExactly(
+                tuple("josh", 2L),
+                tuple("marko", 1L),
+                tuple("peter", 1L)
+            );
+    }
+
+    @Test
+    public void doubleAggregation() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person)" +
+                "WITH p.name AS name, count(p) AS cnt " +
+                "RETURN count(cnt) as count2"
+        );
+
+        assertThat(results)
+            .extracting("count2")
+            .containsExactly(4L);
+    }
+
 }

@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.Tokens._
@@ -31,13 +32,19 @@ import scala.collection.mutable
   * AST walker that handles translation
   * of the `RETURN` clause node in the Cypher AST.
   */
-object ReturnWalker {
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Return) {
-    new ReturnWalker(context, g).walk(node)
+object ProjectionWalker {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: ProjectionClause) {
+    node match {
+      case Return(distinct, ReturnItems(_, items), _, orderBy, skip, limit, _) =>
+        new ProjectionWalker(context, g).walk(distinct, items, orderBy, skip, limit)
+      case With(distinct, ReturnItems(_, items), _, orderBy, skip, limit, _) =>
+        new ProjectionWalker(context, g).walkIntermediate(distinct, items, orderBy, skip, limit)
+      case _ => context.unsupported("projection", node)
+    }
   }
 }
 
-private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class ProjectionWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   case class SubTraversals(
       select: Seq[String],
@@ -49,17 +56,37 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
 
   case object Aggregation extends ReturnFunctionType
 
+  case object Expression extends ReturnFunctionType
+
   case object Pivot extends ReturnFunctionType
 
-  def walk(node: Return): GremlinSteps[T, P] = {
+  def walk(
+      distinct: Boolean,
+      items: Seq[ReturnItem],
+      orderBy: Option[OrderBy],
+      skip: Option[Skip],
+      limit: Option[Limit]) {
     if (context.isFirstStatement) {
       context.markFirstStatement()
       g.inject(START)
     }
 
-    val Return(distinct, ReturnItems(_, items), _, _, skip, limit, _) = node
     val subTraversals = returnSubTraversals(items)
-    applyReturnTraversal(node, subTraversals, distinct, skip, limit)
+
+    applyProjection(subTraversals)
+    applyLimits(distinct, orderBy, skip, limit)
+  }
+
+  def walkIntermediate(
+      distinct: Boolean,
+      items: Seq[ReturnItem],
+      orderBy: Option[OrderBy],
+      skip: Option[Skip],
+      limit: Option[Limit]) {
+
+    applyWherePreconditions(items)
+    walk(distinct, items, orderBy, skip, limit)
+    reselectProjection(items)
   }
 
   private def returnSubTraversals(items: Seq[ReturnItem]): SubTraversals = {
@@ -81,6 +108,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       returnType match {
         case Pivot       => pivotCollector.put(alias, traversal)
         case Aggregation => aggregationCollector.put(alias, traversal)
+        case Expression  => aggregationCollector.put(alias, traversal)
       }
     }
 
@@ -91,12 +119,7 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
     SubTraversals(select, all, pivots, aggregations)
   }
 
-  private def applyReturnTraversal(
-      node: Return,
-      subTraversals: SubTraversals,
-      distinct: Boolean,
-      skip: Option[Skip],
-      limit: Option[Limit]): GremlinSteps[T, P] = {
+  private def applyProjection(subTraversals: SubTraversals): GremlinSteps[T, P] = {
     val SubTraversals(select, all, pivots, aggregations) = subTraversals
     val selectIfAny = () => if (select.nonEmpty) g.select(select: _*) else g
 
@@ -127,11 +150,18 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
         .fold()
         .map(aggregationTraversal)
     } else {
-      context.unsupported("return clause", node)
+      g
     }
+  }
 
+  private def applyLimits(distinct: Boolean, orderBy: Option[OrderBy], skip: Option[Skip], limit: Option[Limit]) {
     if (distinct) {
       g.dedup()
+    }
+
+    orderBy match {
+      case Some(OrderBy(sortItems)) => sort(sortItems)
+      case _                        =>
     }
 
     for (s <- skip) {
@@ -147,8 +177,33 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       val value = inlineExpressionValue(expression, context, classOf[Number]).longValue()
       g.limit(value)
     }
+  }
 
-    g
+  private def applyWherePreconditions(items: Seq[ReturnItem]) {
+    for (item <- items) {
+      val AliasedReturnItem(expression, _) = item
+      expression match {
+        case _: Variable | _: Property | _: Literal | _: ListLiteral | _: Parameter | _: Null | _: FunctionInvocation |
+            _: CountStar | _: PatternComprehension => // Handled separately in #pivot
+        case _ =>
+          WhereWalker.walk(context, g, expression)
+      }
+    }
+  }
+
+  private def reselectProjection(items: Seq[ReturnItem]) {
+    if (items.lengthCompare(1) > 0) {
+      g.as("projection")
+    }
+
+    items.toStream.zipWithIndex.foreach {
+      case (AliasedReturnItem(_, Variable(alias)), i) => {
+        if (i > 0) g.select("projection")
+        g.select(alias).as(alias)
+        context.alias(alias)
+      }
+      case _ =>
+    }
   }
 
   private def getPivotTraversal(pivots: Map[String, GremlinSteps[T, P]]) = {
@@ -313,6 +368,8 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
         }
       case CountStar() =>
         (Aggregation, g.start().unfold().count())
+      case _: Expression =>
+        (Expression, g.start().identity())
       case _ =>
         throw new IllegalArgumentException("Expression not supported: " + expression)
     }
@@ -337,5 +394,23 @@ private class ReturnWalker[T, P](context: StatementContext[T, P], g: GremlinStep
     )
 
     name
+  }
+
+  private def sort(sortItems: Seq[SortItem]) {
+    g.order()
+    for (sortItem <- sortItems) {
+      val order = sortItem match {
+        case _: AscSortItem =>
+          Order.incr
+        case _: DescSortItem =>
+          Order.decr
+      }
+      sortItem.expression match {
+        case Variable(varName) =>
+          g.by(g.start().select(varName), order)
+        case _ =>
+          context.unsupported("sort expression", sortItem.expression)
+      }
+    }
   }
 }

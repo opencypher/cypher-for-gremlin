@@ -218,4 +218,16 @@ public class WithTest {
             .containsExactly("marko", "peter");
     }
 
+    @Test
+    public void projection() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:person)\n" +
+                            "WITH a as p ORDER BY p.name LIMIT 1\n" +
+                            "RETURN p.name"
+        );
+
+        assertThat(results)
+            .extracting("p.name")
+            .containsExactly("josh");
+    }
 }

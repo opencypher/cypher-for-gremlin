@@ -100,6 +100,8 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
     expression match {
       case Variable(varName) =>
         g.start().select(varName)
+      case Property(Variable(varName), PropertyKeyName(keyName)) =>
+        g.start().select(varName).values(keyName)
       case _ =>
         expressionValue(expression, context)
     }
