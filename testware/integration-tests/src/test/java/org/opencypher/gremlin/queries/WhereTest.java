@@ -16,10 +16,12 @@
 package org.opencypher.gremlin.queries;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
@@ -33,6 +35,73 @@ public class WhereTest {
     }
 
     @Test
+    public void nodeProperty() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person)-[r:knows]->(friend:person)\n" +
+                "WHERE n.name = \"marko\"\n" +
+                "RETURN friend.name AS friend"
+        );
+
+        assertThat(results)
+            .extracting("friend")
+            .containsExactlyInAnyOrder("josh", "vadas");
+    }
+
+    @Test
+    public void relationshipType() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n)-[r]->(m)\n" +
+                "WHERE type(r) = \"knows\"\n" +
+                "RETURN n.name, m.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name", "m.name")
+            .containsExactlyInAnyOrder(
+                tuple("marko", "vadas"),
+                tuple("marko", "josh")
+            );
+    }
+
+    @Test
+    public void comparison() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person) " +
+                "WHERE 29 <= p.age < 35 " +
+                "RETURN p.name"
+        );
+
+        assertThat(results)
+            .extracting("p.name")
+            .containsExactlyInAnyOrder("marko", "josh");
+    }
+
+    @Test
+    public void booleanOperators() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) " +
+                "WHERE n.age = 29 OR (n.age > 30 AND NOT n.age = 32) " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("marko", "peter");
+    }
+
+    @Test
+    public void notFalse() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                "WHERE NOT(false) " +
+                "RETURN n"
+        );
+
+        assertThat(results)
+            .hasSize(6);
+    }
+
+    @Test
     public void notAndFalse() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:software) " +
@@ -43,6 +112,32 @@ public class WhereTest {
         assertThat(results)
             .extracting("name")
             .containsExactlyInAnyOrder("lop", "ripple");
+    }
+
+    @Test
+    @Ignore("WhereWalker should consider the path 'calculus'")
+    public void pathLength() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH p = (n)-[r:knows]->(m) " +
+                "WHERE length(p) = 1 " +
+                "RETURN p"
+        );
+
+        assertThat(results)
+            .hasSize(2);
+    }
+
+    @Test
+    public void pattern() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) " +
+                "WHERE (n)-[:created]->(:software) " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("marko", "josh", "peter");
     }
 
 }

@@ -170,14 +170,26 @@ public class ComplexExamplesTest {
 
     @Test
     public void selfReferentialNodeChained() throws Exception {
-        submitAndGet("CREATE (a:A)-[:R]->(b:B {n: 1})-[:R]->(b)");
+        submitAndGet("CREATE (a:A {n: 1})-[:R]->(b:B {n: 2})-[:R]->(b)");
         List<Map<String, Object>> results = submitAndGet(
-            "MATCH (a)-[r1]->(b)-[r2]->(b) RETURN b.n"
+            "MATCH (a)-[r1]->(b)-[r2]->(b) RETURN a.n, b.n"
         );
 
         assertThat(results)
-            .extracting("b.n")
-            .containsExactly(1L);
+            .extracting("a.n", "b.n")
+            .containsExactly(tuple(1L, 2L));
+    }
+
+    @Test
+    public void selfReferentialNodeInTwoPatterns() throws Exception {
+        submitAndGet("CREATE (a:A {n: 1})-[:R]->(b:B {n: 2})-[:R]->(b)");
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)-[r1]->(b), (b)-[r2]->(b) RETURN a.n, b.n"
+        );
+
+        assertThat(results)
+            .extracting("a.n", "b.n")
+            .containsExactly(tuple(1L, 2L));
     }
 
     @Test
