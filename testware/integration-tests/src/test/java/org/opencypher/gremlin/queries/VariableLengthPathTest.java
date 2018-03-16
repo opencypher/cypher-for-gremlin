@@ -100,7 +100,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("josh",
+            .containsExactlyInAnyOrder("josh",
                 "ripple",
                 "lop",
                 "lop",
@@ -116,7 +116,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("josh",
+            .containsExactlyInAnyOrder("josh",
                 "ripple",
                 "lop",
                 "lop",
@@ -133,7 +133,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("ripple", "lop");
+            .containsExactlyInAnyOrder("ripple", "lop");
     }
 
     @Test
@@ -142,7 +142,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("ripple", "lop");
+            .containsExactlyInAnyOrder("ripple", "lop");
     }
 
     @Test
@@ -151,7 +151,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("josh",
+            .containsExactlyInAnyOrder("josh",
                 "ripple",
                 "lop",
                 "lop",
@@ -167,7 +167,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("ripple", "lop");
+            .containsExactlyInAnyOrder("ripple", "lop");
     }
 
     @Test
@@ -176,7 +176,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("ripple", "lop");
+            .containsExactlyInAnyOrder("ripple", "lop");
     }
 
     @Test
@@ -185,7 +185,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("m.name")
-            .contains("ripple", "lop");
+            .containsExactlyInAnyOrder("ripple", "lop");
     }
 
     @Test
@@ -194,7 +194,7 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("n.name", "m.name")
-            .contains( tuple("marko", "josh"),
+            .containsExactlyInAnyOrder( tuple("marko", "josh"),
                 tuple("marko", "ripple"),
                 tuple("josh", "ripple"));
     }
