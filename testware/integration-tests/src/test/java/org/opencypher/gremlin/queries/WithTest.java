@@ -130,4 +130,92 @@ public class WithTest {
             .containsExactly(tuple(1L, "marko", true));
     }
 
+    @Test
+    public void singleName() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:person) " +
+                "RETURN a.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name")
+            .containsExactly("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
+    public void multipleNames() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:software)<-[:created]-(s:person) " +
+                "RETURN a.name, s.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name", "s.name")
+            .containsExactly(
+                tuple("lop", "marko"),
+                tuple("lop", "josh"),
+                tuple("lop", "peter"),
+                tuple("ripple", "josh")
+            );
+    }
+
+    @Test
+    public void whereOrderBy() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:person) " +
+                "WITH a WHERE a.age > 30 " +
+                "RETURN a.name " +
+                "ORDER BY a.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name")
+            .containsExactly("josh", "peter");
+    }
+
+    @Test
+    public void orderBySingleName() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:person) " +
+                "RETURN a.name " +
+                "ORDER BY a.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name")
+            .containsExactly("josh", "marko", "peter", "vadas");
+    }
+
+    @Test
+    public void orderByMultipleNames() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:software)<-[:created]-(s:person) " +
+                "RETURN a.name, s.name " +
+                "ORDER BY a.name, s.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name", "s.name")
+            .containsExactly(
+                tuple("lop", "josh"),
+                tuple("lop", "marko"),
+                tuple("lop", "peter"),
+                tuple("ripple", "josh")
+            );
+    }
+
+    @Test
+    public void orderBySkipLimit() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:person) " +
+                "RETURN a.name " +
+                "ORDER BY a.name " +
+                "SKIP 1 LIMIT 2"
+        );
+
+        assertThat(results)
+            .extracting("a.name")
+            .containsExactly("marko", "peter");
+    }
+
 }

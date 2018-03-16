@@ -67,4 +67,110 @@ public class AstRewriterTest {
         );
     }
 
+    @Test
+    public void matchSingleName() throws Exception {
+        assertThat(parse(
+            "MATCH (a:artist) " +
+                "RETURN a.name"
+        )).normalizedTo(
+            "MATCH (a:artist) " +
+                "RETURN a.name AS `a.name`"
+        );
+    }
+
+    @Test
+    public void multipleNames() throws Exception {
+        assertThat(parse(
+            "MATCH (a:artist)<-[:writtenBy]-(s:song) " +
+                "RETURN a.name, s.name"
+        )).normalizedTo(
+            "MATCH (a:artist)<-[:writtenBy]-(s:song) " +
+                "RETURN a.name AS `a.name`, s.name AS `s.name`"
+        );
+    }
+
+    @Test
+    public void matchWhere() throws Exception {
+        assertThat(parse(
+            "MATCH (a:artist) " +
+                "WITH a WHERE a.age > 18 " +
+                "RETURN a.name"
+        )).normalizedTo(
+            "MATCH (a:artist) " +
+                "WITH a AS a " +
+                "WITH a AS a, a.age > 18 AS `  FRESHID36`" +
+                "WITH a AS a, `  FRESHID36`AS `  FRESHID36`" +
+                "WHERE `  FRESHID36`" +
+                "WITH a AS a " +
+                "RETURN a.name AS `a.name`"
+        );
+    }
+
+    @Test
+    public void matchWhereOrderBy() throws Exception {
+        assertThat(parse(
+            "MATCH (a:artist) " +
+                "WITH a WHERE a.age > 18 " +
+                "RETURN a.name " +
+                "ORDER BY a.name"
+        )).normalizedTo(
+            "MATCH (a:artist) " +
+                "WITH a AS a " +
+                "WITH a AS a, a.age > 18 AS `  FRESHID36`" +
+                "WITH a AS a, `  FRESHID36`AS `  FRESHID36`" +
+                "WHERE `  FRESHID36`" +
+                "WITH a AS a " +
+                "WITH a.name AS `  FRESHID50` " +
+                "WITH `  FRESHID50` AS `  FRESHID50` " +
+                "ORDER BY `  FRESHID50` " +
+                "RETURN `  FRESHID50` AS `a.name`"
+        );
+    }
+
+    @Test
+    public void matchOrderBySingleName() throws Exception {
+        assertThat(parse(
+            "MATCH (a:artist) " +
+                "RETURN a.name " +
+                "ORDER BY a.name"
+        )).normalizedTo(
+            "MATCH (a:artist) " +
+                "WITH a.name AS `  FRESHID26` " +
+                "WITH `  FRESHID26` AS `  FRESHID26` " +
+                "ORDER BY `  FRESHID26` " +
+                "RETURN `  FRESHID26` AS `a.name`"
+        );
+    }
+
+    @Test
+    public void matchOrderByMultipleNames() throws Exception {
+        assertThat(parse(
+            "MATCH (a:artist)<-[:writtenBy]-(s:song) " +
+                "RETURN a.name, s.name " +
+                "ORDER BY a.name, s.name"
+        )).normalizedTo(
+            "MATCH (a:artist)<-[:writtenBy]-(s:song) " +
+                "WITH a.name AS `  FRESHID49`, s.name AS `  FRESHID57` " +
+                "WITH `  FRESHID49` AS `  FRESHID49`, `  FRESHID57` AS `  FRESHID57` " +
+                "ORDER BY `  FRESHID49`, `  FRESHID57` " +
+                "RETURN `  FRESHID49` AS `a.name`, `  FRESHID57` AS `s.name`"
+        );
+    }
+
+    @Test
+    public void matchOrderBySkipLimit() throws Exception {
+        assertThat(parse(
+            "MATCH (a:artist) " +
+                "RETURN a.name " +
+                "ORDER BY a.name " +
+                "SKIP 1 LIMIT 2"
+        )).normalizedTo(
+            "MATCH (a:artist) " +
+                "WITH a.name AS `  FRESHID26` " +
+                "WITH `  FRESHID26` AS `  FRESHID26` " +
+                "ORDER BY `  FRESHID26` SKIP 1 LIMIT 2 " +
+                "RETURN `  FRESHID26` AS `a.name`"
+        );
+    }
+
 }
