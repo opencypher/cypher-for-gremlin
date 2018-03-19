@@ -29,8 +29,6 @@ import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedEdge;
-import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -204,19 +202,11 @@ public class CreateTest {
         );
 
         long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) AS vertices").get(0).get("vertices");
-        Map<String, Object> edges = submitAndGet("MATCH ()<-[r1:lr1]-()-[r2:lr2]->() RETURN r1, r2").get(0);
+        long edges = (long) submitAndGet("MATCH ()-[r]->() RETURN COUNT(r) AS edges").get(0).get("edges");
 
         assertThat(results).isEmpty();
         assertThat(vertices).isEqualTo(3L);
-        assertThat(edges).hasSize(2);
-
-        DetachedEdge r1 = (DetachedEdge) edges.get("r1");
-        assertThat(r1.inVertex().label()).isEqualTo("ln1");
-        assertThat(r1.outVertex().label()).isEqualTo("ln2");
-
-        DetachedEdge r2 = (DetachedEdge) edges.get("r2");
-        assertThat(r2.inVertex().label()).isEqualTo("ln3");
-        assertThat(r2.outVertex().label()).isEqualTo("ln2");
+        assertThat(edges).isEqualTo(2L);
     }
 
     @Test
@@ -404,30 +394,19 @@ public class CreateTest {
             "CREATE (marko:person {name: \"marko\", age: 29})"
         )).isEmpty();
 
-        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
-        assertThat(vertices).hasSize(1);
-
-        DetachedVertex vertex = (DetachedVertex) vertices.get(0).get("n");
-
-        assertThat(vertex.label()).isEqualTo("person");
-        assertThat(vertex.properties()).extracting("label").containsOnly("name", "age");
+        assertThat(submitAndGet("MATCH (n:person) RETURN n.name, n.age").get(0))
+            .containsEntry("n.name", "marko")
+            .containsEntry("n.age", 29L);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void createNodeWithListProperty() throws Exception {
         assertThat(submitAndGet(
-            "CREATE (n:L {foo: [1, 2, 3]})"
+            "CREATE (n:L {foo: ['one', 'two', 'three']})"
         )).isEmpty();
 
-        List<Map<String, Object>> vertices = submitAndGet("MATCH (n:L) RETURN n");
-        assertThat(vertices).hasSize(1);
-
-        DetachedVertex vertex = (DetachedVertex) vertices.get(0).get("n");
-        assertThat(vertex.properties()).hasSize(1);
-
-        List<Number> foo = (List<Number>) vertex.property("foo").value();
-        assertThat(foo.stream().map(Number::intValue)).containsExactly(1, 2, 3);
+        Map<String, Object> result = submitAndGet("MATCH (n:L) RETURN n.foo").get(0);
+        assertThat(result).containsEntry("n.foo", asList("one", "two", "three"));
     }
 
     @Test
@@ -436,11 +415,12 @@ public class CreateTest {
             "CREATE (n)"
         )).isEmpty();
 
-        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
-        assertThat(vertices).hasSize(1);
+        Map<String, Object> result = submitAndGet(
+            "MATCH (n) RETURN size(keys(n)) AS keys, COUNT(n) AS vertices"
+        ).get(0);
 
-        DetachedVertex vertex = (DetachedVertex) vertices.get(0).get("n");
-        assertThat(vertex.properties()).isEmpty();
+        assertThat(result.get("keys")).isEqualTo(0L);
+        assertThat(result.get("vertices")).isEqualTo(1L);
     }
 
     @Test
@@ -450,26 +430,24 @@ public class CreateTest {
                 "CREATE (vadas:person {name: \"vadas\", age: 27})"
         )).isEmpty();
 
-        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
-        assertThat(vertices).hasSize(2);
+        long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) AS vertices").get(0).get("vertices");
+        assertThat(vertices).isEqualTo(2);
     }
-
 
     @Test
     public void createAndMatch() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
+        assertThat(submitAndGet(
             "CREATE (marko:person)-[r:knows]->(vadas:person) " +
                 "WITH marko AS m " +
                 "MATCH (m)-[r:knows]->(friend) " +
-                "RETURN friend "
-        );
+                "RETURN friend"
+        )).hasSize(1);
 
-        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
-        List<Map<String, Object>> edges = submitAndGet("MATCH ()-[r]->() RETURN r");
+        long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) as vertices").get(0).get("vertices");
+        long edges = (long) submitAndGet("MATCH ()-[r]->() RETURN COUNT(r) as edges").get(0).get("edges");
 
-        assertThat(results).hasSize(1);
-        assertThat(vertices).hasSize(2);
-        assertThat(edges).hasSize(1);
+        assertThat(vertices).isEqualTo(2L);
+        assertThat(edges).isEqualTo(1L);
     }
 
 
@@ -480,18 +458,17 @@ public class CreateTest {
                 "CREATE (vadas:person {name: \"vadas\"})"
         );
 
-        List<Map<String, Object>> results = submitAndGet(
+        assertThat(submitAndGet(
             "MATCH (marko:person),(vadas:person) " +
                 "WHERE marko.name = 'marko' AND vadas.name = 'vadas' " +
                 "CREATE (marko)-[r:knows]->(vadas)"
-        );
+        )).isEmpty();
 
-        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
-        List<Map<String, Object>> edges = submitAndGet("MATCH ()-[r]->() RETURN r");
+        long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) as vertices").get(0).get("vertices");
+        long edges = (long) submitAndGet("MATCH ()-[r]->() RETURN COUNT(r) as edges").get(0).get("edges");
 
-        assertThat(results).isEmpty();
-        assertThat(vertices).hasSize(2);
-        assertThat(edges).hasSize(1);
+        assertThat(vertices).isEqualTo(2L);
+        assertThat(edges).isEqualTo(1L);
     }
 
     private static Optional<String> getInitialCause(Throwable throwable) {
