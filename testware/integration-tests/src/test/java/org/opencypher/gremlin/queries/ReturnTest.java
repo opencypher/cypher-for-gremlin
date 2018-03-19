@@ -16,9 +16,7 @@
 package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -346,49 +344,5 @@ public class ReturnTest {
         assertThat(results)
             .extracting("literal")
             .containsExactly((Object) null);
-    }
-
-    @Test
-    public void literals() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "RETURN 42 AS foo, " +
-                "'bar' AS bar, " +
-                "true AS baz, " +
-                "[1, 2, 3] AS list, " +
-                "{qux: 42} AS map"
-        );
-
-        assertThat(results)
-            .extracting("foo", "bar", "baz", "list", "map")
-            .containsExactly(tuple(
-                42L,
-                "bar",
-                true,
-                asList(1L, 2L, 3L),
-                singletonMap("qux", 42L)
-            ));
-    }
-
-    @Test
-    public void literalsAsList() {
-        List<Map<String, Object>> results = submitAndGet(
-            "RETURN [" +
-                "13, -40000," +
-                "'Hello', \"World\"," +
-                "true, false, TRUE, FALSE," +
-                "null," +
-                "[], [13, 'Hello', true, null]" +
-                "] AS literals"
-        );
-
-        assertThat(results)
-            .extracting("literals")
-            .containsExactly(asList(
-                13L, -40000L,
-                "Hello", "World",
-                true, false, true, false,
-                null,
-                emptyList(), asList(13L, "Hello", true, null)
-            ));
     }
 }
