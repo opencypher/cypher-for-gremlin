@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -26,6 +27,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
 import org.opencypher.gremlin.translation.Tokens;
 
@@ -43,10 +46,14 @@ public final class ReturnNormalizer {
             return normalizeMap((Map<?, ?>) value);
         } else if (value instanceof Collection) {
             return normalizeCollection((Collection<?>) value);
+        } else if (value instanceof DetachedVertex) {
+            return normalizeDetachedVertex((DetachedVertex) value);
         } else if (value instanceof DetachedVertexProperty) {
             return elementPropertyMap((DetachedVertexProperty) value);
         } else if (value instanceof Integer) {
             return ((Integer) value).longValue();
+        } else if (value instanceof BigDecimal) {
+            return ((BigDecimal) value).doubleValue();
         } else if (Tokens.NULL.equals(value)) {
             return null;
         } else if (value instanceof Path) {
@@ -69,6 +76,24 @@ public final class ReturnNormalizer {
         return value.stream()
             .map(ReturnNormalizer::normalizeValue)
             .collect(Collectors.toList());
+    }
+
+    private static DetachedVertex normalizeDetachedVertex(DetachedVertex vertex) {
+        DetachedVertex.Builder builder = DetachedVertex.build()
+            .setId(vertex.id())
+            .setLabel(vertex.label());
+        Iterator<VertexProperty<Object>> properties = vertex.properties();
+        while (properties.hasNext()) {
+            VertexProperty<Object> property = properties.next();
+            DetachedVertexProperty normalizedProperty = DetachedVertexProperty.build()
+                .setId(property.id())
+                .setLabel(property.label())
+                .setV(vertex)
+                .setValue(normalizeValue(property.value()))
+                .create();
+            builder.addProperty(normalizedProperty);
+        }
+        return builder.create();
     }
 
     private static Object elementPropertyMap(Element element) {

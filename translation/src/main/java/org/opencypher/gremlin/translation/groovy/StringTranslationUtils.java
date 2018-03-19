@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
 
-final class StringTranslationUtils {
+public final class StringTranslationUtils {
     private StringTranslationUtils() {
     }
 
@@ -41,7 +41,7 @@ final class StringTranslationUtils {
         return "." + apply(name, arguments);
     }
 
-    static String toLiteral(Object argument) {
+    public static String toLiteral(Object argument) {
         if (argument instanceof List) {
             return ((List<?>) argument).stream()
                 .map(StringTranslationUtils::toLiteral)
