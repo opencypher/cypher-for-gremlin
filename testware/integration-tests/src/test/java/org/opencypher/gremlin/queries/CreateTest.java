@@ -29,6 +29,8 @@ import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedEdge;
+import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -202,11 +204,19 @@ public class CreateTest {
         );
 
         long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) AS vertices").get(0).get("vertices");
-        long edges = (long) submitAndGet("MATCH ()-[r]->() RETURN COUNT(r) AS edges").get(0).get("edges");
+        Map<String, Object> edges = submitAndGet("MATCH ()<-[r1:lr1]-()-[r2:lr2]->() RETURN r1, r2").get(0);
 
         assertThat(results).isEmpty();
         assertThat(vertices).isEqualTo(3L);
-        assertThat(edges).isEqualTo(2L);
+        assertThat(edges).hasSize(2);
+
+        DetachedEdge r1 = (DetachedEdge) edges.get("r1");
+        assertThat(r1.inVertex().label()).isEqualTo("ln1");
+        assertThat(r1.outVertex().label()).isEqualTo("ln2");
+
+        DetachedEdge r2 = (DetachedEdge) edges.get("r2");
+        assertThat(r2.inVertex().label()).isEqualTo("ln3");
+        assertThat(r2.outVertex().label()).isEqualTo("ln2");
     }
 
     @Test
@@ -386,6 +396,102 @@ public class CreateTest {
                     assertThat(stackTrace).contains("SyntaxException")
                 );
             });
+    }
+
+    @Test
+    public void createNode() {
+        assertThat(submitAndGet(
+            "CREATE (marko:person {name: \"marko\", age: 29})"
+        )).isEmpty();
+
+        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
+        assertThat(vertices).hasSize(1);
+
+        DetachedVertex vertex = (DetachedVertex) vertices.get(0).get("n");
+
+        assertThat(vertex.label()).isEqualTo("person");
+        assertThat(vertex.properties()).extracting("label").containsOnly("name", "age");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void createNodeWithListProperty() throws Exception {
+        assertThat(submitAndGet(
+            "CREATE (n:L {foo: [1, 2, 3]})"
+        )).isEmpty();
+
+        List<Map<String, Object>> vertices = submitAndGet("MATCH (n:L) RETURN n");
+        assertThat(vertices).hasSize(1);
+
+        DetachedVertex vertex = (DetachedVertex) vertices.get(0).get("n");
+        assertThat(vertex.properties()).hasSize(1);
+
+        List<Number> foo = (List<Number>) vertex.property("foo").value();
+        assertThat(foo.stream().map(Number::intValue)).containsExactly(1, 2, 3);
+    }
+
+    @Test
+    public void createEmptyNode() {
+        assertThat(submitAndGet(
+            "CREATE (n)"
+        )).isEmpty();
+
+        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
+        assertThat(vertices).hasSize(1);
+
+        DetachedVertex vertex = (DetachedVertex) vertices.get(0).get("n");
+        assertThat(vertex.properties()).isEmpty();
+    }
+
+    @Test
+    public void multipleCreateNodes() {
+        assertThat(submitAndGet(
+            "CREATE (marko:person {name: \"marko\", age: 29}) " +
+                "CREATE (vadas:person {name: \"vadas\", age: 27})"
+        )).isEmpty();
+
+        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
+        assertThat(vertices).hasSize(2);
+    }
+
+
+    @Test
+    public void createAndMatch() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "CREATE (marko:person)-[r:knows]->(vadas:person) " +
+                "WITH marko AS m " +
+                "MATCH (m)-[r:knows]->(friend) " +
+                "RETURN friend "
+        );
+
+        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
+        List<Map<String, Object>> edges = submitAndGet("MATCH ()-[r]->() RETURN r");
+
+        assertThat(results).hasSize(1);
+        assertThat(vertices).hasSize(2);
+        assertThat(edges).hasSize(1);
+    }
+
+
+    @Test
+    public void matchAndCreate() {
+        submitAndGet(
+            "CREATE (marko:person {name: \"marko\"}) " +
+                "CREATE (vadas:person {name: \"vadas\"})"
+        );
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (marko:person),(vadas:person) " +
+                "WHERE marko.name = 'marko' AND vadas.name = 'vadas' " +
+                "CREATE (marko)-[r:knows]->(vadas)"
+        );
+
+        List<Map<String, Object>> vertices = submitAndGet("MATCH (n) RETURN n");
+        List<Map<String, Object>> edges = submitAndGet("MATCH ()-[r]->() RETURN r");
+
+        assertThat(results).isEmpty();
+        assertThat(vertices).hasSize(2);
+        assertThat(edges).hasSize(1);
     }
 
     private static Optional<String> getInitialCause(Throwable throwable) {
