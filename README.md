@@ -67,6 +67,10 @@ To automatically fix formatting errors in your changes:
 ./gradlew spotlessApply
 ```
 
+## How to contribute
+
+We would love to find out about any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) you encounter and are happy to accept contributions following a Contributors License Agreement (CLA) signature as per the process outlined in our [contribution guidelines](CONTRIBUTING.md).
+
 ## License
 
 The project is licensed under the Apache Software License, Version 2.0
