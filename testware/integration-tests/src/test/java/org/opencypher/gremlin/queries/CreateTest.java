@@ -388,6 +388,89 @@ public class CreateTest {
             });
     }
 
+    @Test
+    public void createNode() {
+        assertThat(submitAndGet(
+            "CREATE (marko:person {name: \"marko\", age: 29})"
+        )).isEmpty();
+
+        assertThat(submitAndGet("MATCH (n:person) RETURN n.name, n.age").get(0))
+            .containsEntry("n.name", "marko")
+            .containsEntry("n.age", 29L);
+    }
+
+    @Test
+    public void createNodeWithListProperty() throws Exception {
+        assertThat(submitAndGet(
+            "CREATE (n:L {foo: ['one', 'two', 'three']})"
+        )).isEmpty();
+
+        Map<String, Object> result = submitAndGet("MATCH (n:L) RETURN n.foo").get(0);
+        assertThat(result).containsEntry("n.foo", asList("one", "two", "three"));
+    }
+
+    @Test
+    public void createEmptyNode() {
+        assertThat(submitAndGet(
+            "CREATE (n)"
+        )).isEmpty();
+
+        Map<String, Object> result = submitAndGet(
+            "MATCH (n) RETURN size(keys(n)) AS keys, COUNT(n) AS vertices"
+        ).get(0);
+
+        assertThat(result.get("keys")).isEqualTo(0L);
+        assertThat(result.get("vertices")).isEqualTo(1L);
+    }
+
+    @Test
+    public void multipleCreateNodes() {
+        assertThat(submitAndGet(
+            "CREATE (marko:person {name: \"marko\", age: 29}) " +
+                "CREATE (vadas:person {name: \"vadas\", age: 27})"
+        )).isEmpty();
+
+        long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) AS vertices").get(0).get("vertices");
+        assertThat(vertices).isEqualTo(2);
+    }
+
+    @Test
+    public void createAndMatch() throws Exception {
+        assertThat(submitAndGet(
+            "CREATE (marko:person)-[r:knows]->(vadas:person) " +
+                "WITH marko AS m " +
+                "MATCH (m)-[r:knows]->(friend) " +
+                "RETURN friend"
+        )).hasSize(1);
+
+        long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) as vertices").get(0).get("vertices");
+        long edges = (long) submitAndGet("MATCH ()-[r]->() RETURN COUNT(r) as edges").get(0).get("edges");
+
+        assertThat(vertices).isEqualTo(2L);
+        assertThat(edges).isEqualTo(1L);
+    }
+
+
+    @Test
+    public void matchAndCreate() {
+        submitAndGet(
+            "CREATE (marko:person {name: \"marko\"}) " +
+                "CREATE (vadas:person {name: \"vadas\"})"
+        );
+
+        assertThat(submitAndGet(
+            "MATCH (marko:person),(vadas:person) " +
+                "WHERE marko.name = 'marko' AND vadas.name = 'vadas' " +
+                "CREATE (marko)-[r:knows]->(vadas)"
+        )).isEmpty();
+
+        long vertices = (long) submitAndGet("MATCH (n) RETURN COUNT(n) as vertices").get(0).get("vertices");
+        long edges = (long) submitAndGet("MATCH ()-[r]->() RETURN COUNT(r) as edges").get(0).get("edges");
+
+        assertThat(vertices).isEqualTo(2L);
+        assertThat(edges).isEqualTo(1L);
+    }
+
     private static Optional<String> getInitialCause(Throwable throwable) {
         Throwable lastThrowable;
         do {
