@@ -132,6 +132,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> limit(long limit);
 
+    GremlinSteps<T, P> local(GremlinSteps<T, P> localTraversal);
+
     GremlinSteps<T, P> loops();
 
     GremlinSteps<T, P> map(CustomFunction function);
@@ -193,6 +195,8 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> value();
 
     GremlinSteps<T, P> valueMap();
+
+    GremlinSteps<T, P> valueMap(boolean includeTokens);
 
     GremlinSteps<T, P> values(String... propertyKeys);
 

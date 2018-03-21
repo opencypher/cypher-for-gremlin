@@ -16,6 +16,9 @@
 package org.opencypher;
 
 import static java.lang.String.format;
+import static org.opencypher.gremlin.traversal.ReturnNormalizer.NODE;
+import static org.opencypher.gremlin.traversal.ReturnNormalizer.RELATIONSHIP;
+import static org.opencypher.gremlin.traversal.ReturnNormalizer.TYPE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalPath;
@@ -34,6 +35,7 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Entity;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 class GremlinCypherValueConverter {
 
@@ -50,10 +52,10 @@ class GremlinCypherValueConverter {
     }
 
     private static Value toCypherValue(Object value) {
-        if (value instanceof Vertex) {
-            return toCypherVertex((Vertex) value).asValue();
-        } else if (value instanceof Edge) {
-            return toCypherEdge((Edge) value).asValue();
+        if (isNode(value)) {
+            return toCypherNode((Map<?, ?>) value).asValue();
+        } else if (isRelationship(value)) {
+            return toCypherRelationship((Map<?, ?>) value).asValue();
         } else if (isPath(value)) {
             return toCypherPath((List) value);
         } else {
@@ -61,14 +63,12 @@ class GremlinCypherValueConverter {
         }
     }
 
-    private static Entity toCypherElement(Object value) {
-        if (value instanceof Vertex) {
-            return toCypherVertex((Vertex) value);
-        } else if (value instanceof Edge) {
-            return toCypherEdge((Edge) value);
-        } else {
-            throw new IllegalArgumentException(value + "is not path");
-        }
+    private static boolean isNode(Object value) {
+        return ((value instanceof Map) && NODE.equals(((Map) value).get(TYPE)));
+    }
+
+    private static boolean isRelationship(Object value) {
+        return ((value instanceof Map) && RELATIONSHIP.equals(((Map) value).get(TYPE)));
     }
 
     private static boolean isPath(Object value) {
@@ -77,7 +77,7 @@ class GremlinCypherValueConverter {
         }
 
         for (Object e : (List) value) {
-            if (!(e instanceof Vertex || e instanceof Edge)) {
+            if (!isNode(e) && !isRelationship(e)) {
                 return false;
             }
         }
@@ -87,34 +87,54 @@ class GremlinCypherValueConverter {
 
     @SuppressWarnings("unchecked")
     private static Value toCypherPath(List p) {
-        Entity[] objects = ((List<Object>) p).stream()
-            .map(GremlinCypherValueConverter::toCypherElement)
-            .toArray(Entity[]::new);
+        boolean isNode = true;
+
+        Entity[] objects = new Entity[p.size()];
+        for (int i = 0; i < p.size(); i++) {
+            if (isNode) {
+                objects[i] = toCypherNode((Map<?, ?>) p.get(i));
+            } else {
+                objects[i] = toCypherRelationship((Map<?, ?>) p.get(i));
+            }
+
+            isNode = !isNode;
+        }
 
         return new InternalPath(objects).asValue();
     }
 
-    private static InternalRelationship toCypherEdge(Edge e) {
-        Long start = toCypherId(e.outVertex().id());
-        Long end = toCypherId(e.inVertex().id());
+    private static InternalRelationship toCypherRelationship(Map<?, ?> e) {
+        Long start = toCypherId(e.get(ReturnNormalizer.OUTV));
+        Long end = toCypherId(e.get(ReturnNormalizer.INV));
 
-        return new InternalRelationship(toCypherId(e.id()), start, end, e.label());
+        Map<String, Value> properties = toCypherPropertyMap(e);
+
+        Object id = e.get(ReturnNormalizer.ID);
+        Object label = e.get(ReturnNormalizer.LABEL);
+
+        return new InternalRelationship(toCypherId(id), start, end, String.valueOf(label), properties);
     }
 
-    private static InternalNode toCypherVertex(Vertex v) {
+    private static InternalNode toCypherNode(Map<?, ?> v) {
         Set<String> labels = new HashSet<>();
-        if (!Vertex.DEFAULT_LABEL.equals(v.label())) {
-            labels.add(v.label());
+        String label = String.valueOf(v.get(ReturnNormalizer.LABEL));
+        if (!Vertex.DEFAULT_LABEL.equals(label)) {
+            labels.add(label);
         }
 
         Map<String, Value> properties = toCypherPropertyMap(v);
 
-        return new InternalNode(toCypherId(v.id()), labels, properties);
+        return new InternalNode(toCypherId(v.get(ReturnNormalizer.ID)), labels, properties);
     }
 
-    private static Map<String, Value> toCypherPropertyMap(Element e) {
+    private static Map<String, Value> toCypherPropertyMap(Map<?, ?> e) {
         Map<String, Value> properties = new HashMap<>();
-        e.properties().forEachRemaining(p -> properties.put(p.key(), toCypherValue(p.value())));
+        e.forEach((key, value) -> properties.put(
+            String.valueOf(key),
+            toCypherValue(value)));
+        properties.remove(ReturnNormalizer.ID);
+        properties.remove(ReturnNormalizer.LABEL);
+
         return properties;
     }
 

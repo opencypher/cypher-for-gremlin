@@ -62,10 +62,11 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
         Translator<GraphTraversal, P> translator = Translator.builder().traversal(g).build();
         GraphTraversal<?, ?> traversal = ast.buildTranslation(translator);
+        ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getVariableTypes());
         List<Result> results = traversal.toStream()
-            .map(ReturnNormalizer::normalize)
+            .map(returnNormalizer::normalize)
             .map(Result::new)
             .collect(toList());
-        return completedFuture(new CypherResultSet(results.iterator()));
+        return completedFuture(new CypherResultSet(ast.getVariableTypes(), results.iterator()));
     }
 }

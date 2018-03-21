@@ -292,6 +292,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> local(GremlinSteps<String, GroovyPredicate> localTraversal) {
+        g.append(chain("local", traversal(localTraversal)));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> loops() {
         g.append(chain("loops"));
         return this;
@@ -475,6 +481,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @Override
     public GremlinSteps<String, GroovyPredicate> valueMap() {
         g.append(chain("valueMap"));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> valueMap(boolean includeTokens) {
+        g.append(chain("valueMap", includeTokens));
         return this;
     }
 

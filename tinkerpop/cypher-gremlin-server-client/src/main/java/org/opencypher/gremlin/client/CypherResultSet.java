@@ -27,6 +27,7 @@ import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.tinkerpop.gremlin.driver.Result;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 /**
@@ -41,8 +42,10 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 public final class CypherResultSet implements Iterable<Map<String, Object>> {
 
     private final Iterator<Result> resultIterator;
+    private ReturnNormalizer returnNormalizer;
 
-    CypherResultSet(Iterator<Result> resultIterator) {
+    CypherResultSet(Map<String, CypherType> variableTypes, Iterator<Result> resultIterator) {
+        returnNormalizer = ReturnNormalizer.create(variableTypes);
         this.resultIterator = resultIterator;
     }
 
@@ -91,7 +94,7 @@ public final class CypherResultSet implements Iterable<Map<String, Object>> {
             public Map<String, Object> next() {
                 Result result = resultIterator.next();
                 Object row = result.getObject();
-                return ReturnNormalizer.normalize(row);
+                return returnNormalizer.normalize(row);
             }
         };
     }

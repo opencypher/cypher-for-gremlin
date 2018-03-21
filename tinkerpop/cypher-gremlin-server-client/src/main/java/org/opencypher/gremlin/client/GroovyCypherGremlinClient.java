@@ -63,6 +63,6 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, extractedParameters);
         return resultSetFuture
             .thenApply(ResultSet::iterator)
-            .thenApply(CypherResultSet::new);
+            .thenApply(resultIterator -> new CypherResultSet(ast.getVariableTypes(), resultIterator));
     }
 }

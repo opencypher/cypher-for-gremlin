@@ -17,11 +17,12 @@ package org.opencypher.gremlin.translation
 
 import java.util
 
-import org.neo4j.cypher.internal.frontend.v3_3.CypherException
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.neo4j.cypher.internal.frontend.v3_3.ast.rewriters.Never
 import org.neo4j.cypher.internal.frontend.v3_3.helpers.rewriting.RewriterStepSequencer
 import org.neo4j.cypher.internal.frontend.v3_3.phases._
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.{AnyType, CypherType}
+import org.neo4j.cypher.internal.frontend.v3_3.{CypherException, ExpressionTypeInfo}
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
@@ -43,10 +44,15 @@ import scala.collection.mutable
   * for executing a Gremlin traversal.
   *
   * @param statement           AST root node
+  * @param varTypes            variable types by name
   * @param extractedParameters extracted parameters provided by Cypher parser
   * @param options             pre-parser options provided by Cypher parser
   */
-class CypherAst(val statement: Statement, val extractedParameters: Map[String, Any], options: Seq[PreParserOption]) {
+class CypherAst(
+    val statement: Statement,
+    val varTypes: Map[String, CypherType],
+    val extractedParameters: Map[String, Any],
+    options: Seq[PreParserOption]) {
 
   /**
     * Create a translation by passing the wrapped AST, parameters, and options
@@ -65,7 +71,7 @@ class CypherAst(val statement: Statement, val extractedParameters: Map[String, A
       )
       .build()
 
-    val context = StatementContext(irDsl, extractedParameters)
+    val context = StatementContext(irDsl, varTypes, extractedParameters)
     StatementWalker.walk(context, statement)
     val ir = irDsl.translate()
 
@@ -101,6 +107,8 @@ class CypherAst(val statement: Statement, val extractedParameters: Map[String, A
   }.toSet.asJava
 
   def getOptions: util.Set[StatementOption] = new util.HashSet(javaOptions)
+
+  def getVariableTypes: util.HashMap[String, CypherType] = new util.HashMap[String, CypherType](varTypes.asJava)
 
   override def toString: String = {
     val acc = mutable.ArrayBuffer.empty[(String, Int)]
@@ -156,7 +164,23 @@ object CypherAst {
       .transform(startState, EmptyParserContext(preParsedQueryText, Some(offset)))
 
     val params = parameters ++ state.extractedParams()
+    val statement = state.statement()
 
-    new CypherAst(state.statement(), params, options)
+    val varTypes = state
+      .semantics()
+      .typeTable
+      .filter(_._1.isInstanceOf[Variable])
+      .map {
+        case (Variable(name), ExpressionTypeInfo(typeSpec, _)) => {
+          if (typeSpec.ranges.lengthCompare(1) == 0) {
+            val typ = typeSpec.ranges.head.lower
+            (name, typ)
+          } else {
+            (name, AnyType.instance)
+          }
+        }
+      }
+
+    new CypherAst(statement, varTypes, params, options)
   }
 }

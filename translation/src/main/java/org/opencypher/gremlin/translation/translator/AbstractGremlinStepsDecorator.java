@@ -238,6 +238,11 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    public GremlinSteps<T, P> local(GremlinSteps<T, P> localTraversal) {
+        return delegate().local(localTraversal);
+    }
+
+    @Override
     public GremlinSteps<T, P> loops() {
         return delegate().loops();
     }
@@ -387,6 +392,10 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     @Override
     public GremlinSteps<T, P> valueMap() {
         return delegate().valueMap();
+    }
+    @Override
+    public GremlinSteps<T, P> valueMap(boolean includeTokens) {
+        return delegate().valueMap(includeTokens);
     }
 
     @Override

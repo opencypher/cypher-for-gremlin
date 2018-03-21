@@ -15,12 +15,10 @@
  */
 package org.opencypher.gremlin.tck;
 
-import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 final class ResultTransformer {
     private ResultTransformer() {
@@ -28,11 +26,13 @@ final class ResultTransformer {
 
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> resultSetAsMaps(ResultSet resultSet) {
-        return resultSet.all()
-            .join()
-            .stream()
-            .map(result -> result.get(Map.class))
-            .map(ReturnNormalizer::normalize)
-            .collect(toList());
+//        return resultSet.all()
+//            .join()
+//            .stream()
+//            .map(result -> result.get(Map.class))
+//            //todo
+//            //.map(row -> ReturnNormalizer.normalize(ast.getVariableTypes(), row))
+//            .collect(toList());
+        throw new IllegalArgumentException(); //todo
     }
 }

@@ -19,6 +19,7 @@ import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 import java.util.Set;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
 import org.opencypher.gremlin.translation.translator.Translator;
 
 /**
@@ -82,6 +83,15 @@ public class CypherAstWrapper {
      */
     public Set<StatementOption> getOptions() {
         return ast.getOptions();
+    }
+
+    /**
+     * Gets variables defined in this query and types
+     *
+     * @return map of variables to types
+     */
+    public Map<String, CypherType> getVariableTypes() {
+        return ast.getVariableTypes();
     }
 
     /**

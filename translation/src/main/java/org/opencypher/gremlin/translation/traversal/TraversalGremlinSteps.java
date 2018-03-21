@@ -318,6 +318,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> local(GremlinSteps<GraphTraversal, P> localTraversal) {
+        g.local(localTraversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> loops() {
         g.loops();
         return this;
@@ -497,6 +503,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> valueMap() {
         g.valueMap();
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> valueMap(boolean includeTokens) {
+        g.valueMap(includeTokens);
         return this;
     }
 
