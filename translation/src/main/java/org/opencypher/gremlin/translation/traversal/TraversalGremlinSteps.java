@@ -236,6 +236,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> has(String propertyKey, P predicate) {
+        g.has(propertyKey, predicate);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> hasKey(String... labels) {
         if (labels.length >= 1) {
             g.hasKey(labels[0], argumentsSlice(labels, 1));

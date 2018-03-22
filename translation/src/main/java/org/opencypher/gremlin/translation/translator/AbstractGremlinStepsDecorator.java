@@ -173,6 +173,11 @@ abstract class AbstractGremlinStepsDecorator<T, P> implements GremlinSteps<T, P>
     }
 
     @Override
+    public GremlinSteps<T, P> has(String propertyKey, P predicate) {
+        return delegate().has(propertyKey, predicate);
+    }
+
+    @Override
     public GremlinSteps<T, P> hasKey(String... labels) {
         return delegate().hasKey(labels);
     }

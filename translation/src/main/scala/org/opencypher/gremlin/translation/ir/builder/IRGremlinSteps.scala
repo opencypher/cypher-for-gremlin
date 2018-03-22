@@ -27,7 +27,7 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
 
   private val buf = mutable.ListBuffer.empty[GremlinStep]
 
-  override def current(): Seq[GremlinStep] = buf
+  override def current(): Seq[GremlinStep] = buf.toList
 
   override def start(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = new IRGremlinSteps
 
@@ -172,6 +172,13 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
 
   override def has(propertyKey: String): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Has(propertyKey)
+    this
+  }
+
+  override def has(
+      propertyKey: String,
+      predicate: GremlinPredicate): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += HasP(propertyKey, predicate)
     this
   }
 

@@ -25,6 +25,7 @@ import org.neo4j.cypher.internal.frontend.v3_3.phases._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
+import org.opencypher.gremlin.translation.ir.rewrite.PropertyMatchAdjacency
 import org.opencypher.gremlin.translation.preparser.{
   CypherPreParser,
   ExplainOption,
@@ -70,6 +71,7 @@ class CypherAst(val statement: Statement, val extractedParameters: Map[String, A
 
     TranslationWriter
       .from(ir)
+      .rewrite(PropertyMatchAdjacency)
       .translate(dsl)
   }
 
