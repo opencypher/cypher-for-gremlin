@@ -24,8 +24,8 @@ import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
+import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.gremlin.traversal.ReturnNormalizer._
-import org.opencypher.gremlin.traversal.{CustomFunction, ReturnNormalizer}
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable

@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 public class ComplexExamplesTest {
 
@@ -67,7 +68,7 @@ public class ComplexExamplesTest {
         assertThat(distinctResults)
             .hasSize(1)
             .extracting("x")
-            .extracting("label")
+            .extracting(ReturnNormalizer.LABEL)
             .containsExactly("root");
     }
 

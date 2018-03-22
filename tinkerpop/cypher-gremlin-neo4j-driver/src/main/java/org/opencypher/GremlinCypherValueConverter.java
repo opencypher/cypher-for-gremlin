@@ -19,6 +19,7 @@ import static java.lang.String.format;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.NODE;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.RELATIONSHIP;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.TYPE;
+import static org.opencypher.gremlin.traversal.ReturnNormalizer.VALUES;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,11 +130,11 @@ class GremlinCypherValueConverter {
 
     private static Map<String, Value> toCypherPropertyMap(Map<?, ?> e) {
         Map<String, Value> properties = new HashMap<>();
-        e.forEach((key, value) -> properties.put(
-            String.valueOf(key),
-            toCypherValue(value)));
-        properties.remove(ReturnNormalizer.ID);
-        properties.remove(ReturnNormalizer.LABEL);
+        e.entrySet().stream()
+            .filter((n) -> !VALUES.contains(String.valueOf(n.getKey())))
+            .forEach((n) -> properties.put(
+                String.valueOf(n.getKey()),
+                toCypherValue(n.getValue())));
 
         return properties;
     }

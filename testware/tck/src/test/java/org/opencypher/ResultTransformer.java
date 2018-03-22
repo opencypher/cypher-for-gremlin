@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.tck;
+package org.opencypher;
 
+
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 
-final class ResultTransformer {
+public final class ResultTransformer {
     private ResultTransformer() {
     }
 
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> resultSetAsMaps(ResultSet resultSet) {
-//        return resultSet.all()
-//            .join()
-//            .stream()
-//            .map(result -> result.get(Map.class))
-//            //todo
-//            //.map(row -> ReturnNormalizer.normalize(ast.getVariableTypes(), row))
-//            .collect(toList());
-        throw new IllegalArgumentException(); //todo
+        return resultSet.all()
+            .join()
+            .stream()
+            .map(result -> (Map<String, Object>) result.get(Map.class))
+            .collect(toList());
     }
 }

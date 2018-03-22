@@ -169,7 +169,9 @@ object CypherAst {
     val varTypes = state
       .semantics()
       .typeTable
+      .toList
       .filter(_._1.isInstanceOf[Variable])
+      .sortWith(_._1.position.offset < _._1.position.offset)
       .map {
         case (Variable(name), ExpressionTypeInfo(typeSpec, _)) => {
           if (typeSpec.ranges.lengthCompare(1) == 0) {
@@ -180,7 +182,9 @@ object CypherAst {
           }
         }
       }
+      .toMap
 
     new CypherAst(statement, varTypes, params, options)
   }
+
 }

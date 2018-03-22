@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.ID;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.INV;
+import static org.opencypher.gremlin.traversal.ReturnNormalizer.LABEL;
 import static org.opencypher.gremlin.traversal.ReturnNormalizer.OUTV;
 
 import java.io.PrintWriter;
@@ -62,8 +63,8 @@ public class CreateTest {
         Map<String, Object> result = results.get(0);
         Map root = (Map) result.get("root");
         Map link = (Map) result.get("link");
-        assertThat(link.get(ReturnNormalizer.INV)).isEqualTo(root.get("id"));
-        assertThat(link.get(OUTV)).isEqualTo(root.get("id"));
+        assertThat(link.get(ReturnNormalizer.INV)).isEqualTo(root.get(ID));
+        assertThat(link.get(OUTV)).isEqualTo(root.get(ID));
     }
 
     @Test
@@ -100,7 +101,7 @@ public class CreateTest {
 
     @Test
     public void matchCreateMix() throws Exception {
-        long rootId = (long) ((Map) submitAndGet("CREATE (d:D) RETURN d").get(0).get("d")).get("id");
+        long rootId = (long) ((Map) submitAndGet("CREATE (d:D) RETURN d").get(0).get("d")).get(ID);
 
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (d:D) " +
@@ -113,7 +114,7 @@ public class CreateTest {
         List<Long> createdIds = submitAndGet("MATCH (n:E) RETURN n")
             .stream()
             .map(m -> (Map) m.get("n"))
-            .map(v -> (Long) v.get("id"))
+            .map(v -> (Long) v.get(ReturnNormalizer.ID))
             .collect(toList());
 
         assertThat(createdIds).hasSize(2);
@@ -165,8 +166,8 @@ public class CreateTest {
                 "(vadas:person {name: \"vadas\"}) " +
                 "RETURN marko, vadas"
         ).get(0);
-        long markoId = (long) ((Map) created.get("marko")).get("id");
-        long vadasId = (long) ((Map) created.get("vadas")).get("id");
+        long markoId = (long) ((Map) created.get("marko")).get(ID);
+        long vadasId = (long) ((Map) created.get("vadas")).get(ID);
 
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (marko:person),(vadas:person) " +
@@ -348,14 +349,14 @@ public class CreateTest {
 
         assertThat(results)
             .extracting("v")
-            .extracting("label")
+            .extracting(LABEL)
             .containsExactly("End");
 
         Object endId = ((Map) results.get(0).get("v")).get(ID);
 
         assertThat(results)
             .extracting("e")
-            .extracting("label")
+            .extracting(LABEL)
             .containsExactly("TYPE");
 
         assertThat(results)

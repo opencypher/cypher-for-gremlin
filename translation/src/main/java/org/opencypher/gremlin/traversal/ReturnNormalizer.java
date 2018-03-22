@@ -17,6 +17,7 @@ package org.opencypher.gremlin.traversal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,13 +38,15 @@ import org.neo4j.cypher.internal.frontend.v3_3.symbols.RelationshipType;
 import org.opencypher.gremlin.translation.Tokens;
 
 public final class ReturnNormalizer {
-    public static final String ELEMENT = "element";
-    public static final String INV = "inv";
-    public static final String OUTV = "outv";
+    public static final String ID = " cypher.id";
+    public static final String LABEL = " cypher.label";
+    public static final String TYPE = " cypher.type";
+    public static final String ELEMENT = " cypher.element";
+    public static final String INV = " cypher.inv";
+    public static final String OUTV = " cypher.outv";
 
-    public static final String ID = T.id.toString();
-    public static final String LABEL = T.label.toString();
-    public static final String TYPE = "type";
+    public static final List<String> VALUES = Arrays.asList(ID, LABEL, TYPE, ELEMENT, INV, OUTV);
+
     public static final String NODE = "node";
     public static final String RELATIONSHIP = "relationship";
 
@@ -67,7 +70,7 @@ public final class ReturnNormalizer {
         if (Tokens.NULL.equals(value)) {
             return null;
         } else if (type instanceof NodeType) {
-            return normalizeElement((Map<?, ?>) value);
+            return normalizeElement((Map<?, ?>) value, NODE);
         } else if (type instanceof RelationshipType) {
             return normalizeRelationship((Map<?, ?>) value);
         } else if (type instanceof PathType) {
@@ -96,18 +99,21 @@ public final class ReturnNormalizer {
         return value;
     }
 
-    private Map<Object, Object> normalizeElement(Map<?, ?> value) {
+    private Map<Object, Object> normalizeElement(Map<?, ?> value, String type) {
         HashMap<Object, Object> result = new HashMap<>();
-        result.put(TYPE, NODE);
+        result.put(TYPE, type);
+        result.put(ID, value.get(T.id));
+        result.put(LABEL, value.get(T.label));
         value.forEach(
             (k, v) -> {
-                if ((v instanceof Collection) && ((Collection) v).size() == 1) {
-                    result.put(String.valueOf(k), normalizeValue(((Collection) v).iterator().next()));
-                } else {
-                    result.put(String.valueOf(k), normalizeValue(v));
+                if (k instanceof String) {
+                    if ((v instanceof Collection) && ((Collection) v).size() == 1) {
+                        result.put(k, normalizeValue(((Collection) v).iterator().next()));
+                    } else {
+                        result.put(k, normalizeValue(v));
+                    }
                 }
             });
-
 
         return result;
     }
@@ -117,27 +123,18 @@ public final class ReturnNormalizer {
         result.put(TYPE, RELATIONSHIP);
         result.put(INV, value.get(INV));
         result.put(OUTV, value.get(OUTV));
-        result.put(ID, getId(value));
+
         if (value.containsKey(ELEMENT)) {
-            ((Map<?, ?>) value.get(ELEMENT)).forEach(
+            Map<?, ?> element = (Map<?, ?>) value.get(ELEMENT);
+
+            result.put(ID, element.remove(T.id));
+            result.put(LABEL, element.remove(T.label));
+
+            element.forEach(
                 (k, v) -> result.put(String.valueOf(k), normalizeValue(v)));
         }
 
         return result;
-    }
-
-
-    // todo remove this
-    private Object getId(Map<?, ?> value) {
-        if (value.containsKey(T.id)) {
-            return value.get(T.id);
-        } else if (value.containsKey(ID)) {
-            return value.get(ID);
-        } else if (value.containsKey(ELEMENT)) {
-            return getId((Map<?, ?>) value.get(ELEMENT));
-        } else {
-            throw new IllegalArgumentException("Id not found for object " + value);
-        }
     }
 
     private Object normalizePath(List<?> value) {
@@ -148,12 +145,12 @@ public final class ReturnNormalizer {
         List<Object> result = new ArrayList<>();
         for (Object e : value) {
             if (isNode) {
-                prevNode = normalizeElement((Map<?, ?>) e);
+                prevNode = normalizeElement((Map<?, ?>) e, NODE);
                 result.add(prevNode);
-                prevRelationship.put(OUTV, getId(prevNode));
+                prevRelationship.put(OUTV, prevNode.get(ID));
             } else {
-                prevRelationship = normalizeElement((Map<?, ?>) e);
-                prevRelationship.put(INV, getId(prevNode));
+                prevRelationship = normalizeElement((Map<?, ?>) e, RELATIONSHIP);
+                prevRelationship.put(INV, prevNode.get(ID));
                 result.add(prevRelationship);
             }
             isNode = !isNode;
