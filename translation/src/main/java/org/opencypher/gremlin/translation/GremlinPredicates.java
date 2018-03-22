@@ -22,32 +22,32 @@ import org.opencypher.gremlin.translation.translator.Translator;
  * For DSL details, see
  * <a href="https://tinkerpop.apache.org/docs/current/reference/#a-note-on-predicates">A Note on Predicates</a>.
  *
- * @param <T> translation predicate type
+ * @param <P> translation predicate type
  * @see org.opencypher.gremlin.traversal.CustomPredicates
  * @see Translator
  */
-public interface GremlinPredicates<T> {
-    T isEq(Object value); // Named like this to satisfy Scala compiler
+public interface GremlinPredicates<P> {
+    P isEq(Object value); // Named like this to satisfy Scala compiler
 
-    T gt(Object value);
+    P gt(Object value);
 
-    T gte(Object value);
+    P gte(Object value);
 
-    T lt(Object value);
+    P lt(Object value);
 
-    T lte(Object value);
+    P lte(Object value);
 
-    T neq(Object value);
+    P neq(Object value);
 
-    T between(Object first, Object second);
+    P between(Object first, Object second);
 
-    T within(Object... values);
+    P within(Object... values);
 
-    T without(Object... values);
+    P without(Object... values);
 
-    T startsWith(Object value);
+    P startsWith(Object value);
 
-    T endsWith(Object value);
+    P endsWith(Object value);
 
-    T contains(Object value);
+    P contains(Object value);
 }

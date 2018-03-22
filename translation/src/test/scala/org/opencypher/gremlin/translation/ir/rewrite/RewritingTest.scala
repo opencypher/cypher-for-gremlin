@@ -17,9 +17,9 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.opencypher.gremlin.translation.ir._
+import org.opencypher.gremlin.translation.ir.model._
 
-class StepToolsTest {
+class RewritingTest {
 
   @Test
   def findOne(): Unit = {
@@ -27,8 +27,8 @@ class StepToolsTest {
     val relWithLabel: String => PartialFunction[Seq[GremlinStep], String] = (stepLabel) => {
       case OutE(edgeLabel) :: As(`stepLabel`) :: InV :: _ => edgeLabel
     }
-    val found = StepTools.find(seq, relWithLabel("r"))
-    val notFound = StepTools.find(seq, relWithLabel("other"))
+    val found = Rewriting.find(seq, relWithLabel("r"))
+    val notFound = Rewriting.find(seq, relWithLabel("other"))
 
     assertThat(found).isEqualTo(Seq("rel"))
     assertThat(notFound).isEqualTo(Nil)
@@ -37,7 +37,7 @@ class StepToolsTest {
   @Test
   def findMultiple(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val found = StepTools.find(seq, {
+    val found = Rewriting.find(seq, {
       case As(stepLabel) :: _ => stepLabel
     })
 
@@ -47,7 +47,7 @@ class StepToolsTest {
   @Test
   def replaceOne(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val replaced = StepTools.replace(seq, {
+    val replaced = Rewriting.replace(seq, {
       case OutE(edgeLabel) :: As(_) :: InV :: rest => OutE(edgeLabel) :: InV :: rest
     })
 
@@ -59,7 +59,7 @@ class StepToolsTest {
   @Test
   def replaceMultiple(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val replaced = StepTools.replace(seq, {
+    val replaced = Rewriting.replace(seq, {
       case As(stepLabel) :: rest => As(s"_$stepLabel") :: rest
     })
 
