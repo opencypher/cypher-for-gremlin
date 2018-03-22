@@ -106,6 +106,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> has(String propertyKey);
 
+    GremlinSteps<T, P> has(String propertyKey, P predicate);
+
     GremlinSteps<T, P> hasKey(String... labels);
 
     GremlinSteps<T, P> hasLabel(String... labels);

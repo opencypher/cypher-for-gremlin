@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir
 
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.ir.model._
+import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter
 import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.traversal.CustomFunction
 
@@ -26,12 +27,12 @@ object TranslationWriter {
   }
 }
 
-class TranslationWriter(ir: Seq[GremlinStep], rewriters: Seq[Seq[GremlinStep] => Seq[GremlinStep]]) {
-  def rewrite(rewriter: Seq[GremlinStep] => Seq[GremlinStep]): TranslationWriter =
+class TranslationWriter(ir: Seq[GremlinStep], rewriters: Seq[GremlinRewriter]) {
+  def rewrite(rewriter: GremlinRewriter): TranslationWriter =
     new TranslationWriter(ir, rewriters :+ rewriter)
 
   def translate[T, P](translator: Translator[T, P]): T = {
-    val rewritten = rewriters.foldLeft(ir)((ir, rewriter) => rewriter(ir))
+    val rewritten = rewriters.foldLeft(ir)((ir, rewriter) => rewriter.instance()(ir))
     val generator = new TranslationGenerator(translator)
     generator.generate(rewritten)
     translator.translate()
@@ -106,6 +107,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.group()
         case Has(propertyKey) =>
           g.has(propertyKey)
+        case HasP(propertyKey, predicate) =>
+          g.has(propertyKey, generatePredicate(predicate))
         case HasKey(labels @ _*) =>
           g.hasKey(labels: _*)
         case HasLabel(labels @ _*) =>

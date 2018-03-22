@@ -50,6 +50,7 @@ case object Fold extends GremlinStep
 case class From(fromStepLabel: String) extends GremlinStep
 case object Group extends GremlinStep
 case class Has(propertyKey: String) extends GremlinStep
+case class HasP(propertyKey: String, predicate: GremlinPredicate) extends GremlinStep
 case class HasKey(labels: String*) extends GremlinStep
 case class HasLabel(labels: String*) extends GremlinStep
 case class HasNot(propertyKey: String) extends GremlinStep

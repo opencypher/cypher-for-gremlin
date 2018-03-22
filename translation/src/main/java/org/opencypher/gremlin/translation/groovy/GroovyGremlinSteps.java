@@ -214,6 +214,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> has(String propertyKey, GroovyPredicate predicate) {
+        g.append(chain("has", propertyKey, predicate));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> hasKey(String... labels) {
         g.append(chain("hasKey", (Object[]) labels));
         return this;
