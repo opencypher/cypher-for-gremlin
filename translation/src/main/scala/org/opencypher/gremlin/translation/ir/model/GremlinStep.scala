@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.ir
+package org.opencypher.gremlin.translation.ir.model
 
-import org.apache.tinkerpop.gremlin.process.traversal.{Order => TraversalOrder, Scope}
+import org.apache.tinkerpop.gremlin.process.traversal.{Scope, Order => TraversalOrder}
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.traversal.CustomFunction
 

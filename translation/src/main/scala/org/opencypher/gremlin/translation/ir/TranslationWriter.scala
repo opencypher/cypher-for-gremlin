@@ -16,7 +16,9 @@
 package org.opencypher.gremlin.translation.ir
 
 import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.gremlin.traversal.CustomFunction
 
 object TranslationWriter {
   def from(ir: Seq[GremlinStep]): TranslationWriter = {
@@ -79,7 +81,9 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
         case ChooseP(predicate, trueChoice, falseChoice) =>
           if (trueChoice.nonEmpty && falseChoice.nonEmpty) {
             g.choose(generatePredicate(predicate), generateSteps(trueChoice), generateSteps(falseChoice))
-          } else if (trueChoice.nonEmpty) {}
+          } else if (trueChoice.nonEmpty) {
+            g.choose(generatePredicate(predicate), generateSteps(trueChoice))
+          }
         case Coalesce(coalesceTraversals @ _*) =>
           g.coalesce(coalesceTraversals.map(generateSteps): _*)
         case Constant(e) =>
@@ -129,7 +133,13 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
         case Loops =>
           g.loops()
         case MapF(function) =>
-          g.map(function)
+          function.getName match {
+            case "listComprehension" =>
+              val functionTraversal = function.getArgs()(0).asInstanceOf[Seq[GremlinStep]]
+              g.map(CustomFunction.listComprehension(generateSteps(functionTraversal).current()))
+            case _ =>
+              g.map(function)
+          }
         case MapT(traversal) =>
           g.map(generateSteps(traversal))
         case Max =>
@@ -220,8 +230,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
 
   def generateValue(value: Any): Object = {
     value match {
-      case GremlinBinding(name, _) => b.bind(name, value)
-      case _                       => value.asInstanceOf[AnyRef]
+      case GremlinBinding(name, bValue) => b.bind(name, bValue)
+      case _                            => value.asInstanceOf[AnyRef]
     }
   }
 }

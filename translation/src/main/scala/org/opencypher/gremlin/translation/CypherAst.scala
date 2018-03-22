@@ -23,6 +23,8 @@ import org.neo4j.cypher.internal.frontend.v3_3.ast.rewriters.Never
 import org.neo4j.cypher.internal.frontend.v3_3.helpers.rewriting.RewriterStepSequencer
 import org.neo4j.cypher.internal.frontend.v3_3.phases._
 import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.ir.TranslationWriter
+import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
 import org.opencypher.gremlin.translation.preparser.{
   CypherPreParser,
   ExplainOption,
@@ -53,9 +55,22 @@ class CypherAst(val statement: Statement, val extractedParameters: Map[String, A
     * @return to-Gremlin translation
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
-    val context = StatementContext(dsl, extractedParameters)
+    val irDsl = Translator
+      .builder()
+      .custom(
+        new IRGremlinSteps,
+        new IRGremlinPredicates,
+        new IRGremlinBindings
+      )
+      .build()
+
+    val context = StatementContext(irDsl, extractedParameters)
     StatementWalker.walk(context, statement)
-    context.dsl.translate()
+    val ir = irDsl.translate()
+
+    TranslationWriter
+      .from(ir)
+      .translate(dsl)
   }
 
   private val javaExtractedParameters: util.Map[String, Object] =

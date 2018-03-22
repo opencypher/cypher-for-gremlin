@@ -197,7 +197,8 @@ public class CustomFunction implements Function<Traverser, Object> {
                         return TraversalUtil.apply(item, admin);
                     })
                     .collect(Collectors.toList());
-            });
+            },
+            functionTraversal);
     }
 
     public static CustomFunction pathComprehension() {

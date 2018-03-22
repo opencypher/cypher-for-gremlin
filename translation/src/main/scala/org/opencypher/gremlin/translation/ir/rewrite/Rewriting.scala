@@ -15,11 +15,11 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.opencypher.gremlin.translation.ir.GremlinStep
+import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
 import scala.annotation.tailrec
 
-object StepTools {
+object Rewriting {
   def find[R](steps: Seq[GremlinStep], finder: PartialFunction[Seq[GremlinStep], R]): Seq[R] = {
     @tailrec def findAcc(acc: Seq[R], steps: Seq[GremlinStep]): Seq[R] = {
       steps match {
