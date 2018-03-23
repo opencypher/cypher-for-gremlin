@@ -20,7 +20,7 @@ import org.opencypher.gremlin.translation.ir.model.GremlinStep
 import scala.annotation.tailrec
 
 object Rewriting {
-  def find[R](steps: Seq[GremlinStep], finder: PartialFunction[Seq[GremlinStep], R]): Seq[R] = {
+  def extract[R](steps: Seq[GremlinStep], finder: PartialFunction[Seq[GremlinStep], R]): Seq[R] = {
     @tailrec def findAcc(acc: Seq[R], steps: Seq[GremlinStep]): Seq[R] = {
       steps match {
         case _ :: tail if finder.isDefinedAt(steps) =>
@@ -42,7 +42,10 @@ object Rewriting {
       steps match {
         case _ :: _ if replacer.isDefinedAt(steps) =>
           val replaced = replacer(steps)
-          replaceAcc(acc :+ replaced.head, replaced.tail)
+          replaced.headOption match {
+            case Some(head) => replaceAcc(acc :+ head, replaced.tail)
+            case _          => acc
+          }
         case head :: tail =>
           replaceAcc(acc :+ head, tail)
         case Nil =>

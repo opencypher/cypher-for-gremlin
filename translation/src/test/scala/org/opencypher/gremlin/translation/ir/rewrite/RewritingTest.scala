@@ -27,8 +27,8 @@ class RewritingTest {
     val relWithLabel: String => PartialFunction[Seq[GremlinStep], String] = (stepLabel) => {
       case OutE(edgeLabel) :: As(`stepLabel`) :: InV :: _ => edgeLabel
     }
-    val found = Rewriting.find(seq, relWithLabel("r"))
-    val notFound = Rewriting.find(seq, relWithLabel("other"))
+    val found = Rewriting.extract(seq, relWithLabel("r"))
+    val notFound = Rewriting.extract(seq, relWithLabel("other"))
 
     assertThat(found).isEqualTo(Seq("rel"))
     assertThat(notFound).isEqualTo(Nil)
@@ -37,7 +37,7 @@ class RewritingTest {
   @Test
   def findMultiple(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val found = Rewriting.find(seq, {
+    val found = Rewriting.extract(seq, {
       case As(stepLabel) :: _ => stepLabel
     })
 

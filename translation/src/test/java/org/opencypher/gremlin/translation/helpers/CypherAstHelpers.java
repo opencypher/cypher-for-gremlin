@@ -148,5 +148,9 @@ public final class CypherAstHelpers {
         public static GremlinSteps<String, GroovyPredicate> map(GremlinSteps<String, GroovyPredicate> traversal) {
             return start().map(traversal);
         }
+
+        public static GremlinSteps<String, GroovyPredicate> bothE() {
+            return start().bothE();
+        }
     }
 }
