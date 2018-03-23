@@ -80,6 +80,7 @@ public abstract class AbstractBenchmark {
     public void orderBy() {
         client.run(
             "MATCH (n:Person) " +
+                "WHERE n.born IS NOT NULL " +
                 "RETURN n.name " +
                 "ORDER BY n.born DESC LIMIT 10"
         );
