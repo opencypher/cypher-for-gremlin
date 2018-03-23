@@ -140,4 +140,17 @@ public class WhereTest {
             .containsExactlyInAnyOrder("marko", "josh", "peter");
     }
 
+    @Test
+    public void constants() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:software) " +
+                "WHERE 1 <> 2 " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("lop", "ripple");
+    }
+
 }
