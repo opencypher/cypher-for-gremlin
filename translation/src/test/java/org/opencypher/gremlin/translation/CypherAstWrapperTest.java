@@ -57,7 +57,7 @@ public class CypherAstWrapperTest {
                         "WHERE n.name = 'marko'\n" +
                         "RETURN n, friend.name AS friend";
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
-        Map<String, CypherType> variableTypes = ast.getVariableTypes();
+        Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("n")).isInstanceOf(NodeType.class);
         assertThat(variableTypes.get("friend")).isInstanceOf(AnyType.class);
@@ -67,9 +67,21 @@ public class CypherAstWrapperTest {
     public void duplicateNameInAggregation() {
         String cypher = "MATCH (n) RETURN n.prop AS n, count(n) AS count";
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
-        Map<String, CypherType> extractedParameters = ast.getVariableTypes();
+        Map<String, CypherType> extractedParameters = ast.getReturnTypes();
 
         assertThat(extractedParameters.get("n")).isInstanceOf(AnyType.class);
     }
 
+    @Test
+    public void returnTypesInUnion() {
+        String cypher = "MATCH (a:A)\n" +
+            "RETURN a AS a\n" +
+            "UNION\n" +
+            "MATCH (b:B)\n" +
+            "RETURN b AS a";
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        Map<String, CypherType> variableTypes = ast.getReturnTypes();
+
+        assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);
+    }
 }

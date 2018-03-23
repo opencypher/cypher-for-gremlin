@@ -24,9 +24,9 @@ import scala.collection.mutable
 object StatementContext {
   def apply[T, P](
       dsl: Translator[T, P],
-      varTypes: Map[String, CypherType],
+      returnTypes: Map[String, CypherType],
       extractedParameters: Map[String, Any]): StatementContext[T, P] = {
-    new StatementContext(dsl, varTypes, extractedParameters)
+    new StatementContext(dsl, returnTypes, extractedParameters)
   }
 }
 
@@ -34,12 +34,12 @@ object StatementContext {
   * Context used by AST walkers to share global translation state.
   *
   * @param dsl                 reference to [[Translator]] implementation in use
-  * @param varTypes            variable types by name
+  * @param returnTypes            variable types by name
   * @param extractedParameters Cypher query parameters
   */
 sealed class StatementContext[T, P](
     val dsl: Translator[T, P],
-    val varTypes: Map[String, CypherType],
+    val returnTypes: Map[String, CypherType],
     private val extractedParameters: Map[String, Any]) {
 
   def parameter(name: String): Object = {
@@ -114,7 +114,7 @@ sealed class StatementContext[T, P](
   }
 
   def copy(): StatementContext[T, P] = {
-    val result = StatementContext(dsl, varTypes, extractedParameters)
+    val result = StatementContext(dsl, returnTypes, extractedParameters)
     result.referencedAliases ++= referencedAliases
     result.nameGenerator = nameGenerator
     result

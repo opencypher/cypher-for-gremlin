@@ -44,13 +44,13 @@ import scala.collection.mutable
   * for executing a Gremlin traversal.
   *
   * @param statement           AST root node
-  * @param varTypes            variable types by name
+  * @param returnTypes            variable types by name
   * @param extractedParameters extracted parameters provided by Cypher parser
   * @param options             pre-parser options provided by Cypher parser
   */
 class CypherAst(
     val statement: Statement,
-    val varTypes: Map[String, CypherType],
+    val returnTypes: Map[String, CypherType],
     val extractedParameters: Map[String, Any],
     options: Seq[PreParserOption]) {
 
@@ -71,7 +71,7 @@ class CypherAst(
       )
       .build()
 
-    val context = StatementContext(irDsl, varTypes, extractedParameters)
+    val context = StatementContext(irDsl, returnTypes, extractedParameters)
     StatementWalker.walk(context, statement)
     val ir = irDsl.translate()
 
@@ -108,7 +108,7 @@ class CypherAst(
 
   def getOptions: util.Set[StatementOption] = new util.HashSet(javaOptions)
 
-  def getVariableTypes: util.HashMap[String, CypherType] = new util.HashMap[String, CypherType](varTypes.asJava)
+  def getReturnTypes: util.HashMap[String, CypherType] = new util.HashMap[String, CypherType](returnTypes.asJava)
 
   override def toString: String = {
     val acc = mutable.ArrayBuffer.empty[(String, Int)]
@@ -165,37 +165,43 @@ object CypherAst {
 
     val params = parameters ++ state.extractedParams()
     val statement = state.statement()
+    val returnTypes = getReturnTypes(state, statement)
 
+    new CypherAst(statement, returnTypes, params, options)
+  }
+
+  private def getReturnTypes(state: BaseState, statement: Statement): Map[String, CypherType] = {
     val returnTypes = mutable.Map.empty[String, CypherType]
-
     val typeTable = state.semantics().typeTable
+
     statement match {
       case Query(_, part) =>
-        part match {
+        val clauses = part match {
           case union: Union =>
-          //walkUnion(union)todo
+            union.unionedQueries.flatMap(f => f.clauses)
           case single: SingleQuery =>
-            single.clauses.foreach {
-              case Return(_, items, _, _, _, _, _) =>
-                for (item <- items.items) {
-                  val AliasedReturnItem(expression, Variable(name)) = item
-                  typeTable.get(expression) match {
-                    case Some(ExpressionTypeInfo(typeSpec, _)) =>
-                      if (typeSpec.ranges.lengthCompare(1) == 0) {
-                        val typ = typeSpec.ranges.head.lower
-                        returnTypes(name) = typ
-                      } else {
-                        returnTypes(name) = AnyType.instance
-                      }
-                    case _ =>
+            single.clauses
+        }
+
+        clauses.foreach {
+          case Return(_, items, _, _, _, _, _) =>
+            for (item <- items.items) {
+              val AliasedReturnItem(expression, Variable(name)) = item
+              typeTable.get(expression) match {
+                case Some(ExpressionTypeInfo(typeSpec, _)) =>
+                  if (typeSpec.ranges.lengthCompare(1) == 0) {
+                    val typ = typeSpec.ranges.head.lower
+                    returnTypes(name) = typ
+                  } else {
+                    returnTypes(name) = AnyType.instance
                   }
-                }
-              case _ =>
+                case _ =>
+              }
             }
+          case _ =>
         }
     }
 
-    new CypherAst(statement, returnTypes.toMap, params, options)
+    returnTypes.toMap
   }
-
 }

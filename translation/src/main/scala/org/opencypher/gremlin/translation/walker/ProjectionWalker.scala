@@ -353,7 +353,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
   private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String) = {
     val p = context.dsl.predicates()
 
-    context.varTypes.get(alias) match {
+    context.returnTypes.get(alias) match {
       case Some(typ) if typ.isInstanceOf[NodeType] =>
         nullIfNull(subTraversal, g.start().valueMap(true))
       case Some(typ) if typ.isInstanceOf[RelationshipType] =>

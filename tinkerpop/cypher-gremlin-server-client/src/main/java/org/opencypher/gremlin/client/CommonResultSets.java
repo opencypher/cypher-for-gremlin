@@ -39,7 +39,7 @@ final class CommonResultSets {
         explanation.put("translation", ast.buildTranslation(translator));
         explanation.put("options", ast.getOptions().toString());
         Iterator<Result> iterator = singletonIterator(() -> new Result(explanation));
-        return new CypherResultSet(ast.getVariableTypes(), iterator);
+        return new CypherResultSet(ast.getReturnTypes(), iterator);
     }
 
     static CypherResultSet exceptional(Throwable throwable) {

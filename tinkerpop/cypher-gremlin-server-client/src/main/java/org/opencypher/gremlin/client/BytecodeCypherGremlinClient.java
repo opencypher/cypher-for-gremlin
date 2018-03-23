@@ -64,6 +64,6 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(bytecode);
         return resultSetFuture
             .thenApply(ResultSet::iterator)
-            .thenApply(resultIterator -> new CypherResultSet(ast.getVariableTypes(), resultIterator));
+            .thenApply(resultIterator -> new CypherResultSet(ast.getReturnTypes(), resultIterator));
     }
 }

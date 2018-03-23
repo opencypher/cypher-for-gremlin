@@ -86,12 +86,12 @@ public class CypherAstWrapper {
     }
 
     /**
-     * Gets variables defined in this query and types
+     * Gets return aliases types
      *
-     * @return map of variables to types
+     * @return map of aliases to types
      */
-    public Map<String, CypherType> getVariableTypes() {
-        return ast.getVariableTypes();
+    public Map<String, CypherType> getReturnTypes() {
+        return ast.getReturnTypes();
     }
 
     /**
