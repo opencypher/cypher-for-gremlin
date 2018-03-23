@@ -366,14 +366,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             .by(g.start().outV().id())
         )
       case Some(typ) if typ.isInstanceOf[PathType] =>
-        subTraversal.local(
-          g.start()
-            .unfold()
-            .is(p.neq(Tokens.START))
-            .is(p.neq(Tokens.NULL))
-            .valueMap(true)
-            .fold()
-            .choose(g.start().unfold(), g.start().identity(), g.start().constant(Tokens.NULL)))
+        subTraversal.map(CustomFunction.finalizePath());
       case _ =>
         subTraversal
     }

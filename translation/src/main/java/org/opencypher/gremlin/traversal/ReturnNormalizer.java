@@ -138,25 +138,7 @@ public final class ReturnNormalizer {
     }
 
     private Object normalizePath(List<?> value) {
-        boolean isNode = true;
-        Map<Object, Object> prevNode = null;
-        Map<Object, Object> prevRelationship = new HashMap<>();
-
-        List<Object> result = new ArrayList<>();
-        for (Object e : value) {
-            if (isNode) {
-                prevNode = normalizeElement((Map<?, ?>) e, NODE);
-                result.add(prevNode);
-                prevRelationship.put(OUTV, prevNode.get(ID));
-            } else {
-                prevRelationship = normalizeElement((Map<?, ?>) e, RELATIONSHIP);
-                prevRelationship.put(INV, prevNode.get(ID));
-                result.add(prevRelationship);
-            }
-            isNode = !isNode;
-        }
-
-        return result;
+        return value;
     }
 
     private Map<?, ?> normalizeMap(Map<?, ?> map) {
