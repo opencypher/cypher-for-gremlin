@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import java.util
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
+import org.neo4j.cypher.internal.frontend.v3_3.InputPosition
 import org.neo4j.cypher.internal.frontend.v3_3.ast.{BooleanLiteral, _}
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.BooleanType
 import org.opencypher.gremlin.translation.Tokens.NULL
@@ -88,33 +89,33 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       case Or(lhs, rhs) =>
         g.start().or(walkExpression(lhs), walkExpression(rhs))
       case Not(Equals(lhs, rhs)) =>
-        walkBinaryExpression(lhs, rhs, p.neq(_))
-      case Not(In(lhs, ListLiteral(list))) =>
-        walkLhs(g.start(), lhs).is(p.without(list.map(walkRhs): _*))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.neq))
+      case Not(In(lhs, rhs: ListLiteral)) =>
+        walkBinaryExpression(lhs, rhs, seqExpressionPredicate(values => p.without(values: _*)))
+      case Not(In(lhs, rhs: Parameter)) =>
+        walkBinaryExpression(lhs, rhs, seqExpressionPredicate(values => p.without(values: _*)))
       case Not(rhs) =>
         g.start().not(walkExpression(rhs))
       case Equals(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.isEq(_))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.isEq))
       case LessThan(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.lt(_))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.lt))
       case LessThanOrEqual(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.lte(_))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.lte))
       case GreaterThan(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.gt(_))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.gt))
       case GreaterThanOrEqual(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.gte(_))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.gte))
       case StartsWith(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.startsWith(_))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.startsWith))
       case EndsWith(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.endsWith(_))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.endsWith))
       case Contains(lhs, rhs) =>
-        walkBinaryExpression(lhs, rhs, p.contains(_))
-      case In(lhs, ListLiteral(list)) =>
-        walkLhs(g.start(), lhs).is(p.within(list.map(walkRhs): _*))
-      case In(lhs, Parameter(name, _)) =>
-        val coll = context.inlineParameter(name, classOf[util.Collection[_]])
-        val args = coll.asScala.toSeq.asInstanceOf[Seq[Object]]
-        walkLhs(g.start(), lhs).is(p.within(args: _*))
+        walkBinaryExpression(lhs, rhs, expressionPredicate(p.contains))
+      case In(lhs, rhs: ListLiteral) =>
+        walkBinaryExpression(lhs, rhs, seqExpressionPredicate(values => p.within(values: _*)))
+      case In(lhs, rhs: Parameter) =>
+        walkBinaryExpression(lhs, rhs, seqExpressionPredicate(values => p.within(values: _*)))
       case expr: RightUnaryOperatorExpression =>
         walkRightUnaryOperatorExpression(expr)
       case expr: FunctionInvocation =>
@@ -127,7 +128,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       case Parameter(name, _: BooleanType) =>
         g.start().constant(context.parameter(name)).is(p.isEq(true))
       case l: BooleanLiteral =>
-        g.start().constant(walkRhs(l)).is(p.isEq(true))
+        g.start().constant(l.value).is(p.isEq(true))
       case PatternExpression(RelationshipsPattern(relationshipChain)) =>
         val traversal = g.start()
         WhereWalker.walkRelationshipChain(context, traversal, relationshipChain)
@@ -137,40 +138,49 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
   }
 
-  private def walkLhs(g: GremlinSteps[T, P], lhs: Expression): GremlinSteps[T, P] = {
-    lhs match {
-      case Variable(v) =>
-        g.select(v)
-      case Property(Variable(varName), PropertyKeyName(keyName)) =>
-        g.select(freshIds.getOrElse(varName, varName)).values(keyName)
-      case function: FunctionInvocation =>
-        walkFunctionInvocation(g, function)
-      case _ =>
-        context.unsupported("binary expression lhs", lhs)
+  private def expressionPredicate(p: AnyRef => P): Expression => P = { expression =>
+    p(expressionValue(expression, context).asInstanceOf[AnyRef])
+  }
+
+  private def seqExpressionPredicate(p: Seq[AnyRef] => P): Expression => P = { expression =>
+    inlineExpressionValue(expression, context) match {
+      case coll: util.Collection[_] => p(coll.asScala.toSeq.asInstanceOf[Seq[AnyRef]])
+      case value                    => p(value.asInstanceOf[AnyRef] :: Nil)
     }
   }
 
-  private def walkBinaryExpression(lhs: Expression, rhs: Expression, getPredicate: AnyRef => P): GremlinSteps[T, P] = {
-    val binary = g.start()
+  private def walkBinaryExpression(lhs: Expression, rhs: Expression, predicate: Expression => P): GremlinSteps[T, P] = {
+    val whereG = g.start()
 
     rhs match {
       case Variable(v) =>
-        binary.select(v).as(Tokens.LOCAL)
+        whereG.select(v).as(Tokens.LOCAL)
       case Property(Variable(varName), PropertyKeyName(keyName)) =>
-        binary.select(varName).values(keyName).as(Tokens.LOCAL)
+        whereG.select(varName).values(keyName).as(Tokens.LOCAL)
       case _ =>
     }
 
-    walkLhs(binary, lhs)
+    lhs match {
+      case Variable(v) =>
+        whereG.select(v)
+      case Property(Variable(varName), PropertyKeyName(keyName)) =>
+        whereG.select(freshIds.getOrElse(varName, varName)).values(keyName)
+      case function: FunctionInvocation =>
+        walkFunctionInvocation(whereG, function)
+      case _ =>
+        whereG.constant(expressionValue(lhs, context))
+    }
 
     rhs match {
       case Variable(_) =>
-        binary.where(getPredicate(Tokens.LOCAL))
+        whereG.where(predicate(StringLiteral(Tokens.LOCAL)(InputPosition.NONE)))
       case Property(Variable(_), PropertyKeyName(_)) =>
-        binary.where(getPredicate(Tokens.LOCAL))
-      case _ =>
-        binary.is(getPredicate(walkRhs(rhs)))
+        whereG.where(predicate(StringLiteral(Tokens.LOCAL)(InputPosition.NONE)))
+      case expression =>
+        whereG.is(predicate(expression))
     }
+
+    whereG
   }
 
   private def walkRightUnaryOperatorExpression(expr: RightUnaryOperatorExpression): GremlinSteps[T, P] = {
@@ -217,10 +227,6 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       case _ =>
         context.unsupported("expression", function)
     }
-  }
-
-  private def walkRhs(rhs: Expression): AnyRef = {
-    expressionValue(rhs, context).asInstanceOf[AnyRef]
   }
 
   def walkRelationshipChain(relationshipChain: RelationshipChain) {
