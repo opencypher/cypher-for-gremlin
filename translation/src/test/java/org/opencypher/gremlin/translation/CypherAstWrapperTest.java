@@ -19,8 +19,12 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.AnyType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
 
 public class CypherAstWrapperTest {
 
@@ -45,6 +49,27 @@ public class CypherAstWrapperTest {
             .containsExactly(
                 entry("low", 29L)
             );
+    }
+
+    @Test
+    public void duplicateNames() {
+        String cypher = "MATCH (n:person)-[r:knows]->(friend:person)\n" +
+                        "WHERE n.name = 'marko'\n" +
+                        "RETURN n, friend.name AS friend";
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        Map<String, CypherType> variableTypes = ast.getVariableTypes();
+
+        assertThat(variableTypes.get("n")).isInstanceOf(NodeType.class);
+        assertThat(variableTypes.get("friend")).isInstanceOf(AnyType.class);
+    }
+
+    @Test
+    public void duplicateNameInAggregation() {
+        String cypher = "MATCH (n) RETURN n.prop AS n, count(n) AS count";
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        Map<String, CypherType> extractedParameters = ast.getVariableTypes();
+
+        assertThat(extractedParameters.get("n")).isInstanceOf(AnyType.class);
     }
 
 }

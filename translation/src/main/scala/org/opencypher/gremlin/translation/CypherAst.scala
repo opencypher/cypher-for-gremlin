@@ -166,25 +166,36 @@ object CypherAst {
     val params = parameters ++ state.extractedParams()
     val statement = state.statement()
 
-    val varTypes = state
-      .semantics()
-      .typeTable
-      .toList
-      .filter(_._1.isInstanceOf[Variable])
-      .sortWith(_._1.position.offset < _._1.position.offset)
-      .map {
-        case (Variable(name), ExpressionTypeInfo(typeSpec, _)) => {
-          if (typeSpec.ranges.lengthCompare(1) == 0) {
-            val typ = typeSpec.ranges.head.lower
-            (name, typ)
-          } else {
-            (name, AnyType.instance)
-          }
-        }
-      }
-      .toMap
+    val returnTypes = mutable.Map.empty[String, CypherType]
 
-    new CypherAst(statement, varTypes, params, options)
+    val typeTable = state.semantics().typeTable
+    statement match {
+      case Query(_, part) =>
+        part match {
+          case union: Union =>
+          //walkUnion(union)todo
+          case single: SingleQuery =>
+            single.clauses.foreach {
+              case Return(_, items, _, _, _, _, _) =>
+                for (item <- items.items) {
+                  val AliasedReturnItem(expression, Variable(name)) = item
+                  typeTable.get(expression) match {
+                    case Some(ExpressionTypeInfo(typeSpec, _)) =>
+                      if (typeSpec.ranges.lengthCompare(1) == 0) {
+                        val typ = typeSpec.ranges.head.lower
+                        returnTypes(name) = typ
+                      } else {
+                        returnTypes(name) = AnyType.instance
+                      }
+                    case _ =>
+                  }
+                }
+              case _ =>
+            }
+        }
+    }
+
+    new CypherAst(statement, returnTypes.toMap, params, options)
   }
 
 }

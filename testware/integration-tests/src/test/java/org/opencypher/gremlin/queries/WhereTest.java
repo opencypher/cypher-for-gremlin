@@ -39,11 +39,11 @@ public class WhereTest {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person)-[r:knows]->(friend:person)\n" +
                 "WHERE n.name = \"marko\"\n" +
-                "RETURN friend.name AS friendName"
+                "RETURN friend.name AS friend"
         );
 
         assertThat(results)
-            .extracting("friendName")
+            .extracting("friend")
             .containsExactlyInAnyOrder("josh", "vadas");
     }
 

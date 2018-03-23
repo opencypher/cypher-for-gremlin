@@ -15,11 +15,10 @@
  */
 package org.opencypher.gremlin.tck
 
-import java.util.Set
 import java.{lang, util}
 
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
-import org.apache.tinkerpop.gremlin.structure.{Edge, Property, Vertex}
+import org.apache.tinkerpop.gremlin.structure.{Property, Vertex}
 import org.opencypher.gremlin.translation.CypherAst
 import org.opencypher.gremlin.traversal.ReturnNormalizer
 import org.opencypher.gremlin.traversal.ReturnNormalizer._
@@ -126,13 +125,19 @@ object TCKGremlinCypherValueConverter {
     CypherOrderedList(list)
   }
 
-  def isNode(e: util.Map[_, _]): Boolean = NODE == e.get(TYPE)
+  def isNode(e: Any): Boolean = e match {
+    case e: util.Map[_, _] => NODE == e.get(TYPE)
+    case _                 => false
+  }
 
-  def isRelationship(e: util.Map[_, _]): Boolean = RELATIONSHIP == e.get(TYPE)
+  def isRelationship(e: Any): Boolean = e match {
+    case e: util.Map[_, _] => RELATIONSHIP == e.get(TYPE)
+    case _                 => false
+  }
 
   def isPath(value: Any): Boolean = {
     if (!value.isInstanceOf[util.List[_]]) return false
-    val list = value.asInstanceOf[util.List[util.Map[_, _]]].asScala
+    val list = value.asInstanceOf[util.List[_]].asScala
     for (e <- list) {
       if (!isNode(e) && !isRelationship(e)) return false
     }
