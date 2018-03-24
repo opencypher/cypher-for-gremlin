@@ -19,25 +19,33 @@ import org.opencypher.gremlin.translation.ir.rewrite.Rewriting._
 
 import scala.collection.mutable
 
+/**
+  * This rewriter relocates label and property predicates from normalized `WHERE` expressions
+  * to the related `as` step as `has` steps.
+  * This should allow Gremlin provider optimization strategies
+  * to fold generated `has` steps into the adjacent vertex step.
+  */
 object PropertyMatchAdjacency extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    val hasSteps = new mutable.HashMap[String, mutable.Set[GremlinStep]] with mutable.MultiMap[String, GremlinStep]
-
-    val rewrittenAliases = extract(
+    val rewrittenStepLabels = extract(
       steps, {
         case As(stepLabel) :: _                   => stepLabel
         case Repeat(_ :: As(stepLabel) :: _) :: _ => stepLabel
       }
     ).groupBy(identity)
       .flatMap {
-        case (alias, _ :: Nil) => Some(alias)
-        case _                 => None // ignore shadowed aliases
+        case (stepLabel, _ :: Nil) => Some(stepLabel)
+        case _                     => None // ignore shadowed step labels
       }
       .toSet
 
-    if (rewrittenAliases.isEmpty) {
+    if (rewrittenStepLabels.isEmpty) {
+      // No applicable step labels found
       return steps
     }
+
+    // Group "has" steps by related step label
+    val hasSteps = new mutable.HashMap[String, mutable.Set[GremlinStep]] with mutable.MultiMap[String, GremlinStep]
 
     extract(
       steps, {
@@ -47,12 +55,12 @@ object PropertyMatchAdjacency extends GremlinRewriter {
           whereExtractor(whereTraversal :: Nil)
       }
     ).flatten.filter {
-      case (stepLabel, _) => rewrittenAliases.contains(stepLabel)
+      case (stepLabel, _) => rewrittenStepLabels.contains(stepLabel)
     }.foreach {
       case (stepLabel, step) => hasSteps.addBinding(stepLabel, step)
     }
 
-    val aliasesWhereFilter = whereFilter(rewrittenAliases) _
+    val aliasesWhereFilter = whereFilter(rewrittenStepLabels) _
     val firstPass = replace(
       steps, {
         case As(stepLabel) :: rest if hasSteps.contains(stepLabel) =>
@@ -75,6 +83,7 @@ object PropertyMatchAdjacency extends GremlinRewriter {
     firstPass
   }
 
+  // Extracts "has" steps from a list of WHERE expressions
   private def whereExtractor(traversals: Seq[Seq[GremlinStep]]): Seq[(String, GremlinStep)] = {
     traversals.flatMap {
       case SelectK(stepLabel) :: Values(propertyKey) :: Is(predicate) :: Nil =>
@@ -86,6 +95,7 @@ object PropertyMatchAdjacency extends GremlinRewriter {
     }
   }
 
+  // Filters out relocated expressions from WHERE
   private def whereFilter(aliases: Set[String])(traversals: Seq[Seq[GremlinStep]]): Option[GremlinStep] = {
     val newTraversals = traversals.flatMap {
       case SelectK(alias) :: Values(_) :: Is(_) :: Nil if aliases.contains(alias) => None

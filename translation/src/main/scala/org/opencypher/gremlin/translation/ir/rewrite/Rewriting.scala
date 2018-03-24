@@ -19,7 +19,18 @@ import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
 import scala.annotation.tailrec
 
+/**
+  * Gremlin IR rewriting utilities
+  */
 object Rewriting {
+
+  /**
+    * Finds matching parts of an IR sequence and maps occurrences.
+    * @param steps IR sequence
+    * @param finder matching and mapping function
+    * @tparam R mapping result
+    * @return list of extracted values
+    */
   def extract[R](steps: Seq[GremlinStep], finder: PartialFunction[Seq[GremlinStep], R]): Seq[R] = {
     @tailrec def findAcc(acc: Seq[R], steps: Seq[GremlinStep]): Seq[R] = {
       steps match {
@@ -35,6 +46,12 @@ object Rewriting {
     findAcc(Nil, steps)
   }
 
+  /**
+    * Finds matching parts of an IR sequence and replaces them
+    * @param steps IR sequence
+    * @param replacer matching and replacing function
+    * @return rewritten IR sequence
+    */
   def replace(
       steps: Seq[GremlinStep],
       replacer: PartialFunction[Seq[GremlinStep], Seq[GremlinStep]]): Seq[GremlinStep] = {
