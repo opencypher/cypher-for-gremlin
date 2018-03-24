@@ -19,8 +19,19 @@ import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
 import scala.annotation.tailrec
 
+/**
+  * Gremlin IR rewriting utilities
+  */
 object Rewriting {
-  def find[R](steps: Seq[GremlinStep], finder: PartialFunction[Seq[GremlinStep], R]): Seq[R] = {
+
+  /**
+    * Finds matching parts of an IR sequence and maps occurrences.
+    * @param steps IR sequence
+    * @param finder matching and mapping function
+    * @tparam R mapping result
+    * @return list of extracted values
+    */
+  def extract[R](steps: Seq[GremlinStep], finder: PartialFunction[Seq[GremlinStep], R]): Seq[R] = {
     @tailrec def findAcc(acc: Seq[R], steps: Seq[GremlinStep]): Seq[R] = {
       steps match {
         case _ :: tail if finder.isDefinedAt(steps) =>
@@ -35,6 +46,12 @@ object Rewriting {
     findAcc(Nil, steps)
   }
 
+  /**
+    * Finds matching parts of an IR sequence and replaces them
+    * @param steps IR sequence
+    * @param replacer matching and replacing function
+    * @return rewritten IR sequence
+    */
   def replace(
       steps: Seq[GremlinStep],
       replacer: PartialFunction[Seq[GremlinStep], Seq[GremlinStep]]): Seq[GremlinStep] = {
@@ -42,7 +59,10 @@ object Rewriting {
       steps match {
         case _ :: _ if replacer.isDefinedAt(steps) =>
           val replaced = replacer(steps)
-          replaceAcc(acc :+ replaced.head, replaced.tail)
+          replaced.headOption match {
+            case Some(head) => replaceAcc(acc :+ head, replaced.tail)
+            case _          => acc
+          }
         case head :: tail =>
           replaceAcc(acc :+ head, tail)
         case Nil =>

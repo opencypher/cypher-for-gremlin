@@ -141,7 +141,20 @@ public class WhereTest {
     }
 
     @Test
-    public void constants() {
+    public void constantsCustomPredicate() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:software) " +
+                "WHERE 'foo' STARTS WITH 'f' " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("lop", "ripple");
+    }
+
+    @Test
+    public void constantsInequality() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:software) " +
                 "WHERE 1 <> 2 " +

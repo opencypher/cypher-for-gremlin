@@ -22,26 +22,26 @@ import org.opencypher.gremlin.translation.ir.model._
 class RewritingTest {
 
   @Test
-  def findOne(): Unit = {
+  def extractOne(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
     val relWithLabel: String => PartialFunction[Seq[GremlinStep], String] = (stepLabel) => {
       case OutE(edgeLabel) :: As(`stepLabel`) :: InV :: _ => edgeLabel
     }
-    val found = Rewriting.find(seq, relWithLabel("r"))
-    val notFound = Rewriting.find(seq, relWithLabel("other"))
+    val extracted = Rewriting.extract(seq, relWithLabel("r"))
+    val notExtracted = Rewriting.extract(seq, relWithLabel("other"))
 
-    assertThat(found).isEqualTo(Seq("rel"))
-    assertThat(notFound).isEqualTo(Nil)
+    assertThat(extracted).isEqualTo(Seq("rel"))
+    assertThat(notExtracted).isEqualTo(Nil)
   }
 
   @Test
-  def findMultiple(): Unit = {
+  def extractedMultiple(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val found = Rewriting.find(seq, {
+    val extracted = Rewriting.extract(seq, {
       case As(stepLabel) :: _ => stepLabel
     })
 
-    assertThat(found).isEqualTo(Seq("n", "r", "m"))
+    assertThat(extracted).isEqualTo(Seq("n", "r", "m"))
   }
 
   @Test

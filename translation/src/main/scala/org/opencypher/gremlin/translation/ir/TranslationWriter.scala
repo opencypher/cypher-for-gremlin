@@ -32,7 +32,7 @@ class TranslationWriter(ir: Seq[GremlinStep], rewriters: Seq[GremlinRewriter]) {
     new TranslationWriter(ir, rewriters :+ rewriter)
 
   def translate[T, P](translator: Translator[T, P]): T = {
-    val rewritten = rewriters.foldLeft(ir)((ir, rewriter) => rewriter.instance()(ir))
+    val rewritten = rewriters.foldLeft(ir)((ir, rewriter) => rewriter(ir))
     val generator = new TranslationGenerator(translator)
     generator.generate(rewritten)
     translator.translate()
