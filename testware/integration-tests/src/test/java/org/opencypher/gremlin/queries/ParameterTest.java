@@ -88,4 +88,17 @@ public class ParameterTest {
             .extracting("name")
             .containsExactly("marko");
     }
+
+    @Test
+    public void containerIndex() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH ['Apa'] AS expr " +
+                "RETURN expr[$idx] AS value",
+            singletonMap("idx", 0)
+        );
+
+        assertThat(results)
+            .extracting("value")
+            .containsExactly("Apa");
+    }
 }
