@@ -228,4 +228,24 @@ public class ComplexExamplesTest {
                     .containsExactly(tuple("house1", "house3"),
                         tuple("house1", "house4"));
     }
+
+    @Test
+    public void stringInequality() {
+        submitAndGet(
+            "CREATE (root:Root {name: 'x'}), " +
+                "(child1:TextNode {id: 'text'}), " +
+                "(child2:IntNode {id: 0}), " +
+                "(root)-[:T]->(child1), " +
+                "(root)-[:T]->(child2)"
+        );
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (:Root {name: 'x'})-->(i:TextNode) " +
+                "WHERE i.id > 'te' " +
+                "RETURN i.id as id"
+        );
+
+        assertThat(results)
+            .extracting("id")
+            .containsExactly("text");
+    }
 }

@@ -48,6 +48,12 @@ object FilterStepAdjacency extends GremlinRewriter {
 
     // Group "has" steps by related step label
     val hasSteps = new mutable.HashMap[String, mutable.Set[GremlinStep]] with mutable.MultiMap[String, GremlinStep]
+    val sortedHasSteps: String => List[GremlinStep] = { stepLabel =>
+      hasSteps(stepLabel).toList.sortBy { // Reorder "has" steps by priority
+        case _: HasLabel => 0
+        case _           => 1
+      }
+    }
 
     extract(
       steps, {
@@ -66,10 +72,10 @@ object FilterStepAdjacency extends GremlinRewriter {
     val firstPass = replace(
       steps, {
         case As(stepLabel) :: rest if hasSteps.contains(stepLabel) =>
-          val steps = hasSteps(stepLabel).toList
+          val steps = sortedHasSteps(stepLabel)
           As(stepLabel) +: (steps ++ rest)
         case Repeat(head :: As(stepLabel) :: repeatRest) :: rest if hasSteps.contains(stepLabel) =>
-          val steps = hasSteps(stepLabel).toList
+          val steps = sortedHasSteps(stepLabel)
           Repeat(head :: As(stepLabel) +: (steps ++ repeatRest)) :: rest
         case WhereT(And(andTraversals @ _*) :: Nil) :: rest =>
           aliasesWhereFilter(andTraversals)
@@ -88,10 +94,10 @@ object FilterStepAdjacency extends GremlinRewriter {
   // Extracts "has" steps from a list of WHERE expressions
   private def whereExtractor(traversals: Seq[Seq[GremlinStep]]): Seq[(String, GremlinStep)] = {
     traversals.flatMap {
-      case SelectK(stepLabel) :: Values(propertyKey) :: Is(predicate) :: Nil =>
-        Some((stepLabel, HasP(propertyKey, predicate)))
       case SelectK(stepLabel) :: (hasLabel: HasLabel) :: Nil =>
         Some((stepLabel, hasLabel))
+      case SelectK(stepLabel) :: Values(propertyKey) :: Is(predicate) :: Nil =>
+        Some((stepLabel, HasP(propertyKey, predicate)))
       case _ =>
         None
     }
@@ -100,8 +106,8 @@ object FilterStepAdjacency extends GremlinRewriter {
   // Filters out relocated expressions from WHERE
   private def whereFilter(aliases: Set[String])(traversals: Seq[Seq[GremlinStep]]): Option[GremlinStep] = {
     val newTraversals = traversals.flatMap {
-      case SelectK(alias) :: Values(_) :: Is(_) :: Nil if aliases.contains(alias) => None
       case SelectK(alias) :: (_: HasLabel) :: Nil if aliases.contains(alias)      => None
+      case SelectK(alias) :: Values(_) :: Is(_) :: Nil if aliases.contains(alias) => None
       case other                                                                  => Some(other)
     }.toList
     newTraversals match {

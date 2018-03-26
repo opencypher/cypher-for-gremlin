@@ -64,9 +64,9 @@ public class FilterStepAdjacencyTest {
         ))
             .hasTraversalBeforeReturn(
                 __.V()
-                    .as("n").has("p", P.eq("n")).hasLabel("N")
+                    .as("n").hasLabel("N").has("p", P.eq("n"))
                     .outE("R").as("r").has("p", P.eq("r")).inV()
-                    .as("m").has("p", P.eq("m")).hasLabel("M")
+                    .as("m").hasLabel("M").has("p", P.eq("m"))
                     .where(__.constant(1).is(P.neq(2)))
                     .select("n", "r", "m")
             );
@@ -83,9 +83,9 @@ public class FilterStepAdjacencyTest {
         ))
             .hasTraversalBeforeReturn(
                 __.V()
-                    .as("n").has("p", P.eq("n")).hasLabel("N")
+                    .as("n").hasLabel("N").has("p", P.eq("n"))
                     .outE("R").as("r").has("p", P.eq("r")).inV()
-                    .as("m").has("p", P.eq("m")).hasLabel("M")
+                    .as("m").hasLabel("M").has("p", P.eq("m"))
                     .select("n", "r", "m")
             );
     }
@@ -99,11 +99,11 @@ public class FilterStepAdjacencyTest {
         ))
             .hasTraversalBeforeReturn(
                 __.V()
-                    .as("n").has("p", P.eq("n")).hasLabel("N")
+                    .as("n").hasLabel("N").has("p", P.eq("n"))
                     .outE("R").as("r1").inV()
-                    .as("m").has("p", P.eq("m")).hasLabel("M")
+                    .as("m").hasLabel("M").has("p", P.eq("m"))
                     .inE("R").as("r2").outV()
-                    .as("k").has("p", P.eq("k")).hasLabel("K")
+                    .as("k").hasLabel("K").has("p", P.eq("k"))
                     .where(
                         __.select("r2").as(Tokens.LOCAL)
                             .select("r1").where(P.neq(Tokens.LOCAL))
@@ -121,7 +121,7 @@ public class FilterStepAdjacencyTest {
         ))
             .hasTraversalBeforeReturn(
                 __.V()
-                    .as("n").has("p", P.eq("n")).hasLabel("N")
+                    .as("n").hasLabel("N").has("p", P.eq("n"))
                     .emit().repeat(__.outE().as("r").inV())
                     .until(__.path().count(Scope.local).is(P.gte(5)))
                     .where(__.path().count(Scope.local).is(P.between(3, 6)))
