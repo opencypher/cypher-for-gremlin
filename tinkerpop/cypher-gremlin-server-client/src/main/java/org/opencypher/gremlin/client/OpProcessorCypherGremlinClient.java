@@ -44,6 +44,6 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
 
         return resultSetFuture
             .thenApply(ResultSet::iterator)
-            .thenApply(resultIterator -> new CypherResultSet(new HashMap<>(), resultIterator)); //todo
+            .thenApply(resultIterator -> new CypherResultSet(new HashMap<>(), resultIterator));
     }
 }

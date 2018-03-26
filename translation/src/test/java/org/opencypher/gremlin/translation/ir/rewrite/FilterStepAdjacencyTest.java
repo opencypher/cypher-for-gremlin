@@ -105,8 +105,8 @@ public class FilterStepAdjacencyTest {
                     .inE("R").as("r2").outV()
                     .as("k").hasLabel("K").has("p", P.eq("k"))
                     .where(
-                        __.select("r2").as(Tokens.LOCAL)
-                            .select("r1").where(P.neq(Tokens.LOCAL))
+                        __.select("r2").as(Tokens.TEMP)
+                            .select("r1").where(P.neq(Tokens.TEMP))
                     )
                     .V().as("  GENERATED1").where(__.select("  GENERATED1").where(P.eq("k")))
                     .select("k")

@@ -18,10 +18,9 @@ package org.opencypher.gremlin.tck
 import java.{lang, util}
 
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
-import org.apache.tinkerpop.gremlin.structure.{Property, Vertex}
+import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.CypherAst
-import org.opencypher.gremlin.traversal.ReturnNormalizer
-import org.opencypher.gremlin.traversal.ReturnNormalizer._
+import org.opencypher.gremlin.translation.ReturnProperties._
 import org.opencypher.tools.tck.api.{CypherValueRecords, ExecutionFailed}
 import org.opencypher.tools.tck.values._
 
@@ -93,24 +92,16 @@ object TCKGremlinCypherValueConverter {
     case n: Number                              => CypherInteger(n.longValue())
     case b: lang.Boolean                        => CypherBoolean(b)
     case null                                   => CypherNull
-    case m: util.Map[_, _] if isNode(m)         => toCypherNode(m)
-    case m: util.Map[_, _] if isRelationship(m) => toCypherRelationship(m)
+    case n: util.Map[_, _] if isNode(n)         => toCypherNode(n)
+    case r: util.Map[_, _] if isRelationship(r) => toCypherRelationship(r)
     case m: util.Map[_, _]                      => toCypherPropertyMap(m)
     case p: util.List[_] if isPath(v)           => toCypherPath(p.asInstanceOf[util.List[util.Map[_, _]]])
     case p: util.List[_]                        => toCypherList(p)
   }
 
-  private def toCypherPropertyMap[A <: Property[B], B](iterator: util.Iterator[A]): CypherPropertyMap = {
-    val map = iterator.asScala
-      .map(v => (v.key(), toCypherValue(v.value())))
-      .toMap
-
-    CypherPropertyMap(map)
-  }
-
   def toCypherPropertyMap(javaMap: util.Map[_, _]): CypherPropertyMap = {
     val map = javaMap.asScala
-      .filterKeys(k => !ReturnNormalizer.VALUES.contains(k))
+      .filterKeys(k => !ALL_PROPERTIES.contains(k))
       .map { case (k, v) => (k.toString, toCypherValue(v)) }
       .toMap
 
@@ -125,37 +116,15 @@ object TCKGremlinCypherValueConverter {
     CypherOrderedList(list)
   }
 
-  def isNode(e: Any): Boolean = e match {
-    case e: util.Map[_, _] => NODE == e.get(TYPE)
-    case _                 => false
-  }
-
-  def isRelationship(e: Any): Boolean = e match {
-    case e: util.Map[_, _] => RELATIONSHIP == e.get(TYPE)
-    case _                 => false
-  }
-
-  def isPath(value: Any): Boolean = {
-    if (!value.isInstanceOf[util.List[_]]) return false
-    val list = value.asInstanceOf[util.List[_]].asScala
-    if (list.isEmpty || !isNode(list.head)) {
-      return false
-    }
-    for (e <- list) {
-      if (!isNode(e) && !isRelationship(e)) return false
-    }
-    true
-  }
-
   def toCypherRelationship(e: util.Map[_, _]): CypherRelationship = {
     val properties = toCypherPropertyMap(e)
-    val label = String.valueOf(e.get(ReturnNormalizer.LABEL))
+    val label = String.valueOf(e.get(LABEL))
     CypherRelationship(label, properties)
   }
 
   def toCypherNode(v: util.Map[_, _]): CypherNode = {
     val labels = new util.HashSet[String]
-    val label = String.valueOf(v.get(ReturnNormalizer.LABEL))
+    val label = String.valueOf(v.get(LABEL))
     if (!(Vertex.DEFAULT_LABEL == label)) labels.add(label)
     val properties = toCypherPropertyMap(v)
     CypherNode(labels.asScala.toSet, properties)

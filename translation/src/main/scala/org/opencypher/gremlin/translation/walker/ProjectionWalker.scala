@@ -19,13 +19,13 @@ import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.{NodeType, PathType, RelationshipType}
+import org.opencypher.gremlin.translation.ReturnProperties.{ELEMENT, INV, OUTV}
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
-import org.opencypher.gremlin.traversal.ReturnNormalizer._
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
@@ -346,13 +346,10 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     } else if (only) {
       subTraversal.identity()
     }
-
     subTraversal
   }
 
   private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String) = {
-    val p = context.dsl.predicates()
-
     context.returnTypes.get(alias) match {
       case Some(typ) if typ.isInstanceOf[NodeType] =>
         nullIfNull(subTraversal, g.start().valueMap(true))

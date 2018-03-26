@@ -33,6 +33,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.opencypher.gremlin.translation.ReturnProperties;
 import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.exception.TypeException;
 
@@ -194,31 +195,6 @@ public class CustomFunction implements Function<Traverser, Object> {
 
     }
 
-    private static Object finalizeElements(Object o) {
-            HashMap<Object, Object> result = new HashMap<>();
-
-            if (Tokens.NULL.equals(o)) {
-                return Tokens.NULL;
-            }
-
-            Element element = (Element) o;
-            result.put(ReturnNormalizer.ID, element.id());
-            result.put(ReturnNormalizer.LABEL, element.label());
-            element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
-
-            if (o instanceof Vertex) {
-                result.put(ReturnNormalizer.TYPE, ReturnNormalizer.NODE);
-            } else {
-                Edge edge = (Edge) o;
-
-                result.put(ReturnNormalizer.TYPE, ReturnNormalizer.RELATIONSHIP);
-                result.put(ReturnNormalizer.INV, edge.inVertex().id());
-                result.put(ReturnNormalizer.OUTV, edge.outVertex().id());
-            }
-
-            return result;
-    }
-
     public static CustomFunction listComprehension(final Object functionTraversal) {
         return new CustomFunction(
             "listComprehension",
@@ -307,5 +283,30 @@ public class CustomFunction implements Function<Traverser, Object> {
 
     public static Object pathToList(Object value) {
         return value instanceof Path ? new ArrayList<>(((Path) value).objects()) : value;
+    }
+
+    private static Object finalizeElements(Object o) {
+            HashMap<Object, Object> result = new HashMap<>();
+
+            if (Tokens.NULL.equals(o)) {
+                return Tokens.NULL;
+            }
+
+            Element element = (Element) o;
+            result.put(ReturnProperties.ID, element.id());
+            result.put(ReturnProperties.LABEL, element.label());
+            element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
+
+            if (o instanceof Vertex) {
+                result.put(ReturnProperties.TYPE, ReturnProperties.NODE_TYPE);
+            } else {
+                Edge edge = (Edge) o;
+
+                result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
+                result.put(ReturnProperties.INV, edge.inVertex().id());
+                result.put(ReturnProperties.OUTV, edge.outVertex().id());
+            }
+
+            return result;
     }
 }

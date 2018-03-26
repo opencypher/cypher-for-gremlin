@@ -154,11 +154,11 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
 
     rhs match {
       case Variable(v) =>
-        whereG.select(v).as(Tokens.LOCAL)
+        whereG.select(v).as(Tokens.TEMP)
       case Property(Variable(varName), PropertyKeyName(keyName)) =>
-        whereG.select(varName).values(keyName).as(Tokens.LOCAL)
+        whereG.select(varName).values(keyName).as(Tokens.TEMP)
       case function: FunctionInvocation =>
-        walkFunctionInvocation(whereG, function).as(Tokens.LOCAL)
+        walkFunctionInvocation(whereG, function).as(Tokens.TEMP)
       case _ =>
     }
 
@@ -175,7 +175,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
 
     rhs match {
       case Variable(_) | Property(Variable(_), PropertyKeyName(_)) | _: FunctionInvocation =>
-        whereG.where(predicate(StringLiteral(Tokens.LOCAL)(InputPosition.NONE)))
+        whereG.where(predicate(StringLiteral(Tokens.TEMP)(InputPosition.NONE)))
       case expression =>
         whereG.is(predicate(expression))
     }

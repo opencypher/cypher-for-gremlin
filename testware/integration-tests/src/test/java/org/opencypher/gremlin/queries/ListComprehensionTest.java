@@ -17,6 +17,7 @@ package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 public class ListComprehensionTest {
 
@@ -138,7 +138,7 @@ public class ListComprehensionTest {
                     .hasSize(1);
                 assertThat(((List) paths).get(0))
                     .asList()
-                    .extracting(ReturnNormalizer.LABEL)
+                    .extracting(LABEL)
                     .containsExactly("A", "T", "B");
             });
     }

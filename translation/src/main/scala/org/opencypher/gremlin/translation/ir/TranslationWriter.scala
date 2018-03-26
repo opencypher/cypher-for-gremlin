@@ -133,6 +133,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.label()
         case Limit(limit) =>
           g.limit(limit)
+        case Local(traversal) =>
+          g.local(generateSteps(traversal))
         case Loops =>
           g.loops()
         case MapF(function) =>
@@ -205,6 +207,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.value()
         case ValueMap =>
           g.valueMap()
+        case ValueMap(includeTokens) =>
+          g.valueMap(includeTokens)
         case Values(propertyKeys @ _*) =>
           g.values(propertyKeys: _*)
         case WhereT(whereTraversal) =>

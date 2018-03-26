@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher;
+package org.opencypher.gremlin.tck;
 
 
 import static java.util.stream.Collectors.toList;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 
-public final class ResultTransformer {
+final class ResultTransformer {
     private ResultTransformer() {
     }
 

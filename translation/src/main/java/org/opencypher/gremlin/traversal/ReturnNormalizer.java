@@ -16,8 +16,6 @@
 package org.opencypher.gremlin.traversal;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,23 +33,11 @@ import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.PathType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.RelationshipType;
+import org.opencypher.gremlin.translation.ReturnProperties;
 import org.opencypher.gremlin.translation.Tokens;
 
 public final class ReturnNormalizer {
-    public static final String ID = " cypher.id";
-    public static final String LABEL = " cypher.label";
-    public static final String TYPE = " cypher.type";
-    public static final String ELEMENT = " cypher.element";
-    public static final String INV = " cypher.inv";
-    public static final String OUTV = " cypher.outv";
-
-    public static final List<String> VALUES = Arrays.asList(ID, LABEL, TYPE, ELEMENT, INV, OUTV);
-
-    public static final String NODE = "node";
-    public static final String RELATIONSHIP = "relationship";
-
-
-    private Map<String, CypherType> variableTypes;
+    private final Map<String, CypherType> variableTypes;
 
     private ReturnNormalizer(Map<String, CypherType> variableTypes) {
         this.variableTypes = variableTypes;
@@ -64,20 +50,6 @@ public final class ReturnNormalizer {
     @SuppressWarnings("unchecked")
     public Map<String, Object> normalize(Object row) {
         return (Map<String, Object>) normalizeValue(row);
-    }
-
-    private Object normalizeValue(CypherType type, Object value) {
-        if (Tokens.NULL.equals(value)) {
-            return null;
-        } else if (type instanceof NodeType) {
-            return normalizeElement((Map<?, ?>) value, NODE);
-        } else if (type instanceof RelationshipType) {
-            return normalizeRelationship((Map<?, ?>) value);
-        } else if (type instanceof PathType) {
-            return normalizePath((List<?>) value);
-        }
-
-        return normalizeValue(value);
     }
 
     private Object normalizeValue(Object value) {
@@ -99,11 +71,25 @@ public final class ReturnNormalizer {
         return value;
     }
 
+    private Object normalizeValue(CypherType type, Object value) {
+        if (Tokens.NULL.equals(value)) {
+            return null;
+        } else if (type instanceof NodeType) {
+            return normalizeElement((Map<?, ?>) value, ReturnProperties.NODE_TYPE);
+        } else if (type instanceof RelationshipType) {
+            return normalizeRelationship((Map<?, ?>) value);
+        } else if (type instanceof PathType) {
+            return normalizePath((List<?>) value);
+        }
+
+        return normalizeValue(value);
+    }
+
     private Map<Object, Object> normalizeElement(Map<?, ?> value, String type) {
         HashMap<Object, Object> result = new HashMap<>();
-        result.put(TYPE, type);
-        result.put(ID, value.get(T.id));
-        result.put(LABEL, value.get(T.label));
+        result.put(ReturnProperties.TYPE, type);
+        result.put(ReturnProperties.ID, value.get(T.id));
+        result.put(ReturnProperties.LABEL, value.get(T.label));
         value.forEach(
             (k, v) -> {
                 if (k instanceof String) {
@@ -120,15 +106,15 @@ public final class ReturnNormalizer {
 
     private Map<Object, Object> normalizeRelationship(Map<?, ?> value) {
         HashMap<Object, Object> result = new HashMap<>();
-        result.put(TYPE, RELATIONSHIP);
-        result.put(INV, value.get(INV));
-        result.put(OUTV, value.get(OUTV));
+        result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
+        result.put(ReturnProperties.INV, value.get(ReturnProperties.INV));
+        result.put(ReturnProperties.OUTV, value.get(ReturnProperties.OUTV));
 
-        if (value.containsKey(ELEMENT)) {
-            Map<?, ?> element = (Map<?, ?>) value.get(ELEMENT);
+        if (value.containsKey(ReturnProperties.ELEMENT)) {
+            Map<?, ?> element = (Map<?, ?>) value.get(ReturnProperties.ELEMENT);
 
-            result.put(ID, element.remove(T.id));
-            result.put(LABEL, element.remove(T.label));
+            result.put(ReturnProperties.ID, element.remove(T.id));
+            result.put(ReturnProperties.LABEL, element.remove(T.label));
 
             element.forEach(
                 (k, v) -> result.put(String.valueOf(k), normalizeValue(v)));

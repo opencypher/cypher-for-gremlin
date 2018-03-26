@@ -18,6 +18,7 @@ package org.opencypher.gremlin.queries;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
+import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 public class ComplexExamplesTest {
 
@@ -68,7 +68,7 @@ public class ComplexExamplesTest {
         assertThat(distinctResults)
             .hasSize(1)
             .extracting("x")
-            .extracting(ReturnNormalizer.LABEL)
+            .extracting(LABEL)
             .containsExactly("root");
     }
 

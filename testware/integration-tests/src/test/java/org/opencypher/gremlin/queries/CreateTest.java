@@ -20,10 +20,10 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.ID;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.INV;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.LABEL;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.OUTV;
+import static org.opencypher.gremlin.translation.ReturnProperties.ID;
+import static org.opencypher.gremlin.translation.ReturnProperties.INV;
+import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
+import static org.opencypher.gremlin.translation.ReturnProperties.OUTV;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,7 +35,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 public class CreateTest {
 
@@ -63,7 +62,7 @@ public class CreateTest {
         Map<String, Object> result = results.get(0);
         Map root = (Map) result.get("root");
         Map link = (Map) result.get("link");
-        assertThat(link.get(ReturnNormalizer.INV)).isEqualTo(root.get(ID));
+        assertThat(link.get(INV)).isEqualTo(root.get(ID));
         assertThat(link.get(OUTV)).isEqualTo(root.get(ID));
     }
 
@@ -114,7 +113,7 @@ public class CreateTest {
         List<Long> createdIds = submitAndGet("MATCH (n:E) RETURN n")
             .stream()
             .map(m -> (Map) m.get("n"))
-            .map(v -> (Long) v.get(ReturnNormalizer.ID))
+            .map(v -> (Long) v.get(ID))
             .collect(toList());
 
         assertThat(createdIds).hasSize(2);
@@ -127,11 +126,11 @@ public class CreateTest {
 
         Map edge1 = matchCreates.get(0);
         assertThat(edge1.get(OUTV)).isEqualTo(rootId);
-        assertThat(createdIds).contains((Long) edge1.get(ReturnNormalizer.INV));
+        assertThat(createdIds).contains((Long) edge1.get(INV));
 
         Map edge2 = matchCreates.get(1);
         assertThat(edge2.get(OUTV)).isEqualTo(rootId);
-        assertThat(createdIds).contains((Long) edge2.get(ReturnNormalizer.INV));
+        assertThat(createdIds).contains((Long) edge2.get(INV));
     }
 
     @Test
@@ -180,7 +179,7 @@ public class CreateTest {
         Map edge = (Map) submitAndGet("MATCH ()-[r:matchCreates]->() RETURN r").get(0).get("r");
 
         assertThat(edge.get(OUTV)).isEqualTo(markoId);
-        assertThat(edge.get(ReturnNormalizer.INV)).isEqualTo(vadasId);
+        assertThat(edge.get(INV)).isEqualTo(vadasId);
     }
 
     @Test

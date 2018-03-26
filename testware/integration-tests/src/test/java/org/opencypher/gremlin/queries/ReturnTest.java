@@ -30,8 +30,6 @@ import java.util.stream.Stream;
 import org.assertj.core.groups.Tuple;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ReturnTest {
@@ -120,14 +118,6 @@ public class ReturnTest {
     }
 
     @Test
-    public void returnPath2() throws Exception {
-        String cypher = "MATCH p = (n)-[r]-()\n" +
-            "RETURN n, r, p";
-        List<Map<String, Object>> maps = submitAndGet(cypher);
-
-    }
-
-    @Test
     public void returnPath() throws Exception {
         String cypher = "MATCH p = (:person)-[:created]->(:software) RETURN p";
         List<Map<String, Object>> maps = submitAndGet(cypher);
@@ -152,7 +142,6 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(SkipWithGremlinGroovy.class)
     public void returnVertexAsPath() throws Exception {
         String cypher = "MATCH p = (:person) RETURN p";
         List<Object> results = submitAndGet(cypher).stream()

@@ -44,8 +44,8 @@ public final class CypherResultSet implements Iterable<Map<String, Object>> {
     private final Iterator<Result> resultIterator;
     private ReturnNormalizer returnNormalizer;
 
-    CypherResultSet(Map<String, CypherType> variableTypes, Iterator<Result> resultIterator) {
-        this.returnNormalizer = ReturnNormalizer.create(variableTypes);
+    CypherResultSet(Map<String, CypherType> returnTypes, Iterator<Result> resultIterator) {
+        this.returnNormalizer = ReturnNormalizer.create(returnTypes);
         this.resultIterator = resultIterator;
     }
 

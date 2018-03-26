@@ -16,10 +16,13 @@
 package org.opencypher;
 
 import static java.lang.String.format;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.NODE;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.RELATIONSHIP;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.TYPE;
-import static org.opencypher.gremlin.traversal.ReturnNormalizer.VALUES;
+import static org.opencypher.gremlin.translation.ReturnProperties.ALL_PROPERTIES;
+import static org.opencypher.gremlin.translation.ReturnProperties.ID;
+import static org.opencypher.gremlin.translation.ReturnProperties.INV;
+import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
+import static org.opencypher.gremlin.translation.ReturnProperties.OUTV;
+import static org.opencypher.gremlin.translation.ReturnProperties.isNode;
+import static org.opencypher.gremlin.translation.ReturnProperties.isRelationship;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +39,7 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Entity;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
+import org.opencypher.gremlin.translation.ReturnProperties;
 
 class GremlinCypherValueConverter {
 
@@ -57,33 +60,11 @@ class GremlinCypherValueConverter {
             return toCypherNode((Map<?, ?>) value).asValue();
         } else if (isRelationship(value)) {
             return toCypherRelationship((Map<?, ?>) value).asValue();
-        } else if (isPath(value)) {
+        } else if (ReturnProperties.isPath(value)) {
             return toCypherPath((List) value);
         } else {
             return Values.value(value);
         }
-    }
-
-    private static boolean isNode(Object value) {
-        return ((value instanceof Map) && NODE.equals(((Map) value).get(TYPE)));
-    }
-
-    private static boolean isRelationship(Object value) {
-        return ((value instanceof Map) && RELATIONSHIP.equals(((Map) value).get(TYPE)));
-    }
-
-    private static boolean isPath(Object value) {
-        if (!(value instanceof List)) {
-            return false;
-        }
-
-        for (Object e : (List) value) {
-            if (!isNode(e) && !isRelationship(e)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -105,33 +86,33 @@ class GremlinCypherValueConverter {
     }
 
     private static InternalRelationship toCypherRelationship(Map<?, ?> e) {
-        Long start = toCypherId(e.get(ReturnNormalizer.OUTV));
-        Long end = toCypherId(e.get(ReturnNormalizer.INV));
+        Long start = toCypherId(e.get(OUTV));
+        Long end = toCypherId(e.get(INV));
 
         Map<String, Value> properties = toCypherPropertyMap(e);
 
-        Object id = e.get(ReturnNormalizer.ID);
-        Object label = e.get(ReturnNormalizer.LABEL);
+        Object id = e.get(ID);
+        Object label = e.get(LABEL);
 
         return new InternalRelationship(toCypherId(id), start, end, String.valueOf(label), properties);
     }
 
     private static InternalNode toCypherNode(Map<?, ?> v) {
         Set<String> labels = new HashSet<>();
-        String label = String.valueOf(v.get(ReturnNormalizer.LABEL));
+        String label = String.valueOf(v.get(LABEL));
         if (!Vertex.DEFAULT_LABEL.equals(label)) {
             labels.add(label);
         }
 
         Map<String, Value> properties = toCypherPropertyMap(v);
 
-        return new InternalNode(toCypherId(v.get(ReturnNormalizer.ID)), labels, properties);
+        return new InternalNode(toCypherId(v.get(ID)), labels, properties);
     }
 
     private static Map<String, Value> toCypherPropertyMap(Map<?, ?> e) {
         Map<String, Value> properties = new HashMap<>();
         e.entrySet().stream()
-            .filter((n) -> !VALUES.contains(String.valueOf(n.getKey())))
+            .filter((n) -> !ALL_PROPERTIES.contains(String.valueOf(n.getKey())))
             .forEach((n) -> properties.put(
                 String.valueOf(n.getKey()),
                 toCypherValue(n.getValue())));

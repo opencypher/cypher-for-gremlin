@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.builder
 
-import org.apache.tinkerpop.gremlin.process.traversal.{Order => TOrder, Scope}
+import org.apache.tinkerpop.gremlin.process.traversal.{Scope, Order => TOrder}
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.ir.model._
@@ -242,6 +242,12 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def local(
+      traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Local(traversal.current())
+    this
+  }
+
   override def loops(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Loops
     this
@@ -398,6 +404,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
 
   override def valueMap(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += ValueMap
+    this
+  }
+
+  override def valueMap(includeTokens: Boolean): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += ValueMap(includeTokens)
     this
   }
 
