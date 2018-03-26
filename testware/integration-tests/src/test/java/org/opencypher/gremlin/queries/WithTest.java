@@ -131,6 +131,18 @@ public class WithTest {
     }
 
     @Test
+    public void containerIndex() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH ['Apa'] AS expr " +
+                "RETURN expr[0] AS value"
+        );
+
+        assertThat(results)
+            .extracting("value")
+            .containsExactly("Apa");
+    }
+
+    @Test
     public void singleName() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (a:person) " +

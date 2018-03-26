@@ -140,6 +140,12 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
             case "listComprehension" =>
               val functionTraversal = function.getArgs()(0).asInstanceOf[Seq[GremlinStep]]
               g.map(CustomFunction.listComprehension(generateSteps(functionTraversal).current()))
+            case "containerIndex" =>
+              val index = function.getArgs()(0) match {
+                case GremlinBinding(name, value) => b.bind(name, value)
+                case value                       => value
+              }
+              g.map(CustomFunction.containerIndex(index))
             case _ =>
               g.map(function)
           }
