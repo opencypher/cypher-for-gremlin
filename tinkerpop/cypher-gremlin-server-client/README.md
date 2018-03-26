@@ -15,7 +15,7 @@ To add a dependency using Maven:
 <dependency>
     <groupId>org.opencypher.gremlin</groupId>
     <artifactId>cypher-gremlin-server-client</artifactId>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
 </dependency>
 ```
 
@@ -23,7 +23,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.2'
+  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.3'
 }
 ```
 
