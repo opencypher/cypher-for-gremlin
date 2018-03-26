@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 public class ListComprehensionTest {
 
@@ -137,7 +138,7 @@ public class ListComprehensionTest {
                     .hasSize(1);
                 assertThat(((List) paths).get(0))
                     .asList()
-                    .extracting("label")
+                    .extracting(ReturnNormalizer.LABEL)
                     .containsExactly("A", "T", "B");
             });
     }

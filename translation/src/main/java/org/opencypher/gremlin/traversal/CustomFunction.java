@@ -16,7 +16,6 @@
 package org.opencypher.gremlin.traversal;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -167,15 +166,17 @@ public class CustomFunction implements Function<Traverser, Object> {
             "nodes",
             traverser -> ((Path) traverser.get()).objects().stream()
                 .filter(element -> element instanceof Vertex)
+                .map(CustomFunction::finalizeElements)
                 .collect(toList()));
     }
 
     public static CustomFunction relationships() {
         return new CustomFunction(
             "relationships",
-            traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
+                traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
                 .flatMap(CustomFunction::flatten)
                 .filter(element -> element instanceof Edge)
+                .map(CustomFunction::finalizeElements)
                 .collect(toList()));
     }
 
@@ -188,32 +189,34 @@ public class CustomFunction implements Function<Traverser, Object> {
                     return Tokens.NULL;
                 } else return ((Path) traverser.get()).objects().stream()
                     .filter(o -> !o.equals(Tokens.START))
-                    .map(o -> {
-                        HashMap<Object, Object> result = new HashMap<>();
-
-                        if (Tokens.NULL.equals(o)) {
-                            return Tokens.NULL;
-                        }
-
-                        Element element = (Element) o;
-                        result.put(ReturnNormalizer.ID, element.id());
-                        result.put(ReturnNormalizer.LABEL, element.label());
-                        element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
-
-                        if (o instanceof Vertex) {
-                            result.put(ReturnNormalizer.TYPE, ReturnNormalizer.NODE);
-                        } else {
-                            Edge edge = (Edge) o;
-
-                            result.put(ReturnNormalizer.TYPE, ReturnNormalizer.RELATIONSHIP);
-                            result.put(ReturnNormalizer.INV, edge.inVertex().id());
-                            result.put(ReturnNormalizer.OUTV, edge.outVertex().id());
-                        }
-
-                        return result;
-                    }).collect(toList());
+                    .map(CustomFunction::finalizeElements).collect(toList());
             });
 
+    }
+
+    private static Object finalizeElements(Object o) {
+            HashMap<Object, Object> result = new HashMap<>();
+
+            if (Tokens.NULL.equals(o)) {
+                return Tokens.NULL;
+            }
+
+            Element element = (Element) o;
+            result.put(ReturnNormalizer.ID, element.id());
+            result.put(ReturnNormalizer.LABEL, element.label());
+            element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
+
+            if (o instanceof Vertex) {
+                result.put(ReturnNormalizer.TYPE, ReturnNormalizer.NODE);
+            } else {
+                Edge edge = (Edge) o;
+
+                result.put(ReturnNormalizer.TYPE, ReturnNormalizer.RELATIONSHIP);
+                result.put(ReturnNormalizer.INV, edge.inVertex().id());
+                result.put(ReturnNormalizer.OUTV, edge.outVertex().id());
+            }
+
+            return result;
     }
 
     public static CustomFunction listComprehension(final Object functionTraversal) {
@@ -254,10 +257,12 @@ public class CustomFunction implements Function<Traverser, Object> {
 
                     Edge edge = first.orElseThrow(() -> new RuntimeException("Invalid path, no edge found!"));
 
-                    return asList(
+                    return Stream.of(
                         edge.outVertex(),
                         edge,
-                        edge.inVertex());
+                        edge.inVertex())
+                        .map(CustomFunction::finalizeElements)
+                        .collect(toList());
                 })
                 .collect(Collectors.toList()));
     }

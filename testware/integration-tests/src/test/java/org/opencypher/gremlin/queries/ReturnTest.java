@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.assertj.core.groups.Tuple;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -288,11 +286,11 @@ public class ReturnTest {
         Stream<Map<String, List<Object>>> results = submitAndGet(cypher).stream()
             .map(result -> {
                 Map<String, List<Object>> map = new HashMap<>();
-                map.put("nodes", ((Collection<Vertex>) result.get("nodes")).stream()
-                    .map(node -> (String) node.property("name").value())
+                map.put("nodes", ((Collection<Map<String, Object>>) result.get("nodes")).stream()
+                    .map(node -> byElementProperty("name").extract(node))
                     .collect(toList()));
-                map.put("rels", ((Collection<Edge>) result.get("rels")).stream()
-                    .map(rel -> (double) rel.property("weight").value())
+                map.put("rels", ((Collection<Map<String, Object>>) result.get("rels")).stream()
+                    .map(rel -> byElementProperty("weight").extract(rel))
                     .collect(toList()));
                 return map;
             });

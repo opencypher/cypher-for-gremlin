@@ -138,10 +138,13 @@ object TCKGremlinCypherValueConverter {
   def isPath(value: Any): Boolean = {
     if (!value.isInstanceOf[util.List[_]]) return false
     val list = value.asInstanceOf[util.List[_]].asScala
+    if (list.isEmpty || !isNode(list.head)) {
+      return false
+    }
     for (e <- list) {
       if (!isNode(e) && !isRelationship(e)) return false
     }
-    list.nonEmpty
+    true
   }
 
   def toCypherRelationship(e: util.Map[_, _]): CypherRelationship = {
