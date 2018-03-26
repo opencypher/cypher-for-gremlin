@@ -24,7 +24,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.Tokens;
 
-public class PropertyMatchAdjacencyTest {
+public class FilterStepAdjacencyTest {
 
     @Test
     public void singlePattern() {
