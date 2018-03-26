@@ -157,6 +157,8 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
         whereG.select(v).as(Tokens.LOCAL)
       case Property(Variable(varName), PropertyKeyName(keyName)) =>
         whereG.select(varName).values(keyName).as(Tokens.LOCAL)
+      case function: FunctionInvocation =>
+        walkFunctionInvocation(whereG, function).as(Tokens.LOCAL)
       case _ =>
     }
 
@@ -172,9 +174,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
 
     rhs match {
-      case Variable(_) =>
-        whereG.where(predicate(StringLiteral(Tokens.LOCAL)(InputPosition.NONE)))
-      case Property(Variable(_), PropertyKeyName(_)) =>
+      case Variable(_) | Property(Variable(_), PropertyKeyName(_)) | _: FunctionInvocation =>
         whereG.where(predicate(StringLiteral(Tokens.LOCAL)(InputPosition.NONE)))
       case expression =>
         whereG.is(predicate(expression))

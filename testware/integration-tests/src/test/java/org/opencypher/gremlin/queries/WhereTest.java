@@ -64,6 +64,22 @@ public class WhereTest {
     }
 
     @Test
+    public void relationshipTypeOnBothSides() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n1:person {name: 'marko'})-[r1]->(n2)<-[r2]-(n3) " +
+                "WHERE type(r1) = type(r2) " +
+                "RETURN n1.name, n2.name, n3.name"
+        );
+
+        assertThat(results)
+            .extracting("n1.name", "n2.name", "n3.name")
+            .containsExactlyInAnyOrder(
+                tuple("marko", "lop", "peter"),
+                tuple("marko", "lop", "josh")
+            );
+    }
+
+    @Test
     public void comparison() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (p:person) " +
