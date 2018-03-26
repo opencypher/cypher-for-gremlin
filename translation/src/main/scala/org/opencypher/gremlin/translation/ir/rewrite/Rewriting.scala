@@ -26,6 +26,7 @@ object Rewriting {
 
   /**
     * Finds matching parts of an IR sequence and maps occurrences.
+    *
     * @param steps IR sequence
     * @param finder matching and mapping function
     * @tparam R mapping result
@@ -47,7 +48,8 @@ object Rewriting {
   }
 
   /**
-    * Finds matching parts of an IR sequence and replaces them
+    * Finds matching parts of an IR sequence and replaces them.
+    *
     * @param steps IR sequence
     * @param replacer matching and replacing function
     * @return rewritten IR sequence
@@ -70,5 +72,33 @@ object Rewriting {
       }
     }
     replaceAcc(Nil, steps)
+  }
+
+  /**
+    * Finds matching steps in the IR sequence and splits the sequence in segments,
+    * with each matching step marking the end of a segment.
+    *
+    * @param steps IR sequence
+    * @param splitter matching function
+    * @return IR sequence segments
+    */
+  def splitAfter(steps: Seq[GremlinStep], splitter: GremlinStep => Boolean): Seq[Seq[GremlinStep]] = {
+    @tailrec def splitAfterAcc(
+        acc: Seq[Seq[GremlinStep]],
+        current: Seq[GremlinStep],
+        rest: Seq[GremlinStep]): Seq[Seq[GremlinStep]] = {
+      rest match {
+        case step :: _ =>
+          val next = current :+ step
+          if (splitter(step)) {
+            splitAfterAcc(acc :+ next, Nil, rest.tail)
+          } else {
+            splitAfterAcc(acc, next, rest.tail)
+          }
+        case Nil =>
+          if (current.nonEmpty) acc :+ current else acc
+      }
+    }
+    splitAfterAcc(Nil, Nil, steps)
   }
 }

@@ -25,19 +25,21 @@ import scala.collection.mutable
   * This should allow Gremlin provider optimization strategies
   * to fold generated `has` steps into the adjacent vertex step.
   */
-object PropertyMatchAdjacency extends GremlinRewriter {
+object FilterStepAdjacency extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    splitAfter(steps, {
+      case MapT(Project(_*) :: _) => true
+      case _                      => false
+    }).flatMap(rewriteSegment)
+  }
+
+  private def rewriteSegment(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     val rewrittenStepLabels = extract(
       steps, {
         case As(stepLabel) :: _                   => stepLabel
         case Repeat(_ :: As(stepLabel) :: _) :: _ => stepLabel
       }
-    ).groupBy(identity)
-      .flatMap {
-        case (stepLabel, _ :: Nil) => Some(stepLabel)
-        case _                     => None // ignore shadowed step labels
-      }
-      .toSet
+    ).toSet
 
     if (rewrittenStepLabels.isEmpty) {
       // No applicable step labels found

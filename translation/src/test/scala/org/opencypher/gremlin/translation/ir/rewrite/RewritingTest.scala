@@ -68,4 +68,20 @@ class RewritingTest {
     )
   }
 
+  @Test
+  def splitAfter(): Unit = {
+    val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
+    val segments = Rewriting.splitAfter(seq, {
+      case As(_) => true
+      case _     => false
+    })
+
+    assertThat(segments).isEqualTo(
+      Seq(
+        Vertex :: As("n") :: Nil,
+        OutE("rel") :: As("r") :: Nil,
+        InV :: As("m") :: Nil
+      ))
+  }
+
 }
