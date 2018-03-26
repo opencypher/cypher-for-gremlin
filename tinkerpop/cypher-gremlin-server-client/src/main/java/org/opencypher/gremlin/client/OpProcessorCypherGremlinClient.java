@@ -17,7 +17,6 @@ package org.opencypher.gremlin.client;
 
 import static org.opencypher.gremlin.ClientServerCommunication.buildRequest;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
@@ -44,6 +43,6 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
 
         return resultSetFuture
             .thenApply(ResultSet::iterator)
-            .thenApply(resultIterator -> new CypherResultSet(new HashMap<>(), resultIterator));
+            .thenApply(CypherResultSet::new);
     }
 }

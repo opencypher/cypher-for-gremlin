@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.client;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,11 +38,11 @@ final class CommonResultSets {
         explanation.put("translation", ast.buildTranslation(translator));
         explanation.put("options", ast.getOptions().toString());
         Iterator<Result> iterator = singletonIterator(() -> new Result(explanation));
-        return new CypherResultSet(ast.getReturnTypes(), iterator);
+        return new CypherResultSet(iterator);
     }
 
     static CypherResultSet exceptional(Throwable throwable) {
-        return new CypherResultSet(new HashMap<>(), singletonIterator(() -> {
+        return new CypherResultSet(singletonIterator(() -> {
             throw new RuntimeException(throwable);
         }));
     }

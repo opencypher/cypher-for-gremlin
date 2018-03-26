@@ -17,7 +17,6 @@ package org.opencypher.gremlin.test;
 
 import static org.assertj.core.groups.Tuple.tuple;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.assertj.core.api.iterable.Extractor;
@@ -27,28 +26,16 @@ public final class GremlinExtractors {
 
     @SuppressWarnings("unchecked")
     public static <F> Extractor<F, Object> byElementProperty(String propertyName) {
-        return element -> propertyValue((Map<String, Object>) element, propertyName);
+        return element -> ((Map<String, Object>) element).get(propertyName);
     }
 
     @SuppressWarnings("unchecked")
     public static <F> Extractor<F, Tuple> byElementProperty(String... propertyNames) {
         return element -> {
             Object[] values = Stream.of(propertyNames)
-                .map(name -> propertyValue((Map<String, Object>) element, name))
+                .map(name -> ((Map<String, Object>) element).get(name))
                 .toArray();
             return tuple(values);
         };
     }
-
-    private static Object propertyValue(Map<String, Object> element, String propertyName) {
-        Object value = element.get(propertyName);
-        if (value instanceof Collection) {
-            Collection values = (Collection) value;
-            if (values.isEmpty()){
-                return null;
-            }
-        }
-        return value;
-    }
-
 }

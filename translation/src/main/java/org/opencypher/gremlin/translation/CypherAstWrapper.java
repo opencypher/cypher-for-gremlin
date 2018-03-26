@@ -86,7 +86,7 @@ public class CypherAstWrapper {
     }
 
     /**
-     * Gets return aliases types
+     * Gets types or return items
      *
      * @return map of aliases to types
      */

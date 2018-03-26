@@ -22,6 +22,7 @@ import static org.opencypher.gremlin.translation.ReturnProperties.INV;
 import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 import static org.opencypher.gremlin.translation.ReturnProperties.OUTV;
 import static org.opencypher.gremlin.translation.ReturnProperties.isNode;
+import static org.opencypher.gremlin.translation.ReturnProperties.isPath;
 import static org.opencypher.gremlin.translation.ReturnProperties.isRelationship;
 
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Entity;
-import org.opencypher.gremlin.translation.ReturnProperties;
 
 class GremlinCypherValueConverter {
 
@@ -60,7 +60,7 @@ class GremlinCypherValueConverter {
             return toCypherNode((Map<?, ?>) value).asValue();
         } else if (isRelationship(value)) {
             return toCypherRelationship((Map<?, ?>) value).asValue();
-        } else if (ReturnProperties.isPath(value)) {
+        } else if (isPath(value)) {
             return toCypherPath((List) value);
         } else {
             return Values.value(value);

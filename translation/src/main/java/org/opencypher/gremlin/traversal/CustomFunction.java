@@ -190,7 +190,8 @@ public class CustomFunction implements Function<Traverser, Object> {
                     return Tokens.NULL;
                 } else return ((Path) traverser.get()).objects().stream()
                     .filter(o -> !o.equals(Tokens.START))
-                    .map(CustomFunction::finalizeElements).collect(toList());
+                    .map(CustomFunction::finalizeElements)
+                    .collect(toList());
             });
 
     }

@@ -28,6 +28,7 @@ import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 final class GroovyCypherGremlinClient implements CypherGremlinClient {
 
@@ -61,8 +62,9 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
         String gremlin = ast.buildTranslation(translator);
         Map<String, Object> extractedParameters = ast.getExtractedParameters();
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, extractedParameters);
+        ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture
             .thenApply(ResultSet::iterator)
-            .thenApply(resultIterator -> new CypherResultSet(ast.getReturnTypes(), resultIterator));
+            .thenApply(resultIterator -> new CypherResultSet(returnNormalizer::normalize, resultIterator));
     }
 }
