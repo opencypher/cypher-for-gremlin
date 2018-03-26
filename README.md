@@ -40,13 +40,6 @@ It is not guaranteed, however, that all combinations of the listed clauses, patt
   - [List comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-list-comprehension)
   - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `length()`, `nodes()`, `relationships()`, `size()`, `toString()`, `toBoolean()`, `toInteger()`, `toFloat()`
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
-* [Function invocations](https://neo4j.com/docs/developer-manual/current/cypher/functions/) are only supported in the `RETURN` statement.
-* Only literals or aliases are supported on the right-hand side of an expression. For example, the following query is not supported:
-  ```cypher
-  MATCH (n)-[rel]->(x)
-  WHERE n.prop = x.prop
-  RETURN n, x
-  ```
 
 See the current [TCK report](testware/tck) for a detailed overview of language coverage.
 
