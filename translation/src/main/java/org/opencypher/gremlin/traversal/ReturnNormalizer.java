@@ -107,11 +107,11 @@ public final class ReturnNormalizer {
     private Map<Object, Object> normalizeRelationship(Map<?, ?> value) {
         HashMap<Object, Object> result = new HashMap<>();
         result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
-        result.put(ReturnProperties.INV, value.get(ReturnProperties.INV));
-        result.put(ReturnProperties.OUTV, value.get(ReturnProperties.OUTV));
+        result.put(ReturnProperties.INV, value.get(Tokens.PROJECTION_INV));
+        result.put(ReturnProperties.OUTV, value.get(Tokens.PROJECTION_OUTV));
 
-        if (value.containsKey(ReturnProperties.ELEMENT)) {
-            Map<?, ?> element = (Map<?, ?>) value.get(ReturnProperties.ELEMENT);
+        if (value.containsKey(Tokens.ELEMENT)) {
+            Map<?, ?> element = (Map<?, ?>) value.get(Tokens.ELEMENT);
 
             result.put(ReturnProperties.ID, element.remove(T.id));
             result.put(ReturnProperties.LABEL, element.remove(T.label));

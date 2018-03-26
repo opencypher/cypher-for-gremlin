@@ -185,8 +185,7 @@ object CypherAst {
 
         clauses.foreach {
           case Return(_, items, _, _, _, _, _) =>
-            for (item <- items.items) {
-              val AliasedReturnItem(expression, Variable(name)) = item
+            for (AliasedReturnItem(expression, Variable(name)) <- items.items) {
               typeTable.get(expression) match {
                 case Some(ExpressionTypeInfo(typeSpec, _)) =>
                   if (typeSpec.ranges.lengthCompare(1) == 0) {

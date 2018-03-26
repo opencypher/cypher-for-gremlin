@@ -26,14 +26,13 @@ public final class ReturnProperties {
     public static final String NODE_TYPE = "node";
     public static final String RELATIONSHIP_TYPE = "relationship";
 
-    public static final String ID = " cypher.id";
-    public static final String LABEL = " cypher.label";
-    public static final String TYPE = " cypher.type";
-    public static final String ELEMENT = " cypher.element";
-    public static final String INV = " cypher.inv";
-    public static final String OUTV = " cypher.outv";
+    public static final String ID = "_id";
+    public static final String LABEL = "_label";
+    public static final String TYPE = "_type";
+    public static final String INV = "_inV";
+    public static final String OUTV = "_outV";
 
-    public static final List<String> ALL_PROPERTIES = Arrays.asList(ID, LABEL, TYPE, ELEMENT, INV, OUTV);
+    public static final List<String> ALL_PROPERTIES = Arrays.asList(ID, LABEL, TYPE, INV, OUTV);
 
     public static boolean isNode(Object value) {
         return ((value instanceof Map) && NODE_TYPE.equals(((Map) value).get(TYPE)));

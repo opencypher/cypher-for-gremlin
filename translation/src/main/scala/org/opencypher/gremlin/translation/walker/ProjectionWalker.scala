@@ -19,7 +19,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.{NodeType, PathType, RelationshipType}
-import org.opencypher.gremlin.translation.ReturnProperties.{ELEMENT, INV, OUTV}
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
@@ -357,7 +356,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         nullIfNull(
           subTraversal,
           g.start()
-            .project(ELEMENT, INV, OUTV)
+            .project(ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
             .by(g.start().valueMap(true))
             .by(g.start().inV().id())
             .by(g.start().outV().id())

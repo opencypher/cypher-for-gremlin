@@ -44,13 +44,12 @@ public final class CypherResultSet implements Iterable<Map<String, Object>> {
     private Function<Object, Map<String, Object>> returnNormalizer;
 
     CypherResultSet(Iterator<Result> resultIterator) {
-        this.returnNormalizer = CypherResultSet::castToMap;
-        this.resultIterator = resultIterator;
+        this(resultIterator, CypherResultSet::castToMap);
     }
 
-    CypherResultSet(Function<Object, Map<String, Object>> returnNormalizer, Iterator<Result> resultIterator) {
-        this.returnNormalizer = returnNormalizer;
+    CypherResultSet(Iterator<Result> resultIterator, Function<Object, Map<String, Object>> returnNormalizer) {
         this.resultIterator = resultIterator;
+        this.returnNormalizer = returnNormalizer;
     }
 
     /**

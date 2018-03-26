@@ -65,6 +65,6 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture
             .thenApply(ResultSet::iterator)
-            .thenApply(resultIterator -> new CypherResultSet(returnNormalizer::normalize, resultIterator));
+            .thenApply(resultIterator -> new CypherResultSet(resultIterator, returnNormalizer::normalize));
     }
 }
