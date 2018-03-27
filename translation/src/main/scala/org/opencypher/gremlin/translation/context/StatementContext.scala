@@ -15,14 +15,18 @@
  */
 package org.opencypher.gremlin.translation.context
 
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.translator.Translator
 
 import scala.collection.mutable
 
 object StatementContext {
-  def apply[T, P](dsl: Translator[T, P], extractedParameters: Map[String, Any]): StatementContext[T, P] = {
-    new StatementContext(dsl, extractedParameters)
+  def apply[T, P](
+      dsl: Translator[T, P],
+      returnTypes: Map[String, CypherType],
+      extractedParameters: Map[String, Any]): StatementContext[T, P] = {
+    new StatementContext(dsl, returnTypes, extractedParameters)
   }
 }
 
@@ -30,9 +34,13 @@ object StatementContext {
   * Context used by AST walkers to share global translation state.
   *
   * @param dsl                 reference to [[Translator]] implementation in use
+  * @param returnTypes         return types by alias
   * @param extractedParameters Cypher query parameters
   */
-sealed class StatementContext[T, P](val dsl: Translator[T, P], private val extractedParameters: Map[String, Any]) {
+sealed class StatementContext[T, P](
+    val dsl: Translator[T, P],
+    val returnTypes: Map[String, CypherType],
+    private val extractedParameters: Map[String, Any]) {
 
   def parameter(name: String): Object = {
     val value = extractedParameters.get(name).orNull
@@ -106,7 +114,7 @@ sealed class StatementContext[T, P](val dsl: Translator[T, P], private val extra
   }
 
   def copy(): StatementContext[T, P] = {
-    val result = StatementContext(dsl, extractedParameters)
+    val result = StatementContext(dsl, returnTypes, extractedParameters)
     result.referencedAliases ++= referencedAliases
     result.nameGenerator = nameGenerator
     result

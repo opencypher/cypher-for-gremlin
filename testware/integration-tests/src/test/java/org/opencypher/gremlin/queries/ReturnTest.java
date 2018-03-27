@@ -20,20 +20,16 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.assertj.core.groups.Tuple;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ReturnTest {
@@ -121,20 +117,17 @@ public class ReturnTest {
             .containsExactly("vadas", "marko", "josh", "peter");
     }
 
-    /**
-     * During deserialization properties are lost in DetachedVertex, so {@link org.apache.tinkerpop.gremlin.structure.Element#property(java.lang.String)}
-     * throws IllegalStateException
-     */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
     public void returnPath() throws Exception {
         String cypher = "MATCH p = (:person)-[:created]->(:software) RETURN p";
-        List<Tuple> results = submitAndGet(cypher).stream()
+        List<Map<String, Object>> maps = submitAndGet(cypher);
+
+        List<Tuple> results = maps.stream()
             .map(result -> (List) result.get("p"))
             .map(result -> tuple(
-                ((Element) result.get(0)).property("name").value(),
-                ((Element) result.get(1)).property("weight").value(),
-                ((Element) result.get(2)).property("name").value()
+                byElementProperty("name").extract(result.get(0)),
+                byElementProperty("weight").extract(result.get(1)),
+                byElementProperty("name").extract(result.get(2))
             ))
             .collect(toList());
 
@@ -148,17 +141,12 @@ public class ReturnTest {
             );
     }
 
-    /**
-     * During deserialization properties are lost in DetachedVertex, so {@link org.apache.tinkerpop.gremlin.structure.Element#property(java.lang.String)}
-     * throws IllegalStateException
-     */
     @Test
-    @Category(SkipWithGremlinGroovy.class)
     public void returnVertexAsPath() throws Exception {
         String cypher = "MATCH p = (:person) RETURN p";
         List<Object> results = submitAndGet(cypher).stream()
             .map(result -> (List) result.get("p"))
-            .map(result -> ((Element) result.get(0)).property("name").value())
+            .map(result -> byElementProperty("name").extract(result.get(0)))
             .collect(toList());
 
         assertThat(results)
@@ -287,11 +275,11 @@ public class ReturnTest {
         Stream<Map<String, List<Object>>> results = submitAndGet(cypher).stream()
             .map(result -> {
                 Map<String, List<Object>> map = new HashMap<>();
-                map.put("nodes", ((Collection<Vertex>) result.get("nodes")).stream()
-                    .map(node -> (String) node.property("name").value())
+                map.put("nodes", ((Collection<Map<String, Object>>) result.get("nodes")).stream()
+                    .map(node -> byElementProperty("name").extract(node))
                     .collect(toList()));
-                map.put("rels", ((Collection<Edge>) result.get("rels")).stream()
-                    .map(rel -> (double) rel.property("weight").value())
+                map.put("rels", ((Collection<Map<String, Object>>) result.get("rels")).stream()
+                    .map(rel -> byElementProperty("weight").extract(rel))
                     .collect(toList()));
                 return map;
             });

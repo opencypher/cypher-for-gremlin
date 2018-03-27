@@ -15,45 +15,27 @@
  */
 package org.opencypher.gremlin.test;
 
-import static com.google.common.collect.Streams.stream;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.groups.Tuple.tuple;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.Property;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.groups.Tuple;
 
 public final class GremlinExtractors {
 
+    @SuppressWarnings("unchecked")
     public static <F> Extractor<F, Object> byElementProperty(String propertyName) {
-        return element -> propertyValue((Element) element, propertyName);
+        return element -> ((Map<String, Object>) element).get(propertyName);
     }
 
+    @SuppressWarnings("unchecked")
     public static <F> Extractor<F, Tuple> byElementProperty(String... propertyNames) {
         return element -> {
             Object[] values = Stream.of(propertyNames)
-                .map(name -> propertyValue((Element) element, name))
+                .map(name -> ((Map<String, Object>) element).get(name))
                 .toArray();
             return tuple(values);
         };
     }
-
-    private static Object propertyValue(Element element, String propertyName) {
-        Iterator<? extends Property<Object>> properties = element.properties(propertyName);
-        List<Object> values = stream(properties)
-            .map(property -> property.orElse(null))
-            .collect(toList());
-        if (values.isEmpty()) {
-            return null;
-        }
-        if (values.size() == 1) {
-            return values.get(0);
-        }
-        return values;
-    }
-
 }

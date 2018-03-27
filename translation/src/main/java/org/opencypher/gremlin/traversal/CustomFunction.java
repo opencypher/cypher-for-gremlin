@@ -16,11 +16,11 @@
 package org.opencypher.gremlin.traversal;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -31,7 +31,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.opencypher.gremlin.translation.ReturnProperties;
 import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.exception.TypeException;
 
@@ -165,16 +167,33 @@ public class CustomFunction implements Function<Traverser, Object> {
             "nodes",
             traverser -> ((Path) traverser.get()).objects().stream()
                 .filter(element -> element instanceof Vertex)
+                .map(CustomFunction::finalizeElements)
                 .collect(toList()));
     }
 
     public static CustomFunction relationships() {
         return new CustomFunction(
             "relationships",
-            traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
+                traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
                 .flatMap(CustomFunction::flatten)
                 .filter(element -> element instanceof Edge)
+                .map(CustomFunction::finalizeElements)
                 .collect(toList()));
+    }
+
+    public static CustomFunction finalizePath() {
+        return new CustomFunction(
+            "finalizePath",
+
+            traverser -> {
+                if (Tokens.NULL.equals(traverser.get())) {
+                    return Tokens.NULL;
+                } else return ((Path) traverser.get()).objects().stream()
+                    .filter(o -> !o.equals(Tokens.START))
+                    .map(CustomFunction::finalizeElements)
+                    .collect(toList());
+            });
+
     }
 
     public static CustomFunction listComprehension(final Object functionTraversal) {
@@ -215,10 +234,12 @@ public class CustomFunction implements Function<Traverser, Object> {
 
                     Edge edge = first.orElseThrow(() -> new RuntimeException("Invalid path, no edge found!"));
 
-                    return asList(
+                    return Stream.of(
                         edge.outVertex(),
                         edge,
-                        edge.inVertex());
+                        edge.inVertex())
+                        .map(CustomFunction::finalizeElements)
+                        .collect(toList());
                 })
                 .collect(Collectors.toList()));
     }
@@ -263,5 +284,30 @@ public class CustomFunction implements Function<Traverser, Object> {
 
     public static Object pathToList(Object value) {
         return value instanceof Path ? new ArrayList<>(((Path) value).objects()) : value;
+    }
+
+    private static Object finalizeElements(Object o) {
+            HashMap<Object, Object> result = new HashMap<>();
+
+            if (Tokens.NULL.equals(o)) {
+                return Tokens.NULL;
+            }
+
+            Element element = (Element) o;
+            result.put(ReturnProperties.ID, element.id());
+            result.put(ReturnProperties.LABEL, element.label());
+            element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
+
+            if (o instanceof Vertex) {
+                result.put(ReturnProperties.TYPE, ReturnProperties.NODE_TYPE);
+            } else {
+                Edge edge = (Edge) o;
+
+                result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
+                result.put(ReturnProperties.INV, edge.inVertex().id());
+                result.put(ReturnProperties.OUTV, edge.outVertex().id());
+            }
+
+            return result;
     }
 }

@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
-import org.opencypher.gremlin.tck.GremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.GremlinQueries._
+import org.opencypher.gremlin.tck.TCKGremlinCypherValueConverter._
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 

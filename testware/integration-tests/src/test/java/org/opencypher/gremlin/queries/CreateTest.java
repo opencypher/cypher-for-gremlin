@@ -20,6 +20,10 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.translation.ReturnProperties.ID;
+import static org.opencypher.gremlin.translation.ReturnProperties.INV;
+import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
+import static org.opencypher.gremlin.translation.ReturnProperties.OUTV;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -58,10 +60,10 @@ public class CreateTest {
 
         assertThat(results).hasSize(1);
         Map<String, Object> result = results.get(0);
-        Vertex root = (Vertex) result.get("root");
-        Edge link = (Edge) result.get("link");
-        assertThat(link.inVertex().id()).isEqualTo(root.id());
-        assertThat(link.outVertex().id()).isEqualTo(root.id());
+        Map root = (Map) result.get("root");
+        Map link = (Map) result.get("link");
+        assertThat(link.get(INV)).isEqualTo(root.get(ID));
+        assertThat(link.get(OUTV)).isEqualTo(root.get(ID));
     }
 
     @Test
@@ -98,7 +100,7 @@ public class CreateTest {
 
     @Test
     public void matchCreateMix() throws Exception {
-        long rootId = (long) ((Vertex) submitAndGet("CREATE (d:D) RETURN d").get(0).get("d")).id();
+        long rootId = (long) ((Map) submitAndGet("CREATE (d:D) RETURN d").get(0).get("d")).get(ID);
 
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (d:D) " +
@@ -110,25 +112,25 @@ public class CreateTest {
 
         List<Long> createdIds = submitAndGet("MATCH (n:E) RETURN n")
             .stream()
-            .map(m -> (Vertex) m.get("n"))
-            .map(v -> (Long) v.id())
+            .map(m -> (Map) m.get("n"))
+            .map(v -> (Long) v.get(ID))
             .collect(toList());
 
         assertThat(createdIds).hasSize(2);
 
-        List<Edge> matchCreates = submitAndGet("MATCH ()-[r:MCREATE]->() RETURN r")
+        List<Map> matchCreates = submitAndGet("MATCH ()-[r:MCREATE]->() RETURN r")
             .stream()
-            .map(m -> (Edge) m.get("r"))
+            .map(m -> (Map) m.get("r"))
             .collect(toList());
         assertThat(matchCreates).hasSize(2);
 
-        Edge edge1 = matchCreates.get(0);
-        assertThat(edge1.outVertex().id()).isEqualTo(rootId);
-        assertThat(createdIds).contains((Long) edge1.inVertex().id());
+        Map edge1 = matchCreates.get(0);
+        assertThat(edge1.get(OUTV)).isEqualTo(rootId);
+        assertThat(createdIds).contains((Long) edge1.get(INV));
 
-        Edge edge2 = matchCreates.get(1);
-        assertThat(edge2.outVertex().id()).isEqualTo(rootId);
-        assertThat(createdIds).contains((Long) edge2.inVertex().id());
+        Map edge2 = matchCreates.get(1);
+        assertThat(edge2.get(OUTV)).isEqualTo(rootId);
+        assertThat(createdIds).contains((Long) edge2.get(INV));
     }
 
     @Test
@@ -163,8 +165,8 @@ public class CreateTest {
                 "(vadas:person {name: \"vadas\"}) " +
                 "RETURN marko, vadas"
         ).get(0);
-        long markoId = (long) ((Vertex) created.get("marko")).id();
-        long vadasId = (long) ((Vertex) created.get("vadas")).id();
+        long markoId = (long) ((Map) created.get("marko")).get(ID);
+        long vadasId = (long) ((Map) created.get("vadas")).get(ID);
 
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (marko:person),(vadas:person) " +
@@ -174,10 +176,10 @@ public class CreateTest {
 
         assertThat(results).isEmpty();
 
-        Edge edge = (Edge) submitAndGet("MATCH ()-[r:matchCreates]->() RETURN r").get(0).get("r");
+        Map edge = (Map) submitAndGet("MATCH ()-[r:matchCreates]->() RETURN r").get(0).get("r");
 
-        assertThat(edge.outVertex().id()).isEqualTo(markoId);
-        assertThat(edge.inVertex().id()).isEqualTo(vadasId);
+        assertThat(edge.get(OUTV)).isEqualTo(markoId);
+        assertThat(edge.get(INV)).isEqualTo(vadasId);
     }
 
     @Test
@@ -331,8 +333,10 @@ public class CreateTest {
     public void matchCreateWithExisting() throws Exception {
         submitAndGet("CREATE (:Begin)");
         List<Map<String, Object>> begin = submitAndGet(
-            "MATCH (n:Begin) RETURN COUNT(n) AS ns"
+            "MATCH (n:Begin) RETURN id(n) as bid, COUNT(n) AS ns"
         );
+
+        Object beginId = begin.get(0).get("bid");
 
         assertThat(begin)
             .extracting("ns")
@@ -343,26 +347,26 @@ public class CreateTest {
         );
 
         assertThat(results)
+            .extracting("v")
+            .extracting(LABEL)
+            .containsExactly("End");
+
+        Object endId = ((Map) results.get(0).get("v")).get(ID);
+
+        assertThat(results)
             .extracting("e")
-            .extracting("label")
+            .extracting(LABEL)
             .containsExactly("TYPE");
 
         assertThat(results)
             .extracting("e")
-            .extracting("outVertex")
-            .extracting("label")
-            .containsExactly("Begin");
+            .extracting(OUTV)
+            .containsExactly(beginId);
 
         assertThat(results)
             .extracting("e")
-            .extracting("inVertex")
-            .extracting("label")
-            .containsExactly("End");
-
-        assertThat(results)
-            .extracting("v")
-            .extracting("label")
-            .containsExactly("End");
+            .extracting(INV)
+            .containsExactly(endId);
     }
 
     @Test

@@ -18,6 +18,7 @@ package org.opencypher.gremlin.queries;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
+import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class ComplexExamplesTest {
         assertThat(distinctResults)
             .hasSize(1)
             .extracting("x")
-            .extracting("label")
+            .extracting(LABEL)
             .containsExactly("root");
     }
 

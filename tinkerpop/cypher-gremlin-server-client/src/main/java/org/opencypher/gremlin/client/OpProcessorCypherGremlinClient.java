@@ -40,6 +40,7 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         RequestMessage requestMessage = buildRequest(cypher, parameters).create();
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(requestMessage);
+
         return resultSetFuture
             .thenApply(ResultSet::iterator)
             .thenApply(CypherResultSet::new);

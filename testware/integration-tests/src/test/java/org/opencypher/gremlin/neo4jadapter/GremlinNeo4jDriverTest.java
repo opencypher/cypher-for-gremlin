@@ -87,7 +87,7 @@ public class GremlinNeo4jDriverTest {
         Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort());
 
         try (Session session = driver.session()) {
-            StatementResult result = session.run("CREATE (n1:Person {name: 'Marko'})-[r:knows]->(n2:Person)" +
+            StatementResult result = session.run("CREATE (n1:Person {name: 'Marko'})-[r:knows {since:1999}]->(n2:Person)" +
                     "RETURN n1,r,n2",
                 parameters("message", "Hello"));
 
@@ -103,6 +103,7 @@ public class GremlinNeo4jDriverTest {
             assertThat(r.hasType("knows")).isTrue();
             assertThat(r.startNodeId()).isEqualTo(n1.id());
             assertThat(r.endNodeId()).isEqualTo(n2.id());
+            assertThat(r.get("since").asLong()).isEqualTo(1999L);
 
             assertThat(n2.hasLabel("Person")).isTrue();
         }

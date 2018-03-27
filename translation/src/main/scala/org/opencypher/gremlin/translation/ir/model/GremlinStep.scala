@@ -63,6 +63,7 @@ case class Is(predicate: GremlinPredicate) extends GremlinStep
 case object Key extends GremlinStep
 case object Label extends GremlinStep
 case class Limit(limit: Long) extends GremlinStep
+case class Local(traversal: Seq[GremlinStep]) extends GremlinStep
 case object Loops extends GremlinStep
 case class MapF(function: CustomFunction) extends GremlinStep
 case class MapT(traversal: Seq[GremlinStep]) extends GremlinStep
@@ -93,6 +94,7 @@ case class Union(unionTraversals: Seq[GremlinStep]*) extends GremlinStep
 case class Until(untilTraversal: Seq[GremlinStep]) extends GremlinStep
 case object Value extends GremlinStep
 case object ValueMap extends GremlinStep
+case class ValueMap(includeTokens: Boolean) extends GremlinStep
 case class Values(propertyKeys: String*) extends GremlinStep
 case class WhereT(whereTraversal: Seq[GremlinStep]) extends GremlinStep
 case class WhereP(predicate: GremlinPredicate) extends GremlinStep

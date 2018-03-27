@@ -18,14 +18,15 @@ package org.opencypher.gremlin.tck
 import java.{lang, util}
 
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
-import org.apache.tinkerpop.gremlin.structure.{Edge, Property, Vertex}
+import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.CypherAst
+import org.opencypher.gremlin.translation.ReturnProperties._
 import org.opencypher.tools.tck.api.{CypherValueRecords, ExecutionFailed}
 import org.opencypher.tools.tck.values._
 
 import scala.collection.JavaConverters._
 
-object GremlinCypherValueConverter {
+object TCKGremlinCypherValueConverter {
 
   def toExecutionFailed(e: Throwable): ExecutionFailed = {
     val gremlinRemoteException = Iterator
@@ -85,85 +86,78 @@ object GremlinCypherValueConverter {
     }
   }
 
-  private def toCypherValue(v: Any): CypherValue = v match {
-    case v: Vertex         => toCypherNode(v)
-    case e: Edge           => toCypherRelationship(e)
-    case s: String         => CypherString(s)
-    case d: lang.Double    => CypherFloat(d)
-    case n: Number         => CypherInteger(n.longValue())
-    case b: lang.Boolean   => CypherBoolean(b)
-    case null              => CypherNull
-    case m: util.Map[_, _] => toCypherPropertyMap(m)
-    case p: util.List[_]   => toCypherList(p)
+  def toCypherValue(v: Any): CypherValue = v match {
+    case s: String                              => CypherString(s)
+    case d: lang.Double                         => CypherFloat(d)
+    case n: Number                              => CypherInteger(n.longValue())
+    case b: lang.Boolean                        => CypherBoolean(b)
+    case null                                   => CypherNull
+    case n: util.Map[_, _] if isNode(n)         => toCypherNode(n)
+    case r: util.Map[_, _] if isRelationship(r) => toCypherRelationship(r)
+    case m: util.Map[_, _]                      => toCypherPropertyMap(m)
+    case p: util.List[_] if isPath(v)           => toCypherPath(p.asInstanceOf[util.List[util.Map[_, _]]])
+    case p: util.List[_]                        => toCypherList(p)
   }
 
-  private def toCypherRelationship(e: Edge) = {
-    CypherRelationship(e.label(), toCypherPropertyMap(e.properties()))
-  }
-
-  private def toCypherNode(v: Vertex) = {
-    val labels = if (Vertex.DEFAULT_LABEL.equals(v.label())) Set.empty[String] else Set(v.label())
-    CypherNode(labels, toCypherPropertyMap(v.properties()))
-  }
-
-  private def toCypherPropertyMap[A <: Property[B], B](iterator: util.Iterator[A]): CypherPropertyMap = {
-    val map = iterator.asScala
-      .map(v => (v.key(), toCypherValue(v.value())))
+  def toCypherPropertyMap(javaMap: util.Map[_, _]): CypherPropertyMap = {
+    val map = javaMap.asScala
+      .filterKeys(k => !ALL_PROPERTIES.contains(k))
+      .map { case (k, v) => (k.toString, toCypherValue(v)) }
       .toMap
 
     CypherPropertyMap(map)
   }
 
-  private def toCypherPropertyMap(javaMap: util.Map[_, _]): CypherPropertyMap = {
-    val map = javaMap.asScala.map { case (k, v) => (k.toString, toCypherValue(v)) }.toMap
-
-    CypherPropertyMap(map)
-  }
-
   private def toCypherList(gremlinList: util.List[_]): CypherValue = {
-    toCypherPath(gremlinList) match {
-      case Some(path) =>
-        path
-      case None =>
-        val list = gremlinList.asScala
-          .map(e => toCypherValue(e))
-          .toList
+    val list = gremlinList.asScala
+      .map(e => toCypherValue(e))
+      .toList
 
-        CypherOrderedList(list)
-    }
+    CypherOrderedList(list)
   }
 
-  private def toCypherPath(gremlinPath: util.List[_]): Option[CypherPath] = {
+  def toCypherRelationship(e: util.Map[_, _]): CypherRelationship = {
+    val properties = toCypherPropertyMap(e)
+    val label = String.valueOf(e.get(LABEL))
+    CypherRelationship(label, properties)
+  }
+
+  def toCypherNode(v: util.Map[_, _]): CypherNode = {
+    val labels = new util.HashSet[String]
+    val label = String.valueOf(v.get(LABEL))
+    if (!(Vertex.DEFAULT_LABEL == label)) labels.add(label)
+    val properties = toCypherPropertyMap(v)
+    CypherNode(labels.asScala.toSet, properties)
+  }
+
+  private def toCypherPath(gremlinPath: util.List[util.Map[_, _]]) = {
     val gremlinPathScala = gremlinPath.asScala
 
-    if (gremlinPathScala.nonEmpty && gremlinPathScala.head.isInstanceOf[Vertex]) {
-      val startingNode = toCypherNode(gremlinPathScala.head.asInstanceOf[Vertex])
-      val vertexes = gremlinPathScala
-        .filter(_.isInstanceOf[Vertex])
-        .map(_.asInstanceOf[Vertex])
-        .map(v => (v.id(), v))
-        .toMap[Object, Vertex]
+    val startingNode = toCypherNode(gremlinPathScala.head)
 
-      val relationships = gremlinPathScala
-        .grouped(2)
-        .filter(it => it.head.isInstanceOf[Vertex] && it.last.isInstanceOf[Edge])
-        .map(
-          it => {
-            val v = it.head.asInstanceOf[Vertex]
-            val e = it.last.asInstanceOf[Edge]
+    val vertexes = gremlinPathScala
+      .filter(e => isNode(e))
+      .map(_.asInstanceOf[util.Map[String, Object]])
+      .map(v => (v.get(ID), v))
+      .toMap[Object, util.Map[String, Object]]
 
-            if (e.outVertex().equals(v)) {
-              Forward(toCypherRelationship(e), toCypherNode(vertexes(e.inVertex().id())))
-            } else {
-              Backward(toCypherRelationship(e), toCypherNode(vertexes(e.outVertex().id())))
-            }
+    val relationships = gremlinPathScala
+      .grouped(2)
+      .filter(it => isNode(it.head) && isRelationship(it.last))
+      .map(
+        it => {
+          val v = it.head.asInstanceOf[util.Map[String, Object]]
+          val e = it.last.asInstanceOf[util.Map[String, Object]]
+
+          if (e.get(OUTV).equals(v.get(ID))) {
+            Forward(toCypherRelationship(e), toCypherNode(vertexes(e.get(INV))))
+          } else {
+            Backward(toCypherRelationship(e), toCypherNode(vertexes(e.get(OUTV))))
           }
-        )
-        .toList
+        }
+      )
+      .toList
 
-      if (vertexes.nonEmpty) Some(CypherPath(startingNode, relationships)) else None
-    } else {
-      None
-    }
+    CypherPath(startingNode, relationships)
   }
 }

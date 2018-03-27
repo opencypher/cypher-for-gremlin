@@ -16,38 +16,47 @@
 package org.opencypher.gremlin.traversal;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
-import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertex;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.PathType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.RelationshipType;
+import org.opencypher.gremlin.translation.ReturnProperties;
 import org.opencypher.gremlin.translation.Tokens;
 
 public final class ReturnNormalizer {
-    private ReturnNormalizer() {
+    private final Map<String, CypherType> variableTypes;
+
+    private ReturnNormalizer(Map<String, CypherType> variableTypes) {
+        this.variableTypes = variableTypes;
+    }
+
+    public static ReturnNormalizer create(Map<String, CypherType> variableTypes) {
+        return new ReturnNormalizer(variableTypes);
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> normalize(Object row) {
+    public Map<String, Object> normalize(Object row) {
         return (Map<String, Object>) normalizeValue(row);
     }
 
-    private static Object normalizeValue(Object value) {
+    private Object normalizeValue(Object value) {
         if (value instanceof Map) {
             return normalizeMap((Map<?, ?>) value);
         } else if (value instanceof Collection) {
             return normalizeCollection((Collection<?>) value);
-        } else if (value instanceof DetachedVertex) {
-            return normalizeDetachedVertex((DetachedVertex) value);
         } else if (value instanceof DetachedVertexProperty) {
             return elementPropertyMap((DetachedVertexProperty) value);
         } else if (value instanceof Integer) {
@@ -56,47 +65,88 @@ public final class ReturnNormalizer {
             return ((BigDecimal) value).doubleValue();
         } else if (Tokens.NULL.equals(value)) {
             return null;
-        } else if (value instanceof Path) {
-            return new ArrayList<>(((Path) value).objects());
         } else if (value instanceof Traverser) {
             return normalize(((Traverser) value).get());
         }
         return value;
     }
 
-    private static Map<?, ?> normalizeMap(Map<?, ?> value) {
+    private Object normalizeValue(CypherType type, Object value) {
+        if (Tokens.NULL.equals(value)) {
+            return null;
+        } else if (type instanceof NodeType) {
+            return normalizeElement((Map<?, ?>) value, ReturnProperties.NODE_TYPE);
+        } else if (type instanceof RelationshipType) {
+            return normalizeRelationship((Map<?, ?>) value);
+        } else if (type instanceof PathType) {
+            return normalizePath((List<?>) value);
+        }
+
+        return normalizeValue(value);
+    }
+
+    private Map<Object, Object> normalizeElement(Map<?, ?> value, String type) {
+        HashMap<Object, Object> result = new HashMap<>();
+        result.put(ReturnProperties.TYPE, type);
+        result.put(ReturnProperties.ID, value.get(T.id));
+        result.put(ReturnProperties.LABEL, value.get(T.label));
+        value.forEach(
+            (k, v) -> {
+                if (k instanceof String) {
+                    if ((v instanceof Collection) && ((Collection) v).size() == 1) {
+                        result.put(k, normalizeValue(((Collection) v).iterator().next()));
+                    } else {
+                        result.put(k, normalizeValue(v));
+                    }
+                }
+            });
+
+        return result;
+    }
+
+    private Map<Object, Object> normalizeRelationship(Map<?, ?> value) {
+        HashMap<Object, Object> result = new HashMap<>();
+        result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
+        result.put(ReturnProperties.INV, value.get(Tokens.PROJECTION_INV));
+        result.put(ReturnProperties.OUTV, value.get(Tokens.PROJECTION_OUTV));
+
+        if (value.containsKey(Tokens.ELEMENT)) {
+            Map<?, ?> element = (Map<?, ?>) value.get(Tokens.ELEMENT);
+
+            result.put(ReturnProperties.ID, element.remove(T.id));
+            result.put(ReturnProperties.LABEL, element.remove(T.label));
+
+            element.forEach(
+                (k, v) -> result.put(String.valueOf(k), normalizeValue(v)));
+        }
+
+        return result;
+    }
+
+    private Object normalizePath(List<?> value) {
+        return value;
+    }
+
+    private Map<?, ?> normalizeMap(Map<?, ?> map) {
         LinkedHashMap<String, Object> result = new LinkedHashMap<>();
-        for (Entry<?, ?> e : value.entrySet()) {
-            result.put(String.valueOf(e.getKey()), normalizeValue(e.getValue()));
+        for (Entry<?, ?> e : map.entrySet()) {
+            String key = String.valueOf(e.getKey());
+            Object value = variableTypes.containsKey(key) ?
+                normalizeValue(variableTypes.get(key), e.getValue()) :
+                normalizeValue(e.getValue());
+
+            result.put(key, value);
         }
         return result;
     }
 
-    private static Collection<?> normalizeCollection(Collection<?> value) {
+    private Collection<?> normalizeCollection(Collection<?> value) {
         return value.stream()
-            .map(ReturnNormalizer::normalizeValue)
+            .map(this::normalizeValue)
             .collect(Collectors.toList());
     }
 
-    private static DetachedVertex normalizeDetachedVertex(DetachedVertex vertex) {
-        DetachedVertex.Builder builder = DetachedVertex.build()
-            .setId(vertex.id())
-            .setLabel(vertex.label());
-        Iterator<VertexProperty<Object>> properties = vertex.properties();
-        while (properties.hasNext()) {
-            VertexProperty<Object> property = properties.next();
-            DetachedVertexProperty normalizedProperty = DetachedVertexProperty.build()
-                .setId(property.id())
-                .setLabel(property.label())
-                .setV(vertex)
-                .setValue(normalizeValue(property.value()))
-                .create();
-            builder.addProperty(normalizedProperty);
-        }
-        return builder.create();
-    }
-
-    private static Object elementPropertyMap(Element element) {
+    private Object elementPropertyMap(Element element) {
         LinkedHashMap<Object, Object> result = new LinkedHashMap<>();
         Iterator<? extends Property<Object>> properties = element.properties();
         while (properties.hasNext()) {

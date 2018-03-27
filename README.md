@@ -38,6 +38,7 @@ It is not guaranteed, however, that all combinations of the listed clauses, patt
   - Accessing [list](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) elements by index
   - [Literal maps](https://neo4j.com/docs/developer-manual/current/cypher/syntax/maps/)
   - [List comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-list-comprehension)
+  - [Returning named paths](https://neo4j.com/docs/developer-manual/current/cypher/clauses/match/#named-paths)
   - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `length()`, `nodes()`, `relationships()`, `size()`, `toString()`, `toBoolean()`, `toInteger()`, `toFloat()`
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 

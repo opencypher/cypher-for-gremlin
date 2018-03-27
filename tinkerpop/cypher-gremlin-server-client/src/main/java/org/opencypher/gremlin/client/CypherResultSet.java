@@ -24,10 +24,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.tinkerpop.gremlin.driver.Result;
-import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 /**
  * A Gremlin query result iterator wrapper.
@@ -41,9 +41,15 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 public final class CypherResultSet implements Iterable<Map<String, Object>> {
 
     private final Iterator<Result> resultIterator;
+    private Function<Object, Map<String, Object>> returnNormalizer;
 
     CypherResultSet(Iterator<Result> resultIterator) {
+        this(resultIterator, CypherResultSet::castToMap);
+    }
+
+    CypherResultSet(Iterator<Result> resultIterator, Function<Object, Map<String, Object>> returnNormalizer) {
         this.resultIterator = resultIterator;
+        this.returnNormalizer = returnNormalizer;
     }
 
     /**
@@ -91,8 +97,13 @@ public final class CypherResultSet implements Iterable<Map<String, Object>> {
             public Map<String, Object> next() {
                 Result result = resultIterator.next();
                 Object row = result.getObject();
-                return ReturnNormalizer.normalize(row);
+                return returnNormalizer.apply(row);
             }
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> castToMap(Object e) {
+        return (Map<String, Object>) e;
     }
 }
