@@ -181,21 +181,6 @@ public class CustomFunction implements Function<Traverser, Object> {
                 .collect(toList()));
     }
 
-    public static CustomFunction finalizePath() {
-        return new CustomFunction(
-            "finalizePath",
-
-            traverser -> {
-                if (Tokens.NULL.equals(traverser.get())) {
-                    return Tokens.NULL;
-                } else return ((Path) traverser.get()).objects().stream()
-                    .filter(o -> !o.equals(Tokens.START))
-                    .map(CustomFunction::finalizeElements)
-                    .collect(toList());
-            });
-
-    }
-
     public static CustomFunction listComprehension(final Object functionTraversal) {
         return new CustomFunction(
             "listComprehension",

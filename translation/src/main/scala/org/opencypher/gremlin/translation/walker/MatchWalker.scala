@@ -82,9 +82,9 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   def walkPatternParts(patternParts: Seq[PatternPart], whereOption: Option[Where]) {
     patternParts.foreach {
       case EveryPath(patternElement) =>
-        foldPatternElement(patternElement)
+        foldPatternElement(None, patternElement)
       case NamedPatternPart(Variable(pathName), EveryPath(patternElement)) =>
-        foldPatternElement(patternElement)
+        foldPatternElement(Some(pathName), patternElement)
         g.path().as(pathName)
       case n =>
         context.unsupported("match pattern", n)
@@ -93,7 +93,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     whereOption.foreach(WhereWalker.walk(context, g, _))
   }
 
-  private def foldPatternElement(patternElement: PatternElement) {
+  private def foldPatternElement(maybeName: Option[String], patternElement: PatternElement) {
     if (!context.isFirstStatement) {
       context.midTraversal(g)
     } else {
@@ -104,7 +104,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       case NodePattern(Some(Variable(name)), _, _) =>
         asUniqueName(name, g, context)
       case r: RelationshipPattern =>
-        RelationshipPatternWalker.walk(context, g, r)
+        RelationshipPatternWalker.walk(maybeName, context, g, r)
       case n =>
         context.unsupported("relationship pattern element", n)
     }

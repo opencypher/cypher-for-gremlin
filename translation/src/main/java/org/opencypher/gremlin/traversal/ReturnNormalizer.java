@@ -15,8 +15,18 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import static org.opencypher.gremlin.translation.ReturnProperties.ID;
+import static org.opencypher.gremlin.translation.ReturnProperties.INV;
+import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 import static org.opencypher.gremlin.translation.ReturnProperties.NODE_TYPE;
+import static org.opencypher.gremlin.translation.ReturnProperties.OUTV;
 import static org.opencypher.gremlin.translation.ReturnProperties.RELATIONSHIP_TYPE;
+import static org.opencypher.gremlin.translation.ReturnProperties.TYPE;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ELEMENT;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ID;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_INV;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_OUTV;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_RELATIONSHIP;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,7 +47,6 @@ import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.PathType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.RelationshipType;
-import org.opencypher.gremlin.translation.ReturnProperties;
 import org.opencypher.gremlin.translation.Tokens;
 
 public final class ReturnNormalizer {
@@ -91,37 +100,39 @@ public final class ReturnNormalizer {
 
     private Map<Object, Object> normalizeElement(Map<?, ?> value, String type) {
         HashMap<Object, Object> result = new HashMap<>();
-        result.put(ReturnProperties.TYPE, type);
-        result.put(ReturnProperties.ID, value.get(T.id));
-        result.put(ReturnProperties.LABEL, value.get(T.label));
-        value.forEach(
-            (k, v) -> {
-                if (k instanceof String) {
-                    if ((v instanceof Collection) && ((Collection) v).size() == 1) {
-                        result.put(k, normalizeValue(((Collection) v).iterator().next()));
+        result.put(TYPE, type);
+        result.put(ID, getT(value, T.id));
+        result.put(LABEL, getT(value, T.label));
+
+        value.entrySet().stream()
+            .filter(this::isProperty)
+            .forEach(
+                e -> {
+                    if (NODE_TYPE.equals(type) && isVertexValueList(e.getValue())) {
+                        result.put(e.getKey(), normalizeValue(((Collection) e.getValue()).iterator().next()));
                     } else {
-                        result.put(k, normalizeValue(v));
+                        result.put(e.getKey(), normalizeValue(e.getValue()));
                     }
-                }
-            });
+                });
 
         return result;
     }
 
     private Map<Object, Object> normalizeRelationship(Map<?, ?> value) {
         HashMap<Object, Object> result = new HashMap<>();
-        result.put(ReturnProperties.TYPE, RELATIONSHIP_TYPE);
-        result.put(ReturnProperties.INV, value.get(Tokens.PROJECTION_INV));
-        result.put(ReturnProperties.OUTV, value.get(Tokens.PROJECTION_OUTV));
+        result.put(TYPE, RELATIONSHIP_TYPE);
+        result.put(INV, value.get(PROJECTION_INV));
+        result.put(OUTV, value.get(PROJECTION_OUTV));
 
-        if (value.containsKey(Tokens.ELEMENT)) {
-            Map<?, ?> element = (Map<?, ?>) value.get(Tokens.ELEMENT);
+        if (value.containsKey(PROJECTION_ELEMENT)) {
+            Map<?, ?> element = (Map<?, ?>) value.get(PROJECTION_ELEMENT);
 
-            result.put(ReturnProperties.ID, element.remove(T.id));
-            result.put(ReturnProperties.LABEL, element.remove(T.label));
+            result.put(ID, getT(element, T.id));
+            result.put(LABEL, getT(element, T.label));
 
-            element.forEach(
-                (k, v) -> result.put(String.valueOf(k), normalizeValue(v)));
+            element.entrySet().stream()
+                .filter(this::isProperty)
+                .forEach(e -> result.put(e.getKey(), normalizeValue(e.getValue())));
         }
 
         return result;
@@ -129,23 +140,23 @@ public final class ReturnNormalizer {
 
     @SuppressWarnings("unchecked")
     private Object normalizePath(Map<?, ?> value) {
-        List<Map<?, ?>> relationships = (List<Map<?, ?>>) value.get("relationships");
-        List<Map<?, ?>> elements =  (List<Map<?, ?>>) value.get("elements");
+        List<Map<?, ?>> relationships = (List<Map<?, ?>>) value.get(PROJECTION_RELATIONSHIP);
+        List<Map<?, ?>> elements = (List<Map<?, ?>>) value.get(PROJECTION_ELEMENT);
 
         HashMap<Object, Map<?, ?>> relationshipMap = new HashMap<>();
         for (Map<?, ?> relationship : relationships) {
-            relationshipMap.put(relationship.get("id"), relationship);
+            relationshipMap.put(relationship.get(PROJECTION_ID), relationship);
         }
 
         List<Object> result = new ArrayList<>();
         for (Map<?, ?> element : elements) {
-            Object id = element.get(T.id);
+            Object id = getT(element, T.id);
             boolean isRelationship = relationshipMap.containsKey(id);
 
             Map<Object, Object> normalized = normalizeElement(element, isRelationship ? RELATIONSHIP_TYPE : NODE_TYPE);
             if (isRelationship) {
-                normalized.put(ReturnProperties.INV, relationshipMap.get(id).get("inv"));
-                normalized.put(ReturnProperties.OUTV, relationshipMap.get(id).get("outv"));
+                normalized.put(INV, relationshipMap.get(id).get(PROJECTION_INV));
+                normalized.put(OUTV, relationshipMap.get(id).get(PROJECTION_OUTV));
             }
 
             result.add(normalized);
@@ -181,5 +192,19 @@ public final class ReturnNormalizer {
             result.put(next.key(), next.value());
         }
         return result;
+    }
+
+    private Object getT(Map<?, ?> element, T prop) {
+        return element.containsKey(prop) ?
+            element.get(prop) :
+            element.get(prop.toString());
+    }
+
+    private boolean isVertexValueList(Object e) {
+        return (e instanceof Collection) && ((Collection) e).size() == 1;
+    }
+
+    private boolean isProperty(Entry<?, ?> e) {
+        return !T.id.equals(e.getKey()) && !T.label.equals(e.getKey());
     }
 }

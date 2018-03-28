@@ -246,7 +246,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
           g.hasLabel(labelNames.head.name)
         }
       case r: RelationshipPattern =>
-        RelationshipPatternWalker.walk(context, g, r)
+        RelationshipPatternWalker.walk(None, context, g, r)
       case n =>
         context.unsupported("pattern predicate", n)
     }
