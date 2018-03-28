@@ -41,8 +41,8 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
         toCypherValueRecords(query, ResultTransformer.resultSetAsMaps(resultSet))
 
       case ExecQuery | InitQuery | SideEffectQuery =>
-        val paramsJava: util.Map[String, Object] = toGremlinParams(params)
         try {
+          val paramsJava: util.Map[String, Object] = toGremlinParams(params)
           val results = tinkerGraphServerEmbedded
             .cypherGremlinClient()
             .submitAsync(query, paramsJava)
