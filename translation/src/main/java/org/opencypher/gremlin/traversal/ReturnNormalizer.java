@@ -15,7 +15,11 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import static org.opencypher.gremlin.translation.ReturnProperties.NODE_TYPE;
+import static org.opencypher.gremlin.translation.ReturnProperties.RELATIONSHIP_TYPE;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,11 +79,11 @@ public final class ReturnNormalizer {
         if (Tokens.NULL.equals(value)) {
             return null;
         } else if (type instanceof NodeType) {
-            return normalizeElement((Map<?, ?>) value, ReturnProperties.NODE_TYPE);
+            return normalizeElement((Map<?, ?>) value, NODE_TYPE);
         } else if (type instanceof RelationshipType) {
             return normalizeRelationship((Map<?, ?>) value);
         } else if (type instanceof PathType) {
-            return normalizePath((List<?>) value);
+            return normalizePath((Map<?, ?>) value);
         }
 
         return normalizeValue(value);
@@ -106,7 +110,7 @@ public final class ReturnNormalizer {
 
     private Map<Object, Object> normalizeRelationship(Map<?, ?> value) {
         HashMap<Object, Object> result = new HashMap<>();
-        result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
+        result.put(ReturnProperties.TYPE, RELATIONSHIP_TYPE);
         result.put(ReturnProperties.INV, value.get(Tokens.PROJECTION_INV));
         result.put(ReturnProperties.OUTV, value.get(Tokens.PROJECTION_OUTV));
 
@@ -123,8 +127,31 @@ public final class ReturnNormalizer {
         return result;
     }
 
-    private Object normalizePath(List<?> value) {
-        return value;
+    @SuppressWarnings("unchecked")
+    private Object normalizePath(Map<?, ?> value) {
+        List<Map<?, ?>> relationships = (List<Map<?, ?>>) value.get("relationships");
+        List<Map<?, ?>> elements =  (List<Map<?, ?>>) value.get("elements");
+
+        HashMap<Object, Map<?, ?>> relationshipMap = new HashMap<>();
+        for (Map<?, ?> relationship : relationships) {
+            relationshipMap.put(relationship.get("id"), relationship);
+        }
+
+        List<Object> result = new ArrayList<>();
+        for (Map<?, ?> element : elements) {
+            Object id = element.get(T.id);
+            boolean isRelationship = relationshipMap.containsKey(id);
+
+            Map<Object, Object> normalized = normalizeElement(element, isRelationship ? RELATIONSHIP_TYPE : NODE_TYPE);
+            if (isRelationship) {
+                normalized.put(ReturnProperties.INV, relationshipMap.get(id).get("inv"));
+                normalized.put(ReturnProperties.OUTV, relationshipMap.get(id).get("outv"));
+            }
+
+            result.add(normalized);
+        }
+
+        return result;
     }
 
     private Map<?, ?> normalizeMap(Map<?, ?> map) {

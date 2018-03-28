@@ -50,9 +50,9 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
     }
     val addDirection: TraversalFunction = (g) =>
       direction match {
-        case BOTH     => addVariableName(g.bothE(typeNames: _*)).otherV()
-        case INCOMING => addVariableName(g.inE(typeNames: _*)).outV()
-        case OUTGOING => addVariableName(g.outE(typeNames: _*)).inV()
+        case BOTH     => addVariableName(g.bothE(typeNames: _*).aggregate("  cypher.path.edge")).otherV()
+        case INCOMING => addVariableName(g.inE(typeNames: _*).aggregate("  cypher.path.edge")).outV()
+        case OUTGOING => addVariableName(g.outE(typeNames: _*).aggregate("  cypher.path.edge")).inV()
     }
 
     val p = context.dsl.predicates()

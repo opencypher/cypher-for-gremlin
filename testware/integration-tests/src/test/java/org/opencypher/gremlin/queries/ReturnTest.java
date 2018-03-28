@@ -142,6 +142,30 @@ public class ReturnTest {
     }
 
     @Test
+    public void returnUndirectedPath() throws Exception {
+        String cypher = "MATCH p = (:person)-[:created]-(:software) RETURN p";
+        List<Map<String, Object>> maps = submitAndGet(cypher);
+
+        List<Tuple> results = maps.stream()
+            .map(result -> (List) result.get("p"))
+            .map(result -> tuple(
+                byElementProperty("name").extract(result.get(0)),
+                byElementProperty("weight").extract(result.get(1)),
+                byElementProperty("name").extract(result.get(2))
+            ))
+            .collect(toList());
+
+        assertThat(results)
+            .hasSize(4)
+            .containsExactlyInAnyOrder(
+                tuple("peter", 0.2, "lop"),
+                tuple("josh", 0.4, "lop"),
+                tuple("marko", 0.4, "lop"),
+                tuple("josh", 1.0, "ripple")
+            );
+    }
+
+    @Test
     public void returnVertexAsPath() throws Exception {
         String cypher = "MATCH p = (:person) RETURN p";
         List<Object> results = submitAndGet(cypher).stream()
