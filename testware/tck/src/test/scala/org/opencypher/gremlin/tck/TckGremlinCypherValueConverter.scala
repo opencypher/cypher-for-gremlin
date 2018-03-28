@@ -26,7 +26,7 @@ import org.opencypher.tools.tck.values._
 
 import scala.collection.JavaConverters._
 
-object TCKGremlinCypherValueConverter {
+object TckGremlinCypherValueConverter {
 
   def toExecutionFailed(e: Throwable): ExecutionFailed = {
     val gremlinRemoteException = Iterator

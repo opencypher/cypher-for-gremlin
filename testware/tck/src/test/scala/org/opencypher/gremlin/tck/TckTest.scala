@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.tck.GremlinQueries._
-import org.opencypher.gremlin.tck.TCKGremlinCypherValueConverter._
+import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
@@ -63,11 +63,17 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
 class TckTest {
   @TestFactory
   def testTck(): util.Collection[DynamicTest] = {
+    val scenarioName = System.getProperty("scenario")
+    val featureName = System.getProperty("feature")
+
     val scenarios = CypherTCK.allTckScenarios
+      .filter(s => scenarioName == null || s.name == scenarioName)
+      .filter(s => featureName == null || s.featureName == featureName)
+
     runScenarios(scenarios)
   }
 
-  def runScenarios(scenarios: Seq[Scenario]) = {
+  private def runScenarios(scenarios: Seq[Scenario]) = {
     def createTestGraph() = TinkerGraphServerEmbeddedGraph
 
     val dynamicTests = scenarios.map { scenario =>
