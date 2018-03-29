@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.neo4j.cypher.internal.frontend.v3_3.SemanticDirection.{BOTH, INCOMING, OUTGOING}
 import org.neo4j.cypher.internal.frontend.v3_3.ast.{UnsignedDecimalIntegerLiteral => UDIL, _}
-import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 
@@ -28,8 +28,12 @@ import org.opencypher.gremlin.translation.walker.NodeUtils._
   */
 object RelationshipPatternWalker {
 
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: RelationshipPattern) {
-    new RelationshipPatternWalker(context, g).walk(node)
+  def walk[T, P](
+      maybeName: Option[String],
+      context: StatementContext[T, P],
+      g: GremlinSteps[T, P],
+      node: RelationshipPattern) {
+    new RelationshipPatternWalker(context, g).walk(maybeName, node)
   }
 }
 
@@ -39,7 +43,7 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
 
   type TraversalFunction = GremlinSteps[T, P] => GremlinSteps[T, P]
 
-  def walk(node: RelationshipPattern) {
+  def walk(maybeName: Option[String], node: RelationshipPattern) {
     val RelationshipPattern(variableOption, types, length, _, direction, _) = node
     val typeNames = types.map { case RelTypeName(relName) => relName }.distinct
 
@@ -48,11 +52,21 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
         case Some(Variable(name)) => asUniqueName(name, g, context)
         case None                 => g
     }
+
     val addDirection: TraversalFunction = (g) =>
-      direction match {
-        case BOTH     => addVariableName(g.bothE(typeNames: _*)).otherV()
-        case INCOMING => addVariableName(g.inE(typeNames: _*)).outV()
-        case OUTGOING => addVariableName(g.outE(typeNames: _*)).inV()
+      maybeName match {
+        case Some(pathName) =>
+          direction match {
+            case BOTH     => addVariableName(g.bothE(typeNames: _*)).aggregate(Tokens.PATH_EDGE + pathName).otherV()
+            case INCOMING => addVariableName(g.inE(typeNames: _*)).aggregate(Tokens.PATH_EDGE + pathName).outV()
+            case OUTGOING => addVariableName(g.outE(typeNames: _*)).aggregate(Tokens.PATH_EDGE + pathName).inV()
+          }
+        case None =>
+          direction match {
+            case BOTH     => addVariableName(g.bothE(typeNames: _*)).otherV()
+            case INCOMING => addVariableName(g.inE(typeNames: _*)).outV()
+            case OUTGOING => addVariableName(g.outE(typeNames: _*)).inV()
+          }
     }
 
     val p = context.dsl.predicates()

@@ -22,8 +22,11 @@ public final class Tokens {
     public static final String START = "  cypher.start";
     public static final String NULL = "  cypher.null";
     public static final String TEMP = "  cypher.temp";
+    public static final String PATH_EDGE = "  cypher.path.edge.";
 
-    public static final String ELEMENT = "  cypher.element";
+    public static final String PROJECTION_RELATIONSHIP = "  cypher.relationship";
+    public static final String PROJECTION_ELEMENT = "  cypher.element";
+    public static final String PROJECTION_ID = "  cypher.id";
     public static final String PROJECTION_INV = "  cypher.inv";
     public static final String PROJECTION_OUTV = "  cypher.outv";
 }
