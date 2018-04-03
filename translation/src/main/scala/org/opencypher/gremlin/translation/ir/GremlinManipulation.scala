@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.ir.rewrite
+package org.opencypher.gremlin.translation.ir
 
 import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
 import scala.annotation.tailrec
 
 /**
-  * Gremlin IR rewriting utilities
+  * Gremlin IR manipulation utilities
   */
-object Rewriting {
+object GremlinManipulation {
 
   /**
     * Finds matching parts of an IR sequence and maps occurrences.

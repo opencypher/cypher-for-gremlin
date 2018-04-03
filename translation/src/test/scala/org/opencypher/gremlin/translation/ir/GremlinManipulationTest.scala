@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.ir.rewrite
+package org.opencypher.gremlin.translation.ir
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.opencypher.gremlin.translation.ir.model._
 
-class RewritingTest {
+class GremlinManipulationTest {
 
   @Test
   def extractOne(): Unit = {
@@ -27,8 +27,8 @@ class RewritingTest {
     val relWithLabel: String => PartialFunction[Seq[GremlinStep], String] = (stepLabel) => {
       case OutE(edgeLabel) :: As(`stepLabel`) :: InV :: _ => edgeLabel
     }
-    val extracted = Rewriting.extract(seq, relWithLabel("r"))
-    val notExtracted = Rewriting.extract(seq, relWithLabel("other"))
+    val extracted = GremlinManipulation.extract(seq, relWithLabel("r"))
+    val notExtracted = GremlinManipulation.extract(seq, relWithLabel("other"))
 
     assertThat(extracted).isEqualTo(Seq("rel"))
     assertThat(notExtracted).isEqualTo(Nil)
@@ -37,7 +37,7 @@ class RewritingTest {
   @Test
   def extractedMultiple(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val extracted = Rewriting.extract(seq, {
+    val extracted = GremlinManipulation.extract(seq, {
       case As(stepLabel) :: _ => stepLabel
     })
 
@@ -47,7 +47,7 @@ class RewritingTest {
   @Test
   def replaceOne(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val replaced = Rewriting.replace(seq, {
+    val replaced = GremlinManipulation.replace(seq, {
       case OutE(edgeLabel) :: As(_) :: InV :: rest => OutE(edgeLabel) :: InV :: rest
     })
 
@@ -59,7 +59,7 @@ class RewritingTest {
   @Test
   def replaceMultiple(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val replaced = Rewriting.replace(seq, {
+    val replaced = GremlinManipulation.replace(seq, {
       case As(stepLabel) :: rest => As(s"_$stepLabel") :: rest
     })
 
@@ -71,7 +71,7 @@ class RewritingTest {
   @Test
   def splitAfter(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val segments = Rewriting.splitAfter(seq, {
+    val segments = GremlinManipulation.splitAfter(seq, {
       case As(_) => true
       case _     => false
     })

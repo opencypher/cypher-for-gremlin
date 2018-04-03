@@ -17,6 +17,4 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
-trait GremlinRewriter {
-  def apply(steps: Seq[GremlinStep]): Seq[GremlinStep]
-}
+trait GremlinRewriter extends (Seq[GremlinStep] => Seq[GremlinStep])

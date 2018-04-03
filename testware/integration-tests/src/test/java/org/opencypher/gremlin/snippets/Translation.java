@@ -77,7 +77,7 @@ public class Translation {
         // freshReadmeSnippet: cosmosdb
         Translator<String, GroovyPredicate> translator = Translator.builder()
             .gremlinGroovy()
-            .build(TranslatorFlavor.cosmosdb());
+            .build(TranslatorFlavor.cosmosDb());
         // freshReadmeSnippet: cosmosdb
 
         translator.steps().V();

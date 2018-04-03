@@ -27,12 +27,7 @@ import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
 import org.opencypher.gremlin.translation.ir.rewrite.FilterStepAdjacency
-import org.opencypher.gremlin.translation.preparser.{
-  CypherPreParser,
-  ExplainOption,
-  PreParsedStatement,
-  PreParserOption
-}
+import org.opencypher.gremlin.translation.preparser._
 import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.translation.walker.StatementWalker
 
@@ -75,9 +70,12 @@ class CypherAst(
     StatementWalker.walk(context, statement)
     val ir = irDsl.translate()
 
+    val flavor = dsl.flavor()
     TranslationWriter
       .from(ir)
       .rewrite(FilterStepAdjacency)
+      .rewrite(flavor.rewriters: _*)
+      .verify(flavor.postConditions: _*)
       .translate(dsl)
   }
 

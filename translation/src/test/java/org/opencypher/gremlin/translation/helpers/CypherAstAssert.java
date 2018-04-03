@@ -32,7 +32,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
 
     private final String actualTranslation;
 
-    CypherAstAssert(CypherAstWrapper actual, TranslatorFlavor<String, GroovyPredicate> flavor) {
+    CypherAstAssert(CypherAstWrapper actual, TranslatorFlavor flavor) {
         super(actual, CypherAstAssert.class);
         Translator<String, GroovyPredicate> dsl = Translator.builder().gremlinGroovy().build(flavor);
         actualTranslation = actual.buildTranslation(dsl);

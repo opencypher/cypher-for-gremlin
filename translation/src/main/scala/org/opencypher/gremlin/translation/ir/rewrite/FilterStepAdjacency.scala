@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 package org.opencypher.gremlin.translation.ir.rewrite
+
 import org.opencypher.gremlin.translation.ir.model._
-import org.opencypher.gremlin.translation.ir.rewrite.Rewriting._
+import org.opencypher.gremlin.translation.ir.GremlinManipulation._
 
 import scala.collection.mutable
 
