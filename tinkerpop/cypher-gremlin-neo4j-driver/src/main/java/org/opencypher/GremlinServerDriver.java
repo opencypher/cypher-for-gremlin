@@ -181,7 +181,8 @@ class GremlinServerDriver implements Driver {
 
         @Override
         public StatementResult run(Statement statement) {
-            Iterator<Map<String, Object>> iterator = client.submit(statement.text(), statement.parameters().asMap()).iterator();
+            HashMap<String, Object> serializableMap = new HashMap<>(statement.parameters().asMap());
+            Iterator<Map<String, Object>> iterator = client.submit(statement.text(), serializableMap).iterator();
             return new GremlinServerStatementResult(serverInfo, statement, iterator);
         }
 
