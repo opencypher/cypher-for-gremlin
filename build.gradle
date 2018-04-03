@@ -124,6 +124,10 @@ project(':translation') {
         compile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
         compile "org.neo4j:neo4j-cypher-frontend-${cypherVersion}:${cypherVersion}.${cypherPatchVersion}"
     }
+
+    scaladoc {
+        title "${project.ext.title} ${scmVersion.version} API"
+    }
 }
 
 project(':tinkerpop:tinkerpop-common') {
@@ -439,7 +443,10 @@ gitPublish {
     branch = 'gh-pages'
     contents {
         from(allJavadoc) {
-            into "api/${project.version}"
+            into "api/${project.version}/java"
+        }
+        from(project(':translation').getTasks().getByName('scaladoc')) {
+            into "api/${project.version}/scala"
         }
     }
     preserve {
@@ -448,4 +455,4 @@ gitPublish {
     commitMessage = "Publishing Javadoc ${project.version}"
 }
 
-gitPublishCopy.dependsOn allJavadoc
+gitPublishCopy.dependsOn (allJavadoc, ':translation:scaladoc')
