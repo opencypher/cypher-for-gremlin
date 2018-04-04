@@ -17,13 +17,17 @@ package org.opencypher.gremlin.translation.helpers;
 
 import static java.util.Collections.emptyMap;
 
+import java.util.List;
 import java.util.Map;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter;
+import org.opencypher.gremlin.translation.ir.verify.GremlinPostCondition;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public final class CypherAstHelpers {
     private CypherAstHelpers() {
@@ -44,6 +48,10 @@ public final class CypherAstHelpers {
     public static Object parameter(String name) {
         GroovyGremlinBindings parameters = new GroovyGremlinBindings();
         return parameters.bind(name, null);
+    }
+
+    public static TranslatorFlavor flavor(List<GremlinRewriter> rewriters, List<GremlinPostCondition> postConditions) {
+        return null;
     }
 
     public static final GroovyGremlinPredicates P = new GroovyGremlinPredicates();

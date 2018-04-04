@@ -20,12 +20,19 @@ import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.ass
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
+import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.Tokens;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class FilterStepAdjacencyTest {
+
+    private final TranslatorFlavor flavor = new TranslatorFlavor(
+        seq(FilterStepAdjacency$.MODULE$),
+        seq()
+    );
 
     @Test
     public void singlePattern() {
@@ -33,6 +40,7 @@ public class FilterStepAdjacencyTest {
             "MATCH (n:N) " +
                 "RETURN n"
         ))
+            .withFlavor(flavor)
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n").hasLabel("N")
@@ -48,6 +56,7 @@ public class FilterStepAdjacencyTest {
                 "AND 1 <> 2 " +
                 "RETURN n"
         ))
+            .withFlavor(flavor)
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n").has("p", P.eq("n"))
@@ -63,6 +72,7 @@ public class FilterStepAdjacencyTest {
                 "WHERE 1 <> 2 " +
                 "RETURN n, r, m"
         ))
+            .withFlavor(flavor)
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n").hasLabel("N").has("p", P.eq("n"))
@@ -82,6 +92,7 @@ public class FilterStepAdjacencyTest {
                 "AND r.p = 'r' " +
                 "RETURN n, r, m"
         ))
+            .withFlavor(flavor)
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n").hasLabel("N").has("p", P.eq("n"))
@@ -98,6 +109,7 @@ public class FilterStepAdjacencyTest {
                 "MATCH (k:K {p: 'k'}) " +
                 "RETURN k"
         ))
+            .withFlavor(flavor)
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n").hasLabel("N").has("p", P.eq("n"))
@@ -120,6 +132,7 @@ public class FilterStepAdjacencyTest {
             "MATCH (n:N {p: 'n'})-[r*1..2]->(m) " +
                 "RETURN m"
         ))
+            .withFlavor(flavor)
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n").hasLabel("N").has("p", P.eq("n"))
@@ -137,6 +150,7 @@ public class FilterStepAdjacencyTest {
         assertThat(parse(
             "MERGE (n:N {p: 'n'})"
         ))
+            .withFlavor(flavor)
             .hasTraversal(
                 __.inject(START).coalesce(
                     __.start().V().as("n").hasLabel("N").has("p", P.eq("n")),

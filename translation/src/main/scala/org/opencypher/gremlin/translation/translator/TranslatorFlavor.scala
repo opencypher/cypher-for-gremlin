@@ -15,13 +15,18 @@
  */
 package org.opencypher.gremlin.translation.translator
 
-import org.opencypher.gremlin.translation.ir.rewrite.{CosmosDbFlavor, GremlinRewriter}
+import org.opencypher.gremlin.translation.ir.rewrite.{CosmosDbFlavor, FilterStepAdjacency, GremlinRewriter}
 import org.opencypher.gremlin.translation.ir.verify.{GremlinPostCondition, NoCustomFunctions}
 
 /**
   * A flavor defines translation rewriting rules and post-conditions.
   */
-sealed case class TranslatorFlavor private (rewriters: Seq[GremlinRewriter], postConditions: Seq[GremlinPostCondition])
+sealed case class TranslatorFlavor private[translation] (
+    rewriters: Seq[GremlinRewriter],
+    postConditions: Seq[GremlinPostCondition]) {
+  def extend(rewriters: Seq[GremlinRewriter], postConditions: Seq[GremlinPostCondition]): TranslatorFlavor =
+    TranslatorFlavor(this.rewriters ++ rewriters, this.postConditions ++ postConditions)
+}
 
 object TranslatorFlavor {
 
@@ -31,12 +36,16 @@ object TranslatorFlavor {
     *
     * This is the default flavor.
     */
-  val gremlinServer: TranslatorFlavor = TranslatorFlavor(Nil, Nil)
+  val gremlinServer: TranslatorFlavor = TranslatorFlavor(
+    rewriters = Seq(
+      FilterStepAdjacency
+    ),
+    postConditions = Nil)
 
   /**
     * A translator flavor that is suitable for Cosmos DB.
     */
-  val cosmosDb: TranslatorFlavor = TranslatorFlavor(
+  val cosmosDb: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
       CosmosDbFlavor
     ),

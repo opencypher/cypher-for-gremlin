@@ -26,7 +26,6 @@ import org.neo4j.cypher.internal.frontend.v3_3.{CypherException, ExpressionTypeI
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
-import org.opencypher.gremlin.translation.ir.rewrite.FilterStepAdjacency
 import org.opencypher.gremlin.translation.preparser._
 import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.translation.walker.StatementWalker
@@ -53,7 +52,7 @@ class CypherAst(
     * Create a translation by passing the wrapped AST, parameters, and options
     * to [[StatementWalker.walk]].
     *
-    * @param dsl Instance of [[Translator]]
+    * @param dsl instance of [[Translator]]
     * @return to-Gremlin translation
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
@@ -73,7 +72,6 @@ class CypherAst(
     val flavor = dsl.flavor()
     TranslationWriter
       .from(ir)
-      .rewrite(FilterStepAdjacency)
       .rewrite(flavor.rewriters: _*)
       .verify(flavor.postConditions: _*)
       .translate(dsl)
