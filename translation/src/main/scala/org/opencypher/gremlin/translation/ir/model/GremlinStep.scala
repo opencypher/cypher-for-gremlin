@@ -20,7 +20,9 @@ import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.traversal.CustomFunction
 
 sealed trait GremlinStep {
-  def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = this
+  def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = this
+
+  def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = z
 }
 
 case object Vertex extends GremlinStep
@@ -34,8 +36,11 @@ case class AddV(vertexLabel: String) extends GremlinStep
 case class Aggregate(sideEffectKey: String) extends GremlinStep
 
 case class And(andTraversals: Seq[GremlinStep]*) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    And(andTraversals.map(mapper): _*)
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    And(andTraversals.map(f): _*)
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    andTraversals.foldLeft(z)(op)
 }
 
 case class As(stepLabel: String) extends GremlinStep
@@ -45,8 +50,11 @@ case object Barrier extends GremlinStep
 case class BothE(edgeLabels: String*) extends GremlinStep
 
 case class By(traversal: Seq[GremlinStep], order: Option[TraversalOrder]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    By(mapper(traversal), order)
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    By(f(traversal), order)
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, traversal)
 }
 
 case class Cap(sideEffectKey: String) extends GremlinStep
@@ -56,19 +64,28 @@ case class ChooseT(
     trueChoice: Seq[GremlinStep],
     falseChoice: Seq[GremlinStep] = Nil)
     extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    ChooseT(mapper(traversalPredicate), mapper(trueChoice), mapper(falseChoice))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    ChooseT(f(traversalPredicate), f(trueChoice), f(falseChoice))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(op(op(z, traversalPredicate), trueChoice), falseChoice)
 }
 
 case class ChooseP(predicate: GremlinPredicate, trueChoice: Seq[GremlinStep], falseChoice: Seq[GremlinStep] = Nil)
     extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    ChooseP(predicate, mapper(trueChoice), mapper(falseChoice))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    ChooseP(predicate, f(trueChoice), f(falseChoice))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(op(z, trueChoice), falseChoice)
 }
 
 case class Coalesce(coalesceTraversals: Seq[GremlinStep]*) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    Coalesce(coalesceTraversals.map(mapper): _*)
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    Coalesce(coalesceTraversals.map(f): _*)
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    coalesceTraversals.foldLeft(z)(op)
 }
 
 case class Constant(e: Any) extends GremlinStep
@@ -118,8 +135,11 @@ case object Label extends GremlinStep
 case class Limit(limit: Long) extends GremlinStep
 
 case class Local(traversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    Local(mapper(traversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    Local(f(traversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, traversal)
 }
 
 case object Loops extends GremlinStep
@@ -127,8 +147,11 @@ case object Loops extends GremlinStep
 case class MapF(function: CustomFunction) extends GremlinStep
 
 case class MapT(traversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    MapT(mapper(traversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    MapT(f(traversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, traversal)
 }
 
 case object Max extends GremlinStep
@@ -138,13 +161,19 @@ case object Mean extends GremlinStep
 case object Min extends GremlinStep
 
 case class Not(notTraversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    Not(mapper(notTraversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    Not(f(notTraversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, notTraversal)
 }
 
 case class Or(orTraversals: Seq[GremlinStep]*) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    Or(orTraversals.map(mapper): _*)
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    Or(orTraversals.map(f): _*)
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    orTraversals.foldLeft(z)(op)
 }
 
 case object Order extends GremlinStep
@@ -162,15 +191,21 @@ case class Properties(propertyKeys: String*) extends GremlinStep
 case class PropertyV(key: String, value: Any) extends GremlinStep
 
 case class PropertyT(key: String, traversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    PropertyT(key, mapper(traversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    PropertyT(key, f(traversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, traversal)
 }
 
 case class Project(keys: String*) extends GremlinStep
 
 case class Repeat(repeatTraversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    Repeat(mapper(repeatTraversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    Repeat(f(repeatTraversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, repeatTraversal)
 }
 
 case class SelectK(selectKeys: String*) extends GremlinStep
@@ -178,8 +213,11 @@ case class SelectK(selectKeys: String*) extends GremlinStep
 case class SelectC(column: Column) extends GremlinStep
 
 case class SideEffect(sideEffectTraversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    SideEffect(mapper(sideEffectTraversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    SideEffect(f(sideEffectTraversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, sideEffectTraversal)
 }
 
 case class Skip(skip: Long) extends GremlinStep
@@ -193,13 +231,19 @@ case class To(toStepLabel: String) extends GremlinStep
 case object Unfold extends GremlinStep
 
 case class Union(unionTraversals: Seq[GremlinStep]*) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    Union(unionTraversals.map(mapper): _*)
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    Union(unionTraversals.map(f): _*)
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    unionTraversals.foldLeft(z)(op)
 }
 
 case class Until(untilTraversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    Until(mapper(untilTraversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    Until(f(untilTraversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, untilTraversal)
 }
 
 case object Value extends GremlinStep
@@ -211,8 +255,11 @@ case class ValueMap(includeTokens: Boolean) extends GremlinStep
 case class Values(propertyKeys: String*) extends GremlinStep
 
 case class WhereT(whereTraversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
-    WhereT(mapper(whereTraversal))
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep =
+    WhereT(f(whereTraversal))
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R =
+    op(z, whereTraversal)
 }
 
 case class WhereP(predicate: GremlinPredicate) extends GremlinStep

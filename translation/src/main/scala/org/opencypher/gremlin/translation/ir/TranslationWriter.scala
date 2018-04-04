@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.ir
 
 import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter
 import org.opencypher.gremlin.translation.ir.verify.GremlinPostCondition
@@ -40,6 +41,11 @@ class TranslationWriter(
 
   def translate[T, P](translator: Translator[T, P]): T = {
     val rewritten = rewriters.foldLeft(ir)((ir, rewriter) => rewriter(ir))
+
+    postConditions
+      .flatMap(postCondition => postCondition(rewritten))
+      .foreach(msg => throw new SyntaxException(msg))
+
     val generator = new TranslationGenerator(translator)
     generator.generate(rewritten)
     translator.translate()

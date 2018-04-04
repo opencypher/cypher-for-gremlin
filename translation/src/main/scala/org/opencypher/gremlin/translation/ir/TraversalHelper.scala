@@ -25,8 +25,15 @@ import scala.language.implicitConversions
   */
 object TraversalHelper {
 
-  def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep])(steps: Seq[GremlinStep]): Seq[GremlinStep] =
-    mapper(steps.map(step => step.mapTraversals(steps => mapTraversals(mapper)(steps))))
+  def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep])(steps: Seq[GremlinStep]): Seq[GremlinStep] =
+    f(steps.map({ step =>
+      step.mapTraversals(steps => mapTraversals(f)(steps))
+    }))
+
+  def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R)(steps: Seq[GremlinStep]): R =
+    steps.foldLeft(op(z, steps)) { (acc, step) =>
+      step.foldTraversals(acc)(foldTraversals(_)(op)(_))
+    }
 
   /**
     * Finds matching parts of an IR sequence and maps occurrences.
@@ -48,6 +55,7 @@ object TraversalHelper {
           acc
       }
     }
+
     findAcc(Nil, steps)
   }
 
@@ -74,6 +82,7 @@ object TraversalHelper {
           acc
       }
     }
+
     replaceAcc(Nil, steps)
   }
 

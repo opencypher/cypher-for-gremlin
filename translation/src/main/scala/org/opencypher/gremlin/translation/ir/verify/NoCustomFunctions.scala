@@ -24,9 +24,21 @@ import org.opencypher.gremlin.translation.ir.TraversalHelper._
   */
 object NoCustomFunctions extends GremlinPostCondition {
   override def apply(steps: Seq[GremlinStep]): Option[String] = {
+    val all = foldTraversals(Seq.empty[String])({ (acc, steps) =>
+      acc ++ extractFunctionNames(steps)
+    })(steps).sorted.distinct
+
+    if (all.nonEmpty) {
+      Some(s"Custom functions and predicates are not supported: ${all.mkString(", ")}")
+    } else {
+      None
+    }
+  }
+
+  private def extractFunctionNames(steps: Seq[GremlinStep]): Seq[String] = {
     val functions = extract({
       case MapF(function) :: _ => function.getName
-    })(steps).toSet
+    })(steps)
 
     val predicates = extract({
       case ChooseP(predicate, _, _) :: _ => predicate
@@ -40,14 +52,7 @@ object NoCustomFunctions extends GremlinPostCondition {
         case _: Contains   => Some("contains")
         case _             => None
       })
-      .toSet
 
-    val all = (functions ++ predicates).toSeq.sorted
-
-    if (all.nonEmpty) {
-      Some(s"Custom functions and predicates are not supported: ${all.mkString(", ")}")
-    } else {
-      None
-    }
+    functions ++ predicates
   }
 }
