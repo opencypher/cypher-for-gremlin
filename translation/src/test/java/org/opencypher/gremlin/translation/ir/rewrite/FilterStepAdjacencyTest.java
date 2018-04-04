@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.Tokens.START;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
@@ -127,6 +128,20 @@ public class FilterStepAdjacencyTest {
                     .where(__.path().count(Scope.local).is(P.between(3, 6)))
                     .as("m")
                     .select("m")
+            );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void merge() {
+        assertThat(parse(
+            "MERGE (n:N {p: 'n'})"
+        ))
+            .hasTraversal(
+                __.inject(START).coalesce(
+                    __.start().V().as("n").hasLabel("N").has("p", P.eq("n")),
+                    __.start().addV("N").as("n").property("p", "n")
+                ).as("n").barrier().limit(0)
             );
     }
 

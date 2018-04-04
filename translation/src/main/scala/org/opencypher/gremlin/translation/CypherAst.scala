@@ -39,7 +39,7 @@ import scala.collection.mutable
   * for executing a Gremlin traversal.
   *
   * @param statement           AST root node
-  * @param returnTypes            variable types by name
+  * @param returnTypes         variable types by name
   * @param extractedParameters extracted parameters provided by Cypher parser
   * @param options             pre-parser options provided by Cypher parser
   */

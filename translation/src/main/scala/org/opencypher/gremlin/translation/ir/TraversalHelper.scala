@@ -18,25 +18,29 @@ package org.opencypher.gremlin.translation.ir
 import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
 import scala.annotation.tailrec
+import scala.language.implicitConversions
 
 /**
   * Gremlin IR manipulation utilities
   */
-object GremlinManipulation {
+object TraversalHelper {
+
+  def mapTraversals(mapper: Seq[GremlinStep] => Seq[GremlinStep])(steps: Seq[GremlinStep]): Seq[GremlinStep] =
+    mapper(steps.map(step => step.mapTraversals(steps => mapTraversals(mapper)(steps))))
 
   /**
     * Finds matching parts of an IR sequence and maps occurrences.
     *
-    * @param steps IR sequence
-    * @param finder matching and mapping function
+    * @param extractor matching and mapping function
+    * @param steps     IR sequence
     * @tparam R mapping result
     * @return list of extracted values
     */
-  def extract[R](steps: Seq[GremlinStep], finder: PartialFunction[Seq[GremlinStep], R]): Seq[R] = {
+  def extract[R](extractor: PartialFunction[Seq[GremlinStep], R])(steps: Seq[GremlinStep]): Seq[R] = {
     @tailrec def findAcc(acc: Seq[R], steps: Seq[GremlinStep]): Seq[R] = {
       steps match {
-        case _ :: tail if finder.isDefinedAt(steps) =>
-          val found = finder(steps)
+        case _ :: tail if extractor.isDefinedAt(steps) =>
+          val found = extractor(steps)
           findAcc(acc :+ found, tail)
         case _ :: tail =>
           findAcc(acc, tail)
@@ -50,13 +54,12 @@ object GremlinManipulation {
   /**
     * Finds matching parts of an IR sequence and replaces them.
     *
-    * @param steps IR sequence
+    * @param steps    IR sequence
     * @param replacer matching and replacing function
     * @return rewritten IR sequence
     */
-  def replace(
-      steps: Seq[GremlinStep],
-      replacer: PartialFunction[Seq[GremlinStep], Seq[GremlinStep]]): Seq[GremlinStep] = {
+  def replace(replacer: PartialFunction[Seq[GremlinStep], Seq[GremlinStep]])(
+      steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     @tailrec def replaceAcc(acc: Seq[GremlinStep], steps: Seq[GremlinStep]): Seq[GremlinStep] = {
       steps match {
         case _ :: _ if replacer.isDefinedAt(steps) =>
@@ -78,11 +81,11 @@ object GremlinManipulation {
     * Finds matching steps in the IR sequence and splits the sequence in segments,
     * with each matching step marking the end of a segment.
     *
-    * @param steps IR sequence
+    * @param steps    IR sequence
     * @param splitter matching function
     * @return IR sequence segments
     */
-  def splitAfter(steps: Seq[GremlinStep], splitter: GremlinStep => Boolean): Seq[Seq[GremlinStep]] = {
+  def splitAfter(splitter: GremlinStep => Boolean)(steps: Seq[GremlinStep]): Seq[Seq[GremlinStep]] = {
     @tailrec def splitAfterAcc(
         acc: Seq[Seq[GremlinStep]],
         current: Seq[GremlinStep],
@@ -99,6 +102,7 @@ object GremlinManipulation {
           if (current.nonEmpty) acc :+ current else acc
       }
     }
+
     splitAfterAcc(Nil, Nil, steps)
   }
 }

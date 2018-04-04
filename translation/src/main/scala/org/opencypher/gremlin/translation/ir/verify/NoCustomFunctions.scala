@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.ir.verify
 
 import org.opencypher.gremlin.translation.ir.model._
-import org.opencypher.gremlin.translation.ir.GremlinManipulation._
+import org.opencypher.gremlin.translation.ir.TraversalHelper._
 
 /**
   * This post-condition verifies that custom functions are not used.
@@ -24,16 +24,17 @@ import org.opencypher.gremlin.translation.ir.GremlinManipulation._
   */
 object NoCustomFunctions extends GremlinPostCondition {
   override def apply(steps: Seq[GremlinStep]): Option[String] = {
-    val functions = extract(steps, {
+    val functions = extract({
       case MapF(function) :: _ => function.getName
-    }).toSet
+    })(steps).toSet
 
-    val predicates = extract(steps, {
+    val predicates = extract({
       case ChooseP(predicate, _, _) :: _ => predicate
       case HasP(_, predicate) :: _       => predicate
       case Is(predicate) :: _            => predicate
       case WhereP(predicate) :: _        => predicate
-    }).flatMap({
+    })(steps)
+      .flatMap({
         case _: StartsWith => Some("starsWith")
         case _: EndsWith   => Some("endsWith")
         case _: Contains   => Some("contains")

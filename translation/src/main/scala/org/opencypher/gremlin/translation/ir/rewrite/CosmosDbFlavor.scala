@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 package org.opencypher.gremlin.translation.ir.rewrite
+
 import org.opencypher.gremlin.translation.Tokens._
-import org.opencypher.gremlin.translation.ir.GremlinManipulation._
+import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
 /**
@@ -24,21 +25,26 @@ import org.opencypher.gremlin.translation.ir.model._
 object CosmosDbFlavor extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     Seq(
+      rewriteValues(_),
       rewriteLoops(_)
     ).foldLeft(steps) { (steps, rewriter) =>
-      rewriter(steps)
+      mapTraversals(rewriter)(steps)
     }
   }
 
-  def rewriteLoops(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    replace(
-      steps, {
-        case Inject(START) :: Repeat(_) :: Times(end) ::
-              Cap(_) :: Unfold ::
-              Skip(start) :: Limit(_) :: As(stepLabel) :: rest =>
-          val range = start until end
-          Inject(range: _*) :: As(stepLabel) :: rest
-      }
-    )
+  private def rewriteValues(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Values(propertyKeys @ _*) :: rest => Properties() :: HasKey(propertyKeys: _*) :: Value :: rest
+    })(steps)
+  }
+
+  private def rewriteLoops(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Inject(START) :: Repeat(_) :: Times(end) ::
+            Cap(_) :: Unfold ::
+            Skip(start) :: Limit(_) :: As(stepLabel) :: rest =>
+        val range = start until end
+        Inject(range: _*) :: As(stepLabel) :: rest
+    })(steps)
   }
 }
