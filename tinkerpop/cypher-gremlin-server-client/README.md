@@ -84,7 +84,7 @@ String cypher = "MATCH (p:person) WHERE p.age > 25 RETURN p.name";
 List<Map<String, Object>> results = cypherGremlinClient.submit(cypher).all();
 ```
 
-Consult the Javadoc for more information.
+Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.3/org/opencypher/gremlin/client/CypherGremlinClient.html) for more information.
 
 ## Neo4j driver-like API
 
