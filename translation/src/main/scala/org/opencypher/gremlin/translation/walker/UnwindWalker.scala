@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import java.util.Collections
+
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -65,6 +67,12 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
         walkRange(range, varName)
       case FunctionInvocation(_, FunctionName(fnName), _, Vector(Variable(funArg))) if "labels" == fnName.toLowerCase =>
         g.select(funArg).label().is(p.neq(Vertex.DEFAULT_LABEL)).as(varName)
+      case Variable(name) =>
+        g.select(name).unfold().as(varName)
+      case Null() =>
+        g.inject(Collections.emptyList).unfold().as(varName)
+      case _: Expression =>
+        g.inject(expressionValue(expression, context).asInstanceOf[Object]).unfold().as(varName)
     }
   }
 
