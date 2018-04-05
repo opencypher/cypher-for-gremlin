@@ -15,8 +15,8 @@
  */
 package org.opencypher.gremlin.translation.translator
 
-import org.opencypher.gremlin.translation.ir.rewrite.{CosmosDbFlavor, FilterStepAdjacency, GremlinRewriter}
-import org.opencypher.gremlin.translation.ir.verify.{GremlinPostCondition, NoCustomFunctions}
+import org.opencypher.gremlin.translation.ir.rewrite._
+import org.opencypher.gremlin.translation.ir.verify._
 
 /**
   * A flavor defines translation rewriting rules and post-conditions.
@@ -38,7 +38,9 @@ object TranslatorFlavor {
     */
   val gremlinServer: TranslatorFlavor = TranslatorFlavor(
     rewriters = Seq(
-      FilterStepAdjacency
+      GroupStepFilters,
+      RemoveImmediateReselect,
+      RemoveUnusedAliases
     ),
     postConditions = Nil)
 
