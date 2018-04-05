@@ -135,4 +135,30 @@ public class UnwindTest {
             .extracting("x")
             .containsExactly(1L, 2L, 3L);
     }
+
+    @Test
+    public void unwindVariable() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH [1, 2, 3] AS numbers " +
+            "UNWIND numbers AS arr " +
+            "RETURN arr"
+        );
+
+        assertThat(results)
+            .extracting("arr")
+            .containsExactly(1L, 2L, 3L);
+    }
+
+    @Test
+    public void unwindNull() {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND null AS nil " +
+                "RETURN nil"
+        );
+
+        assertThat(results)
+            .extracting("nil")
+            .isEmpty();
+    }
+
 }
