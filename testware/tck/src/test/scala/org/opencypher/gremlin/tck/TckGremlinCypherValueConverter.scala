@@ -52,14 +52,7 @@ object TckGremlinCypherValueConverter {
 
   def toGremlinParams(params: Map[String, CypherValue]): util.Map[String, Object] = {
     new util.HashMap[String, AnyRef](params.mapValues {
-      case s: CypherString =>
-        s.toString
-          .stripPrefix("'")
-          .stripSuffix("'")
-      case i: CypherInteger => i.value
-      case d: CypherFloat   => d.value
-      case b: CypherBoolean => b.value
-      case n                => throw new IllegalArgumentException(s"Unable to convert param $n")
+      fromCypherValue
     }.mapValues(_.asInstanceOf[Object]).asJava)
   }
 
@@ -86,6 +79,25 @@ object TckGremlinCypherValueConverter {
     }
   }
 
+  def fromCypherValue: CypherValue => Any = {
+    case s: CypherString =>
+      s.toString
+        .stripPrefix("'")
+        .stripSuffix("'")
+    case i: CypherInteger     => i.value
+    case d: CypherFloat       => d.value
+    case b: CypherBoolean     => b.value
+    case m: CypherPropertyMap => toGremlinParams(m.properties)
+    case l: CypherOrderedList =>
+      val list = new util.ArrayList[Object]
+      l.elements.foreach(e => {
+        list.add(fromCypherValue(e).asInstanceOf[Object])
+      })
+      list
+    case CypherNull => null
+    case other      => throw new IllegalArgumentException(s"Unable to convert param $other")
+  }
+
   def toCypherValue(v: Any): CypherValue = v match {
     case s: String                              => CypherString(s)
     case d: lang.Double                         => CypherFloat(d)
@@ -97,6 +109,7 @@ object TckGremlinCypherValueConverter {
     case m: util.Map[_, _]                      => toCypherPropertyMap(m)
     case p: util.List[_] if isPath(v)           => toCypherPath(p.asInstanceOf[util.List[util.Map[_, _]]])
     case p: util.List[_]                        => toCypherList(p)
+    case other                                  => throw new IllegalArgumentException(s"Unable to convert result $other")
   }
 
   def toCypherPropertyMap(javaMap: util.Map[_, _]): CypherPropertyMap = {
