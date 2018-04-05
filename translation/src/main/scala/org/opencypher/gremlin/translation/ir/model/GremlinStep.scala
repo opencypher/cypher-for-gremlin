@@ -20,8 +20,23 @@ import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.traversal.CustomFunction
 
 sealed trait GremlinStep {
+
+  /**
+    * Recreates the step with all traversal arguments mapped with the provided function, if any.
+    *
+    * @param f mapping function
+    * @return step
+    */
   def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = this
 
+  /**
+    * Folds all traversal arguments from left to right with the provided operator, if any.
+    *
+    * @param z  start value
+    * @param op folding operator
+    * @tparam R folding result type
+    * @return folding result
+    */
   def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = z
 }
 

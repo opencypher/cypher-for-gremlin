@@ -25,15 +25,33 @@ import scala.language.implicitConversions
   */
 object TraversalHelper {
 
-  def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep])(steps: Seq[GremlinStep]): Seq[GremlinStep] =
+  /**
+    * Maps top-level and all nested traversals starting from the bottom and going up.
+    *
+    * @param f     mapping function
+    * @param steps top-level traversal
+    * @return mapping result
+    */
+  def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep])(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     f(steps.map({ step =>
       step.mapTraversals(steps => mapTraversals(f)(steps))
     }))
+  }
 
-  def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R)(steps: Seq[GremlinStep]): R =
+  /**
+    * Folds top-level and all nested traversals starting from the top and going down.
+    *
+    * @param z     start value
+    * @param op    folding operator
+    * @param steps top-level traversal
+    * @tparam R folding result type
+    * @return folding result
+    */
+  def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R)(steps: Seq[GremlinStep]): R = {
     steps.foldLeft(op(z, steps)) { (acc, step) =>
       step.foldTraversals(acc)(foldTraversals(_)(op)(_))
     }
+  }
 
   /**
     * Finds matching parts of an IR sequence and maps occurrences.
