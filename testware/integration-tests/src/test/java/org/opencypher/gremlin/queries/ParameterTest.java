@@ -115,4 +115,17 @@ public class ParameterTest {
             .extracting("value")
             .containsExactly("Apa");
     }
+
+    @Test
+    public void unwind() {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND $numbers AS arr " +
+                "RETURN arr",
+            singletonMap("numbers", asList(1L, 2L, 3L))
+        );
+
+        assertThat(results)
+            .extracting("arr")
+            .containsExactly(1L, 2L, 3L);
+    }
 }
