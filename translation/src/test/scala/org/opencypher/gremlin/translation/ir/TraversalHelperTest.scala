@@ -81,7 +81,7 @@ class TraversalHelperTest {
   }
 
   @Test
-  def replacedNested(): Unit = {
+  def replaceNested(): Unit = {
     val seq = Vertex :: Project("a", "b") :: By(Values("foo") :: Nil, None) :: By(Values("bar") :: Nil, None) :: Nil
     val replaced = TraversalHelper.mapTraversals({ steps =>
       TraversalHelper.replace({
