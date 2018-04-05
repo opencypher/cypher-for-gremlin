@@ -67,7 +67,7 @@ Some translation targets can be customized with a flavor, like Azure Cosmos DB:
 ```java
 Translator<String, GroovyPredicate> translator = Translator.builder()
     .gremlinGroovy()
-    .build(TranslatorFlavor.cosmosdb());
+    .build(TranslatorFlavor.cosmosDb());
 ```
 
 Custom translation targets can be provided by implementing `GremlinSteps`, `GremlinPredicates`, and `GremlinParameters`:

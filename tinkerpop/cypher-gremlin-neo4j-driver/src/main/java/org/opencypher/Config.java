@@ -15,7 +15,6 @@
  */
 package org.opencypher;
 
-import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 /**
@@ -31,7 +30,7 @@ import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
  * </pre>
  */
 public class Config {
-    private TranslatorFlavor<String, GroovyPredicate> flavor;
+    private TranslatorFlavor flavor;
 
     private Config(ConfigBuilder configBuilder) {
         flavor = configBuilder.flavor;
@@ -47,7 +46,7 @@ public class Config {
     /**
      * @return {@link TranslatorFlavor} if {@link #translationEnabled()}, null otherwise
      */
-    public TranslatorFlavor<String, GroovyPredicate> flavor() {
+    public TranslatorFlavor flavor() {
         return flavor;
     }
 
@@ -71,7 +70,7 @@ public class Config {
      * Builder for new {@link Config} instances.
      */
     public static class ConfigBuilder {
-        private TranslatorFlavor<String, GroovyPredicate> flavor;
+        private TranslatorFlavor flavor;
 
         private ConfigBuilder() {
         }
@@ -92,7 +91,7 @@ public class Config {
          * @param flavor {@link TranslatorFlavor} of translation
          * @return a {@link ConfigBuilder} instance
          */
-        public ConfigBuilder withTranslation(TranslatorFlavor<String, GroovyPredicate> flavor) {
+        public ConfigBuilder withTranslation(TranslatorFlavor flavor) {
             this.flavor = flavor;
             return this;
         }

@@ -19,7 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.neo4j.driver.v1.Values.parameters;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -79,6 +81,28 @@ public class GremlinNeo4jDriverTest {
             String message = result.single().get(0).asString();
 
             assertThat(message).isEqualTo("Hello");
+        }
+    }
+
+    @Test
+    public void withMultipleParameters() {
+        Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort());
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("p1", 1L);
+        properties.put("p2", 2L);
+
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("CREATE (a:Greeting) " +
+                    "SET a.p1 = $p1, " +
+                    "a.p2 = $p2 " +
+                    "RETURN a.p1, a.p2",
+                properties);
+
+            Record record = result.single();
+
+            assertThat(record.get("a.p1").asLong()).isEqualTo(1L);
+            assertThat(record.get("a.p2").asLong()).isEqualTo(2L);
         }
     }
 

@@ -16,23 +16,36 @@
 package org.opencypher.gremlin.translation.ir
 
 import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter
+import org.opencypher.gremlin.translation.ir.verify.GremlinPostCondition
 import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.traversal.CustomFunction
 
 object TranslationWriter {
   def from(ir: Seq[GremlinStep]): TranslationWriter = {
-    new TranslationWriter(ir, Nil)
+    new TranslationWriter(ir, Nil, Nil)
   }
 }
 
-class TranslationWriter(ir: Seq[GremlinStep], rewriters: Seq[GremlinRewriter]) {
-  def rewrite(rewriter: GremlinRewriter): TranslationWriter =
-    new TranslationWriter(ir, rewriters :+ rewriter)
+class TranslationWriter(
+    ir: Seq[GremlinStep],
+    rewriters: Seq[GremlinRewriter],
+    postConditions: Seq[GremlinPostCondition]) {
+  def rewrite(rewriters: GremlinRewriter*): TranslationWriter =
+    new TranslationWriter(ir, this.rewriters ++ rewriters, postConditions)
+
+  def verify(postConditions: GremlinPostCondition*): TranslationWriter =
+    new TranslationWriter(ir, rewriters, this.postConditions ++ postConditions)
 
   def translate[T, P](translator: Translator[T, P]): T = {
     val rewritten = rewriters.foldLeft(ir)((ir, rewriter) => rewriter(ir))
+
+    postConditions
+      .flatMap(postCondition => postCondition(rewritten))
+      .foreach(msg => throw new SyntaxException(msg))
+
     val generator = new TranslationGenerator(translator)
     generator.generate(rewritten)
     translator.translate()

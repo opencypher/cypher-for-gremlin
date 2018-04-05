@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 package org.opencypher.gremlin.translation.ir.rewrite
+
 import org.opencypher.gremlin.translation.ir.model._
-import org.opencypher.gremlin.translation.ir.rewrite.Rewriting._
+import org.opencypher.gremlin.translation.ir.TraversalHelper._
 
 import scala.collection.mutable
 
@@ -27,19 +28,18 @@ import scala.collection.mutable
   */
 object FilterStepAdjacency extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    splitAfter(steps, {
+    splitAfter({
       case MapT(Project(_*) :: _) => true
       case _                      => false
-    }).flatMap(rewriteSegment)
+    })(steps)
+      .flatMap(mapTraversals(rewriteSegment))
   }
 
   private def rewriteSegment(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    val rewrittenStepLabels = extract(
-      steps, {
-        case As(stepLabel) :: _                   => stepLabel
-        case Repeat(_ :: As(stepLabel) :: _) :: _ => stepLabel
-      }
-    ).toSet
+    val rewrittenStepLabels = extract({
+      case As(stepLabel) :: _                   => stepLabel
+      case Repeat(_ :: As(stepLabel) :: _) :: _ => stepLabel
+    })(steps).toSet
 
     if (rewrittenStepLabels.isEmpty) {
       // No applicable step labels found
@@ -55,38 +55,34 @@ object FilterStepAdjacency extends GremlinRewriter {
       }
     }
 
-    extract(
-      steps, {
-        case WhereT(And(andTraversals @ _*) :: Nil) :: _ =>
-          whereExtractor(andTraversals)
-        case WhereT(whereTraversal) :: _ =>
-          whereExtractor(whereTraversal :: Nil)
-      }
-    ).flatten.filter {
+    extract({
+      case WhereT(And(andTraversals @ _*) :: Nil) :: _ =>
+        whereExtractor(andTraversals)
+      case WhereT(whereTraversal) :: _ =>
+        whereExtractor(whereTraversal :: Nil)
+    })(steps).flatten.filter {
       case (stepLabel, _) => rewrittenStepLabels.contains(stepLabel)
     }.foreach {
       case (stepLabel, step) => hasSteps.addBinding(stepLabel, step)
     }
 
     val aliasesWhereFilter = whereFilter(rewrittenStepLabels) _
-    val firstPass = replace(
-      steps, {
-        case As(stepLabel) :: rest if hasSteps.contains(stepLabel) =>
-          val steps = sortedHasSteps(stepLabel)
-          As(stepLabel) +: (steps ++ rest)
-        case Repeat(head :: As(stepLabel) :: repeatRest) :: rest if hasSteps.contains(stepLabel) =>
-          val steps = sortedHasSteps(stepLabel)
-          Repeat(head :: As(stepLabel) +: (steps ++ repeatRest)) :: rest
-        case WhereT(And(andTraversals @ _*) :: Nil) :: rest =>
-          aliasesWhereFilter(andTraversals)
-            .map(_ :: rest)
-            .getOrElse(rest)
-        case WhereT(whereTraversal) :: rest =>
-          aliasesWhereFilter(whereTraversal :: Nil)
-            .map(_ :: rest)
-            .getOrElse(rest)
-      }
-    )
+    val firstPass = replace({
+      case As(stepLabel) :: rest if hasSteps.contains(stepLabel) =>
+        val steps = sortedHasSteps(stepLabel)
+        As(stepLabel) +: (steps ++ rest)
+      case Repeat(head :: As(stepLabel) :: repeatRest) :: rest if hasSteps.contains(stepLabel) =>
+        val steps = sortedHasSteps(stepLabel)
+        Repeat(head :: As(stepLabel) +: (steps ++ repeatRest)) :: rest
+      case WhereT(And(andTraversals @ _*) :: Nil) :: rest =>
+        aliasesWhereFilter(andTraversals)
+          .map(_ :: rest)
+          .getOrElse(rest)
+      case WhereT(whereTraversal) :: rest =>
+        aliasesWhereFilter(whereTraversal :: Nil)
+          .map(_ :: rest)
+          .getOrElse(rest)
+    })(steps)
 
     firstPass
   }

@@ -43,14 +43,16 @@ public final class Translator<T, P> {
     private final GremlinSteps<T, P> steps;
     private final GremlinPredicates<P> predicates;
     private final GremlinBindings bindings;
+    private final TranslatorFlavor flavor;
 
     private Translator(GremlinSteps<T, P> steps,
                        GremlinPredicates<P> predicates,
                        GremlinBindings bindings,
-                       TranslatorFlavor<T, P> flavor) {
-        this.steps = flavor.decorateTranslationBuilder(steps);
+                       TranslatorFlavor flavor) {
+        this.steps = steps;
         this.predicates = predicates;
         this.bindings = bindings;
+        this.flavor = flavor;
     }
 
     /**
@@ -84,6 +86,15 @@ public final class Translator<T, P> {
      */
     public GremlinBindings bindings() {
         return bindings;
+    }
+
+    /**
+     * Returns the flavor of this translation.
+     *
+     * @return translation flavor
+     */
+    public TranslatorFlavor flavor() {
+        return flavor;
     }
 
     /**
@@ -209,26 +220,21 @@ public final class Translator<T, P> {
          * @return translator
          */
         public Translator<T, P> build() {
-            return new Translator<>(
-                steps,
-                predicates,
-                bindings,
-                TranslatorFlavor.gremlinServer()
-            );
+            return build(null);
         }
 
         /**
          * Builds a {@link Translator} with the given translator flavor.
          *
-         * @param flavor translator flavor
+         * @param flavor translation flavor
          * @return translator
          */
-        public Translator<T, P> build(TranslatorFlavor<T, P> flavor) {
+        public Translator<T, P> build(TranslatorFlavor flavor) {
             return new Translator<>(
                 steps,
                 predicates,
                 bindings,
-                flavor
+                flavor != null ? flavor : TranslatorFlavor.gremlinServer()
             );
         }
     }

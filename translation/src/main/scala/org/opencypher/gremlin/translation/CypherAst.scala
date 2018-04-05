@@ -26,13 +26,7 @@ import org.neo4j.cypher.internal.frontend.v3_3.{CypherException, ExpressionTypeI
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
-import org.opencypher.gremlin.translation.ir.rewrite.FilterStepAdjacency
-import org.opencypher.gremlin.translation.preparser.{
-  CypherPreParser,
-  ExplainOption,
-  PreParsedStatement,
-  PreParserOption
-}
+import org.opencypher.gremlin.translation.preparser._
 import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.translation.walker.StatementWalker
 
@@ -44,7 +38,7 @@ import scala.collection.mutable
   * for executing a Gremlin traversal.
   *
   * @param statement           AST root node
-  * @param returnTypes            variable types by name
+  * @param returnTypes         variable types by name
   * @param extractedParameters extracted parameters provided by Cypher parser
   * @param options             pre-parser options provided by Cypher parser
   */
@@ -58,7 +52,7 @@ class CypherAst(
     * Create a translation by passing the wrapped AST, parameters, and options
     * to [[StatementWalker.walk]].
     *
-    * @param dsl Instance of [[Translator]]
+    * @param dsl instance of [[Translator]]
     * @return to-Gremlin translation
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
@@ -75,9 +69,11 @@ class CypherAst(
     StatementWalker.walk(context, statement)
     val ir = irDsl.translate()
 
+    val flavor = dsl.flavor()
     TranslationWriter
       .from(ir)
-      .rewrite(FilterStepAdjacency)
+      .rewrite(flavor.rewriters: _*)
+      .verify(flavor.postConditions: _*)
       .translate(dsl)
   }
 

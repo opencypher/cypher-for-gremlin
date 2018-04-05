@@ -30,18 +30,17 @@ import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
 
-    private final String actualTranslation;
-
-    CypherAstAssert(CypherAstWrapper actual, TranslatorFlavor<String, GroovyPredicate> flavor) {
-        super(actual, CypherAstAssert.class);
-        Translator<String, GroovyPredicate> dsl = Translator.builder().gremlinGroovy().build(flavor);
-        actualTranslation = actual.buildTranslation(dsl);
-    }
+    private final CypherAstWrapper actual;
+    private TranslatorFlavor flavor;
 
     CypherAstAssert(CypherAstWrapper actual) {
         super(actual, CypherAstAssert.class);
-        Translator<String, GroovyPredicate> dsl = Translator.builder().gremlinGroovy().build();
-        actualTranslation = actual.buildTranslation(dsl);
+        this.actual = actual;
+    }
+
+    public CypherAstAssert withFlavor(TranslatorFlavor flavor) {
+        this.flavor = flavor;
+        return this;
     }
 
     public CypherAstAssert normalizedTo(String expected) {
@@ -64,7 +63,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
      * This pattern matches the Gremlin translation of a {@code RETURN} clause.
      * It might need to be modified if {@code RETURN} translation changes.
      *
-     * @see org.opencypher.gremlin.translation.walker.ReturnWalker
+     * @see org.opencypher.gremlin.translation.walker.ProjectionWalker
      * @see #hasTraversalBeforeReturn(GremlinSteps)
      */
     private static final Pattern RETURN_START = Pattern.compile(
@@ -83,6 +82,10 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     private CypherAstAssert hasTraversal(GremlinSteps traversal,
                                          Function<String, String> extractor) {
         isNotNull();
+
+        Translator.ParametrizedFlavorBuilder<String, GroovyPredicate> builder = Translator.builder().gremlinGroovy();
+        Translator<String, GroovyPredicate> dsl = flavor != null ? builder.build(flavor) : builder.build();
+        String actualTranslation = actual.buildTranslation(dsl);
 
         String actual = Optional.ofNullable(actualTranslation)
             .map(extractor)

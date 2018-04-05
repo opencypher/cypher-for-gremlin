@@ -34,9 +34,9 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 final class BytecodeCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final TranslatorFlavor<Bytecode, P> flavor;
+    private final TranslatorFlavor flavor;
 
-    BytecodeCypherGremlinClient(Client client, TranslatorFlavor<Bytecode, P> flavor) {
+    BytecodeCypherGremlinClient(Client client, TranslatorFlavor flavor) {
         this.client = client;
         this.flavor = flavor;
     }
