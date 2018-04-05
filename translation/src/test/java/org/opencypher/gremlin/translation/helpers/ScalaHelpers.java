@@ -15,11 +15,19 @@
  */
 package org.opencypher.gremlin.translation.helpers;
 
-import org.assertj.core.api.Assertions;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import scala.collection.immutable.List;
+import scala.collection.immutable.Seq;
 
-public class CypherAstAssertions extends Assertions {
-    public static CypherAstAssert assertThat(CypherAstWrapper actual) {
-        return new CypherAstAssert(actual);
+public final class ScalaHelpers {
+    private ScalaHelpers() {
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Seq<T> seq(T... values) {
+        List<T> list = (List<T>) List.empty();
+        for (T value : values) {
+            list = list.$colon$colon(value);
+        }
+        return list;
     }
 }

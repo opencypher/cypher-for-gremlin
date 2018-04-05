@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.helpers;
+package org.opencypher.gremlin.translation.ir.verify
 
-import org.assertj.core.api.Assertions;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
-public class CypherAstAssertions extends Assertions {
-    public static CypherAstAssert assertThat(CypherAstWrapper actual) {
-        return new CypherAstAssert(actual);
-    }
-}
+trait GremlinPostCondition extends (Seq[GremlinStep] => Option[String])

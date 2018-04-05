@@ -78,7 +78,7 @@ public class GremlinServerExternalResource extends ExternalResource {
             case "bytecode":
                 return CypherGremlinClient.bytecode(gremlinClient.alias("g"));
             case "cosmosdb":
-                return CypherGremlinClient.translating(gremlinClient, TranslatorFlavor.cosmosdb());
+                return CypherGremlinClient.translating(gremlinClient, TranslatorFlavor.cosmosDb());
             default:
                 throw new IllegalArgumentException("Unknown name: " + clientName);
         }

@@ -32,7 +32,6 @@ import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteException;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
-import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 /**
@@ -69,7 +68,7 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
 
     private static CypherGremlinClient configureClient(Client gremlinClient, List<String> args) {
         if (args.contains(TOKEN_TRANSLATE)) {
-            TranslatorFlavor<String, GroovyPredicate> flavor = TranslatorFlavor.gremlinServer();
+            TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
             int flavorParamIndex = args.indexOf(TOKEN_TRANSLATE) + 1;
             if (flavorParamIndex < args.size()) {
                 flavor = flavorByName(args.get(flavorParamIndex));
@@ -80,10 +79,10 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
         }
     }
 
-    private static TranslatorFlavor<String, GroovyPredicate> flavorByName(String name) {
+    private static TranslatorFlavor flavorByName(String name) {
         switch (name) {
             case "cosmosdb":
-                return TranslatorFlavor.cosmosdb();
+                return TranslatorFlavor.cosmosDb();
             case "gremlin":
             default:
                 return TranslatorFlavor.gremlinServer();

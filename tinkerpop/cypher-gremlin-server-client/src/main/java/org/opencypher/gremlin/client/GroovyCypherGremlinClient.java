@@ -33,9 +33,9 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 final class GroovyCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final TranslatorFlavor<String, GroovyPredicate> flavor;
+    private final TranslatorFlavor flavor;
 
-    GroovyCypherGremlinClient(Client client, TranslatorFlavor<String, GroovyPredicate> flavor) {
+    GroovyCypherGremlinClient(Client client, TranslatorFlavor flavor) {
         this.client = client;
         this.flavor = flavor;
     }
