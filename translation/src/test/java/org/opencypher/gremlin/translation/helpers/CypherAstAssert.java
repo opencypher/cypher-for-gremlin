@@ -20,6 +20,7 @@ import static java.util.function.Function.identity;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractAssert;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
@@ -71,12 +72,19 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
             "group\\(\\)\\.by\\([^)]+\\)\\.by\\([^)]+\\)|" +
             "map\\(__\\.project|" +
             "fold\\(\\)\\.map\\(__\\.project" +
-            ").*$"
+            ")"
     );
 
     public CypherAstAssert hasTraversalBeforeReturn(GremlinSteps traversal) {
         // Extract everything up to the start of the RETURN clause translation
-        return hasTraversal(traversal, t -> RETURN_START.matcher(t).replaceFirst(""));
+        return hasTraversal(traversal, t -> {
+            Matcher matcher = RETURN_START.matcher(t);
+            int lastIndex = -1;
+            while (matcher.find()) {
+                lastIndex = matcher.start();
+            }
+            return t.substring(0, lastIndex);
+        });
     }
 
     private CypherAstAssert hasTraversal(GremlinSteps traversal,
