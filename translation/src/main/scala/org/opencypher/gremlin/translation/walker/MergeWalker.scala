@@ -28,7 +28,7 @@ import org.opencypher.gremlin.translation.walker.NodeUtils.getPathTraversalAlias
   */
 object MergeWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Merge) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Merge): Unit = {
     new MergeWalker(context, g).walkClause(node)
   }
 }

@@ -34,7 +34,7 @@ import scala.collection.mutable
   * of the `RETURN` clause node in the Cypher AST.
   */
 object ProjectionWalker {
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: ProjectionClause) {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: ProjectionClause): Unit = {
     node match {
       case Return(distinct, ReturnItems(_, items), _, orderBy, skip, limit, _) =>
         new ProjectionWalker(context, g).walk(distinct, items, orderBy, skip, limit, finalize = true)
@@ -160,7 +160,11 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
   }
 
-  private def applyLimits(distinct: Boolean, orderBy: Option[OrderBy], skip: Option[Skip], limit: Option[Limit]) {
+  private def applyLimits(
+      distinct: Boolean,
+      orderBy: Option[OrderBy],
+      skip: Option[Skip],
+      limit: Option[Limit]): Unit = {
     if (distinct) {
       g.dedup()
     }
@@ -185,7 +189,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
   }
 
-  private def applyWherePreconditions(items: Seq[ReturnItem]) {
+  private def applyWherePreconditions(items: Seq[ReturnItem]): Unit = {
     for (item <- items) {
       val AliasedReturnItem(expression, _) = item
       expression match {
@@ -197,7 +201,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
   }
 
-  private def reselectProjection(items: Seq[ReturnItem]) {
+  private def reselectProjection(items: Seq[ReturnItem]): Unit = {
     if (items.lengthCompare(1) > 0) {
       g.as(Tokens.TEMP)
     }
@@ -448,7 +452,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     name
   }
 
-  private def sort(sortItems: Seq[SortItem]) {
+  private def sort(sortItems: Seq[SortItem]): Unit = {
     g.order()
     for (sortItem <- sortItems) {
       val order = sortItem match {

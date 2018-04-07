@@ -25,20 +25,26 @@ import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import scala.collection.JavaConverters._
 
 object NodeUtils {
-  def expressionValue[T, P](node: Expression, context: StatementContext[T, P]): Any = {
+  def expressionValue[T, P](node: Expression, context: StatementContext[T, P]): AnyRef = {
     traversalValueToJava(node, context, context.parameter)
   }
 
-  def inlineExpressionValue[T, P](node: Expression, context: StatementContext[T, P]): Any = {
-    inlineExpressionValue(node, context, classOf[Any])
+  def inlineExpressionValue[T, P](node: Expression, context: StatementContext[T, P]): AnyRef = {
+    inlineExpressionValue(node, context, classOf[AnyRef])
   }
 
-  def inlineExpressionValue[T, P, R](node: Expression, context: StatementContext[T, P], klass: Class[R]): R = {
+  def inlineExpressionValue[T, P, R <: AnyRef](
+      node: Expression,
+      context: StatementContext[T, P],
+      klass: Class[R]): R = {
     val parameterHandler = (name: String) => context.inlineParameter(name, klass)
     traversalValueToJava(node, context, parameterHandler).asInstanceOf[R]
   }
 
-  def traversalValueToJava[T, P](value: Any, context: StatementContext[T, P], parameterHandler: String => Any): Any = {
+  def traversalValueToJava[T, P](
+      value: Any,
+      context: StatementContext[T, P],
+      parameterHandler: String => AnyRef): AnyRef = {
     value match {
       case Variable(varName) =>
         varName
@@ -69,13 +75,13 @@ object NodeUtils {
 
   private def asDetachedVertex[T, P](
       items: Seq[(PropertyKeyName, Expression)],
-      context: StatementContext[T, P]): Any = {
+      context: StatementContext[T, P]): AnyRef = {
     val builder = DetachedVertexProperty.build().setId(0)
 
     items.foreach(item => {
       val (PropertyKeyName(name), expression) = item
       val value = expressionValue(expression, context)
-      builder.addProperty(new DetachedProperty[Any](name, value))
+      builder.addProperty(new DetachedProperty[AnyRef](name, value))
     })
 
     builder.create()
@@ -120,7 +126,7 @@ object NodeUtils {
     }
   }
 
-  def setProperty[T, P](g: GremlinSteps[T, P], key: String, value: Any) {
+  def setProperty[T, P](g: GremlinSteps[T, P], key: String, value: Any): Unit = {
     value match {
       case builder: GremlinSteps[T @unchecked, P @unchecked] =>
         g.property(key, builder)

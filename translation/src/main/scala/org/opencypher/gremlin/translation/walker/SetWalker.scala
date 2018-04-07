@@ -28,14 +28,14 @@ import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, set
   * of the `SET` clause nodes in the Cypher AST.
   */
 object SetWalker {
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Clause) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Clause): Unit = {
     new SetWalker(context, g).walkClause(node)
   }
 }
 
 private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
-  def walkClause(node: Clause) {
+  def walkClause(node: Clause): Unit = {
     node match {
       case SetClause(items) =>
         walkSetClause(items)
@@ -47,7 +47,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
 
   }
 
-  private def walkSetClause(items: Seq[SetItem]) {
+  private def walkSetClause(items: Seq[SetItem]): Unit = {
     items.foreach {
       case SetPropertyItem(Property(Variable(variable), PropertyKeyName(key)), expression: Expression) =>
         val value = expressionValue(expression, context)
@@ -65,7 +65,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
     }
   }
 
-  private def walkRemoveClause(items: Seq[RemoveItem]) {
+  private def walkRemoveClause(items: Seq[RemoveItem]): Unit = {
     items.foreach {
       case RemovePropertyItem(Property(Variable(variable), PropertyKeyName(key))) =>
         applySideEffect(variable, _.properties(key).drop())
@@ -74,14 +74,14 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
     }
   }
 
-  private def applySideEffect(variable: String, setter: GremlinSteps[T, P] => Unit) {
+  private def applySideEffect(variable: String, setter: GremlinSteps[T, P] => Unit): Unit = {
     val p = context.dsl.predicates()
     val sideEffect = g.start().select(variable)
     setter(sideEffect)
     g.choose(p.neq(NULL), g.start().sideEffect(sideEffect))
   }
 
-  private def setProperties(g: GremlinSteps[T, P], items: Seq[(PropertyKeyName, Expression)]) {
+  private def setProperties(g: GremlinSteps[T, P], items: Seq[(PropertyKeyName, Expression)]): Unit = {
     for ((PropertyKeyName(key), expression) <- items) {
       val value = expressionValue(expression, context)
       setProperty(g, key, value)

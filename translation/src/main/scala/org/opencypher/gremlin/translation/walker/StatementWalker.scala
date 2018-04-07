@@ -27,7 +27,7 @@ import scala.collection.mutable
   * AST walker that starts translation of the Cypher AST.
   */
 object StatementWalker {
-  def walk[T, P](context: StatementContext[T, P], node: Statement) {
+  def walk[T, P](context: StatementContext[T, P], node: Statement): Unit = {
     val g = context.dsl.steps()
     new StatementWalker(context, g).walk(node)
   }
@@ -35,7 +35,7 @@ object StatementWalker {
 
 class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
-  def walk(node: Statement) {
+  def walk(node: Statement): Unit = {
     node match {
       case Query(_, part) =>
         part match {
@@ -47,7 +47,7 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
     }
   }
 
-  def walkUnion(node: Union) {
+  def walkUnion(node: Union): Unit = {
     if (context.isFirstStatement) {
       context.markFirstStatement()
       g.inject(START)
@@ -76,7 +76,7 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
     }
   }
 
-  def walkSingle(node: SingleQuery) {
+  def walkSingle(node: SingleQuery): Unit = {
     val clauses = node.clauses
     walkFirstClause(clauses.head)
     clauses.tail.foreach(walkClause)
@@ -92,7 +92,7 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
     }
   }
 
-  private def walkFirstClause(node: Clause) {
+  private def walkFirstClause(node: Clause): Unit = {
     node match {
       case withClause: With =>
         if (context.isFirstStatement) {
@@ -117,7 +117,7 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
     }
   }
 
-  private def walkClause(node: Clause) {
+  private def walkClause(node: Clause): Unit = {
     node match {
       case matchClause: Match =>
         MatchWalker.walkClause(context, g, matchClause)
