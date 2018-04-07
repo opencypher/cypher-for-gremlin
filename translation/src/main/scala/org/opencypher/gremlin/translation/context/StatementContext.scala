@@ -59,7 +59,7 @@ sealed class StatementContext[T, P](
 
   private var midTraversals = 0
 
-  def midTraversal(g: GremlinSteps[T, P]) {
+  def midTraversal(g: GremlinSteps[T, P]): Unit = {
     midTraversals += 1
     g.V()
   }
@@ -72,7 +72,7 @@ sealed class StatementContext[T, P](
     throw new UnsupportedOperationException(s"Unsupported $description: $node")
   }
 
-  def precondition(expression: Boolean, message: String, node: Any) {
+  def precondition(expression: Boolean, message: String, node: Any): Unit = {
     if (!expression) {
       throw new UnsupportedOperationException(s"$message: $node")
     }
@@ -84,7 +84,7 @@ sealed class StatementContext[T, P](
     firstStatement
   }
 
-  def markFirstStatement() {
+  def markFirstStatement(): Unit = {
     firstStatement = false
   }
 

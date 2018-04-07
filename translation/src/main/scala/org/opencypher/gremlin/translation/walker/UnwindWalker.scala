@@ -31,7 +31,7 @@ import scala.collection.immutable.NumericRange
   */
 object UnwindWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Unwind) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Unwind): Unit = {
     new UnwindWalker(context, g).walkClause(node)
   }
 }
@@ -40,7 +40,7 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
 
   private val injectHardLimit = 10000
 
-  def walkClause(node: Unwind) {
+  def walkClause(node: Unwind): Unit = {
     val p = context.dsl.predicates()
 
     if (context.isFirstStatement) {
@@ -72,7 +72,7 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       case Null() =>
         g.inject(Collections.emptyList).unfold().as(varName)
       case _: Expression =>
-        g.inject(expressionValue(expression, context).asInstanceOf[Object]).unfold().as(varName)
+        g.inject(expressionValue(expression, context)).unfold().as(varName)
     }
   }
 

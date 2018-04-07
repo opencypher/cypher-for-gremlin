@@ -30,7 +30,7 @@ import scala.collection.mutable
   */
 object CreateWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Create) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Create): Unit = {
     new CreateWalker(context, g).walk(node.pattern.patternParts)
   }
 
@@ -39,7 +39,7 @@ object CreateWalker {
 private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
   private val nodeHistory = new mutable.Stack[String]
 
-  def walk(patternParts: Seq[PatternPart]) {
+  def walk(patternParts: Seq[PatternPart]): Unit = {
     context.markFirstStatement()
     patternParts.foreach {
       case EveryPath(n: PatternElement) =>
@@ -53,7 +53,7 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
     * For relationship like this: `(n1)-[r1]->(n2)<-[r2]-(n3)`
     * creation order would be: `n1 n2 r1 n3 r2`
     */
-  private def walkPattern(patternElement: PatternElement) {
+  private def walkPattern(patternElement: PatternElement): Unit = {
     flattenRelationshipChain(patternElement).foreach {
       case n: NodePattern =>
         walkNodePattern(n)
@@ -64,7 +64,7 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
     }
   }
 
-  private def walkNodePattern(nodePattern: NodePattern) {
+  private def walkNodePattern(nodePattern: NodePattern): Unit = {
     nodePattern match {
       case NodePattern(Some(Variable(name)), labels, propertiesOption) =>
         nodeHistory.push(name)
@@ -107,7 +107,7 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
     }
   }
 
-  private def walkRelationshipPattern(relationshipPattern: RelationshipPattern) {
+  private def walkRelationshipPattern(relationshipPattern: RelationshipPattern): Unit = {
     relationshipPattern match {
       case RelationshipPattern(_, Nil, _, _, _, _) => // Ignored
       case RelationshipPattern(Some(Variable(rName)), types, _, propertiesOption, direction, _) =>
@@ -162,7 +162,7 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
     }
   }
 
-  private def validateDeclaredNode(name: String, labels: Seq[LabelName], properties: Option[Expression]) {
+  private def validateDeclaredNode(name: String, labels: Seq[LabelName], properties: Option[Expression]): Unit = {
     if (labels.nonEmpty || getPropertiesMap(properties).nonEmpty) {
       throw new SyntaxException(
         s"Can't create node '$name' with labels or properties here." +

@@ -114,7 +114,7 @@ class CypherAst(
     } mkString "\n"
   }
 
-  private def flattenText(acc: mutable.ArrayBuffer[(String, Int)], node: Any, depth: Int) {
+  private def flattenText(acc: mutable.ArrayBuffer[(String, Int)], node: Any, depth: Int): Unit = {
     node match {
       case astNode: ASTNode =>
         acc += ((astNode.getClass.getSimpleName, depth))
@@ -167,36 +167,34 @@ object CypherAst {
   }
 
   private def getReturnTypes(state: BaseState, statement: Statement): Map[String, CypherType] = {
-    val returnTypes = mutable.Map.empty[String, CypherType]
-    val typeTable = state.semantics().typeTable
-
-    statement match {
+    val clauses = statement match {
       case Query(_, part) =>
-        val clauses = part match {
+        part match {
           case union: Union =>
-            union.unionedQueries.flatMap(f => f.clauses)
+            union.unionedQueries.flatMap(_.clauses)
           case single: SingleQuery =>
             single.clauses
         }
-
-        clauses.foreach {
-          case Return(_, items, _, _, _, _, _) =>
-            for (AliasedReturnItem(expression, Variable(name)) <- items.items) {
-              typeTable.get(expression) match {
-                case Some(ExpressionTypeInfo(typeSpec, _)) =>
-                  if (typeSpec.ranges.lengthCompare(1) == 0) {
-                    val typ = typeSpec.ranges.head.lower
-                    returnTypes(name) = typ
-                  } else {
-                    returnTypes(name) = AnyType.instance
-                  }
-                case _ =>
-              }
-            }
-          case _ =>
-        }
     }
 
-    returnTypes.toMap
+    val typeTable = state.semantics().typeTable
+    clauses.flatMap {
+      case Return(_, returnItems, _, _, _, _, _) => returnItems.items
+      case _                                     => Nil
+    }.flatMap {
+      case AliasedReturnItem(expression, Variable(name)) =>
+        val pair = typeTable.get(expression).map {
+          case ExpressionTypeInfo(typeSpec, _) =>
+            if (typeSpec.ranges.lengthCompare(1) == 0) {
+              val typ = typeSpec.ranges.head.lower
+              (name, typ)
+            } else {
+              (name, AnyType.instance)
+            }
+        }
+        pair
+      case _ =>
+        None
+    }.toMap
   }
 }
