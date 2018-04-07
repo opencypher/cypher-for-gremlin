@@ -27,10 +27,10 @@ import org.junit.Test;
 import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
-public class FilterStepAdjacencyTest {
+public class GroupStepFiltersTest {
 
     private final TranslatorFlavor flavor = new TranslatorFlavor(
-        seq(FilterStepAdjacency$.MODULE$),
+        seq(GroupStepFilters$.MODULE$),
         seq()
     );
 
