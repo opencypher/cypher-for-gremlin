@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Stash all changes unrelated to commit
-git stash -q --keep-index --include-untracked
+STASH=$(git stash --keep-index --include-untracked)
 git clean -q -f -d
 
 export PATH=$PATH:$PWD/build/freshreadme/
@@ -22,5 +22,8 @@ echo "Running code checks..."
 ./gradlew spotlessCheck >/dev/null
 RESULT=$?
 
-git stash pop -q
+echo "$STASH" | grep -q "No local changes to save"
+if [ $? -ne 0 ]; then
+    git stash pop -q
+fi
 exit $RESULT
