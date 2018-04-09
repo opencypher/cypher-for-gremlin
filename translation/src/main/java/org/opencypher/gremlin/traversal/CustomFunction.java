@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -32,6 +33,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opencypher.gremlin.translation.ReturnProperties;
 import org.opencypher.gremlin.translation.Tokens;
@@ -162,6 +164,20 @@ public class CustomFunction implements Function<Traverser, Object> {
             });
     }
 
+    public static CustomFunction properties() {
+        return new CustomFunction(
+            "properties",
+            traverser -> {
+                Iterator<? extends Property<Object>> it = ((Element) traverser.get()).properties();
+                Map<Object, Object> propertyMap = new HashMap<>();
+                while (it.hasNext()) {
+                    Property<Object> property = it.next();
+                    propertyMap.putIfAbsent(property.key(), property.value());
+                }
+                return propertyMap;
+            });
+    }
+
     public static CustomFunction nodes() {
         return new CustomFunction(
             "nodes",
@@ -174,7 +190,7 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction relationships() {
         return new CustomFunction(
             "relationships",
-                traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
+            traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
                 .flatMap(CustomFunction::flatten)
                 .filter(element -> element instanceof Edge)
                 .map(CustomFunction::finalizeElements)
@@ -272,27 +288,27 @@ public class CustomFunction implements Function<Traverser, Object> {
     }
 
     private static Object finalizeElements(Object o) {
-            HashMap<Object, Object> result = new HashMap<>();
+        HashMap<Object, Object> result = new HashMap<>();
 
-            if (Tokens.NULL.equals(o)) {
-                return Tokens.NULL;
-            }
+        if (Tokens.NULL.equals(o)) {
+            return Tokens.NULL;
+        }
 
-            Element element = (Element) o;
-            result.put(ReturnProperties.ID, element.id());
-            result.put(ReturnProperties.LABEL, element.label());
-            element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
+        Element element = (Element) o;
+        result.put(ReturnProperties.ID, element.id());
+        result.put(ReturnProperties.LABEL, element.label());
+        element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
 
-            if (o instanceof Vertex) {
-                result.put(ReturnProperties.TYPE, ReturnProperties.NODE_TYPE);
-            } else {
-                Edge edge = (Edge) o;
+        if (o instanceof Vertex) {
+            result.put(ReturnProperties.TYPE, ReturnProperties.NODE_TYPE);
+        } else {
+            Edge edge = (Edge) o;
 
-                result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
-                result.put(ReturnProperties.INV, edge.inVertex().id());
-                result.put(ReturnProperties.OUTV, edge.outVertex().id());
-            }
+            result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
+            result.put(ReturnProperties.INV, edge.inVertex().id());
+            result.put(ReturnProperties.OUTV, edge.outVertex().id());
+        }
 
-            return result;
+        return result;
     }
 }

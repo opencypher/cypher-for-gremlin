@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -263,6 +264,21 @@ public class ReturnTest {
                     .asList()
                     .hasSize(2)
                     .containsExactlyInAnyOrder("name", "age")
+            );
+    }
+
+    @Test
+    public void propertiesFunction() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:software) " +
+                "RETURN properties(p) AS m"
+        );
+
+        assertThat(results)
+            .extracting("m")
+            .containsExactlyInAnyOrder(
+                ImmutableMap.of("name", "ripple", "lang", "java"),
+                ImmutableMap.of("name", "lop", "lang", "java")
             );
     }
 
