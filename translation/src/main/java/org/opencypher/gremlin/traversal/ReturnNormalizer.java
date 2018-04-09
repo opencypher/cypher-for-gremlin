@@ -64,7 +64,7 @@ public final class ReturnNormalizer {
     public Map<String, Object> normalize(Object row) {
         if (row instanceof String) {
             throw new IllegalStateException("Invalid response: expected Map, got String." +
-                " Probable cause: `serializeResultToString` set to `true` in Gremlin serializer config");
+                " Probable cause: 'serializeResultToString' set to 'true' in Gremlin serializer config");
         }
 
         return (Map<String, Object>) normalizeValue(row);
