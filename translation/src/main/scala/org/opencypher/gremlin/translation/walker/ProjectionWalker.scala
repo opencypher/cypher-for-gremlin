@@ -258,6 +258,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "length"        => traversals.head.map(CustomFunction.length())
           case "nodes"         => traversals.head.map(CustomFunction.nodes())
+          case "properties"    => nullIfNull(traversals.head, __.map(CustomFunction.properties()))
           case "relationships" => traversals.head.map(CustomFunction.relationships())
           case "size"          => traversals.head.map(CustomFunction.size())
           case "type"          => nullIfNull(traversals.head, __.label().is(p.neq(Vertex.DEFAULT_LABEL)))
