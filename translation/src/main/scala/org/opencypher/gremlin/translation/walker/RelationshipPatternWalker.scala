@@ -43,7 +43,7 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
 
   type TraversalFunction = GremlinSteps[T, P] => GremlinSteps[T, P]
 
-  def walk(maybeName: Option[String], node: RelationshipPattern) {
+  def walk(maybeName: Option[String], node: RelationshipPattern): Unit = {
     val RelationshipPattern(variableOption, types, length, _, direction, _) = node
     val typeNames = types.map { case RelTypeName(relName) => relName }.distinct
 

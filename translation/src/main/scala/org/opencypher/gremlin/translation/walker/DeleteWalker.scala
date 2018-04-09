@@ -21,14 +21,14 @@ import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
 object DeleteWalker {
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Delete) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Delete): Unit = {
     new DeleteWalker(context, g).walkClause(node)
   }
 }
 
 class DeleteWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
-  def walkClause(node: Delete) {
+  def walkClause(node: Delete): Unit = {
     val Delete(expressions, _) = node
     val aliases = expressions.map {
       case Variable(name) =>

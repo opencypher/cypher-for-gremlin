@@ -37,10 +37,19 @@ public class CastTest {
 
     @Test
     public void castToString() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "UNWIND [13, 3.14, 'Hello', true, null] AS n\n" +
-                "RETURN toString(n) AS r"
-        );
+        List<Map<String, Object>> results = Stream.of(
+            "13",
+            "3.14",
+            "'Hello'",
+            "true",
+            "null"
+        )
+            .flatMap(literal -> submitAndGet(
+                "WITH " + literal + " AS l " +
+                    "RETURN toString(l) AS r"
+            ).stream())
+            .collect(toList());
+
         assertThat(results)
             .extracting("r")
             .containsExactly(
@@ -54,10 +63,20 @@ public class CastTest {
 
     @Test
     public void castToInteger() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "UNWIND [13, 3.14, '13', '3.14', 'Hello', null] AS n\n" +
-                "RETURN toInteger(n) AS r"
-        );
+        List<Map<String, Object>> results = Stream.of(
+            "13",
+            "3.14",
+            "'13'",
+            "'3.14'",
+            "'Hello'",
+            "null"
+        )
+            .flatMap(literal -> submitAndGet(
+                "WITH " + literal + " AS l " +
+                    "RETURN toInteger(l) AS r"
+            ).stream())
+            .collect(toList());
+
         assertThat(results)
             .extracting("r")
             .containsExactly(
@@ -91,10 +110,20 @@ public class CastTest {
 
     @Test
     public void castToFloat() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "UNWIND [13, 3.14, '13', '3.14', 'Hello', null] AS n\n" +
-                "RETURN toFloat(n) AS r"
-        );
+        List<Map<String, Object>> results = Stream.of(
+            "13",
+            "3.14",
+            "'13'",
+            "'3.14'",
+            "'Hello'",
+            "null"
+        )
+            .flatMap(literal -> submitAndGet(
+                "WITH " + literal + " AS l " +
+                    "RETURN toFloat(l) AS r"
+            ).stream())
+            .collect(toList());
+
         assertThat(results)
             .extracting("r")
             .containsExactly(
@@ -128,10 +157,22 @@ public class CastTest {
 
     @Test
     public void castToBoolean() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "UNWIND [true, false, 'True', 'False', '13', '3.14', 'Hello', null] AS n\n" +
-                "RETURN toBoolean(n) AS r"
-        );
+        List<Map<String, Object>> results = Stream.of(
+            "true",
+            "false",
+            "'True'",
+            "'False'",
+            "'13'",
+            "'3.14'",
+            "'Hello'",
+            "null"
+        )
+            .flatMap(literal -> submitAndGet(
+                "WITH " + literal + " AS l " +
+                    "RETURN toBoolean(l) AS r"
+            ).stream())
+            .collect(toList());
+
         assertThat(results)
             .extracting("r")
             .containsExactly(

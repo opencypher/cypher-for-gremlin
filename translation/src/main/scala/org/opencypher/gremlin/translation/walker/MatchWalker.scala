@@ -23,7 +23,7 @@ import org.opencypher.gremlin.translation.walker.NodeUtils._
 
 object MatchWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Match) {
+  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Match): Unit = {
     new MatchWalker(context, g).walkClause(node)
   }
 
@@ -38,7 +38,7 @@ object MatchWalker {
 
 private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
-  def walkClause(node: Match) {
+  def walkClause(node: Match): Unit = {
     val Match(optional, Pattern(patternParts), _, whereOption) = node
     if (optional) {
       walkOptionalMatch(patternParts, whereOption)
@@ -47,7 +47,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
   }
 
-  private def walkOptionalMatch(patternParts: Seq[PatternPart], whereOption: Option[Where]) {
+  private def walkOptionalMatch(patternParts: Seq[PatternPart], whereOption: Option[Where]): Unit = {
     if (context.isFirstStatement) {
       context.markFirstStatement()
       g.inject(START)
@@ -79,7 +79,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
   }
 
-  def walkPatternParts(patternParts: Seq[PatternPart], whereOption: Option[Where]) {
+  def walkPatternParts(patternParts: Seq[PatternPart], whereOption: Option[Where]): Unit = {
     patternParts.foreach {
       case EveryPath(patternElement) =>
         foldPatternElement(None, patternElement)
@@ -93,7 +93,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     whereOption.foreach(WhereWalker.walk(context, g, _))
   }
 
-  private def foldPatternElement(maybeName: Option[String], patternElement: PatternElement) {
+  private def foldPatternElement(maybeName: Option[String], patternElement: PatternElement): Unit = {
     if (!context.isFirstStatement) {
       context.midTraversal(g)
     } else {

@@ -34,11 +34,11 @@ import scala.collection.mutable
   * of the `WHERE` clause nodes in the Cypher AST.
   */
 object WhereWalker {
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Where) {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Where): Unit = {
     new WhereWalker(context, g).walk(node)
   }
 
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], expression: Expression) {
+  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], expression: Expression): Unit = {
     new WhereWalker(context, g).walk(expression)
   }
 
@@ -54,7 +54,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
 
   private val freshIds = mutable.HashMap.empty[String, String]
 
-  def walk(node: Where) {
+  def walk(node: Where): Unit = {
     node.expression match {
       case _: True => // Ignored
       case _: False =>
@@ -70,7 +70,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
   }
 
-  def walk(expression: Expression) {
+  def walk(expression: Expression): Unit = {
     g.where(walkExpression(expression))
   }
 
@@ -229,7 +229,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     }
   }
 
-  def walkRelationshipChain(relationshipChain: RelationshipChain) {
+  def walkRelationshipChain(relationshipChain: RelationshipChain): Unit = {
     var firstNode = true
     flattenRelationshipChain(relationshipChain).foreach {
       case NodePattern(variableOption, labelNames, _) =>

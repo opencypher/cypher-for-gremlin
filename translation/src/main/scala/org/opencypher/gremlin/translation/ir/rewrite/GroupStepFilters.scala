@@ -26,10 +26,11 @@ import scala.collection.mutable
   * This should allow Gremlin provider optimization strategies
   * to fold generated `has` steps into the adjacent vertex step.
   */
-object FilterStepAdjacency extends GremlinRewriter {
+object GroupStepFilters extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     splitAfter({
       case MapT(Project(_*) :: _) => true
+      case Project(_*)            => true
       case _                      => false
     })(steps)
       .flatMap(mapTraversals(rewriteSegment))
