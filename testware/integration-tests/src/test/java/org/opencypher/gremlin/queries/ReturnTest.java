@@ -357,4 +357,19 @@ public class ReturnTest {
             .extracting("literal")
             .containsExactly((Object) null);
     }
+
+    @Test
+    public void returnCoalesce() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a) " +
+                "RETURN coalesce(a.age, a.lang) AS c"
+        );
+
+        assertThat(results)
+            .extracting("c")
+            .containsExactlyInAnyOrder(
+                27L, 29L, 32L, 35L,
+                "java", "java"
+            );
+    }
 }

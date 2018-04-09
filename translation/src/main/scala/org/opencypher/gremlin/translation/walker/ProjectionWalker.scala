@@ -23,7 +23,7 @@ import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
-import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
+import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.immutable.ListMap
@@ -203,15 +203,14 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
 
   private def reselectProjection(items: Seq[ReturnItem]): Unit = {
     if (items.lengthCompare(1) > 0) {
-      g.as(Tokens.TEMP)
+      g.as(TEMP)
     }
 
     items.toStream.zipWithIndex.foreach {
-      case (AliasedReturnItem(_, Variable(alias)), i) => {
-        if (i > 0) g.select(Tokens.TEMP)
+      case (AliasedReturnItem(_, Variable(alias)), i) =>
+        if (i > 0) g.select(TEMP)
         g.select(alias).as(alias)
         context.alias(alias)
-      }
       case _ =>
     }
   }
@@ -234,7 +233,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
 
   private def nullIfNull(g: GremlinSteps[T, P], trueChoice: GremlinSteps[T, P]): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
-    g.choose(p.neq(Tokens.NULL), trueChoice, g.start().constant(Tokens.NULL))
+    g.choose(p.neq(NULL), trueChoice, g.start().constant(NULL))
   }
 
   private def pivot(
@@ -249,23 +248,23 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     expression match {
       case node: FunctionInvocation =>
         val FunctionInvocation(_, FunctionName(fnName), distinct, args) = node
-        val (_, traversal) = pivot(alias, args.head, select, unfold, false)
+        val traversals = args.map(pivot(alias, _, select, unfold, finalize = false)._2)
 
         val function = fnName.toLowerCase match {
-          case "id"     => nullIfNull(traversal, __.id())
-          case "type"   => nullIfNull(traversal, __.label().is(p.neq(Vertex.DEFAULT_LABEL)))
-          case "labels" => traversal.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
-          case "keys"   => traversal.valueMap().select(Column.keys)
-          case "exists" =>
-            __.coalesce(traversal.is(p.neq(Tokens.NULL)).constant(true), __.constant(false))
-          case "tostring"      => traversal.map(CustomFunction.convertToString())
-          case "tointeger"     => traversal.map(CustomFunction.convertToInteger())
-          case "tofloat"       => traversal.map(CustomFunction.convertToFloat())
-          case "toboolean"     => traversal.map(CustomFunction.convertToBoolean())
-          case "length"        => traversal.map(CustomFunction.length())
-          case "nodes"         => traversal.map(CustomFunction.nodes())
-          case "relationships" => traversal.map(CustomFunction.relationships())
-          case "size"          => traversal.map(CustomFunction.size())
+          case "exists"        => __.coalesce(traversals.head.is(p.neq(NULL)).constant(true), __.constant(false))
+          case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
+          case "id"            => nullIfNull(traversals.head, __.id())
+          case "keys"          => traversals.head.valueMap().select(Column.keys)
+          case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
+          case "length"        => traversals.head.map(CustomFunction.length())
+          case "nodes"         => traversals.head.map(CustomFunction.nodes())
+          case "relationships" => traversals.head.map(CustomFunction.relationships())
+          case "size"          => traversals.head.map(CustomFunction.size())
+          case "type"          => nullIfNull(traversals.head, __.label().is(p.neq(Vertex.DEFAULT_LABEL)))
+          case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
+          case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
+          case "tointeger"     => traversals.head.map(CustomFunction.convertToInteger())
+          case "tostring"      => traversals.head.map(CustomFunction.convertToString())
           case _ =>
             return aggregation(alias, expression, select)
         }
@@ -300,11 +299,11 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case IsNotNull(expr) =>
         val (_, traversal) = pivot(alias, expr, select, unfold, finalize)
 
-        (Pivot, __.coalesce(traversal.is(p.neq(Tokens.NULL)).constant(true), __.constant(false)))
+        (Pivot, __.coalesce(traversal.is(p.neq(NULL)).constant(true), __.constant(false)))
       case IsNull(expr) =>
         val (_, traversal) = pivot(alias, expr, select, unfold, finalize)
 
-        (Pivot, __.coalesce(traversal.is(p.neq(Tokens.NULL)).constant(false), __.constant(true)))
+        (Pivot, __.coalesce(traversal.is(p.neq(NULL)).constant(false), __.constant(true)))
       case node @ (_: Parameter | _: Literal | _: ListLiteral | _: MapExpression | _: Null) =>
         (Pivot, __.constant(expressionValue(node, context)))
       case Property(Variable(varName), PropertyKeyName(keyName: String)) =>
@@ -314,7 +313,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             baseSelect(varName, select, unfold, only = false),
             __.coalesce(
               __.values(keyName),
-              __.constant(Tokens.NULL)
+              __.constant(NULL)
             )
           )
         )
@@ -408,17 +407,17 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           traversal.dedup()
         }
 
-        traversal.is(p.neq(Tokens.NULL))
+        traversal.is(p.neq(NULL))
 
         fnName.toLowerCase match {
-          case "count"   => (Aggregation, traversal.count())
+          case "avg"     => (Aggregation, traversal.mean())
           case "collect" => (Aggregation, traversal.fold())
+          case "count"   => (Aggregation, traversal.count())
           case "max" =>
-            (Aggregation, traversal.max().choose(p.isEq(Integer.MIN_VALUE), __.constant(Tokens.NULL)))
+            (Aggregation, traversal.max().choose(p.isEq(Integer.MIN_VALUE), __.constant(NULL)))
           case "min" =>
-            (Aggregation, traversal.min().choose(p.isEq(Integer.MAX_VALUE), __.constant(Tokens.NULL)))
+            (Aggregation, traversal.min().choose(p.isEq(Integer.MAX_VALUE), __.constant(NULL)))
           case "sum" => (Aggregation, traversal.sum())
-          case "avg" => (Aggregation, traversal.mean())
           case _ =>
             throw new SyntaxException(s"Unknown function '$fnName'")
         }
