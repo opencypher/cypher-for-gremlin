@@ -17,9 +17,10 @@ package org.opencypher.gremlin.translation.walker
 
 import java.util.Collections
 
-import org.apache.tinkerpop.gremlin.structure.Vertex
+import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
@@ -65,8 +66,18 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
             NumericRange.inclusive(start.value, end.value, step.value)
         }
         walkRange(range, varName)
-      case FunctionInvocation(_, FunctionName(fnName), _, Vector(Variable(funArg))) if "labels" == fnName.toLowerCase =>
-        g.select(funArg).label().is(p.neq(Vertex.DEFAULT_LABEL)).as(varName)
+      case FunctionInvocation(_, FunctionName(fnName), _, Vector(arg)) =>
+        arg match {
+          case Variable(name) => g.select(name)
+          case _              => g.inject(expressionValue(arg, context))
+        }
+        fnName.toLowerCase match {
+          case "labels" => g.label().is(p.neq(Vertex.DEFAULT_LABEL)).as(varName)
+          case "keys"   => g.valueMap().select(Column.keys).unfold().as(varName)
+          case _        => throw new SyntaxException(s"Unknown function '$fnName'")
+        }
+      case FunctionInvocation(_, FunctionName(fnName), _, _) =>
+        throw new SyntaxException(s"Unknown function '$fnName'")
       case Variable(name) =>
         g.select(name).unfold().as(varName)
       case Null() =>
