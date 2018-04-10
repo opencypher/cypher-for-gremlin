@@ -60,7 +60,7 @@ object GremlinErrors {
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, NO_VARIABLES_IN_SCOPE),
     "Multiple result columns with the same name are not supported .+" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, COLUMN_NAME_CONFLICT),
-    "Can't create node `(.+)` with labels or properties here. The variable is already declared in this context" ->
+    "Can't create node '(.+)' with labels or properties here. The variable is already declared in this context" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, VARIABLE_ALREADY_BOUND),
     "Can't create node `(.+)` with labels or properties here. It already exists in this context" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, VARIABLE_ALREADY_BOUND),
