@@ -34,16 +34,27 @@ public class UnwindTest {
     @Test
     public void unwindLabels() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
-            "MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label"
+            "MATCH (n) UNWIND " +
+                "labels(n) AS label " +
+                "RETURN DISTINCT label"
         );
 
         assertThat(results)
-            .hasSize(2)
             .extracting("label")
-            .containsExactlyInAnyOrder(
-                "person",
-                "software"
-            );
+            .containsExactlyInAnyOrder("person", "software");
+    }
+
+    @Test
+    public void unwindKeys() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                "UNWIND keys(n) AS key " +
+                "RETURN DISTINCT key"
+        );
+
+        assertThat(results)
+            .extracting("key")
+            .containsExactlyInAnyOrder("name", "age", "lang");
     }
 
     @Test
@@ -106,6 +117,8 @@ public class UnwindTest {
             "MATCH (n:lcp) RETURN sum(n.num) as sum"
         );
 
+        submitAndGet("MATCH (n:lcp) DETACH DELETE n");
+
         assertThat(verification)
             .extracting("sum")
             .containsExactly(6L);
@@ -140,8 +153,8 @@ public class UnwindTest {
     public void unwindVariable() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS numbers " +
-            "UNWIND numbers AS arr " +
-            "RETURN arr"
+                "UNWIND numbers AS arr " +
+                "RETURN arr"
         );
 
         assertThat(results)
