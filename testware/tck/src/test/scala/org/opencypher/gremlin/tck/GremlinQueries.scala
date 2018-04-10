@@ -16,23 +16,10 @@
 package org.opencypher.gremlin.tck
 
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps
+import org.opencypher.tools.tck.constants.TCKQueries
 
 object GremlinQueries {
   val dropQuery: String = new GroovyGremlinSteps().V().drop().toString
-
-  // TODO Remove after https://github.com/opencypher/openCypher/pull/295 is released
-  private val nodePropsQuery =
-    """MATCH (n)
-      |UNWIND keys(n) AS key
-      |WITH properties(n) AS properties, key, n
-      |RETURN id(n) AS nodeId, key, properties[key] AS value""".stripMargin
-
-  // TODO Remove after https://github.com/opencypher/openCypher/pull/295 is released
-  private val relPropsQuery =
-    """MATCH ()-[r]->()
-      |UNWIND keys(r) AS key
-      |WITH properties(r) AS properties, key, r
-      |RETURN id(r) AS relId, key, properties[key] AS value""".stripMargin
 
   private val getNodeProperties = {
     val b = new GroovyGremlinSteps()
@@ -64,8 +51,8 @@ object GremlinQueries {
   }
 
   val cypherToGremlinQueries = Map(
-    nodePropsQuery -> getNodeProperties.toString,
-    relPropsQuery -> getRelProperties.toString
+    TCKQueries.NODE_PROPS_QUERY -> getNodeProperties.toString,
+    TCKQueries.REL_PROPS_QUERY -> getRelProperties.toString
   )
 
 }
