@@ -345,6 +345,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> math(String expression) {
+        g.math(expression);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> max() {
         g.max();
         return this;

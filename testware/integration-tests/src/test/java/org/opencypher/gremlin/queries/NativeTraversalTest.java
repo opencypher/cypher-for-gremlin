@@ -449,6 +449,18 @@ public class NativeTraversalTest {
         )).isEqualTo(0);
     }
 
+    @Test
+    public void math() throws Exception {
+        String cypher = "MATCH (n:Person {firstName: 'Erlend'}) " +
+            "RETURN toInteger(sqrt(abs(1 + (2 - (3 * (4 / (5 ^ ((n.born - 1990) % 3)))))))) AS result";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+
+        assertThat(cypherResults)
+            .extracting("result")
+            .containsExactly(3L);
+    }
+
     public static Comparator<? super Tuple> ignoreOrderInCollections() {
         return (t1, t2) ->
             (int) Streams.zip(t1.toList().stream(), t2.toList().stream(),

@@ -264,6 +264,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def math(expression: String): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Math(expression)
+    this
+  }
+
   override def max(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Max
     this

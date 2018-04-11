@@ -183,6 +183,8 @@ case class MapT(traversal: Seq[GremlinStep]) extends GremlinStep {
   }
 }
 
+case class Math(expression: String) extends GremlinStep
+
 case object Max extends GremlinStep
 
 case object Mean extends GremlinStep

@@ -192,7 +192,8 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
   private def isWherePrecondition(expression: Expression): Boolean = {
     expression match {
       case _: Variable | _: Property | _: Literal | _: ListLiteral | _: Parameter | _: Null | _: FunctionInvocation |
-          _: CountStar | _: PatternComprehension =>
+          _: CountStar | _: PatternComprehension | _: Add | _: Subtract | _: Multiply | _: Divide | _: Pow |
+          _: Modulo =>
         false
       case _ =>
         true
@@ -257,6 +258,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         val traversals = args.map(pivot(alias, _, select, unfold, finalize = false)._2)
 
         val function = fnName.toLowerCase match {
+          case "abs"           => traversals.head.math("abs(_)")
           case "exists"        => __.coalesce(traversals.head.is(p.neq(NULL)).constant(true), __.constant(false))
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
           case "id"            => nullIfNull(traversals.head, __.id())
@@ -267,6 +269,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "properties"    => nullIfNull(traversals.head, __.map(CustomFunction.properties()))
           case "relationships" => traversals.head.map(CustomFunction.relationships())
           case "size"          => traversals.head.map(CustomFunction.size())
+          case "sqrt"          => traversals.head.math("sqrt(_)")
           case "type"          => nullIfNull(traversals.head, __.label().is(p.neq(Vertex.DEFAULT_LABEL)))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
           case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
@@ -343,6 +346,13 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             )
           )
         )
+      case Add(e1, e2)      => math(alias, unfold, finalize, e1, e2, "+")
+      case Subtract(e1, e2) => math(alias, unfold, finalize, e1, e2, "-")
+      case Multiply(e1, e2) => math(alias, unfold, finalize, e1, e2, "*")
+      case Divide(e1, e2)   => math(alias, unfold, finalize, e1, e2, "/")
+      case Pow(e1, e2)      => math(alias, unfold, finalize, e1, e2, "^")
+      case Modulo(e1, e2)   => math(alias, unfold, finalize, e1, e2, "%")
+
       case _ => aggregation(alias, expression, select, finalize)
     }
   }
@@ -436,6 +446,25 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case _ =>
         throw new IllegalArgumentException("Expression not supported: " + expression)
     }
+  }
+
+  private def math(alias: String, unfold: Boolean, finalize: Boolean, e1: Expression, e2: Expression, op: String) = {
+    val p = context.dsl.predicates()
+
+    val (_, traversal1) = pivot(alias, e1, select = true, unfold, finalize)
+    val (_, traversal2) = pivot(alias, e2, select = true, unfold, finalize)
+
+    val lhsName = context.generateName().replace(" ", "_") // name limited by MathStep#VARIABLE_PATTERN
+
+    (
+      Pivot,
+      __.map(traversal1)
+        .as(lhsName)
+        .map(traversal2)
+        .choose(
+          __.or(__.is(p.isEq(NULL)), __.select(lhsName).is(p.isEq(NULL))),
+          __.constant(NULL),
+          __.math("%s %s _".format(lhsName, op))))
   }
 
   private def walkPatternComprehension(

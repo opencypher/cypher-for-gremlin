@@ -317,6 +317,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> math(String expression) {
+        bytecode.addStep(Symbols.math, expression);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> max() {
         bytecode.addStep(Symbols.max);
         return this;

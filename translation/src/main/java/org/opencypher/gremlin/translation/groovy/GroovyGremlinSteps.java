@@ -324,6 +324,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> math(String expression) {
+        g.append(chain("math", expression));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> max() {
         g.append(chain("max"));
         return this;
