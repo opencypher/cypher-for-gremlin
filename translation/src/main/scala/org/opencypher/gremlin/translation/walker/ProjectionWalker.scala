@@ -19,11 +19,11 @@ import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.{NodeType, PathType, RelationshipType}
+import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
-import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.immutable.ListMap
@@ -189,16 +189,22 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
   }
 
-  private def applyWherePreconditions(items: Seq[ReturnItem]): Unit = {
-    for (item <- items) {
-      val AliasedReturnItem(expression, _) = item
-      expression match {
-        case _: Variable | _: Property | _: Literal | _: ListLiteral | _: Parameter | _: Null | _: FunctionInvocation |
-            _: CountStar | _: PatternComprehension => // Handled separately in #pivot
-        case _ =>
-          WhereWalker.walk(context, g, expression)
-      }
+  private def isWherePrecondition(expression: Expression): Boolean = {
+    expression match {
+      case _: Variable | _: Property | _: Literal | _: ListLiteral | _: Parameter | _: Null | _: FunctionInvocation |
+          _: CountStar | _: PatternComprehension =>
+        false
+      case _ =>
+        true
     }
+  }
+
+  private def applyWherePreconditions(items: Seq[ReturnItem]): Unit = {
+    items.map {
+      case AliasedReturnItem(expression, _)   => expression
+      case UnaliasedReturnItem(expression, _) => expression
+    }.filter(isWherePrecondition)
+      .foreach(WhereWalker.walk(context, g, _))
   }
 
   private def reselectProjection(items: Seq[ReturnItem]): Unit = {
@@ -267,7 +273,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "tointeger"     => traversals.head.map(CustomFunction.convertToInteger())
           case "tostring"      => traversals.head.map(CustomFunction.convertToString())
           case _ =>
-            return aggregation(alias, expression, select)
+            return aggregation(alias, expression, select, finalize)
         }
 
         if (distinct) {
@@ -337,7 +343,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             )
           )
         )
-      case _ => aggregation(alias, expression, select)
+      case _ => aggregation(alias, expression, select, finalize)
     }
   }
 
@@ -395,7 +401,8 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
   private def aggregation(
       alias: String,
       expression: Expression,
-      select: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
+      select: Boolean,
+      finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
     val p = context.dsl.predicates()
 
     expression match {
@@ -424,7 +431,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         }
       case CountStar() =>
         (Aggregation, __.unfold().count())
-      case _: Expression =>
+      case _: Expression if !finalize && isWherePrecondition(expression) =>
         (Expression, __.identity())
       case _ =>
         throw new IllegalArgumentException("Expression not supported: " + expression)
