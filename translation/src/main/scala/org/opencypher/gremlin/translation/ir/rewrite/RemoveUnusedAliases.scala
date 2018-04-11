@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 package org.opencypher.gremlin.translation.ir.rewrite
+
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.{MathStep, MathStepAcessor}
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
+import scala.collection.JavaConverters._
 import scala.collection.SortedMap
 
 /**
@@ -40,11 +43,13 @@ object RemoveUnusedAliases extends GremlinRewriter {
       def increment(keys: String*): SortedMap[String, Int] = {
         keys.foldLeft(acc)((acc, key) => acc.updated(key, acc.getOrElse(key, 0) + 1))
       }
+
       acc ++ extract({
         case From(fromStepLabel) :: _      => increment(fromStepLabel)
         case To(toStepLabel) :: _          => increment(toStepLabel)
         case SelectK(selectKeys @ _*) :: _ => increment(selectKeys: _*)
         case WhereP(predicate) :: _        => increment(predicateAliases(predicate): _*)
+        case Math(expression) :: _         => increment(MathStepAcessor.getVariables(expression).asScala.toSeq: _*)
       })(localSteps).flatten
     })(steps)
 
@@ -62,6 +67,7 @@ object RemoveUnusedAliases extends GremlinRewriter {
         .filter(_.isInstanceOf[String])
         .map(_.asInstanceOf[String])
     }
+
     predicate match {
       case Eq(value)              => strings(value)
       case Gt(value)              => strings(value)

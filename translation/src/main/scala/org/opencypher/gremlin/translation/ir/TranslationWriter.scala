@@ -166,6 +166,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           }
         case MapT(traversal) =>
           g.map(generateSteps(traversal))
+        case Math(expression) =>
+          g.math(expression)
         case Max =>
           g.max()
         case Mean =>
