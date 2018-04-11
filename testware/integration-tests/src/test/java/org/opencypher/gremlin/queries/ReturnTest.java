@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +26,7 @@ import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -39,7 +41,11 @@ public class ReturnTest {
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.cypherGremlinClient().submit(cypher).all();
+        return submitAndGet(cypher, emptyMap());
+    }
+
+    private List<Map<String, Object>> submitAndGet(String cypher, Map<String, ?> parameters) {
+        return gremlinServer.cypherGremlinClient().submit(cypher, parameters).all();
     }
 
     @Test
@@ -387,5 +393,53 @@ public class ReturnTest {
                 27L, 29L, 32L, 35L,
                 "java", "java"
             );
+    }
+
+    @Test
+    public void ternaryLogic() throws Exception {
+        Map<String, Object> args = new HashMap<>();
+        args.put("t", true);
+        args.put("t2", true);
+        args.put("f", false);
+        args.put("f2", false);
+        args.put("n", null);
+        args.put("n2", null);
+
+        Map<String, Boolean> tests = new LinkedHashMap<>();
+        tests.put("NOT $n", null);
+        tests.put("NOT $t", false);
+        tests.put("NOT $f", true);
+
+        tests.put("$t AND $t2", true);
+        tests.put("$t AND $f", false);
+        tests.put("$f AND $f2", false);
+        tests.put("$t AND $n", null);
+        tests.put("$f AND $n", false);
+
+        tests.put("$t OR $t2", true);
+        tests.put("$t OR $f", true);
+        tests.put("$f OR $f2", false);
+        tests.put("$t OR $n", true);
+        tests.put("$f OR $n", null);
+
+        tests.put("$t XOR $t2", false);
+        tests.put("$f XOR $f2", false);
+        tests.put("$t XOR $f", true);
+        tests.put("$f XOR $t", true);
+        tests.put("$n XOR $n2", null);
+        tests.put("$n XOR $t", null);
+        tests.put("$t XOR $n", null);
+        tests.put("$n XOR $f", null);
+        tests.put("$f XOR $n", null);
+
+        for (Map.Entry<String, Boolean> entry : tests.entrySet()) {
+            String expr = entry.getKey();
+            Boolean result = entry.getValue();
+            List<Map<String, Object>> results = submitAndGet("RETURN " + expr, args);
+
+            assertThat(results)
+                .extracting(expr)
+                .containsExactly(result);
+        }
     }
 }
