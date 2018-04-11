@@ -346,12 +346,71 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             )
           )
         )
+
       case Add(e1, e2)      => math(alias, unfold, finalize, e1, e2, "+")
       case Subtract(e1, e2) => math(alias, unfold, finalize, e1, e2, "-")
       case Multiply(e1, e2) => math(alias, unfold, finalize, e1, e2, "*")
       case Divide(e1, e2)   => math(alias, unfold, finalize, e1, e2, "/")
       case Pow(e1, e2)      => math(alias, unfold, finalize, e1, e2, "^")
       case Modulo(e1, e2)   => math(alias, unfold, finalize, e1, e2, "%")
+
+      case Not(rhs) =>
+        val rhsT = pivot(alias, rhs, select, unfold, finalize = false)._2
+        (
+          Pivot,
+          __.choose(
+            __.map(rhsT).is(p.isEq(NULL)),
+            __.constant(NULL),
+            __.choose(
+              __.map(rhsT).is(p.isEq(true)),
+              __.constant(false),
+              __.constant(true)
+            )
+          )
+        )
+      case Ands(ands) =>
+        val traversals = ands.map(pivot(alias, _, select, unfold, finalize = false)._2).toSeq
+        (
+          Pivot,
+          __.choose(
+            __.and(traversals.map(__.map(_)).map(_.is(p.isEq(true))): _*),
+            __.constant(true),
+            __.choose(
+              __.or(traversals.map(__.map(_)).map(_.is(p.isEq(false))): _*),
+              __.constant(false),
+              __.constant(NULL)
+            )
+          )
+        )
+      case Ors(ors) =>
+        val traversals = ors.map(pivot(alias, _, select, unfold, finalize = false)._2).toSeq
+        (
+          Pivot,
+          __.choose(
+            __.or(traversals.map(__.map(_)).map(_.is(p.isEq(true))): _*),
+            __.constant(true),
+            __.choose(
+              __.and(traversals.map(__.map(_)).map(_.is(p.isEq(false))): _*),
+              __.constant(false),
+              __.constant(NULL)
+            )
+          )
+        )
+      case Xor(lhs, rhs) =>
+        val lhsT = pivot(alias, lhs, select, unfold, finalize = false)._2
+        val rhsT = pivot(alias, rhs, select, unfold, finalize = false)._2
+        (
+          Pivot,
+          __.choose(
+            __.or(__.map(lhsT).is(p.isEq(NULL)), __.map(rhsT).is(p.isEq(NULL))),
+            __.constant(NULL),
+            __.choose(
+              __.map(rhsT).as(TEMP).map(lhsT).where(p.neq(TEMP)),
+              __.constant(true),
+              __.constant(false)
+            )
+          )
+        )
 
       case _ => aggregation(alias, expression, select, finalize)
     }

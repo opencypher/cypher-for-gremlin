@@ -15,12 +15,15 @@
  */
 package org.opencypher.gremlin.translation.bytecode;
 
+import static org.opencypher.gremlin.translation.Tokens.NULL;
+
+import java.util.Optional;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode.Binding;
 import org.opencypher.gremlin.translation.GremlinBindings;
 
 public class BytecodeGremlinBindings implements GremlinBindings {
     @Override
     public Object bind(String name, Object value) {
-        return new Binding<>(name, value);
+        return new Binding<>(name, Optional.ofNullable(value).orElse(NULL));
     }
 }
