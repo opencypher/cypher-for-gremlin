@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.{NodeType, PathType, RelationshipType}
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.{CypherType, ListType, NodeType, PathType, RelationshipType}
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -330,7 +330,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case Variable(varName) =>
         val value = baseSelect(varName, select, unfold, only = true)
         if (finalize) {
-          (Pivot, finalizeValue(value, alias))
+          (Pivot, finalizeValue(select, value, alias))
         } else {
           (Pivot, value)
         }
@@ -429,12 +429,17 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     subTraversal
   }
 
-  private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String) = {
+  private def finalizeValue(select: Boolean, subTraversal: GremlinSteps[T, P], alias: String) = {
+    def hasInnerType(typ: CypherType, expected: CypherType): Boolean =
+      typ.isInstanceOf[ListType] && typ.asInstanceOf[ListType].innerType == expected
+
     val p = context.dsl.predicates()
 
     context.returnTypes.get(alias) match {
       case Some(typ) if typ.isInstanceOf[NodeType] =>
         nullIfNull(subTraversal, __.valueMap(true))
+      case Some(typ) if typ.isInstanceOf[ListType] && hasInnerType(typ, NodeType.instance) =>
+        baseSelect(alias, select, unfold = false, only = false).unfold().is(p.neq(NULL)).valueMap(true).fold()
       case Some(typ) if typ.isInstanceOf[RelationshipType] =>
         nullIfNull(
           subTraversal,
@@ -443,6 +448,15 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             .by(__.inV().id())
             .by(__.outV().id())
         )
+      case Some(typ) if typ.isInstanceOf[ListType] && hasInnerType(typ, RelationshipType.instance) =>
+        baseSelect(alias, select, unfold = false, only = false)
+          .unfold()
+          .is(p.neq(NULL))
+          .project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
+          .by(__.valueMap(true))
+          .by(__.inV().id())
+          .by(__.outV().id())
+          .fold()
       case Some(typ) if typ.isInstanceOf[PathType] =>
         nullIfNull(
           subTraversal,
@@ -489,6 +503,8 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         fnName.toLowerCase match {
           case "avg" =>
             (Aggregation, traversal.mean())
+          case "collect" if finalize =>
+            (Aggregation, finalizeValue(select, traversal.fold(), alias))
           case "collect" =>
             (Aggregation, traversal.fold())
           case "count" =>

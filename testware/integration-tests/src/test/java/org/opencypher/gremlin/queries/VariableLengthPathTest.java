@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.translation.ReturnProperties;
 
 public class VariableLengthPathTest {
 
@@ -84,8 +84,8 @@ public class VariableLengthPathTest {
                 }
 
                 Map<String, Object> map = new HashMap<>();
-                map.put("r", ((Collection<Edge>) result.get("r")).stream()
-                    .map(Element::label)
+                map.put("r", ((Collection<Map>) result.get("r")).stream()
+                    .map(m -> m.get(ReturnProperties.LABEL))
                     .collect(toList()));
 
                 map.put("software", result.get("software"));

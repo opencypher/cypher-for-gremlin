@@ -45,6 +45,7 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.IntegerType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.ListType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.PathType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.RelationshipType;
@@ -90,6 +91,7 @@ public final class ReturnNormalizer {
         return value;
     }
 
+    @SuppressWarnings("unchecked")
     private Object normalizeValue(CypherType type, Object value) {
         if (Tokens.NULL.equals(value)) {
             return null;
@@ -101,6 +103,12 @@ public final class ReturnNormalizer {
             return normalizePath((Map<?, ?>) value);
         } else if (type instanceof IntegerType) {
             return CustomFunction.convertToLong(value);
+        } else if (type instanceof ListType) {
+            CypherType cypherType = ((ListType) type).innerType();
+            return ((Collection<?>) value)
+                .stream()
+                .map(v -> normalizeValue(cypherType, v))
+                .collect(Collectors.toList());
         }
 
         return normalizeValue(value);
