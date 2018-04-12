@@ -109,31 +109,14 @@ public class CustomFunction implements Function<Traverser, Object> {
             });
     }
 
-    public static CustomFunction convertToInteger() {
+    public static CustomFunction convertToIntegerType() {
         return new CustomFunction(
-            "convertToInteger",
+            "convertToIntegerType",
             traverser -> {
                 Object arg = tokenToNull(traverser.get());
-                boolean valid = arg == null ||
-                    arg instanceof Number ||
-                    arg instanceof String;
-                if (!valid) {
-                    String className = arg.getClass().getName();
-                    throw new TypeException("Cannot convert " + className + " to integer");
-                }
-
-                return nullToToken(
-                    Optional.ofNullable(arg)
-                        .map(String::valueOf)
-                        .map(v -> {
-                            try {
-                                return Double.valueOf(v);
-                            } catch (NumberFormatException e) {
-                                return null;
-                            }
-                        })
-                        .map(Double::intValue)
-                        .orElse(null));
+                // long in org.neo4j.driver.internal.value.IntegerValue#val
+                Long integer = convertToLong(arg);
+                return nullToToken(integer);
             });
     }
 
@@ -269,6 +252,28 @@ public class CustomFunction implements Function<Traverser, Object> {
             "size", traverser -> traverser.get() instanceof String ?
             (long) ((String) traverser.get()).length() :
             (long) ((Collection) traverser.get()).size());
+    }
+
+    static Long convertToLong(Object arg) {
+        boolean valid = arg == null ||
+            arg instanceof Number ||
+            arg instanceof String;
+        if (!valid) {
+            String className = arg.getClass().getName();
+            throw new TypeException("Cannot convert " + className + " to integer");
+        }
+
+        return Optional.ofNullable(arg)
+            .map(String::valueOf)
+            .map(v -> {
+                try {
+                    return Double.valueOf(v);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            })
+            .map(Double::longValue)
+            .orElse(null);
     }
 
     private static Object flatten(Object element) {

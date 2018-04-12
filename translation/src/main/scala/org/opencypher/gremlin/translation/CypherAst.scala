@@ -182,8 +182,11 @@ object CypherAst {
       case Return(_, returnItems, _, _, _, _, _) => returnItems.items
       case _                                     => Nil
     }.flatMap {
-      case AliasedReturnItem(expression, Variable(name)) =>
-        val pair = typeTable.get(expression).map {
+      case AliasedReturnItem(expression, variable @ Variable(name)) =>
+        val typeInfo = typeTable
+          .get(expression)
+          .orElse(typeTable.get(variable))
+        val pair = typeInfo.map {
           case ExpressionTypeInfo(typeSpec, _) =>
             if (typeSpec.ranges.lengthCompare(1) == 0) {
               val typ = typeSpec.ranges.head.lower

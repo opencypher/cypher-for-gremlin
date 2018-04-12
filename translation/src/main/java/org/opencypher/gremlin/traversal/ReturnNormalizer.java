@@ -44,6 +44,7 @@ import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.IntegerType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.PathType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.RelationshipType;
@@ -98,6 +99,8 @@ public final class ReturnNormalizer {
             return normalizeRelationship((Map<?, ?>) value);
         } else if (type instanceof PathType) {
             return normalizePath((Map<?, ?>) value);
+        } else if (type instanceof IntegerType) {
+            return CustomFunction.convertToLong(value);
         }
 
         return normalizeValue(value);
