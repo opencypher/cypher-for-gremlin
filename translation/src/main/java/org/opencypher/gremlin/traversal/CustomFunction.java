@@ -17,8 +17,14 @@ package org.opencypher.gremlin.traversal;
 
 import static java.lang.Integer.parseInt;
 import static java.util.stream.Collectors.toList;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ELEMENT;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ID;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_INV;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_OUTV;
+import static org.opencypher.gremlin.translation.Tokens.PROJECTION_RELATIONSHIP;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,8 +41,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.opencypher.gremlin.translation.ReturnProperties;
 import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.exception.TypeException;
 
@@ -219,12 +225,24 @@ public class CustomFunction implements Function<Traverser, Object> {
 
                     Edge edge = first.orElseThrow(() -> new RuntimeException("Invalid path, no edge found!"));
 
-                    return Stream.of(
-                        edge.outVertex(),
-                        edge,
-                        edge.inVertex())
-                        .map(CustomFunction::finalizeElements)
-                        .collect(toList());
+                    HashMap<String, Object> result = new HashMap<>();
+
+                    HashMap<String, Object> projectionRelationship = new HashMap<>();
+                    projectionRelationship.put(PROJECTION_ID, edge.id());
+                    projectionRelationship.put(PROJECTION_INV, edge.inVertex().id());
+                    projectionRelationship.put(PROJECTION_OUTV, edge.outVertex().id());
+
+                    result.put(PROJECTION_RELATIONSHIP, Arrays.asList(projectionRelationship));
+
+                    result.put(PROJECTION_ELEMENT,
+                        Stream.of(
+                            edge.outVertex(),
+                            edge,
+                            edge.inVertex())
+                            .map(CustomFunction::valueMap)
+                            .collect(toList()));
+
+                    return result;
                 })
                 .collect(toList()));
     }
@@ -367,27 +385,30 @@ public class CustomFunction implements Function<Traverser, Object> {
     }
 
     private static Object finalizeElements(Object o) {
-        HashMap<Object, Object> result = new HashMap<>();
 
         if (Tokens.NULL.equals(o)) {
             return Tokens.NULL;
         }
 
-        Element element = (Element) o;
-        result.put(ReturnProperties.ID, element.id());
-        result.put(ReturnProperties.LABEL, element.label());
-        element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
-
         if (o instanceof Vertex) {
-            result.put(ReturnProperties.TYPE, ReturnProperties.NODE_TYPE);
+            return valueMap((Element) o);
         } else {
             Edge edge = (Edge) o;
 
-            result.put(ReturnProperties.TYPE, ReturnProperties.RELATIONSHIP_TYPE);
-            result.put(ReturnProperties.INV, edge.inVertex().id());
-            result.put(ReturnProperties.OUTV, edge.outVertex().id());
-        }
+            HashMap<Object, Object> wrapper = new HashMap<>();
+            wrapper.put(PROJECTION_INV, edge.inVertex().id());
+            wrapper.put(PROJECTION_OUTV, edge.outVertex().id());
+            wrapper.put(PROJECTION_ELEMENT, valueMap((Element) o));
 
+            return wrapper;
+        }
+    }
+
+    private static HashMap<Object, Object> valueMap(Element element) {
+        HashMap<Object, Object> result = new HashMap<>();
+        result.put(T.id, element.id());
+        result.put(T.label, element.label());
+        element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
         return result;
     }
 }
