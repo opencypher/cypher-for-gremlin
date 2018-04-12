@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
@@ -199,7 +200,7 @@ public class CustomFunction implements Function<Traverser, Object> {
                         GraphTraversal.Admin admin = GraphTraversal.class.cast(functionTraversal).asAdmin();
                         return TraversalUtil.apply(item, admin);
                     })
-                    .collect(Collectors.toList());
+                    .collect(toList());
             },
             functionTraversal);
     }
@@ -225,7 +226,7 @@ public class CustomFunction implements Function<Traverser, Object> {
                         .map(CustomFunction::finalizeElements)
                         .collect(toList());
                 })
-                .collect(Collectors.toList()));
+                .collect(toList()));
     }
 
     public static CustomFunction containerIndex(Object index) {
@@ -245,6 +246,79 @@ public class CustomFunction implements Function<Traverser, Object> {
                     .orElse(null);
             },
             index);
+    }
+
+    public static CustomFunction percentileCont(double percentile) {
+        return new CustomFunction(
+            "percentileCont",
+            percentileFunction(
+                percentile,
+                data -> {
+                    int last = data.size() - 1;
+                    double lowPercentile = Math.floor(percentile * last) / last;
+                    double highPercentile = Math.ceil(percentile * last) / last;
+                    if (lowPercentile == highPercentile) {
+                        return percentileNearest(data, percentile);
+                    }
+
+                    double scale = (percentile - lowPercentile) / (highPercentile - lowPercentile);
+                    double low = percentileNearest(data, lowPercentile).doubleValue();
+                    double high = percentileNearest(data, highPercentile).doubleValue();
+                    return (high - low) * scale + low;
+                }
+            ),
+            percentile
+        );
+    }
+
+    public static CustomFunction percentileDisc(double percentile) {
+        return new CustomFunction(
+            "percentileDisc",
+            percentileFunction(
+                percentile,
+                data -> percentileNearest(data, percentile)
+            ),
+            percentile
+        );
+    }
+
+    private static Function<Traverser, Object> percentileFunction(double percentile,
+                                                                  Function<List<Number>, Number> percentileStrategy) {
+        return traverser -> {
+            if (percentile < 0 || percentile > 1) {
+                throw new IllegalArgumentException("Number out of range: " + percentile);
+            }
+
+            Collection<?> coll = (Collection<?>) traverser.get();
+            boolean invalid = coll.stream()
+                .anyMatch(o -> !(o == null || o instanceof Number));
+            if (invalid) {
+                throw new IllegalArgumentException("Percentile function can only handle numerical values");
+            }
+            List<Number> data = coll.stream()
+                .filter(Objects::nonNull)
+                .map(o -> (Number) o)
+                .sorted()
+                .collect(toList());
+
+            int size = data.size();
+            if (size == 0) {
+                return Tokens.NULL;
+            } else if (size == 1) {
+                return data.get(0);
+            }
+
+            return percentileStrategy.apply(data);
+        };
+    }
+
+    private static <T> T percentileNearest(List<T> sorted, double percentile) {
+        int size = sorted.size();
+        int index = (int) Math.ceil(percentile * size) - 1;
+        if (index == -1) {
+            index = 0;
+        }
+        return sorted.get(index);
     }
 
     public static CustomFunction size() {
@@ -288,7 +362,7 @@ public class CustomFunction implements Function<Traverser, Object> {
         return maybeNull == null ? Tokens.NULL : maybeNull;
     }
 
-    public static Object pathToList(Object value) {
+    private static Object pathToList(Object value) {
         return value instanceof Path ? new ArrayList<>(((Path) value).objects()) : value;
     }
 
