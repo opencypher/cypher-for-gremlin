@@ -487,14 +487,24 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         traversal.is(p.neq(NULL))
 
         fnName.toLowerCase match {
-          case "avg"     => (Aggregation, traversal.mean())
-          case "collect" => (Aggregation, traversal.fold())
-          case "count"   => (Aggregation, traversal.count())
+          case "avg" =>
+            (Aggregation, traversal.mean())
+          case "collect" =>
+            (Aggregation, traversal.fold())
+          case "count" =>
+            (Aggregation, traversal.count())
           case "max" =>
             (Aggregation, traversal.max().choose(p.isEq(Integer.MIN_VALUE), __.constant(NULL)))
           case "min" =>
             (Aggregation, traversal.min().choose(p.isEq(Integer.MAX_VALUE), __.constant(NULL)))
-          case "sum" => (Aggregation, traversal.sum())
+          case "percentilecont" =>
+            val percentile = inlineExpressionValue(args(1), context, classOf[java.lang.Number]).doubleValue()
+            (Aggregation, traversal.fold().map(CustomFunction.percentileCont(percentile)))
+          case "percentiledisc" =>
+            val percentile = inlineExpressionValue(args(1), context, classOf[java.lang.Number]).doubleValue()
+            (Aggregation, traversal.fold().map(CustomFunction.percentileDisc(percentile)))
+          case "sum" =>
+            (Aggregation, traversal.sum())
           case _ =>
             throw new SyntaxException(s"Unknown function '$fnName'")
         }

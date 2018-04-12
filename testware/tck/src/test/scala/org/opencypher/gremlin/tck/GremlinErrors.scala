@@ -17,8 +17,8 @@ package org.opencypher.gremlin.tck
 
 import org.opencypher.tools.tck.api.ExecutionFailed
 import org.opencypher.tools.tck.constants.TCKErrorDetails._
-import org.opencypher.tools.tck.constants.TCKErrorPhases.{COMPILE_TIME, RUNTIME}
-import org.opencypher.tools.tck.constants.TCKErrorTypes.{SYNTAX_ERROR, TYPE_ERROR}
+import org.opencypher.tools.tck.constants.TCKErrorPhases._
+import org.opencypher.tools.tck.constants.TCKErrorTypes._
 
 object GremlinErrors {
   val mappings = Map(
@@ -97,6 +97,8 @@ object GremlinErrors {
     "Unsupported graph element type: (.+)" ->
       ExecutionFailed(SYNTAX_ERROR, RUNTIME, PROPERTY_ACCESS_ON_NON_MAP),
     "Cannot convert .+ to .+" ->
-      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_VALUE)
+      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_VALUE),
+    "Number out of range: (.+)" ->
+      ExecutionFailed(ARGUMENT_ERROR, RUNTIME, NUMBER_OUT_OF_RANGE)
   )
 }
