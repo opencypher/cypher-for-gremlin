@@ -273,7 +273,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "type"          => nullIfNull(traversals.head, __.label().is(p.neq(Vertex.DEFAULT_LABEL)))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
           case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
-          case "tointeger"     => traversals.head.map(CustomFunction.convertToInteger())
+          case "tointeger"     => traversals.head.map(CustomFunction.convertToIntegerType())
           case "tostring"      => traversals.head.map(CustomFunction.convertToString())
           case _ =>
             return aggregation(alias, expression, select, finalize)
@@ -464,7 +464,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         .choose(
           __.or(__.is(p.isEq(NULL)), __.select(lhsName).is(p.isEq(NULL))),
           __.constant(NULL),
-          __.math("%s %s _".format(lhsName, op))))
+          __.math(s"$lhsName $op _")))
   }
 
   private def walkPatternComprehension(

@@ -24,6 +24,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.AnyType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.IntegerType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
 
 public class CypherAstWrapperTest {
@@ -83,5 +84,16 @@ public class CypherAstWrapperTest {
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);
+    }
+
+    @Test
+    public void variableInTypeTable() {
+        String cypher = "MATCH (a)\n" +
+            "RETURN a, count(a) + 3";
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        Map<String, CypherType> variableTypes = ast.getReturnTypes();
+
+        assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);
+        assertThat(variableTypes.get("count(a) + 3")).isInstanceOf(IntegerType.class);
     }
 }
