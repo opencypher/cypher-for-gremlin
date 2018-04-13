@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -48,6 +49,8 @@ import org.opencypher.gremlin.translation.exception.TypeException;
 
 @SuppressWarnings("unchecked")
 public class CustomFunction implements Function<Traverser, Object> {
+    private static GraphTraversal.Admin valueMap = __.start().valueMap(true).asAdmin();
+
     private final String name;
     private final Object[] args;
     private final Function<Traverser, Object> implementation;
@@ -225,9 +228,9 @@ public class CustomFunction implements Function<Traverser, Object> {
 
                     Edge edge = first.orElseThrow(() -> new RuntimeException("Invalid path, no edge found!"));
 
-                    HashMap<String, Object> result = new HashMap<>();
+                    Map<String, Object> result = new HashMap<>();
 
-                    HashMap<String, Object> projectionRelationship = new HashMap<>();
+                    Map<String, Object> projectionRelationship = new HashMap<>();
                     projectionRelationship.put(PROJECTION_ID, edge.id());
                     projectionRelationship.put(PROJECTION_INV, edge.inVertex().id());
                     projectionRelationship.put(PROJECTION_OUTV, edge.outVertex().id());
@@ -239,7 +242,7 @@ public class CustomFunction implements Function<Traverser, Object> {
                             edge.outVertex(),
                             edge,
                             edge.inVertex())
-                            .map(CustomFunction::valueMap)
+                            .map(e -> TraversalUtil.apply(e, valueMap))
                             .collect(toList()));
 
                     return result;
@@ -391,24 +394,16 @@ public class CustomFunction implements Function<Traverser, Object> {
         }
 
         if (o instanceof Vertex) {
-            return valueMap((Element) o);
+            return TraversalUtil.apply(o, valueMap);
         } else {
             Edge edge = (Edge) o;
 
-            HashMap<Object, Object> wrapper = new HashMap<>();
+            Map<Object, Object> wrapper = new HashMap<>();
             wrapper.put(PROJECTION_INV, edge.inVertex().id());
             wrapper.put(PROJECTION_OUTV, edge.outVertex().id());
-            wrapper.put(PROJECTION_ELEMENT, valueMap((Element) o));
+            wrapper.put(PROJECTION_ELEMENT, TraversalUtil.apply(o, valueMap));
 
             return wrapper;
         }
-    }
-
-    private static HashMap<Object, Object> valueMap(Element element) {
-        HashMap<Object, Object> result = new HashMap<>();
-        result.put(T.id, element.id());
-        result.put(T.label, element.label());
-        element.properties().forEachRemaining(e -> result.put(e.key(), e.value()));
-        return result;
     }
 }
