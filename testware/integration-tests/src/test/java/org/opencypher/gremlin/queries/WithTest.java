@@ -97,10 +97,7 @@ public class WithTest {
      * Maps don't work in client-side translations
      */
     @Test
-    @Category({
-        SkipWithGremlinGroovy.class,
-        SkipWithBytecode.class
-    })
+    @Category({SkipWithGremlinGroovy.class})
     public void withMapWithNullValue() throws Exception {
         String query = "WITH {notName: 0, notName2: null} AS map " +
             "RETURN exists(map.notName2) AS result";

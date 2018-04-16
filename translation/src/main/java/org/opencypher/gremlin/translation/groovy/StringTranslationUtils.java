@@ -55,7 +55,11 @@ public final class StringTranslationUtils {
             return toLiteral(map);
         }
         if (argument instanceof Map) {
-            return ((Map<?, ?>) argument).entrySet().stream()
+            Map<?, ?> map = (Map<?, ?>) argument;
+            if(map.isEmpty()){
+                return "[:]";
+            }
+            return map.entrySet().stream()
                 .map(entry -> {
                     Object key = entry.getKey();
                     Object value = toLiteral(entry.getValue());

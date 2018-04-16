@@ -15,6 +15,9 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import java.util.Collections
+import java.util.Collections.emptyMap
+
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
@@ -28,6 +31,7 @@ import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
+import scala.collection.breakOut
 
 /**
   * AST walker that handles translation
@@ -326,8 +330,18 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         val (_, traversal) = pivot(alias, expr, finalize)
 
         (Pivot, __.coalesce(traversal.is(p.neq(NULL)).constant(false), __.constant(true)))
-      case node @ (_: Parameter | _: Literal | _: ListLiteral | _: MapExpression | _: Null) =>
+      case node @ (_: Parameter | _: Literal | _: ListLiteral | _: Null) =>
         (Pivot, __.constant(expressionValue(node, context)))
+      case MapExpression(Nil) => (Pivot, __.constant(emptyMap()))
+      case MapExpression(items) =>
+        val map: Map[String, GremlinSteps[T, P]] = items.map(item => {
+          val (PropertyKeyName(name), expression) = item
+          val (_, traversal) = pivot(alias, expression, select, unfold, finalize)
+          (name, traversal)
+        })(breakOut)
+        val project = __.project(map.keySet.toSeq: _*)
+        map.values.foreach(traversal => project.by(traversal))
+        (Pivot, project)
       case Property(Variable(varName), PropertyKeyName(keyName: String)) =>
         (
           Pivot,
