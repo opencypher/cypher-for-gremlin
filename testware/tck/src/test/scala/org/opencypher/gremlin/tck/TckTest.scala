@@ -18,10 +18,12 @@ package org.opencypher.gremlin.tck
 import java.util
 import java.util.concurrent.TimeUnit.SECONDS
 
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.tck.GremlinQueries._
 import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
+import org.opencypher.gremlin.tck.reports.CucumberReportAdapter
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
@@ -60,6 +62,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
   }
 }
 
+@ExtendWith(Array(classOf[CucumberReportAdapter]))
 class TckTest {
   @TestFactory
   def testTck(): util.Collection[DynamicTest] = {
