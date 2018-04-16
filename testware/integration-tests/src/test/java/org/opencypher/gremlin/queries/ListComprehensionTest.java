@@ -155,4 +155,21 @@ public class ListComprehensionTest {
                     .containsExactly("A", "T", "B");
             });
     }
+
+    @Test
+    public void patternComprehensionNodeDegree() throws Exception {
+        submitAndGet("CREATE (x:X),\n" +
+            "(x)-[:T]->(),\n" +
+            "(x)-[:T]->(),\n" +
+            "(x)-[:T]->()");
+
+        String cypher = "MATCH (a:X)\n" +
+            "RETURN size([(a)-->() | 1]) AS length";
+
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("length")
+            .containsExactly(3L);
+    }
 }

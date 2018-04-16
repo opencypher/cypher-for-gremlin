@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
@@ -42,7 +43,8 @@ public class RemoveUnusedAliasesTest {
                 __.V()
                     .as("n")
                     .outE().inV()
-                    .select("n")
+                    .as(UNUSED)
+                    .select("n", UNUSED)
             );
     }
 
@@ -57,7 +59,8 @@ public class RemoveUnusedAliasesTest {
                 __.V()
                     .as("n")
                     .outE().inV()
-                    .select("n")
+                    .as(UNUSED)
+                    .select("n", UNUSED)
             );
     }
 
@@ -91,7 +94,8 @@ public class RemoveUnusedAliasesTest {
                     .V()
                     .as("  GENERATED1").where(__.select("  GENERATED1").where(P.eq("m")))
                     .outE().inV()
-                    .select("n")
+                    .as(UNUSED)
+                    .select("n", UNUSED)
             );
     }
 

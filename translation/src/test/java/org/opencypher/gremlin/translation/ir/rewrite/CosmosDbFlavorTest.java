@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static org.opencypher.gremlin.translation.Tokens.NULL;
+import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
@@ -40,9 +41,9 @@ public class CosmosDbFlavorTest {
         ))
             .withFlavor(flavor)
             .hasTraversal(
-                __.V().as("n").where(__.select("n").hasLabel("N"))
-                    .select("n")
-                    .map(__.project("n.p").by(__.choose(P.neq(NULL), __.coalesce(
+                __.V().as("n").where(__.select("n").hasLabel("N")).as(UNUSED)
+                    .select("n", UNUSED)
+                    .map(__.project("n.p").by(__.select("n").choose(P.neq(NULL), __.coalesce(
                         __.properties().hasKey("p").value(),
                         __.constant(NULL)), __.constant(NULL))))
             );
@@ -56,8 +57,8 @@ public class CosmosDbFlavorTest {
         ))
             .withFlavor(flavor)
             .hasTraversalBeforeReturn(
-                __.inject(1, 2, 3).as("i")
-                    .select("i")
+                __.inject(1, 2, 3).as("i").as(UNUSED)
+                    .select("i", UNUSED)
             );
     }
 }
