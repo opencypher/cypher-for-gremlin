@@ -70,8 +70,9 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     private static final Pattern RETURN_START = Pattern.compile(
         "\\.(" +
             "group\\(\\)\\.by\\([^)]+\\)\\.by\\([^)]+\\)|" +
-            "map\\(__\\.project|" +
-            "fold\\(\\)\\.map\\(__\\.project" +
+            "fold\\(\\)\\.map\\(__\\.project\\(|" +
+            "map\\(__\\.project\\(|" +
+            "(?<=[^_]\\.)project\\(" +
             ")"
     );
 
@@ -83,7 +84,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
             while (matcher.find()) {
                 lastIndex = matcher.start();
             }
-            return t.substring(0, lastIndex);
+            return lastIndex == -1 ? t : t.substring(0, lastIndex);
         });
     }
 
