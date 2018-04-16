@@ -29,7 +29,11 @@ import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 public class CosmosDbFlavorTest {
 
     private final TranslatorFlavor flavor = new TranslatorFlavor(
-        seq(CosmosDbFlavor$.MODULE$),
+        seq(
+            InlineMapTraversal$.MODULE$,
+            RemoveUselessSteps$.MODULE$,
+            CosmosDbFlavor$.MODULE$
+        ),
         seq()
     );
 
@@ -43,13 +47,13 @@ public class CosmosDbFlavorTest {
             .hasTraversal(
                 __.V().as("n").where(__.select("n").hasLabel("N")).as(UNUSED)
                     .select("n", UNUSED)
-                    .map(__.project("n.p").by(
-                        __.select("n").map(__.choose(
+                    .project("n.p").by(
+                        __.select("n").choose(
                             P.neq(NULL),
                             __.coalesce(
                                 __.properties().hasKey("p").value(),
                                 __.constant(NULL)),
-                            __.constant(NULL)))))
+                            __.constant(NULL)))
             );
     }
 

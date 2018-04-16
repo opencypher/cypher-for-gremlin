@@ -24,6 +24,9 @@ import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 import org.opencypher.gremlin.traversal.CustomFunction
 
+import scala.collection.JavaConverters._
+import scala.collection.immutable.NumericRange
+
 /**
   * AST walker that handles translation
   * of evaluable expression nodes in the Cypher AST.
@@ -143,6 +146,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "length"        => traversals.head.map(CustomFunction.length())
           case "nodes"         => traversals.head.map(CustomFunction.nodes())
           case "properties"    => traversals.head.map(notNull(__.map(CustomFunction.properties())))
+          case "range"         => range(args)
           case "relationships" => traversals.head.map(CustomFunction.relationships())
           case "size"          => traversals.head.map(CustomFunction.size())
           case "sqrt"          => traversals.head.math("sqrt(_)")
@@ -223,6 +227,37 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         __.constant(NULL),
         __.math(s"$lhsName $op _")
       )
+  }
+
+  private val injectHardLimit = 10000
+
+  private def range(rangeArgs: Seq[Expression]): GremlinSteps[T, P] = {
+    val range: NumericRange[Long] = rangeArgs match {
+      case Seq(start: IntegerLiteral, end: IntegerLiteral) =>
+        NumericRange.inclusive(start.value, end.value, 1)
+      case Seq(start: IntegerLiteral, end: IntegerLiteral, step: IntegerLiteral) =>
+        NumericRange.inclusive(start.value, end.value, step.value)
+    }
+
+    context.precondition(
+      range.length <= injectHardLimit,
+      s"Range is too big (must be less than or equal to $injectHardLimit)",
+      range
+    )
+
+    if (range.step == 1) {
+      val rangeLabel = context.generateName()
+      __.repeat(__.start().loops().aggregate(rangeLabel))
+        .times((range.end + 1).toInt)
+        .cap(rangeLabel)
+        .unfold()
+        .skip(range.start)
+        .limit(range.end - range.start + 1)
+        .fold()
+    } else {
+      val numbers = range.asInstanceOf[Seq[Object]]
+      __.constant(numbers.asJava)
+    }
   }
 
   private def patternComprehensionPath(

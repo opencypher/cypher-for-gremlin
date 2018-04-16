@@ -396,6 +396,17 @@ public class ReturnTest {
     }
 
     @Test
+    public void returnRange() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN range(1, 5) AS r"
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly(asList(1L, 2L, 3L, 4L, 5L));
+    }
+
+    @Test
     public void ternaryLogic() throws Exception {
         Map<String, Object> args = new HashMap<>();
         args.put("t", true);
