@@ -61,10 +61,7 @@ public class ContainerIndexTest {
      * Maps don't work in client-side translations
      */
     @Test
-    @Category({
-        SkipWithGremlinGroovy.class,
-        SkipWithBytecode.class
-    })
+    @Category({SkipWithGremlinGroovy.class})
     public void mapIndexInReturn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +

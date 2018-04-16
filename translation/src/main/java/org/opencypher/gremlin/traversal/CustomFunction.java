@@ -161,7 +161,11 @@ public class CustomFunction implements Function<Traverser, Object> {
         return new CustomFunction(
             "properties",
             traverser -> {
-                Iterator<? extends Property<Object>> it = ((Element) traverser.get()).properties();
+                Object argument = traverser.get();
+                if (argument instanceof Map) {
+                    return argument;
+                }
+                Iterator<? extends Property<Object>> it = ((Element) argument).properties();
                 Map<Object, Object> propertyMap = new HashMap<>();
                 while (it.hasNext()) {
                     Property<Object> property = it.next();

@@ -25,6 +25,7 @@ import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -441,5 +442,31 @@ public class ReturnTest {
                 .extracting(expr)
                 .containsExactly(result);
         }
+    }
+
+    @Test
+    public void returnMapLiteral() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person {name: 'marko'}) " +
+                "RETURN {foo: n.age, bar: 'baz'} AS x"
+        );
+
+        assertThat(results)
+            .extracting("x")
+            .containsOnly(ImmutableMap.of(
+                "foo", 29L,
+                "bar", "baz")
+            );
+    }
+
+    @Test
+    public void returnEmptyMap() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN {} AS literal"
+        );
+
+        assertThat(results)
+            .extracting("literal")
+            .containsOnly(Collections.emptyMap());
     }
 }
