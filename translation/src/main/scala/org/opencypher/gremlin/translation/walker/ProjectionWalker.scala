@@ -28,6 +28,7 @@ import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
+import scala.util.Try
 
 /**
   * AST walker that handles translation
@@ -253,179 +254,18 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       alias: String,
       expression: Expression,
       finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
-
-    val p = context.dsl.predicates()
-
-    expression match {
-      case node: FunctionInvocation =>
-        val FunctionInvocation(_, FunctionName(fnName), distinct, args) = node
-        val traversals = args.map(pivot(alias, _, finalize = false)._2)
-
-        val function = fnName.toLowerCase match {
-          case "abs"           => traversals.head.math("abs(_)")
-          case "exists"        => __.coalesce(traversals.head.is(p.neq(NULL)).constant(true), __.constant(false))
-          case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
-          case "id"            => nullIfNull(traversals.head, __.id())
-          case "keys"          => traversals.head.valueMap().select(Column.keys)
-          case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
-          case "length"        => traversals.head.map(CustomFunction.length())
-          case "nodes"         => traversals.head.map(CustomFunction.nodes())
-          case "properties"    => nullIfNull(traversals.head, __.map(CustomFunction.properties()))
-          case "relationships" => traversals.head.map(CustomFunction.relationships())
-          case "size"          => traversals.head.map(CustomFunction.size())
-          case "sqrt"          => traversals.head.math("sqrt(_)")
-          case "type"          => nullIfNull(traversals.head, __.label().is(p.neq(Vertex.DEFAULT_LABEL)))
-          case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
-          case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
-          case "tointeger"     => traversals.head.map(CustomFunction.convertToIntegerType())
-          case "tostring"      => traversals.head.map(CustomFunction.convertToString())
-          case _ =>
-            return aggregation(alias, expression, finalize)
-        }
-
-        if (distinct) {
-          throw new SyntaxException("Invalid use of DISTINCT with function '" + fnName + "'")
-        }
-
-        (Pivot, function)
-      case ListComprehension(ExtractScope(_, _, Some(function)), target) if function.dependencies.size == 1 =>
-        val (_, traversal) = pivot(alias, target, finalize)
-        val (_, functionTraversal) = pivot(alias, function, finalize)
-
-        val Variable(dependencyName) = function.dependencies.head
-        (Pivot, traversal.unfold().as(dependencyName).map(functionTraversal).fold())
-      case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybeExpression, projection, _) =>
-        val varName = walkPatternComprehension(relationshipChain, maybeExpression, projection)
-        val traversal = __.select(varName)
-
-        projection match {
-          case PathExpression(_) =>
-            (Pivot, traversal.map(CustomFunction.pathComprehension()))
-          case expression: Expression =>
-            val (_, functionTraversal) = pivot(alias, expression, finalize)
-            if (expression.dependencies.isEmpty) {
-              (Pivot, traversal.unfold().map(functionTraversal).fold())
-            } else if (expression.dependencies.size == 1) {
-              val Variable(dependencyName) = expression.dependencies.head
-              (Pivot, traversal.unfold().as(dependencyName).map(functionTraversal).fold())
-            } else {
-              context.unsupported("pattern comprehension with multiple arguments", expression)
-            }
-        }
-
-      case ContainerIndex(expr, idx) =>
-        val (_, traversal) = pivot(alias, expr, finalize)
-
-        val index = expressionValue(idx, context)
-        (Pivot, traversal.map(CustomFunction.containerIndex(index)))
-      case IsNotNull(expr) =>
-        val (_, traversal) = pivot(alias, expr, finalize)
-
-        (Pivot, __.coalesce(traversal.is(p.neq(NULL)).constant(true), __.constant(false)))
-      case IsNull(expr) =>
-        val (_, traversal) = pivot(alias, expr, finalize)
-
-        (Pivot, __.coalesce(traversal.is(p.neq(NULL)).constant(false), __.constant(true)))
-      case node @ (_: Parameter | _: Literal | _: ListLiteral | _: MapExpression | _: Null) =>
-        (Pivot, __.constant(expressionValue(node, context)))
-      case Property(Variable(varName), PropertyKeyName(keyName: String)) =>
-        (
-          Pivot,
-          nullIfNull(
-            __.select(varName),
-            __.coalesce(
-              __.values(keyName),
-              __.constant(NULL)
-            )
-          )
-        )
-      case Variable(varName) =>
-        val value = __.select(varName)
-        if (finalize) {
-          (Pivot, finalizeValue(value, alias))
-        } else {
-          (Pivot, value)
-        }
-      case HasLabels(Variable(varName), List(LabelName(label))) =>
-        (
-          Pivot,
-          nullIfNull(
-            __.select(varName),
-            __.choose(
-              __.hasLabel(label),
-              __.constant(true),
-              __.constant(false)
-            )
-          )
-        )
-
-      case Add(e1, e2)      => math(alias, finalize, e1, e2, "+")
-      case Subtract(e1, e2) => math(alias, finalize, e1, e2, "-")
-      case Multiply(e1, e2) => math(alias, finalize, e1, e2, "*")
-      case Divide(e1, e2)   => math(alias, finalize, e1, e2, "/")
-      case Pow(e1, e2)      => math(alias, finalize, e1, e2, "^")
-      case Modulo(e1, e2)   => math(alias, finalize, e1, e2, "%")
-
-      case Not(rhs) =>
-        val rhsT = pivot(alias, rhs, finalize = false)._2
-        (
-          Pivot,
-          __.choose(
-            __.map(rhsT).is(p.isEq(NULL)),
-            __.constant(NULL),
-            __.choose(
-              __.map(rhsT).is(p.isEq(true)),
-              __.constant(false),
-              __.constant(true)
-            )
-          )
-        )
-      case Ands(ands) =>
-        val traversals = ands.map(pivot(alias, _, finalize = false)._2).toSeq
-        (
-          Pivot,
-          __.choose(
-            __.and(traversals.map(__.map(_)).map(_.is(p.isEq(true))): _*),
-            __.constant(true),
-            __.choose(
-              __.or(traversals.map(__.map(_)).map(_.is(p.isEq(false))): _*),
-              __.constant(false),
-              __.constant(NULL)
-            )
-          )
-        )
-      case Ors(ors) =>
-        val traversals = ors.map(pivot(alias, _, finalize = false)._2).toSeq
-        (
-          Pivot,
-          __.choose(
-            __.or(traversals.map(__.map(_)).map(_.is(p.isEq(true))): _*),
-            __.constant(true),
-            __.choose(
-              __.and(traversals.map(__.map(_)).map(_.is(p.isEq(false))): _*),
-              __.constant(false),
-              __.constant(NULL)
-            )
-          )
-        )
-      case Xor(lhs, rhs) =>
-        val lhsT = pivot(alias, lhs, finalize = false)._2
-        val rhsT = pivot(alias, rhs, finalize = false)._2
-        (
-          Pivot,
-          __.choose(
-            __.or(__.map(lhsT).is(p.isEq(NULL)), __.map(rhsT).is(p.isEq(NULL))),
-            __.constant(NULL),
-            __.choose(
-              __.map(rhsT).as(TEMP).map(lhsT).where(p.neq(TEMP)),
-              __.constant(true),
-              __.constant(false)
-            )
-          )
-        )
-
-      case _ => aggregation(alias, expression, finalize)
-    }
+    Try(ExpressionWalker.walkLocal(context, g, expression)).map { localTraversal =>
+      if (finalize && expression.isInstanceOf[Variable]) {
+        (Pivot, finalizeValue(localTraversal, alias))
+      } else {
+        (Pivot, localTraversal)
+      }
+    }.recover {
+      case e: SyntaxException if e.getMessage.startsWith("Unknown function") =>
+        aggregation(alias, expression, finalize)
+      case e: UnsupportedOperationException if e.getMessage.startsWith("Unsupported value expression") =>
+        aggregation(alias, expression, finalize)
+    }.get
   }
 
   private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String) = {
@@ -529,46 +369,6 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case _ =>
         context.unsupported("expression", expression)
     }
-  }
-
-  private def math(alias: String, finalize: Boolean, e1: Expression, e2: Expression, op: String) = {
-    val p = context.dsl.predicates()
-
-    val (_, traversal1) = pivot(alias, e1, finalize)
-    val (_, traversal2) = pivot(alias, e2, finalize)
-
-    val lhsName = context.generateName().replace(" ", "_") // name limited by MathStep#VARIABLE_PATTERN
-
-    (
-      Pivot,
-      __.map(traversal1)
-        .as(lhsName)
-        .map(traversal2)
-        .choose(
-          __.or(__.is(p.isEq(NULL)), __.select(lhsName).is(p.isEq(NULL))),
-          __.constant(NULL),
-          __.math(s"$lhsName $op _")))
-  }
-
-  private def walkPatternComprehension(
-      relationshipChain: RelationshipChain,
-      maybePredicate: Option[Expression],
-      projection: Expression): String = {
-    val select = __
-    val contextWhere = context.copy()
-    WhereWalker.walkRelationshipChain(contextWhere, select, relationshipChain)
-    maybePredicate.foreach(WhereWalker.walk(contextWhere, select, _))
-
-    if (projection.isInstanceOf[PathExpression]) {
-      select.path()
-    }
-
-    val name = contextWhere.generateName()
-    g.sideEffect(
-      select.aggregate(name)
-    )
-
-    name
   }
 
   private def sort(sortItems: Seq[SortItem]): Unit = {
