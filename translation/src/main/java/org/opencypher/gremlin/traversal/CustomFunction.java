@@ -190,30 +190,6 @@ public class CustomFunction implements Function<Traverser, Object> {
                 .collect(toList()));
     }
 
-    public static CustomFunction listComprehension(final Object functionTraversal) {
-        return new CustomFunction(
-            "listComprehension",
-            traverser -> {
-                Object list = traverser.get();
-                if (!(list instanceof Collection)) {
-                    throw new IllegalArgumentException("Expected Iterable, got " + list.getClass());
-                }
-
-                if (!(functionTraversal instanceof GraphTraversal)) {
-                    throw new IllegalArgumentException("Expected GraphTraversal, got " + list.getClass());
-                }
-
-                return ((Collection) list)
-                    .stream()
-                    .map(item -> {
-                        GraphTraversal.Admin admin = GraphTraversal.class.cast(functionTraversal).asAdmin();
-                        return TraversalUtil.apply(item, admin);
-                    })
-                    .collect(toList());
-            },
-            functionTraversal);
-    }
-
     public static CustomFunction pathComprehension() {
         return new CustomFunction(
             "pathComprehension",

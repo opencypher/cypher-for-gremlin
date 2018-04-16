@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static org.opencypher.gremlin.translation.Tokens.START;
+import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
@@ -44,7 +45,8 @@ public class GroupStepFiltersTest {
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n").hasLabel("N")
-                    .select("n")
+                    .as(UNUSED)
+                    .select("n", UNUSED)
             );
     }
 
@@ -61,7 +63,8 @@ public class GroupStepFiltersTest {
                 __.V()
                     .as("n").has("p", P.eq("n"))
                     .where(__.constant(1).is(P.neq(2)))
-                    .select("n")
+                    .as(UNUSED)
+                    .select("n", UNUSED)
             );
     }
 
@@ -122,7 +125,8 @@ public class GroupStepFiltersTest {
                             .select("r1").where(P.neq(Tokens.TEMP))
                     )
                     .V().as("  GENERATED1").where(__.select("  GENERATED1").where(P.eq("k")))
-                    .select("k")
+                    .as(UNUSED)
+                    .select("k", UNUSED)
             );
     }
 
@@ -140,7 +144,8 @@ public class GroupStepFiltersTest {
                     .until(__.path().count(Scope.local).is(P.gte(5)))
                     .where(__.path().count(Scope.local).is(P.between(3, 6)))
                     .as("m")
-                    .select("m")
+                    .as(UNUSED)
+                    .select("m", UNUSED)
             );
     }
 

@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static org.opencypher.gremlin.translation.Tokens.START;
+import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
@@ -40,7 +41,8 @@ public class InlineMapTraversalTest {
             .withFlavor(flavor)
             .hasTraversal(
                 __.inject(START).constant(1).limit(1).as("n")
-                    .select("n").project("n").by(__.identity())
+                    .as(UNUSED)
+                    .select("n", UNUSED).project("n").by(__.select("n"))
             );
     }
 

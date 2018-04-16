@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
@@ -41,8 +42,9 @@ public class RemoveImmediateReselectTest {
             .hasTraversalBeforeReturn(
                 __.V()
                     .as("n")
-                    .map(__.project("m").by(__.identity())).select("m")
-                    .as("m")
+                    .as(UNUSED).select("n", UNUSED)
+                    .map(__.project("m").by(__.select("n")))
+                    .select("m").as("m").as(UNUSED).select("m", UNUSED)
             );
     }
 
