@@ -134,14 +134,17 @@ public class ListComprehensionTest {
 
     @Test
     public void pathInPatternComprehension() throws Exception {
-        submitAndGet("CREATE (a:A), (b:B)\n" +
-            "CREATE (a)-[:T]->(b)");
+        submitAndGet("CREATE (:A)-[:T]->(:B)");
 
-        String cypher = "MATCH (a:A), (b:B)\n" +
-            "RETURN [p = (a)-[*]->(b) | p] AS paths";
+        String cypher = "MATCH (a:A), (b:B) " +
+            "WITH [p = (a)-[*]->(b) | p] AS paths, count(a) AS c " +
+            "RETURN paths, c";
 
         List<Map<String, Object>> results = submitAndGet(cypher);
 
+        assertThat(results)
+            .extracting("c")
+            .containsExactly(1L);
         assertThat(results)
             .extracting("paths")
             .hasSize(1)
