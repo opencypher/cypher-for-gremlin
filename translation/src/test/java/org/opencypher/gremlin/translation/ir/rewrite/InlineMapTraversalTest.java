@@ -39,10 +39,9 @@ public class InlineMapTraversalTest {
                 "RETURN n"
         ))
             .withFlavor(flavor)
-            .hasTraversal(
-                __.inject(START).constant(1).limit(1).as("n")
-                    .as(UNUSED)
-                    .select("n", UNUSED).project("n").by(__.select("n"))
+            .hasTraversalBeforeReturn(
+                __.inject(START).project("n").by(__.constant(1))
+                    .select("n").as("n").as(UNUSED).select("n", UNUSED)
             );
     }
 

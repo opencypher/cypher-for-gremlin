@@ -16,9 +16,9 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order
-import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
+import org.apache.tinkerpop.gremlin.structure.Column
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.{CypherType, ListType, NodeType, PathType, RelationshipType}
+import org.neo4j.cypher.internal.frontend.v3_3.symbols._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -198,9 +198,9 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
 
   private def isWherePrecondition(expression: Expression): Boolean = {
     expression match {
-      case _: Variable | _: Property | _: Literal | _: ListLiteral | _: Parameter | _: Null | _: FunctionInvocation |
-          _: CountStar | _: PatternComprehension | _: Add | _: Subtract | _: Multiply | _: Divide | _: Pow |
-          _: Modulo =>
+      case _: Add | _: CountStar | _: Divide | _: FunctionInvocation | _: ListLiteral | _: Literal | _: MapExpression |
+          _: Modulo | _: Multiply | _: Null | _: Parameter | _: PatternComprehension | _: Pow | _: Property |
+          _: Subtract | _: Variable =>
         false
       case _ =>
         true
