@@ -19,7 +19,6 @@ import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext
-import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
 
 import scala.collection.mutable
 
@@ -78,42 +77,11 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
 
   def walkSingle(node: SingleQuery): Unit = {
     val clauses = node.clauses
-    walkFirstClause(clauses.head)
-    clauses.tail.foreach(walkClause)
+    clauses.foreach(walkClause)
 
-    val returnClauses = clauses
-      .find(_.isInstanceOf[Return])
-      .map(_.asInstanceOf[Return])
-
-    if (returnClauses.nonEmpty) {
-      returnClauses.foreach(ProjectionWalker.walk(context, g, _))
-    } else {
+    val returnClauses = clauses.count(_.isInstanceOf[Return])
+    if (returnClauses == 0) {
       g.barrier().limit(0)
-    }
-  }
-
-  private def walkFirstClause(node: Clause): Unit = {
-    node match {
-      case withClause: With =>
-        if (context.isFirstStatement) {
-          context.markFirstStatement()
-          g.inject(START)
-        }
-        withClause.returnItems.items.foldLeft(g) { (g, item) =>
-          val AliasedReturnItem(expr, Variable(alias)) = item
-          g.constant(expressionValue(expr, context)).limit(1).as(alias)
-        }
-      case _: Return => // Handled elsewhere
-      case matchClause: Match =>
-        MatchWalker.walkClause(context, g, matchClause)
-      case unwindClause: Unwind =>
-        UnwindWalker.walkClause(context, g, unwindClause)
-      case createClause: Create =>
-        CreateWalker.walkClause(context, g, createClause)
-      case mergeClause: Merge =>
-        MergeWalker.walkClause(context, g, mergeClause)
-      case _ =>
-        context.unsupported("first clause", node)
     }
   }
 
@@ -131,9 +99,8 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
         DeleteWalker.walkClause(context, g, deleteClause)
       case SetClause(_) | Remove(_) =>
         SetWalker.walkClause(context, g, node)
-      case withClause: With =>
-        ProjectionWalker.walk(context, g, withClause)
-      case _: Return => // Handled elsewhere
+      case projectionClause: ProjectionClause =>
+        ProjectionWalker.walk(context, g, projectionClause)
       case _ =>
         context.unsupported("clause", node)
     }
