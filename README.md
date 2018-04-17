@@ -13,6 +13,10 @@ The toolkit is composed of:
 - [tinkerpop/cypher-gremlin-server-client](tinkerpop/cypher-gremlin-server-client): Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
 - [tinkerpop/cypher-gremlin-neo4j-driver](tinkerpop/cypher-gremlin-neo4j-driver): Neo4j Java API wrapper for users familiar with Neo4j
 
+## Quick Start
+
+The fastest way to start experimenting with Cypher for Gremlin is with the [Gremlin Console Cypher plugin](tinkerpop/cypher-gremlin-console-plugin). Follow the link for installation and usage instructions.
+
 ## Language Support
 
 With Cypher for Gremlin you can use the following Cypher language features:
