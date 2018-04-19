@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
+import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -253,7 +255,7 @@ public class CreateTest {
     }
 
     @Test
-    public void createNullProperty() throws Exception {
+    public void createNullPropertyOnNode() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "CREATE (n {foo: \"bar\", property: null}) RETURN n.foo AS f"
         );
@@ -269,6 +271,36 @@ public class CreateTest {
         assertThat(created)
             .extracting("ns")
             .containsExactly(1L);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void createNullPropertyOnRelationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "CREATE ()-[r:X {id: 12, property: null}]->() " +
+                "RETURN r.id"
+        );
+
+        assertThat(results)
+            .extracting("r.id")
+            .containsExactly(12L);
+
+        List<? extends Map<String, ?>> properties = gremlinServer.gremlinClient().alias("g").submit(
+            __.V()
+                .outE()
+                .as("E")
+                .properties()
+                .project("key", "value")
+                .by(__.key())
+                .by(__.value())
+        ).all().join().stream()
+            .map(r -> (Traverser<Map<String, ?>>) r.getObject())
+            .map(Traverser::get)
+            .collect(toList());
+
+        assertThat(properties)
+            .extracting("key", "value")
+            .containsExactly(tuple("id", 12L));
     }
 
     @Test

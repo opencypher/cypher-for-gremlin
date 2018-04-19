@@ -159,7 +159,7 @@ public class GroupStepFiltersTest {
             .hasTraversal(
                 __.inject(START).coalesce(
                     __.start().V().as("n").hasLabel("N").has("p", P.eq("n")),
-                    __.start().addV("N").as("n").property("p", "n")
+                    __.start().addV("N").as("n").property("p", __.constant("n"))
                 ).as("n").barrier().limit(0)
             );
     }
