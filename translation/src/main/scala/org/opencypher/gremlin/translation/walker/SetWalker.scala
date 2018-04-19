@@ -15,13 +15,10 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import java.util
-
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.context.StatementContext
-import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, setProperty}
 
 /**
   * AST walker that handles translation
@@ -50,11 +47,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
   private def walkSetClause(items: Seq[SetItem]): Unit = {
     items.foreach {
       case SetPropertyItem(Property(Variable(variable), PropertyKeyName(key)), expression: Expression) =>
-        val value = expressionValue(expression, context)
-        if (value.isInstanceOf[util.Collection[_]]) {
-          applySideEffect(variable, setProperty(_, key, null))
-        }
-        applySideEffect(variable, setProperty(_, key, value))
+        applySideEffect(variable, ExpressionWalker.walkProperty(context, _, key, expression))
       case SetIncludingPropertiesFromMapItem(Variable(variable), MapExpression(pairs)) =>
         applySideEffect(variable, setProperties(_, pairs))
       case SetExactPropertiesFromMapItem(Variable(variable), MapExpression(pairs)) =>
@@ -83,8 +76,7 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
 
   private def setProperties(g: GremlinSteps[T, P], items: Seq[(PropertyKeyName, Expression)]): Unit = {
     for ((PropertyKeyName(key), expression) <- items) {
-      val value = expressionValue(expression, context)
-      setProperty(g, key, value)
+      ExpressionWalker.walkProperty(context, g, key, expression)
     }
   }
 }

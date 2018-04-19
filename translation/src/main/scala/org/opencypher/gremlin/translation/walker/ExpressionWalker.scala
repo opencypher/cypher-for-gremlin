@@ -39,6 +39,14 @@ object ExpressionWalker {
   def walkLocal[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Expression): GremlinSteps[T, P] = {
     new ExpressionWalker(context, g).walkLocal(node)
   }
+
+  def walkProperty[T, P](
+      context: StatementContext[T, P],
+      g: GremlinSteps[T, P],
+      key: String,
+      value: Expression): GremlinSteps[T, P] = {
+    new ExpressionWalker(context, g).walkProperty(key, value)
+  }
 }
 
 private class ExpressionWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
@@ -279,5 +287,14 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     )
 
     name
+  }
+
+  def walkProperty(key: String, value: Expression): GremlinSteps[T, P] = {
+    val p = context.dsl.predicates()
+    val traversal = walkLocal(value)
+    g.choose(
+      g.start().map(traversal).is(p.neq(NULL)).unfold(),
+      g.start().property(key, traversal),
+      g.start().sideEffect(g.start().properties(key).drop()))
   }
 }

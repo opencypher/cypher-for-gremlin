@@ -19,6 +19,7 @@ import java.util
 
 import org.apache.tinkerpop.gremlin.structure.util.detached.{DetachedProperty, DetachedVertexProperty}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
+import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
@@ -124,29 +125,5 @@ object NodeUtils {
       case _ =>
         g.as(name)
     }
-  }
-
-  def setProperty[T, P](g: GremlinSteps[T, P], key: String, value: Any): Unit = {
-    value match {
-      case builder: GremlinSteps[T @unchecked, P @unchecked] =>
-        g.property(key, builder)
-      case null =>
-        drop(g, key)
-      case s: String if s.equals(Tokens.NULL) =>
-        drop(g, key)
-      case v: Vector[_] if v.isEmpty =>
-        drop(g, key)
-      case c: java.util.Collection[_] if c.isEmpty =>
-        drop(g, key)
-      case vector: Vector[_] =>
-        val collection = new util.ArrayList[Any](vector.asJava)
-        g.property(key, collection)
-      case _ =>
-        g.property(key, value)
-    }
-  }
-
-  private def drop[T, P](g: GremlinSteps[T, P], key: String) = {
-    g.sideEffect(g.start().properties(key).drop())
   }
 }

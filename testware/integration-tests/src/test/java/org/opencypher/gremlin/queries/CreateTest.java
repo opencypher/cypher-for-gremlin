@@ -277,13 +277,13 @@ public class CreateTest {
     @SuppressWarnings("unchecked")
     public void createNullPropertyOnRelationship() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
-            "CREATE ()-[r:X {id: 12, property: null}]->() " +
-                "RETURN r.id"
+            "CREATE ()-[r:X {foo: 'bar', property: null}]->() " +
+                "RETURN r.foo"
         );
 
         assertThat(results)
-            .extracting("r.id")
-            .containsExactly(12L);
+            .extracting("r.foo")
+            .containsExactly("bar");
 
         List<? extends Map<String, ?>> properties = gremlinServer.gremlinClient().alias("g").submit(
             __.V()
@@ -300,7 +300,7 @@ public class CreateTest {
 
         assertThat(properties)
             .extracting("key", "value")
-            .containsExactly(tuple("id", 12L));
+            .containsExactly(tuple("foo", "bar"));
     }
 
     @Test
