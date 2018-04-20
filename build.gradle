@@ -24,7 +24,6 @@ buildscript {
         classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.8.0'
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
         classpath 'me.champeau.gradle:jmh-gradle-plugin:0.4.5'
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
         classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.2'
         classpath 'co.riiid:gradle-github-plugin:0.4.2'
         classpath 'org.ajoberstar:gradle-git-publish:0.3.3'
@@ -62,13 +61,11 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs += '-Xlint:deprecation,unchecked'
-        options.compilerArgs += '-Werror'
+        options.compilerArgs += ['-Xlint:deprecation,unchecked', '-Werror', '-proc:none']
     }
     tasks.withType(ScalaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs += '-Xlint:deprecation,unchecked'
-        options.compilerArgs += '-Werror'
+        options.compilerArgs += ['-Xlint:deprecation,unchecked', '-Werror', '-proc:none']
         scalaCompileOptions.additionalParameters = [
             '-Xfatal-warnings'
         ]
@@ -289,7 +286,6 @@ project(':testware:performance-tests') {
 
 project(':testware:tck') {
     apply plugin: 'scala'
-    apply plugin: 'org.junit.platform.gradle.plugin'
     apply plugin: 'com.kncept.junit5.reporter'
 
     ext.hasTckTask = {
@@ -303,14 +299,18 @@ project(':testware:tck') {
         project.hasTckTask()
     }
 
-    junitPlatformTest {
+    task('tck', type: Test) {
         onlyIf { project.hasTckTask() }
         systemProperty "cucumber.options", "--plugin 'json:build/reports/tests/cucumber/cucumber.json"
+        useJUnitPlatform()
+        ignoreFailures true
+
+        if (project.hasProperty('ci')) {
+            testLogging.showStandardStreams = true
+            minHeapSize = '256m'
+            maxHeapSize = '512m'
+        }
     }.finalizedBy('junitHtmlReport', 'tckReport')
-
-    task('tck', type: Exec, dependsOn: 'junitPlatformTest') {
-
-    }
 
     task('tckReport', type: JavaExec) {
         onlyIf {project.hasTckTask()}
@@ -326,11 +326,9 @@ project(':testware:tck') {
     }
 
     task('tckSaveReport', type: Copy) {
-        from 'build/test-results/junit-platform/TEST-junit-jupiter.xml'
-        into 'build/test-results/junit-platform/'
-        rename { String fileName ->
-            fileName.replace('.xml', '-before.xml')
-        }
+        from 'build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml'
+        into 'build/test-results/tck/'
+        rename { fileName -> "TckTest-before.xml" }
     }
 
     repositories {

@@ -46,6 +46,54 @@ jobs:
       - store_test_results:
           path: ~/repo/build/junit
 
+
+  tck:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/repo
+
+    environment:
+      JVM_OPTS: -Xmx256m
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          - v1-dependencies-
+
+      - run:
+          name: Fetch dependencies
+          command: ./gradlew --no-daemon -Pci dependencies
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      - run:
+          name: Run OpenCypher TCK tests
+          command: ./gradlew --no-daemon -Pci tck
+
+      - store_test_results:
+          path: ~/repo/testware/tck/build/test-results/tck
+
+      - store_artifacts:
+          path: ~/repo/testware/tck/build/reports/tests/cucumber/cucumber-html-reports
+
+
+workflows:
+  version: 2
+  build_and_tck:
+    jobs:
+      - build
+      - tck:
+          requires:
+            - build
+
 experimental:
   notify:
     branches:
