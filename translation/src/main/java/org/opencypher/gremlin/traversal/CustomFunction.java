@@ -42,7 +42,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.exception.TypeException;
@@ -161,7 +160,11 @@ public class CustomFunction implements Function<Traverser, Object> {
         return new CustomFunction(
             "properties",
             traverser -> {
-                Iterator<? extends Property<Object>> it = ((Element) traverser.get()).properties();
+                Object argument = traverser.get();
+                if (argument instanceof Map) {
+                    return argument;
+                }
+                Iterator<? extends Property<Object>> it = ((Element) argument).properties();
                 Map<Object, Object> propertyMap = new HashMap<>();
                 while (it.hasNext()) {
                     Property<Object> property = it.next();

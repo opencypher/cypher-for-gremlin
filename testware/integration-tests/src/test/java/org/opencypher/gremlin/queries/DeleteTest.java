@@ -77,6 +77,52 @@ public class DeleteTest {
     }
 
     @Test
+    public void detachDeletePath() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH p = (:software)<-[:created]-() DETACH DELETE p"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .isEmpty();
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(1L);
+    }
+
+    @Test
+    public void detachDeleteFromAList() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (n) " +
+                "WITH [n] AS nodes " +
+                "DETACH DELETE nodes[0]"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .isEmpty();
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(0L);
+    }
+
+    @Test
     public void deleteWithReturn() throws Exception {
         submitAndGet("MATCH (n) DETACH DELETE n");
         submitAndGet("CREATE ()-[:R]->()");
@@ -111,7 +157,7 @@ public class DeleteTest {
         submitAndGet(
             "MATCH (n)\n" +
                 "OPTIONAL MATCH (n)-[r]-()\n" +
-                "DELETE n, r"
+                "DELETE r, n"
         );
         List<Map<String, Object>> afterDelete = submitAndGet(
             "MATCH (n) RETURN count(*)"

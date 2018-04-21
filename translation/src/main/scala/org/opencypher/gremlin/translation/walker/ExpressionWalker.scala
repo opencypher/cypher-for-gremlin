@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.MapType
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -63,12 +64,17 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case Variable(varName) =>
         __.select(varName)
 
-      case Property(Variable(varName), PropertyKeyName(keyName: String)) =>
+      case Property(variable @ Variable(varName), PropertyKeyName(keyName: String)) =>
+        val typ = context.expressionTypes.get(variable)
+        val extractStep: String => GremlinSteps[T, P] = typ match {
+          case Some(MapType.instance) => __.select(_)
+          case _                      => __.values(_)
+        }
         __.select(varName)
           .map(
             notNull(
               __.coalesce(
-                __.values(keyName),
+                extractStep(keyName),
                 __.constant(NULL)
               ),
               context))
@@ -197,6 +203,18 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
               context.unsupported("pattern comprehension with multiple arguments", expression)
             }
         }
+
+      case ListLiteral(expressions @ _ :: _) =>
+        val keys = expressions.map(_ => context.generateName())
+        val traversal = __.project(keys: _*)
+        expressions.map(walkLocal).foreach(traversal.by)
+        traversal.select(Column.values)
+
+      case MapExpression(items @ _ :: _) =>
+        val keys = items.map(_._1.name)
+        val traversal = __.project(keys: _*)
+        items.map(_._2).map(walkLocal).foreach(traversal.by)
+        traversal
 
       case _ =>
         __.constant(expressionValue(expression, context))

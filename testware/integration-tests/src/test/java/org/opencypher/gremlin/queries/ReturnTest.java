@@ -289,6 +289,19 @@ public class ReturnTest {
     }
 
     @Test
+    public void propertiesFunctionOnAMap() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN properties({name: 'Popeye', level: 9001}) AS m"
+        );
+
+        assertThat(results)
+            .extracting("m")
+            .containsExactly(
+                ImmutableMap.of("name", "Popeye", "level", 9001L)
+            );
+    }
+
+    @Test
     public void distinctLabels() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) RETURN DISTINCT labels(n) AS labels"
