@@ -22,31 +22,54 @@ import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.CypherAst
 import org.opencypher.gremlin.translation.ReturnProperties._
 import org.opencypher.tools.tck.api.{CypherValueRecords, ExecutionFailed}
+import org.opencypher.tools.tck.constants.TCKErrorPhases.RUNTIME
 import org.opencypher.tools.tck.values._
 
 import scala.collection.JavaConverters._
 
 object TckGremlinCypherValueConverter {
 
+  private val UNKNOWN_ERROR = "UnknownError"
+
   def toExecutionFailed(e: Throwable): ExecutionFailed = {
+
     val gremlinRemoteException = Iterator
       .iterate(e)(_.getCause)
-      .filter(c => c == null || c.isInstanceOf[ResponseException])
+      .filter(c => {
+        c == null |
+          c.isInstanceOf[ResponseException] |
+          c.isInstanceOf[IllegalArgumentException]
+      })
       .next()
 
     gremlinRemoteException match {
-      case r: ResponseException =>
-        val errors = GremlinErrors.mappings.filterKeys(k => r.getMessage matches k)
-
-        errors.size match {
-          case 0 => throw new RuntimeException(s"Unknown error message `${r.getMessage}`", e)
-          case 1 => errors.head._2
-          case _ => throw new RuntimeException(s"More than 1 errors `${errors.keySet}` match `${r.getMessage}`", e)
-        }
+      case e: ResponseException        => parseException(e)
+      case e: IllegalArgumentException => parseException(e)
       case _ =>
-        throw new RuntimeException(
+        ExecutionFailed(
+          UNKNOWN_ERROR,
+          RUNTIME,
           "Unable to find org.apache.tinkerpop.gremlin.driver.exception.ResponseException in stack ",
-          e)
+          Some(e)
+        )
+    }
+  }
+
+  def parseException(e: Exception): ExecutionFailed = {
+    val errors = GremlinErrors.mappings.filterKeys(k => e.getMessage matches k)
+
+    errors.size match {
+      case 0 => ExecutionFailed(UNKNOWN_ERROR, RUNTIME, e.getMessage, Some(e))
+      case 1 =>
+        val r = errors.head._2
+        ExecutionFailed(r.errorType, r.phase, r.detail, Some(e))
+      case _ =>
+        ExecutionFailed(
+          UNKNOWN_ERROR,
+          RUNTIME,
+          s"More than 1 errors `${errors.keySet}` match `${e.getMessage}`",
+          Some(e)
+        )
     }
   }
 

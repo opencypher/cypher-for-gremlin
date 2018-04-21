@@ -99,6 +99,10 @@ object GremlinErrors {
     "Cannot convert .+ to .+" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_VALUE),
     "Number out of range: (.+)" ->
-      ExecutionFailed(ARGUMENT_ERROR, RUNTIME, NUMBER_OUT_OF_RANGE)
+      ExecutionFailed(ARGUMENT_ERROR, RUNTIME, NUMBER_OUT_OF_RANGE),
+    "Unable to convert param (.+)" ->
+      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_TYPE),
+    "Unable to convert result (.+)" ->
+      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_TYPE)
   )
 }
