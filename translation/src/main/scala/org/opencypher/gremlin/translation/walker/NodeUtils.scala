@@ -126,4 +126,10 @@ object NodeUtils {
         g.as(name)
     }
   }
+
+  def notNull[T, P](traversal: GremlinSteps[T, P], context: StatementContext[T, P]): GremlinSteps[T, P] = {
+    val g = context.dsl.steps()
+    val p = context.dsl.predicates()
+    g.start().choose(p.neq(NULL), traversal, g.start().constant(NULL))
+  }
 }

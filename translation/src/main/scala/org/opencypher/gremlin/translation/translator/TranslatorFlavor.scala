@@ -39,6 +39,7 @@ object TranslatorFlavor {
   val gremlinServer: TranslatorFlavor = TranslatorFlavor(
     rewriters = Seq(
       InlineMapTraversal,
+      SimplifyPropertySetters,
       GroupStepFilters,
       RemoveUselessSteps,
       RemoveUnusedAliases

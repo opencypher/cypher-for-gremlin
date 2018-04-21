@@ -167,4 +167,20 @@ public class SetTest {
             .extracting("n.name", "n.age", "n.loc")
             .containsExactly(tuple("marko", 28L, "uk"));
     }
+
+    @Test
+    public void setPropertyToAnExpression() {
+        submitAndGet("CREATE (:A {foo: 2})");
+        submitAndGet("CREATE (:B {foo: 3})");
+
+        List<Map<String, Object>> update = submitAndGet(
+            "MATCH (a:A), (b:B) " +
+                "SET a.foo = b.foo " +
+                "RETURN a.foo"
+        );
+
+        assertThat(update)
+            .extracting("a.foo")
+            .containsExactly(3L);
+    }
 }
