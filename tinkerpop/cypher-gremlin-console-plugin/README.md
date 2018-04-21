@@ -60,6 +60,10 @@ Run the following commands from project root.
     ==>opencypher.gremlin
     ```
 
+### Pre-configured Distribution
+
+You can also download a pre-configured Gremlin Console distribution from the [releases section](https://github.com/opencypher/cypher-for-gremlin/releases). This distribution has the Cypher plugin pre-installed.
+
 ## Usage
 
 1. Activate `opencypher.gremlin` plugin:

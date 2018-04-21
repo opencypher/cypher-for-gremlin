@@ -139,7 +139,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   }
 
   private def expressionPredicate(p: AnyRef => P): Expression => P = { expression =>
-    p(expressionValue(expression, context).asInstanceOf[AnyRef])
+    p(expressionValue(expression, context))
   }
 
   private def seqExpressionPredicate(p: Seq[AnyRef] => P): Expression => P = { expression =>

@@ -16,57 +16,55 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static org.opencypher.gremlin.translation.Tokens.NULL;
-import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parameter;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
-public class CosmosDbFlavorTest {
+public class SimplifyPropertySettersTest {
 
     private final TranslatorFlavor flavor = new TranslatorFlavor(
         seq(
             InlineMapTraversal$.MODULE$,
-            RemoveUselessSteps$.MODULE$,
-            CosmosDbFlavor$.MODULE$
+            SimplifyPropertySetters$.MODULE$
         ),
         seq()
     );
 
     @Test
-    public void values() {
+    public void create() {
         assertThat(parse(
-            "MATCH (n:N) " +
-                "RETURN n.p"
+            "CREATE ({foo: 'bar', baz: null, quux: $x})"
         ))
             .withFlavor(flavor)
-            .hasTraversal(
-                __.V().as("n").where(__.select("n").hasLabel("N")).as(UNUSED)
-                    .select("n", UNUSED)
-                    .project("n.p").by(
-                        __.select("n").choose(
-                            P.neq(NULL),
-                            __.coalesce(
-                                __.properties().hasKey("p").value(),
-                                __.constant(NULL)),
-                            __.constant(NULL)))
+            .hasTraversalBeforeReturn(
+                __.addV().as("  UNNAMED8")
+                    .property("foo", "bar")
+                    .property("quux", parameter("x"))
+                    .barrier().limit(0)
             );
     }
 
     @Test
-    public void loops() {
+    public void unset() {
         assertThat(parse(
-            "UNWIND range(1, 3) AS i " +
-                "RETURN i"
+            "MATCH (n) " +
+                "SET n.foo = []"
         ))
             .withFlavor(flavor)
             .hasTraversalBeforeReturn(
-                __.inject(1, 2, 3).as("i").as(UNUSED)
-                    .select("i", UNUSED)
+                __.V().as("n")
+                    .select("n")
+                    .choose(P.neq(NULL),
+                        __.sideEffect(__.properties("foo").drop()),
+                        __.constant(NULL))
+                    .barrier().limit(0)
             );
     }
+
 }

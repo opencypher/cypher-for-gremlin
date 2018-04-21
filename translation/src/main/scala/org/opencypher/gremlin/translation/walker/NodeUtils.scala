@@ -19,6 +19,7 @@ import java.util
 
 import org.apache.tinkerpop.gremlin.structure.util.detached.{DetachedProperty, DetachedVertexProperty}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
+import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
@@ -126,27 +127,9 @@ object NodeUtils {
     }
   }
 
-  def setProperty[T, P](g: GremlinSteps[T, P], key: String, value: Any): Unit = {
-    value match {
-      case builder: GremlinSteps[T @unchecked, P @unchecked] =>
-        g.property(key, builder)
-      case null =>
-        drop(g, key)
-      case s: String if s.equals(Tokens.NULL) =>
-        drop(g, key)
-      case v: Vector[_] if v.isEmpty =>
-        drop(g, key)
-      case c: java.util.Collection[_] if c.isEmpty =>
-        drop(g, key)
-      case vector: Vector[_] =>
-        val collection = new util.ArrayList[Any](vector.asJava)
-        g.property(key, collection)
-      case _ =>
-        g.property(key, value)
-    }
-  }
-
-  private def drop[T, P](g: GremlinSteps[T, P], key: String) = {
-    g.sideEffect(g.start().properties(key).drop())
+  def notNull[T, P](traversal: GremlinSteps[T, P], context: StatementContext[T, P]): GremlinSteps[T, P] = {
+    val g = context.dsl.steps()
+    val p = context.dsl.predicates()
+    g.start().choose(p.neq(NULL), traversal, g.start().constant(NULL))
   }
 }

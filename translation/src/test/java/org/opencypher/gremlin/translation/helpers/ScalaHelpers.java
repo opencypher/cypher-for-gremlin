@@ -28,6 +28,6 @@ public final class ScalaHelpers {
         for (T value : values) {
             list = list.$colon$colon(value);
         }
-        return list;
+        return list.reverse();
     }
 }

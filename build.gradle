@@ -138,7 +138,7 @@ project(':tinkerpop:tinkerpop-common') {
     dependencies {
         compile project(':translation')
 
-        compile("org.apache.tinkerpop:gremlin-server:${tinkerpopVersion}") {
+        compile("org.apache.tinkerpop:gremlin-driver:${tinkerpopVersion}") {
             exclude group: 'org.codehaus.groovy'
         }
     }
@@ -152,9 +152,7 @@ project(':tinkerpop:cypher-gremlin-server-client') {
     dependencies {
         compile project(':tinkerpop:tinkerpop-common')
 
-        compile("org.apache.tinkerpop:gremlin-driver:${tinkerpopVersion}") {
-            exclude group: 'org.codehaus.groovy'
-        }
+        compile("org.apache.tinkerpop:tinkergraph-gremlin:${tinkerpopVersion}")
     }
 }
 

@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
@@ -24,10 +25,13 @@ import org.junit.Test;
 import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
-public class RemoveImmediateReselectTest {
+public class RemoveUselessStepsTest {
 
     private final TranslatorFlavor flavor = new TranslatorFlavor(
-        seq(RemoveImmediateReselect$.MODULE$),
+        seq(
+            InlineMapTraversal$.MODULE$,
+            RemoveUselessSteps$.MODULE$
+        ),
         seq()
     );
 
@@ -43,8 +47,23 @@ public class RemoveImmediateReselectTest {
                 __.V()
                     .as("n")
                     .as(UNUSED).select("n", UNUSED)
-                    .map(__.project("m").by(__.select("n")))
+                    .project("m").by(__.select("n"))
                     .select("m").as("m").as(UNUSED).select("m", UNUSED)
+            );
+    }
+
+    @Test
+    public void foldUnfold() {
+        assertThat(parse(
+            "MATCH (n) " +
+                "UNWIND labels(n) as l " +
+                "RETURN l"
+        ))
+            .withFlavor(flavor)
+            .hasTraversalBeforeReturn(
+                __.V().as("n")
+                    .label().is(P.neq("vertex")).as("l")
+                    .as(UNUSED).select("l", UNUSED)
             );
     }
 
