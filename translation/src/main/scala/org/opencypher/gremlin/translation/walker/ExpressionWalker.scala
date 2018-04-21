@@ -21,7 +21,7 @@ import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
-import org.opencypher.gremlin.translation.walker.NodeUtils.expressionValue
+import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, notNull}
 import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.JavaConverters._
@@ -38,6 +38,14 @@ object ExpressionWalker {
 
   def walkLocal[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Expression): GremlinSteps[T, P] = {
     new ExpressionWalker(context, g).walkLocal(node)
+  }
+
+  def walkProperty[T, P](
+      context: StatementContext[T, P],
+      g: GremlinSteps[T, P],
+      key: String,
+      value: Expression): GremlinSteps[T, P] = {
+    new ExpressionWalker(context, g).walkProperty(key, value)
   }
 }
 
@@ -62,11 +70,12 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
               __.coalesce(
                 __.values(keyName),
                 __.constant(NULL)
-              )))
+              ),
+              context))
 
       case HasLabels(Variable(varName), List(LabelName(label))) =>
         __.select(varName)
-          .map(notNull(anyMatch(__.hasLabel(label))))
+          .map(notNull(anyMatch(__.hasLabel(label)), context))
 
       case IsNull(expr) =>
         walkLocal(expr).map(anyMatch(__.is(p.isEq(NULL))))
@@ -140,17 +149,17 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "abs"           => traversals.head.math("abs(_)")
           case "exists"        => traversals.head.map(anyMatch(__.is(p.neq(NULL))))
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
-          case "id"            => traversals.head.map(notNull(__.id()))
+          case "id"            => traversals.head.map(notNull(__.id(), context))
           case "keys"          => traversals.head.valueMap().select(Column.keys)
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "length"        => traversals.head.map(CustomFunction.length())
           case "nodes"         => traversals.head.map(CustomFunction.nodes())
-          case "properties"    => traversals.head.map(notNull(__.map(CustomFunction.properties())))
+          case "properties"    => traversals.head.map(notNull(__.map(CustomFunction.properties()), context))
           case "range"         => range(args)
           case "relationships" => traversals.head.map(CustomFunction.relationships())
           case "size"          => traversals.head.map(CustomFunction.size())
           case "sqrt"          => traversals.head.math("sqrt(_)")
-          case "type"          => traversals.head.map(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL))))
+          case "type"          => traversals.head.map(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
           case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
           case "tointeger"     => traversals.head.map(CustomFunction.convertToIntegerType())
@@ -194,13 +203,18 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
   }
 
-  private def copy(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
-    __.map(traversal)
+  def walkProperty(key: String, value: Expression): GremlinSteps[T, P] = {
+    val p = context.dsl.predicates()
+    val traversal = walkLocal(value)
+    g.choose(
+      g.start().map(traversal).is(p.neq(NULL)).unfold(),
+      g.start().property(key, traversal),
+      g.start().sideEffect(g.start().properties(key).drop())
+    )
   }
 
-  private def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
-    val p = context.dsl.predicates()
-    __.choose(p.neq(NULL), traversal, __.constant(NULL))
+  private def copy(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+    __.map(traversal)
   }
 
   private def anyMatch(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {

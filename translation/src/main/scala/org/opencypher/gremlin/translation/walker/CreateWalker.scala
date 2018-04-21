@@ -20,7 +20,6 @@ import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
-import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, setProperty}
 
 import scala.collection.mutable
 
@@ -89,21 +88,10 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
           case _           => true
         }.foreach {
           case (key, expression) =>
-            setProperty(g, key, createExpressionValue(expression))
+            ExpressionWalker.walkProperty(context, g, key, expression)
         }
       case _ =>
         context.unsupported("node pattern", nodePattern)
-    }
-  }
-
-  def createExpressionValue(expression: Expression): Any = {
-    expression match {
-      case Variable(varName) =>
-        g.start().select(varName)
-      case Property(Variable(varName), PropertyKeyName(keyName)) =>
-        g.start().select(varName).values(keyName)
-      case _ =>
-        expressionValue(expression, context)
     }
   }
 
@@ -128,7 +116,7 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
           }
           g.as(rName)
           for ((key, expression) <- properties) {
-            setProperty(g, key, createExpressionValue(expression))
+            ExpressionWalker.walkProperty(context, g, key, expression)
           }
         }
       case _ =>

@@ -160,5 +160,13 @@ public final class CypherAstHelpers {
         public static GremlinSteps<String, GroovyPredicate> bothE() {
             return start().bothE();
         }
+
+        public static GremlinSteps<String, GroovyPredicate> property(String key, GremlinSteps<String, GroovyPredicate> traversal) {
+            return start().property(key, traversal);
+        }
+
+        public static GremlinSteps<String, GroovyPredicate> sideEffect(GremlinSteps<String, GroovyPredicate> sideEffectTraversal) {
+            return start().sideEffect(sideEffectTraversal);
+        }
     }
 }

@@ -15,13 +15,12 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import java.util
-
+import org.neo4j.cypher.internal.frontend.v3_3.InputPosition
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.context.StatementContext
-import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, setProperty}
+import org.opencypher.gremlin.translation.walker.NodeUtils.notNull
 
 /**
   * AST walker that handles translation
@@ -48,18 +47,19 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
   }
 
   private def walkSetClause(items: Seq[SetItem]): Unit = {
+    val p = context.dsl.predicates()
     items.foreach {
       case SetPropertyItem(Property(Variable(variable), PropertyKeyName(key)), expression: Expression) =>
-        val value = expressionValue(expression, context)
-        if (value.isInstanceOf[util.Collection[_]]) {
-          applySideEffect(variable, setProperty(_, key, null))
-        }
-        applySideEffect(variable, setProperty(_, key, value))
+        setProperty(variable, key, expression)
       case SetIncludingPropertiesFromMapItem(Variable(variable), MapExpression(pairs)) =>
-        applySideEffect(variable, setProperties(_, pairs))
+        pairs.foreach {
+          case (PropertyKeyName(key), expression) => setProperty(variable, key, expression)
+        }
       case SetExactPropertiesFromMapItem(Variable(variable), MapExpression(pairs)) =>
-        applySideEffect(variable, _.properties().drop())
-        applySideEffect(variable, setProperties(_, pairs))
+        g.select(variable).sideEffect(g.start().is(p.neq(NULL)).properties().drop())
+        pairs.foreach {
+          case (PropertyKeyName(key), expression) => setProperty(variable, key, expression)
+        }
       case n =>
         context.unsupported("set clause", n)
     }
@@ -68,23 +68,14 @@ private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T
   private def walkRemoveClause(items: Seq[RemoveItem]): Unit = {
     items.foreach {
       case RemovePropertyItem(Property(Variable(variable), PropertyKeyName(key))) =>
-        applySideEffect(variable, _.properties(key).drop())
+        setProperty(variable, key, Null()(InputPosition.NONE))
       case n =>
         context.unsupported("set clause", n)
     }
   }
 
-  private def applySideEffect(variable: String, setter: GremlinSteps[T, P] => Unit): Unit = {
-    val p = context.dsl.predicates()
-    val sideEffect = g.start().select(variable)
-    setter(sideEffect)
-    g.choose(p.neq(NULL), g.start().sideEffect(sideEffect))
-  }
-
-  private def setProperties(g: GremlinSteps[T, P], items: Seq[(PropertyKeyName, Expression)]): Unit = {
-    for ((PropertyKeyName(key), expression) <- items) {
-      val value = expressionValue(expression, context)
-      setProperty(g, key, value)
-    }
+  private def setProperty(variable: String, key: String, value: Expression): Unit = {
+    val traversal = ExpressionWalker.walkProperty(context, g.start(), key, value)
+    g.select(variable).map(notNull(traversal, context))
   }
 }
