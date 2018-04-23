@@ -42,9 +42,11 @@ object TranslatorFlavor {
       SimplifyPropertySetters,
       GroupStepFilters,
       RemoveUselessSteps,
-      RemoveUnusedAliases
+      RemoveUnusedAliases,
+      ProjectionSimplifications
     ),
-    postConditions = Nil)
+    postConditions = Nil
+  )
 
   /**
     * A translator flavor that is suitable for Cosmos DB.
