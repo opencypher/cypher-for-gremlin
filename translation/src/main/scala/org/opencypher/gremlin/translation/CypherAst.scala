@@ -38,12 +38,14 @@ import scala.collection.mutable
   * for executing a Gremlin traversal.
   *
   * @param statement           AST root node
-  * @param returnTypes         variable types by name
+  * @param expressionTypes     expression Cypher types
+  * @param returnTypes         return types by alias
   * @param extractedParameters extracted parameters provided by Cypher parser
   * @param options             pre-parser options provided by Cypher parser
   */
 class CypherAst(
     val statement: Statement,
+    val expressionTypes: Map[Expression, CypherType],
     val returnTypes: Map[String, CypherType],
     val extractedParameters: Map[String, Any],
     options: Seq[PreParserOption]) {
@@ -65,7 +67,7 @@ class CypherAst(
       )
       .build()
 
-    val context = StatementContext(irDsl, returnTypes, extractedParameters)
+    val context = StatementContext(irDsl, expressionTypes, returnTypes, extractedParameters)
     StatementWalker.walk(context, statement)
     val ir = irDsl.translate()
 
@@ -161,12 +163,27 @@ object CypherAst {
 
     val params = parameters ++ state.extractedParams()
     val statement = state.statement()
-    val returnTypes = getReturnTypes(state, statement)
+    val expressionTypes = getExpressionTypes(state)
+    val returnTypes = getReturnTypes(expressionTypes, statement)
 
-    new CypherAst(statement, returnTypes, params, options)
+    new CypherAst(statement, expressionTypes, returnTypes, params, options)
   }
 
-  private def getReturnTypes(state: BaseState, statement: Statement): Map[String, CypherType] = {
+  private def getExpressionTypes(state: BaseState): Map[Expression, CypherType] = {
+    state.semantics().typeTable.mapValues { typeInfo =>
+      val typeSpec = typeInfo.specified
+      if (typeSpec.ranges.lengthCompare(1) == 0) {
+        val typ = typeSpec.ranges.head.lower
+        typ
+      } else {
+        AnyType.instance
+      }
+    }
+  }
+
+  private def getReturnTypes(
+      expressionTypes: Map[Expression, CypherType],
+      statement: Statement): Map[String, CypherType] = {
     val clauses = statement match {
       case Query(_, part) =>
         part match {
@@ -177,27 +194,28 @@ object CypherAst {
         }
     }
 
-    val typeTable = state.semantics().typeTable
     clauses.flatMap {
       case Return(_, returnItems, _, _, _, _, _) => returnItems.items
       case _                                     => Nil
     }.flatMap {
       case AliasedReturnItem(expression, variable @ Variable(name)) =>
-        val typeInfo = typeTable
+        val pair = expressionTypes
           .get(expression)
-          .orElse(typeTable.get(variable))
-        val pair = typeInfo.map {
-          case ExpressionTypeInfo(typeSpec, _) =>
-            if (typeSpec.ranges.lengthCompare(1) == 0) {
-              val typ = typeSpec.ranges.head.lower
-              (name, typ)
-            } else {
-              (name, AnyType.instance)
-            }
-        }
+          .orElse(expressionTypes.get(variable))
+          .map(typ => (name, typ))
         pair
       case _ =>
         None
     }.toMap
+  }
+
+  private def getTypeFromExpression(typeInfo: ExpressionTypeInfo): CypherType = {
+    val typeSpec = typeInfo.specified
+    if (typeSpec.ranges.lengthCompare(1) == 0) {
+      val typ = typeSpec.ranges.head.lower
+      typ
+    } else {
+      AnyType.instance
+    }
   }
 }

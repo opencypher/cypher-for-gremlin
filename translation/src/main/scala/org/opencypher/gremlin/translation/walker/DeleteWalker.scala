@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.structure.Column
-import org.neo4j.cypher.internal.frontend.v3_3.ast.{Delete, Variable}
+import org.neo4j.cypher.internal.frontend.v3_3.ast.Delete
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 
@@ -30,26 +30,18 @@ class DeleteWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P])
 
   def walkClause(node: Delete): Unit = {
     val Delete(expressions, _) = node
-    val aliases = expressions.map {
-      case Variable(name) =>
-        name
-      case n =>
-        context.unsupported("delete expression", n)
-    }
 
     val p = context.dsl.predicates()
-
-    val traversal = g.start().select(aliases: _*)
-    if (aliases.length > 1) {
-      traversal.select(Column.values)
-    }
+    val sideEffect = g.start().project(expressions.map(_ => context.generateName()): _*)
+    expressions.foreach(expr => sideEffect.by(ExpressionWalker.walkLocal(context, g, expr)))
+    sideEffect
+      .select(Column.values)
+      .unfold()
+      .unfold() // Unwraps paths
+      .is(p.neq(Tokens.NULL))
+      .drop()
 
     g.barrier()
-      .sideEffect(
-        traversal
-          .unfold()
-          .is(p.neq(Tokens.NULL))
-          .drop()
-      )
+      .sideEffect(sideEffect)
   }
 }

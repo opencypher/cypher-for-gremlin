@@ -60,7 +60,7 @@ object NodeUtils {
       case ListLiteral(expressions) =>
         traversalValueToJava(expressions, context, parameterHandler)
       case MapExpression(items) =>
-        asDetachedVertex(items, context)
+        traversalValueToJava(items.toMap, context, parameterHandler)
       case FunctionInvocation(_, _, _, Seq(args)) =>
         expressionValue(args, context)
       case seq: Seq[_] =>
@@ -72,20 +72,6 @@ object NodeUtils {
       case _ =>
         context.unsupported("value expression", value)
     }
-  }
-
-  private def asDetachedVertex[T, P](
-      items: Seq[(PropertyKeyName, Expression)],
-      context: StatementContext[T, P]): AnyRef = {
-    val builder = DetachedVertexProperty.build().setId(0)
-
-    items.foreach(item => {
-      val (PropertyKeyName(name), expression) = item
-      val value = expressionValue(expression, context)
-      builder.addProperty(new DetachedProperty[AnyRef](name, value))
-    })
-
-    builder.create()
   }
 
   def getPathTraversalAliases(patternElement: PatternElement): Vector[String] = {
