@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
-import static org.opencypher.gremlin.translation.Tokens.NULL;
 import static org.opencypher.gremlin.translation.Tokens.START;
 import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
@@ -163,11 +162,7 @@ public class GroupStepFiltersTest {
             .hasTraversal(
                 __.inject(START).coalesce(
                     __.start().V().as("n").hasLabel("N").has("p", P.eq("n")),
-                    __.start().addV("N").as("n").choose(
-                        __.constant("n").is(P.neq(NULL)).unfold(),
-                        __.property("p", __.constant("n")),
-                        __.sideEffect(__.properties("p").drop())
-                    )
+                    __.start().addV("N").as("n").property("p", __.constant("n"))
                 ).as("n").barrier().limit(0)
             );
     }

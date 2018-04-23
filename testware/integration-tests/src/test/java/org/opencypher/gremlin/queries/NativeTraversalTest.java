@@ -33,9 +33,6 @@ import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithBytecode;
-import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class NativeTraversalTest {
@@ -114,14 +111,7 @@ public class NativeTraversalTest {
             .containsExactly("1.0");
     }
 
-    /**
-     * Maps don't work in client-side translations
-     */
     @Test
-    @Category({
-        SkipWithGremlinGroovy.class,
-        SkipWithBytecode.class
-    })
     public void mapLiteral() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {name: 'Matz', name2: 'Pontus'} AS map\n" +

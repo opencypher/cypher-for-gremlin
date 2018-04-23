@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static java.util.Collections.emptyMap;
 import static org.opencypher.gremlin.translation.Tokens.NULL;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
@@ -23,6 +24,7 @@ import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parame
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
+import org.apache.tinkerpop.gremlin.structure.Column;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
@@ -37,7 +39,7 @@ public class SimplifyPropertySettersTest {
     );
 
     @Test
-    public void create() {
+    public void createProperties() {
         assertThat(parse(
             "CREATE ({foo: 'bar', baz: null, quux: $x})"
         ))
@@ -51,17 +53,37 @@ public class SimplifyPropertySettersTest {
     }
 
     @Test
-    public void unset() {
+    public void setProperties() {
         assertThat(parse(
             "MATCH (n) " +
-                "SET n.foo = []"
+                "SET " +
+                "n.p1 = []," +
+                "n.p2 = [1]," +
+                "n.p3 = {}," +
+                "n.p4 = {k:1}"
         ))
             .withFlavor(flavor)
             .hasTraversalBeforeReturn(
                 __.V().as("n")
                     .select("n")
-                    .choose(P.neq(NULL),
-                        __.sideEffect(__.properties("foo").drop()),
+                    .choose(
+                        P.neq(NULL),
+                        __.sideEffect(__.properties("p1").drop()),
+                        __.constant(NULL))
+                    .select("n")
+                    .choose(
+                        P.neq(NULL),
+                        __.property("p2", __.project("  GENERATED1").by(__.constant(1)).select(Column.values)),
+                        __.constant(NULL))
+                    .select("n")
+                    .choose(
+                        P.neq(NULL),
+                        __.property("p3", emptyMap()),
+                        __.constant(NULL))
+                    .select("n")
+                    .choose(
+                        P.neq(NULL),
+                        __.property("p4", __.project("k").by(__.constant(1))),
                         __.constant(NULL))
                     .barrier().limit(0)
             );

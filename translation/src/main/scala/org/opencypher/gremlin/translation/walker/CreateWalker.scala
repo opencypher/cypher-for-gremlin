@@ -75,21 +75,14 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
           case _ =>
         }
 
-        val properties = getPropertiesMap(propertiesOption)
-
         if (labels.isEmpty) {
           g.addV().as(name)
         } else {
           g.addV(labels.head.name).as(name)
         }
 
-        properties.filter {
-          case (_, Null()) => false
-          case _           => true
-        }.foreach {
-          case (key, expression) =>
-            ExpressionWalker.walkProperty(context, g, key, expression)
-        }
+        val properties = getPropertiesMap(propertiesOption)
+        walkProperties(properties)
       case _ =>
         context.unsupported("node pattern", nodePattern)
     }
@@ -115,12 +108,22 @@ private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinStep
             case _        => g.from(n1Name).to(n2Name)
           }
           g.as(rName)
-          for ((key, expression) <- properties) {
-            ExpressionWalker.walkProperty(context, g, key, expression)
-          }
+
+          walkProperties(properties)
         }
       case _ =>
         context.unsupported("relationship pattern", relationshipPattern)
+    }
+  }
+
+  def walkProperties(properties: Seq[(String, Expression)]): Unit = {
+    properties.filter {
+      case (_, Null()) => false
+      case _           => true
+    }.foreach {
+      case (key, expression) =>
+        val traversal = ExpressionWalker.walkLocal(context, g, expression)
+        g.property(key, traversal)
     }
   }
 

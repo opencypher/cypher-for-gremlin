@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithBytecode;
-import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class WithTest {
@@ -72,14 +69,7 @@ public class WithTest {
             .containsExactlyInAnyOrder("marko", "vadas");
     }
 
-    /**
-     * Maps don't work in client-side translations
-     */
     @Test
-    @Category({
-        SkipWithGremlinGroovy.class,
-        SkipWithBytecode.class
-    })
     public void withMap() throws Exception {
         assertThat(returnWith("map").toString()).isEqualTo("{name=Mats}");
         assertThat(returnWith("map.name")).isEqualTo("Mats");
@@ -93,14 +83,7 @@ public class WithTest {
         return getResult(format(queryTemplate, returnExpression));
     }
 
-    /**
-     * Maps don't work in client-side translations
-     */
     @Test
-    @Category({
-        SkipWithGremlinGroovy.class,
-        SkipWithBytecode.class
-    })
     public void withMapWithNullValue() throws Exception {
         String query = "WITH {notName: 0, notName2: null} AS map " +
             "RETURN exists(map.notName2) AS result";

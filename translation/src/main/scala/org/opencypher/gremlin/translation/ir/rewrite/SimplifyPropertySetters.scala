@@ -29,7 +29,9 @@ object SimplifyPropertySetters extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     mapTraversals(replace({
-      case ChooseT(_, PropertyT(key, Constant(value) :: Nil) :: Nil, drop) :: rest =>
+      case PropertyT(key, Constant(value) :: Nil) :: rest =>
+        PropertyV(key, value) :: rest
+      case ChooseT(_, PropertyV(key, value) :: Nil, drop) :: rest =>
         val empty = value match {
           case NULL                     => true
           case coll: util.Collection[_] => coll.isEmpty
@@ -39,6 +41,12 @@ object SimplifyPropertySetters extends GremlinRewriter {
           drop ++ rest
         } else {
           PropertyV(key, value) :: rest
+        }
+      case step @ ChooseT(_, prop @ PropertyT(_, Project(_*) :: valueTail) :: Nil, _) :: rest
+          if valueTail.init.forall(_.isInstanceOf[By]) =>
+        valueTail.last match {
+          case _: By | _: SelectC => prop ++ rest
+          case _                  => step
         }
     }))(steps)
   }

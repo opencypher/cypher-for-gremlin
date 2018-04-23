@@ -23,6 +23,7 @@ import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.toLiteral;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class LiteralTest {
         literalMap.put("p8", asList(13L, -40000L));
         literalMap.put("p9", asList("Hello", "World"));
         literalMap.put("p10", asList(true, false));
+        literalMap.put("p11", new ArrayList<>());
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
@@ -137,5 +139,32 @@ public class LiteralTest {
 
         assertThat(results)
             .containsExactly(literalMap);
+    }
+
+    @Test
+    public void returnEmptyMap() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN {} AS map"
+        );
+
+        assertThat(results)
+            .extracting("map")
+            .containsExactly(new HashMap<>());
+    }
+
+    @Test
+    public void returnMap() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN {k1: 12, k2: 'Hello', k3: true} AS map"
+        );
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("k1", 12L);
+        map.put("k2", "Hello");
+        map.put("k3", true);
+
+        assertThat(results)
+            .extracting("map")
+            .containsExactly(map);
     }
 }
