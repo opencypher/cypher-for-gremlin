@@ -313,6 +313,7 @@ project(':testware:tck') {
     }
 
     task('tckReport', type: JavaExec) {
+        onlyIf {project.hasTckTask()}
         systemProperty("projectVersion", scmVersion.version)
 
         main = 'org.opencypher.gremlin.tck.reports.OpenCypherTckReport'
