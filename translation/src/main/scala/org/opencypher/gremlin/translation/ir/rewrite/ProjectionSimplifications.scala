@@ -37,6 +37,10 @@ object ProjectionSimplifications extends GremlinRewriter {
 
   private def removeSelect(key: String, steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     steps match {
+      case Project(keys @ _*) :: rest =>
+        Project(keys: _*) :: removeSelectFromBy(key, rest)
+      case Unfold :: Project(keys @ _*) :: rest =>
+        Unfold :: Project(keys: _*) :: removeSelectFromBy(key, rest)
       case Fold :: Project(keys @ _*) :: rest =>
         Fold :: Project(keys: _*) :: removeSelectFromBy(key, rest)
       case Unfold :: SelectK(key1) :: rest if key == key1 =>
