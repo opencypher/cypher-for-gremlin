@@ -42,9 +42,12 @@ object SimplifyPropertySetters extends GremlinRewriter {
         } else {
           PropertyV(key, value) :: rest
         }
-      case ChooseT(_, prop @ PropertyT(_, Project(_*) :: valueTail) :: Nil, _) :: rest
-          if valueTail.init.forall(_.isInstanceOf[By]) && valueTail.last.isInstanceOf[SelectC] =>
-        prop ++ rest
+      case step @ ChooseT(_, prop @ PropertyT(_, Project(_*) :: valueTail) :: Nil, _) :: rest
+          if valueTail.init.forall(_.isInstanceOf[By]) =>
+        valueTail.last match {
+          case _: By | _: SelectC => prop ++ rest
+          case _                  => step
+        }
     }))(steps)
   }
 }
