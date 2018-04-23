@@ -56,6 +56,7 @@ public class LiteralTest {
         literalMap.put("p8", asList(13L, -40000L));
         literalMap.put("p9", asList("Hello", "World"));
         literalMap.put("p10", asList(true, false));
+        literalMap.put("p11", new ArrayList<>());
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {

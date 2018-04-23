@@ -23,6 +23,7 @@ import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parame
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
+import org.apache.tinkerpop.gremlin.structure.Column;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
@@ -62,6 +63,26 @@ public class SimplifyPropertySettersTest {
                     .select("n")
                     .choose(P.neq(NULL),
                         __.sideEffect(__.properties("foo").drop()),
+                        __.constant(NULL))
+                    .barrier().limit(0)
+            );
+    }
+
+    @Test
+    public void setList() {
+        assertThat(parse(
+            "MATCH (n) " +
+                "SET n.foo = [1]"
+        ))
+            .withFlavor(flavor)
+            .hasTraversalBeforeReturn(
+                __.V().as("n")
+                    .select("n")
+                    .choose(P.neq(NULL),
+                        __.property("foo",
+                            __.project("  GENERATED1")
+                                .by(__.constant(1))
+                                .select(Column.values)),
                         __.constant(NULL))
                     .barrier().limit(0)
             );
