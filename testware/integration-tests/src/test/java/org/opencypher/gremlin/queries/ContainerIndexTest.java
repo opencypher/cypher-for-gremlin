@@ -54,6 +54,7 @@ public class ContainerIndexTest {
             .containsExactly("2");
     }
 
+    @Test
     public void mapIndexInReturn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
@@ -64,6 +65,7 @@ public class ContainerIndexTest {
             .containsExactly(2L);
     }
 
+    @Test
     public void mapIndexInReturnFunction() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +

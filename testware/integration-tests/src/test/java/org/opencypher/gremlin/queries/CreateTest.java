@@ -309,6 +309,7 @@ public class CreateTest {
             .containsExactly(asList(1L, 2L, 3L));
     }
 
+    @Test
     public void createMapProperty() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "CREATE (n {foo: {foo: 'bar', baz: 'qux'}}) RETURN n.foo AS f"

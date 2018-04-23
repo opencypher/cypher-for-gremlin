@@ -69,6 +69,7 @@ public class WithTest {
             .containsExactlyInAnyOrder("marko", "vadas");
     }
 
+    @Test
     public void withMap() throws Exception {
         assertThat(returnWith("map").toString()).isEqualTo("{name=Mats}");
         assertThat(returnWith("map.name")).isEqualTo("Mats");
@@ -82,6 +83,7 @@ public class WithTest {
         return getResult(format(queryTemplate, returnExpression));
     }
 
+    @Test
     public void withMapWithNullValue() throws Exception {
         String query = "WITH {notName: 0, notName2: null} AS map " +
             "RETURN exists(map.notName2) AS result";

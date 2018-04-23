@@ -64,6 +64,7 @@ public class SetTest {
         assertThat(setAndGetProperty("[1, 2, 3]")).containsExactly(asList(1L, 2L, 3L));
     }
 
+    @Test
     public void setAndGetMap() throws Exception {
         assertThat(setAndGetProperty("{key: 'value'}")).containsExactly(singletonMap("key", "value"));
     }

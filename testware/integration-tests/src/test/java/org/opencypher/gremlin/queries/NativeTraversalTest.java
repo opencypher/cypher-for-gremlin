@@ -111,6 +111,7 @@ public class NativeTraversalTest {
             .containsExactly("1.0");
     }
 
+    @Test
     public void mapLiteral() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {name: 'Matz', name2: 'Pontus'} AS map\n" +
