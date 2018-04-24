@@ -22,7 +22,7 @@ import org.opencypher.gremlin.translation.ir.model._
 /**
   * Remove select in case of single key and [[UNUSED]] workaround
   */
-object ProjectionSimplifications extends GremlinRewriter {
+object SimplifySingleProjections extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     mapTraversals(replace({

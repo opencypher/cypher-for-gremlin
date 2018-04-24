@@ -19,18 +19,15 @@ import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
 /**
-  * This rewriter removes different sequences of steps that are no-op or otherwise useless.
-  * These sequences can sometimes appear in the generated traversal
-  * when results of several walkers are combined together.
+  * This rule removes `select` steps that immediately follow an `as` step with the same label.
+  * Since the expected value is already in the traverser, this is a useless operation.
+  * This rewrite also enables some cases of [[RemoveUnusedAliases]] rewrites.
   */
-object RemoveUselessSteps extends GremlinRewriter {
+object RemoveImmediateReselect extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     mapTraversals(replace({
-      // These rules remove `fold` and `unfold` pairs, since the former is an inverse of the latter.
-      case Fold :: Unfold :: rest =>
-        rest
-      case Unfold :: Fold :: rest =>
-        rest
+      case As(stepLabel) :: SelectK(selectKey) :: rest if stepLabel == selectKey =>
+        As(stepLabel) :: rest
     }))(steps)
   }
 }
