@@ -38,17 +38,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TckResultsComparator {
+
+    private static final Logger logger = LoggerFactory.getLogger(TckResultsComparator.class);
+
+    private static final String BEFORE = "build/test-results/tck/TckTest-before.xml";
+    private static final String NOW = "build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml";
+
     public static void main(String[] args) throws IOException, TemplateException {
-        Features before = getFeatures("build/test-results/tck/TckTest-before.xml");
-        Features now = getFeatures("build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml");
+        if (!shouldCompare()) {
+            return;
+        }
+        Features before = getFeatures(BEFORE);
+        Features now = getFeatures(NOW);
         Diff diff = now.compare(before);
         TckRegressionReport.generate(diff);
 
         if (!diff.newlyFailedScenarios.isEmpty()) {
             System.exit(1);
         }
+    }
+
+    private static boolean shouldCompare() {
+        File reportFile = new File(BEFORE);
+        if (!reportFile.exists() && "true".equals(System.getenv("CI"))) {
+            logger.info("Previous TCK result file not found." +
+                "Assuming this is the first TCK run in CI environment, skip results comparison");
+            return false;
+        }
+        return true;
     }
 
     private static Features getFeatures(String reportPath) throws IOException {

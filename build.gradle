@@ -304,6 +304,12 @@ project(':testware:tck') {
         systemProperty "cucumber.options", "--plugin 'json:build/reports/tests/cucumber/cucumber.json"
         useJUnitPlatform()
         ignoreFailures true
+
+        if (project.hasProperty('ci')) {
+            testLogging.showStandardStreams = true
+            minHeapSize = '256m'
+            maxHeapSize = '512m'
+        }
     }.finalizedBy('junitHtmlReport', 'tckReport')
 
     task('tckReport', type: JavaExec) {

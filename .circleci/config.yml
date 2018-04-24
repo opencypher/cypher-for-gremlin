@@ -54,35 +54,84 @@ jobs:
     working_directory: ~/repo
 
     environment:
-      JVM_OPTS: -Xmx512m
+      JVM_OPTS: -Xmx1g
       TERM: dumb
 
     steps:
       - checkout
+
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "build.gradle" }}
           - v1-dependencies-
+
       - run:
-          command: gradle dependencies
+          name: Fetch dependencies
+          command: ./gradlew --no-daemon -Pci dependencies
+
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "build.gradle" }}
+
       - run:
-          command: gradle tck
+          name: Run OpenCypher TCK tests
+          command: ./gradlew --no-daemon -Pci tck
 
       - store_test_results:
           path: ~/repo/testware/tck/build/test-results/tck
+
+      - store_artifacts:
+          path: ~/repo/testware/tck/build/reports/tests/cucumber/cucumber-html-reports
+
+      - run:
+          name: Fetch baseline branch
+          command: git fetch origin pull/53/head:baseline
+
+      - run:
+          # CircleCI hack: print variable to a file because using env variable as cache key is not supported.
+          name: Save base commit hash to a file
+          command: echo $(git merge-base baseline ${CIRCLE_BRANCH}) > ~/.base-commit.txt
+
+      - run:
+          # Debug
+          command: cat ~/.base-commit.txt
+
+      - restore_cache:
+          keys:
+          - v1-tck-baseline-{{ checksum "~/.base-commit.txt" }}
+
+      - run:
+          name: Compare TCK results with baseline
+          command: |
+            if [ "${CIRCLE_BRANCH}" != "pull/53" ]; then
+              ./gradlew --no-daemon -Pci tckRegression
+            fi
+
+      - store_artifacts:
+          path: ~/repo/testware/tck/build/reports/tests/regression.html
+
+      - run:
+          name: Save TCK report
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "pull/53" ]; then
+              ./gradlew --no-daemon -Pci tckSaveReport
+            fi
+
+      - save_cache:
+          paths:
+            - ~/repo/testware/tck/build/test-results/tck/TckTest-before.xml
+          key: v1-tck-baseline-{{ checksum "~/.base-commit.txt" }}
 
 workflows:
   version: 2
   build_and_tck:
     jobs:
-      - build
-      - tck:
-          requires:
-            - build
+#      - build
+      - tck
+#      - tck:
+#          requires:
+#            - build
 
 experimental:
   notify:
