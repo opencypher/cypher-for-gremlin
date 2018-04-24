@@ -24,7 +24,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.traverser.util.EmptyTraver
  * This is an iterator adapter that unwraps bulked traversers
  * and iterates over each bulked value the specified number of times.
  *
- * @see org.apache.tinkerpop.gremlin.server.util.TraverserIterator
+ * @see org.apache.tinkerpop.gremlin.process.traversal.traverser.util.TraverserSet
  */
 public class TraverserIterator implements Iterator<Result> {
 
