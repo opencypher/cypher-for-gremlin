@@ -21,29 +21,23 @@ The fastest way to start experimenting with Cypher for Gremlin is with the [Grem
 
 With Cypher for Gremlin you can use the following Cypher language features:
 
-Clauses          | Other       | Patterns                       | Functions
------------------|-------------|--------------------------------|--------------------------
-`MATCH`          | `ON CREATE` | `(n:L {k: ‘v’})`               | `avg`, `collect`, `count`
-`RETURN`         | `ON MATCH`  | `()-->()`                      | `max`, `min`, `sum`
-`UNWIND`         | `WHERE`     | `()--()`                       | `keys`, `labels`
-`OPTIONAL MATCH` | `ORDER BY`  | `()-[r:L {k: ‘v’}]-()`         | `nodes`, `relationships`
-`WITH`           | `SKIP`      | `(n)-[r]-(m)`                  | `size`
-`UNION`          | `LIMIT`     | `()-[]-()-[]-()`               | `type`, `exists`
-`CREATE`         | `DISTINCT`  | <code>[x IN … &#124; …]</code> | type conversions
-`MERGE`          |             |                                | string matching
-`SET`            |             |                                |
-`DETACH DELETE`  |             |                                |
+- `MATCH` and `OPTIONAL MATCH` with most of the [pattern-matching](https://neo4j.com/docs/developer-manual/current/cypher/syntax/patterns/) syntax, except for variable-length patterns
+- `WHERE`, `ORDER BY`, `SKIP`, and `LIMIT` sub-clauses
+- `RETURN`, `WITH`, and `UNWIND` projections, including basic support for list and path comprehensions
+- `CREATE`, `MERGE`, `SET`, `REMOVE`, and `DETACH DELETE`
+- `UNION` operations
 
-It is not guaranteed, however, that all combinations of the listed clauses, patterns, or functions will work. You are welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
+It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers over 70% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck).
+
+You are very welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
 
 ### Major Limitations
 
 * Some functionality is exclusive to Gremlin Servers with the [Cypher plugin](tinkerpop/cypher-gremlin-server-plugin) installed, including:
   - Accessing [list](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) elements by index
-  - [Literal maps](https://neo4j.com/docs/developer-manual/current/cypher/syntax/maps/)
   - [List comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-list-comprehension)
   - [Returning named paths](https://neo4j.com/docs/developer-manual/current/cypher/clauses/match/#named-paths)
-  - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `length()`, `nodes()`, `relationships()`, `size()`, `toString()`, `toBoolean()`, `toInteger()`, `toFloat()`
+  - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `length`, `nodes`, `percentileDisc`, `percentileCont`, `properties`, `relationships`, `size`, `toBoolean`, `toFloat`, `toInteger`, `toString`
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 
 See the current [TCK report](testware/tck) for a detailed overview of language coverage.
