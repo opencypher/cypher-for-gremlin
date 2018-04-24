@@ -383,6 +383,18 @@ public class ReturnTest {
     }
 
     @Test
+    public void returnMaxMinWithNull() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND [1, null, 3] AS i " +
+                "RETURN max(i), min(i)"
+        );
+
+        assertThat(results)
+            .extracting("max(i)", "min(i)")
+            .containsExactly(tuple(3L, 1L));
+    }
+
+    @Test
     public void returnNull() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "RETURN null AS literal"

@@ -41,9 +41,10 @@ object TranslatorFlavor {
       InlineMapTraversal,
       SimplifyPropertySetters,
       GroupStepFilters,
-      RemoveUselessSteps,
+      SimplifySingleProjections,
+      RemoveImmediateReselect,
       RemoveUnusedAliases,
-      ProjectionSimplifications
+      RemoveUselessSteps
     ),
     postConditions = Nil
   )

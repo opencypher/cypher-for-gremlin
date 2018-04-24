@@ -26,7 +26,7 @@ import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 
-public class ProjectionSimplificationsTest {
+public class SimplifySingleProjectionsTest {
 
     @Test
     public void pivotAndAggregation() {
@@ -51,7 +51,7 @@ public class ProjectionSimplificationsTest {
     private String translate(String queryText) {
         TranslatorFlavor flavor = new TranslatorFlavor(
             seq(InlineMapTraversal$.MODULE$,
-                ProjectionSimplifications$.MODULE$),
+                SimplifySingleProjections$.MODULE$),
             seq()
         );
 
