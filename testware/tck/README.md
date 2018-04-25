@@ -14,8 +14,8 @@ It is expected for some tests for fail, but the report will give you an overview
 
 To compare TCK results with some baseline TCK run use these tasks:
 
-* `tckSaveReport` to save the current report to `build/test-results/junit-platform/TEST-junit-jupiter-before.xml`
-* `tckRegression` to compare `TEST-junit-jupiter-before.xml` and the current report `TEST-junit-jupiter.xml`
+* `tckSaveReport` to save the current report to `build/test-results/tck/TckTest-before.xml`
+* `tckRegression` to compare `TckTest-before.xml` and the current report `TEST-org.opencypher.gremlin.tck.TckTest.xml`
 
 The usual workflow is:
 

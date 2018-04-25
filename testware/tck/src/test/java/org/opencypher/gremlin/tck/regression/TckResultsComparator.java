@@ -41,8 +41,8 @@ import java.util.regex.Pattern;
 
 public class TckResultsComparator {
     public static void main(String[] args) throws IOException, TemplateException {
-        Features before = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter-before.xml");
-        Features now = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter.xml");
+        Features before = getFeatures("build/test-results/tck/TckTest-before.xml");
+        Features now = getFeatures("build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml");
         Diff diff = now.compare(before);
         TckRegressionReport.generate(diff);
 
