@@ -79,7 +79,10 @@ jobs:
           command: ./gradlew --no-daemon -Pci tck
 
       - store_test_results:
-          path: ~/repo/testware/tck/build/test-results/tck
+          path: ~/repo/testware/tck/build/test-results
+
+      - store_artifacts:
+          path: ~/repo/testware/tck/build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml
 
       - store_artifacts:
           path: ~/repo/testware/tck/build/reports/tests/cucumber/cucumber-html-reports
@@ -88,9 +91,23 @@ jobs:
           # CircleCI hack: print variable to a file because using env variable as cache key is not supported.
           name: Get base commit hash
           command: |
-            export BASE_COMMIT=$(git merge-base master ${CIRCLE_BRANCH})
+            export BASE_COMMIT=$(git merge-base remotes/origin/master ${CIRCLE_BRANCH})
             echo $BASE_COMMIT > ~/.base-commit.txt
             echo $BASE_COMMIT
+
+      - restore_cache:
+          keys:
+          - v1-tck-master-{{ checksum "~/.base-commit.txt" }}
+
+      - run:
+          name: Compare TCK results with master branch
+          command: |
+            if [ "${CIRCLE_BRANCH}" != "master" ]; then
+              ./gradlew --no-daemon -Pci tckRegression
+            fi
+
+      - store_artifacts:
+          path: ~/repo/testware/tck/build/reports/tests/regression.html
 
       - run:
           name: Save TCK report
