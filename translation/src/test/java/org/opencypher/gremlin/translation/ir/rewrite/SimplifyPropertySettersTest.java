@@ -66,25 +66,21 @@ public class SimplifyPropertySettersTest {
             .hasTraversalBeforeReturn(
                 __.V().as("n")
                     .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.sideEffect(__.properties("p1").drop()),
-                        __.constant(NULL))
+                    .optional(
+                        __.is(P.neq(NULL))
+                            .sideEffect(__.properties("p1").drop()))
                     .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.property("p2", __.project("  GENERATED1").by(__.constant(1)).select(Column.values)),
-                        __.constant(NULL))
+                    .optional(
+                        __.is(P.neq(NULL))
+                            .property("p2", __.project("  GENERATED1").by(__.constant(1)).select(Column.values)))
                     .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.property("p3", emptyMap()),
-                        __.constant(NULL))
+                    .optional(
+                        __.is(P.neq(NULL))
+                            .property("p3", emptyMap()))
                     .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.property("p4", __.project("k").by(__.constant(1))),
-                        __.constant(NULL))
+                    .optional(
+                        __.is(P.neq(NULL))
+                            .property("p4", __.project("k").by(__.constant(1))))
                     .barrier().limit(0)
             );
     }

@@ -347,6 +347,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> optional(GremlinSteps<Bytecode, P> optionalTraversal) {
+        bytecode.addStep(Symbols.optional, optionalTraversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> or(GremlinSteps<Bytecode, P>... orTraversals) {
         bytecode.addStep(Symbols.or, (Object[]) traversals(orTraversals));
         return this;

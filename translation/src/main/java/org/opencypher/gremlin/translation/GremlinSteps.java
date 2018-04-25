@@ -150,6 +150,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> not(GremlinSteps<T, P> notTraversal);
 
+    GremlinSteps<T, P> optional(GremlinSteps<T, P> optionalTraversal);
+
     @SuppressWarnings("unchecked")
     GremlinSteps<T, P> or(GremlinSteps<T, P>... orTraversals);
 

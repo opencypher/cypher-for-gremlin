@@ -149,6 +149,20 @@ public class NativeTraversalTest {
     }
 
     @Test
+    public void nullProperty() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:Person {firstName: 'Lars'}) RETURN " +
+                "p.notExisting as n1," +
+                "abs(sqrt(p.notExisting)) as n2," +
+                "id(p.notExisting) as n3"
+        );
+
+        assertThat(results)
+            .extracting("n1", "n2", "n3")
+            .contains(tuple(null, null, null));
+    }
+
+    @Test
     public void oneAggregation() throws Exception {
         String cypher = "MATCH (n1) RETURN collect(n1)";
 
