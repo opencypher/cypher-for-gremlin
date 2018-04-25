@@ -29,7 +29,7 @@ object DeleteWalker {
 class DeleteWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Delete): Unit = {
-    throw new RuntimeException("Testing regression")
+//    throw new RuntimeException("Testing regression")
 
     val Delete(expressions, _) = node
     val aliases = expressions.map {
