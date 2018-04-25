@@ -152,7 +152,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
         val traversals = args.map(walkLocal)
         val traversal = fnName.toLowerCase match {
-          case "abs"           => traversals.head.math("abs(_)")
+          case "abs"           => traversals.head.map(notNull(__.math("abs(_)"), context))
           case "exists"        => traversals.head.map(anyMatch(__.is(p.neq(NULL))))
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
           case "id"            => traversals.head.map(notNull(__.id(), context))
@@ -164,7 +164,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "range"         => range(args)
           case "relationships" => traversals.head.map(CustomFunction.relationships())
           case "size"          => traversals.head.map(CustomFunction.size())
-          case "sqrt"          => traversals.head.math("sqrt(_)")
+          case "sqrt"          => traversals.head.map(notNull(__.math("sqrt(_)"), context))
           case "type"          => traversals.head.map(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
           case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())

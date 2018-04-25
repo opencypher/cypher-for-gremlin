@@ -173,6 +173,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.min()
         case Not(notTraversal) =>
           g.not(generateSteps(notTraversal))
+        case Optional(optionalTraversal) =>
+          g.optional(generateSteps(optionalTraversal))
         case Or(orTraversals @ _*) =>
           g.or(orTraversals.map(generateSteps): _*)
         case Order =>

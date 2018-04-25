@@ -38,6 +38,7 @@ public class CosmosDbFlavorTest {
     );
 
     @Test
+    @SuppressWarnings("unchecked")
     public void values() {
         assertThat(parse(
             "MATCH (n:N) " +
@@ -48,12 +49,11 @@ public class CosmosDbFlavorTest {
                 __.V().as("n").where(__.select("n").hasLabel("N")).as(UNUSED)
                     .select("n", UNUSED)
                     .project("n.p").by(
-                        __.select("n").choose(
-                            P.neq(NULL),
-                            __.coalesce(
+                        __.select("n").optional(
+                            __.is(P.neq(NULL))
+                                .coalesce(
                                 __.properties().hasKey("p").value(),
-                                __.constant(NULL)),
-                            __.constant(NULL)))
+                                __.constant(NULL))))
             );
     }
 

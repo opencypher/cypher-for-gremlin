@@ -375,6 +375,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> optional(GremlinSteps<GraphTraversal, P> optionalTraversal) {
+        g.optional(optionalTraversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> or(GremlinSteps<GraphTraversal, P>... orTraversals) {
         g.or(traversals(orTraversals));
         return this;
