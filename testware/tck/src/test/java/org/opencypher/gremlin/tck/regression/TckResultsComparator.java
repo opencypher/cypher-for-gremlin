@@ -38,17 +38,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TckResultsComparator {
+
+    private static final Logger logger = LoggerFactory.getLogger(TckResultsComparator.class);
+
+    private static final String BEFORE = "build/test-results/tck/TckTest-before.xml";
+    private static final String NOW = "build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml";
+
     public static void main(String[] args) throws IOException, TemplateException {
-        Features before = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter-before.xml");
-        Features now = getFeatures("build/test-results/junit-platform/TEST-junit-jupiter.xml");
+        if (!shouldCompare()) {
+            return;
+        }
+        Features before = getFeatures(BEFORE);
+        Features now = getFeatures(NOW);
         Diff diff = now.compare(before);
         TckRegressionReport.generate(diff);
 
         if (!diff.newlyFailedScenarios.isEmpty()) {
             System.exit(1);
         }
+    }
+
+    private static boolean shouldCompare() {
+        File reportFile = new File(BEFORE);
+        if (!reportFile.exists() && "true".equals(System.getenv("CI"))) {
+            logger.info("Previous TCK result file not found." +
+                "Assuming this is the first TCK run in CI environment, skip results comparison");
+            return false;
+        }
+        return true;
     }
 
     private static Features getFeatures(String reportPath) throws IOException {
@@ -154,7 +175,7 @@ public class TckResultsComparator {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class Error {
+    static class Failure {
         String message;
     }
 
@@ -166,19 +187,19 @@ public class TckResultsComparator {
 
         private String featureName;
 
-        private Error error;
+        private Failure failure;
 
         @JsonCreator
-        public Scenario(@JsonProperty("name") String name, @JsonProperty("error") Error error) {
+        public Scenario(@JsonProperty("name") String name, @JsonProperty("failure") Failure failure) {
             Matcher matcher = pattern.matcher(name);
             matcher.find();
             this.name = matcher.group(2);
             this.featureName = matcher.group(1);
-            this.error = error;
+            this.failure = failure;
         }
 
         public boolean isFailed() {
-            return error != null;
+            return failure != null;
         }
 
         public boolean isPassed() {
