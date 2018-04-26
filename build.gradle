@@ -301,7 +301,8 @@ project(':testware:tck') {
 
     task('tck', type: Test) {
         onlyIf { project.hasTckTask() }
-        systemProperty "cucumber.options", "--plugin 'json:build/reports/tests/cucumber/cucumber.json"
+        ext.cucumberReportDir = "${project.buildDir.absolutePath}/reports/tests/cucumber"
+        systemProperty "cucumber.options", "--plugin 'json:${ext.cucumberReportDir}/cucumber.json"
         useJUnitPlatform()
         ignoreFailures true
 
@@ -460,11 +461,19 @@ gitPublish {
         from(project(':translation').getTasks().getByName('scaladoc')) {
             into "api/${project.version}/scala"
         }
+        from(project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
+            into "test-reports/${project.version}"
+        }
     }
     preserve {
         include '**' // keep all existing files
     }
-    commitMessage = "Publishing Javadoc ${project.version}"
+    commitMessage = "Publish release ${project.version}"
 }
 
 gitPublishCopy.dependsOn (allJavadoc, ':translation:scaladoc')
+
+apply plugin:'base'
+clean {
+    delete "${rootDir}/build"
+}
