@@ -47,11 +47,9 @@ public class OpenCypherTckReport {
 
         // additional metadata presented on main page
         configuration.addClassifications("Platform", "Linux");
+        configuration.addClassifications("Backend", "Tinker Graph");
         configuration.addClassifications("Branch", "master");
-
-        String backend = "Tinker Graph";
-
-        configuration.addClassifications("Backend", backend);
+        configuration.addClassifications("Build", System.getProperty("buildNumber"));
 
         new ReportBuilder(jsonFiles, configuration).generateReports();
 
