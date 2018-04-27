@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir
 
+import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.model._
@@ -151,16 +152,7 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
         case Loops =>
           g.loops()
         case MapF(function) =>
-          function.getName match {
-            case "containerIndex" =>
-              val index = function.getArgs()(0) match {
-                case GremlinBinding(name, value) => b.bind(name, value)
-                case value                       => value
-              }
-              g.map(CustomFunction.containerIndex(index))
-            case _ =>
-              g.map(function)
-          }
+          g.map(function)
         case MapT(traversal) =>
           g.map(generateSteps(traversal))
         case Math(expression) =>
@@ -193,6 +185,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.property(key, generateSteps(traversal))
         case Project(keys @ _*) =>
           g.project(keys: _*)
+        case Range(scope: Scope, low: Long, high: Long) =>
+          g.range(scope, low, high)
         case Repeat(repeatTraversal) =>
           g.repeat(generateSteps(repeatTraversal))
         case SelectK(selectKeys @ _*) =>

@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.MapType
@@ -22,7 +23,7 @@ import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
-import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, notNull}
+import org.opencypher.gremlin.translation.walker.NodeUtils.{expressionValue, inlineExpressionValue, notNull}
 import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.JavaConverters._
@@ -146,8 +147,8 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case Modulo(lhs, rhs)   => math(lhs, rhs, "%")
 
       case ContainerIndex(expr, idx) =>
-        val index = expressionValue(idx, context)
-        walkLocal(expr).map(CustomFunction.containerIndex(index))
+        val index = inlineExpressionValue(idx, context, classOf[java.lang.Number]).longValue()
+        walkLocal(expr).range(Scope.local, index, index + 1)
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
         val traversals = args.map(walkLocal)

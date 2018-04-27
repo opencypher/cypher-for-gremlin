@@ -407,6 +407,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> range(Scope scope, long low, long high) {
+        bytecode.addStep(Symbols.range, scope, low, high);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> repeat(GremlinSteps<Bytecode, P> repeatTraversal) {
         bytecode.addStep(Symbols.repeat, repeatTraversal.current());
         return this;
