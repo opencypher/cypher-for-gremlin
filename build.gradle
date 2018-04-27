@@ -161,7 +161,7 @@ project(':tinkerpop:cypher-gremlin-server-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile (project(':tinkerpop:tinkerpop-common')) {
+        compile(project(':tinkerpop:tinkerpop-common')) {
             exclude group: 'org.apache.tinkerpop'
         }
         compileOnly "org.apache.tinkerpop:gremlin-server:${tinkerpopVersion}"
@@ -176,7 +176,7 @@ project(':tinkerpop:cypher-gremlin-console-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile (project(':tinkerpop:cypher-gremlin-server-client')) {
+        compile(project(':tinkerpop:cypher-gremlin-server-client')) {
             exclude group: 'org.apache.tinkerpop'
         }
         compileOnly "org.apache.tinkerpop:gremlin-console:${tinkerpopVersion}"
@@ -301,7 +301,8 @@ project(':testware:tck') {
 
     task('tck', type: Test) {
         onlyIf { project.hasTckTask() }
-        systemProperty "cucumber.options", "--plugin 'json:build/reports/tests/cucumber/cucumber.json"
+        ext.cucumberReportDir = "${project.buildDir.absolutePath}/reports/tests/cucumber"
+        systemProperty "cucumber.options", "--plugin 'json:${ext.cucumberReportDir}/cucumber.json"
         useJUnitPlatform()
         ignoreFailures true
 
@@ -313,8 +314,9 @@ project(':testware:tck') {
     }.finalizedBy('junitHtmlReport', 'tckReport')
 
     task('tckReport', type: JavaExec) {
-        onlyIf {project.hasTckTask()}
+        onlyIf { project.hasTckTask() }
         systemProperty("projectVersion", scmVersion.version)
+        systemProperty("buildNumber", project.findProperty("buildNumber"))
 
         main = 'org.opencypher.gremlin.tck.reports.OpenCypherTckReport'
         classpath = sourceSets.test.runtimeClasspath
@@ -453,18 +455,33 @@ apply plugin: 'org.ajoberstar.git-publish'
 gitPublish {
     repoUri = "git@github.com:${githubProject}.git"
     branch = 'gh-pages'
-    contents {
-        from(allJavadoc) {
-            into "api/${project.version}/java"
+    if (project.hasProperty("publishTck")) {
+        contents {
+            from(
+                project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
+                into "test-reports/snapshot"
+            }
         }
-        from(project(':translation').getTasks().getByName('scaladoc')) {
-            into "api/${project.version}/scala"
+        commitMessage = "Publish TCK report for build #${project.property('buildNumber')}"
+    } else {
+        contents {
+            from(allJavadoc) {
+                into "api/${project.version}/java"
+            }
+            from(project(':translation').getTasks().getByName('scaladoc')) {
+                into "api/${project.version}/scala"
+            }
+            from(project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
+                into "test-reports/${project.version}"
+            }
         }
+        commitMessage = "Publish release ${project.version}"
     }
-    preserve {
-        include '**' // keep all existing files
-    }
-    commitMessage = "Publishing Javadoc ${project.version}"
 }
 
-gitPublishCopy.dependsOn (allJavadoc, ':translation:scaladoc')
+gitPublishCopy.dependsOn(allJavadoc, ':translation:scaladoc')
+
+apply plugin: 'base'
+clean {
+    delete "${rootDir}/build"
+}

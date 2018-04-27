@@ -76,7 +76,7 @@ jobs:
 
       - run:
           name: Run OpenCypher TCK tests
-          command: ./gradlew --no-daemon -Pci tck
+          command: ./gradlew --no-daemon -Pci -PbuildNumber=${CIRCLE_BUILD_NUM} tck
 
       - store_test_results:
           path: ~/repo/testware/tck/build/test-results
@@ -110,7 +110,7 @@ jobs:
           path: ~/repo/testware/tck/build/reports/tests/regression.html
 
       - run:
-          name: Save TCK report
+          name: Save TCK report to CI cache
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               ./gradlew --no-daemon -Pci tckSaveReport
@@ -121,6 +121,12 @@ jobs:
             - ~/repo/testware/tck/build/test-results/tck/TckTest-before.xml
           key: v1-tck-{{ .Branch }}-{{ checksum "~/.base-commit.txt" }}
 
+      - run:
+          name: Publish TCK report to GitHub Pages
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./gradlew gitPublishPush -PpublishTck -PbuildNumber=${CIRCLE_BUILD_NUM}
+            fi
 
 workflows:
   version: 2
