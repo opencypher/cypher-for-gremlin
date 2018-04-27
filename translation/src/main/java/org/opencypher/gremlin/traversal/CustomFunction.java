@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.traversal;
 
-import static java.lang.Integer.parseInt;
 import static java.util.stream.Collectors.toList;
 import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ELEMENT;
 import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ID;
@@ -227,25 +226,6 @@ public class CustomFunction implements Function<Traverser, Object> {
                     return result;
                 })
                 .collect(toList()));
-    }
-
-    public static CustomFunction containerIndex(Object index) {
-        return new CustomFunction(
-            "containerIndex",
-            traverser -> {
-                Object arg = traverser.get();
-                if (arg instanceof Map) {
-                    Map map = (Map) arg;
-                    return map.get(index);
-                }
-                Collection coll = (Collection) arg;
-                int idx = parseInt(String.valueOf(index));
-                return coll.stream()
-                    .skip(idx)
-                    .findFirst()
-                    .orElse(null);
-            },
-            index);
     }
 
     public static CustomFunction percentileCont(double percentile) {

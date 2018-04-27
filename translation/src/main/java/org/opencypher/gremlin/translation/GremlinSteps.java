@@ -171,6 +171,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> project(String... keys);
 
+    GremlinSteps<T, P> range(Scope scope, long low, long high);
+
     GremlinSteps<T, P> repeat(GremlinSteps<T, P> repeatTraversal);
 
     GremlinSteps<T, P> select(String... selectKeys);

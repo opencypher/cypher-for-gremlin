@@ -237,6 +237,8 @@ case class PropertyT(key: String, traversal: Seq[GremlinStep]) extends GremlinSt
 
 case class Project(keys: String*) extends GremlinStep
 
+case class Range(scope: Scope, low: Long, high: Long) extends GremlinStep
+
 case class Repeat(repeatTraversal: Seq[GremlinStep]) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
     Repeat(f(repeatTraversal))

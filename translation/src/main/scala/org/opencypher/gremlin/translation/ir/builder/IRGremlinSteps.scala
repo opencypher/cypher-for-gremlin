@@ -343,6 +343,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def range(scope: Scope, low: Long, high: Long): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Range(scope, low, high)
+    this
+  }
+
   override def repeat(repeatTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Repeat(repeatTraversal.current())

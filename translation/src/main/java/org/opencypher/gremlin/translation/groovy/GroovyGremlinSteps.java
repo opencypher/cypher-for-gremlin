@@ -415,6 +415,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> range(Scope scope, long low, long high) {
+        g.append(chain("range", scope, low, high));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> repeat(GremlinSteps<String, GroovyPredicate> repeatTraversal) {
         g.append(chain("repeat", traversal(repeatTraversal)));
         return this;
