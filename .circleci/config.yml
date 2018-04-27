@@ -58,6 +58,10 @@ jobs:
       TERM: dumb
 
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "ae:8a:99:8c:f8:6b:f1:0a:62:8f:88:0b:fa:ef:ee:f5"
+
       - checkout
 
       - restore_cache:
