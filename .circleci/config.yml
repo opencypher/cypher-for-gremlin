@@ -58,10 +58,6 @@ jobs:
       TERM: dumb
 
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "ae:8a:99:8c:f8:6b:f1:0a:62:8f:88:0b:fa:ef:ee:f5"
-
       - checkout
 
       - restore_cache:
@@ -131,6 +127,10 @@ jobs:
             if [ "${CIRCLE_BRANCH}" != "master" ]; then
               ./gradlew gitPublishCommit -PpublishTck -PbuildNumber=${CIRCLE_BUILD_NUM}
             fi
+
+      - add_ssh_keys:
+          fingerprints:
+            - "ae:8a:99:8c:f8:6b:f1:0a:62:8f:88:0b:fa:ef:ee:f5"
 
       - run:
           name: Push TCK report
