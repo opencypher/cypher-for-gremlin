@@ -121,13 +121,6 @@ jobs:
             - ~/repo/testware/tck/build/test-results/tck/TckTest-before.xml
           key: v1-tck-{{ .Branch }}-{{ checksum "~/.base-commit.txt" }}
 
-      - run:
-          name: Publish TCK report to GitHub Pages
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./gradlew gitPublishPush -PpublishTck -PbuildNumber=${CIRCLE_BUILD_NUM}
-            fi
-
 workflows:
   version: 2
   build_and_tck:
