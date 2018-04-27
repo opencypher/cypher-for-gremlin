@@ -122,10 +122,17 @@ jobs:
           key: v1-tck-{{ .Branch }}-{{ checksum "~/.base-commit.txt" }}
 
       - run:
-          name: Publish TCK report to GitHub Pages
+          name: Commit TCK report to GitHub Pages
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./gradlew gitPublishPush -PpublishTck -PbuildNumber=${CIRCLE_BUILD_NUM}
+            if [ "${CIRCLE_BRANCH}" != "master" ]; then
+              ./gradlew gitPublishCommit -PpublishTck -PbuildNumber=${CIRCLE_BUILD_NUM}
+            fi
+
+      - run:
+          name: Push TCK report
+          command: |
+            if [ "${CIRCLE_BRANCH}" != "master" ]; then
+              cd ~/repo/build/gitPublish && git push origin gh-pages
             fi
 
 workflows:
