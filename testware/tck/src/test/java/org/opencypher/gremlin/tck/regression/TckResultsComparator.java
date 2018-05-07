@@ -154,7 +154,7 @@ public class TckResultsComparator {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class Error {
+    static class Failure {
         String message;
     }
 
@@ -166,19 +166,19 @@ public class TckResultsComparator {
 
         private String featureName;
 
-        private Error error;
+        private Failure failure;
 
         @JsonCreator
-        public Scenario(@JsonProperty("name") String name, @JsonProperty("error") Error error) {
+        public Scenario(@JsonProperty("name") String name, @JsonProperty("failure") Failure failure) {
             Matcher matcher = pattern.matcher(name);
             matcher.find();
             this.name = matcher.group(2);
             this.featureName = matcher.group(1);
-            this.error = error;
+            this.failure = failure;
         }
 
         public boolean isFailed() {
-            return error != null;
+            return failure != null;
         }
 
         public boolean isPassed() {
