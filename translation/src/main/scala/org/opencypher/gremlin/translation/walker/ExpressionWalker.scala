@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.MapType
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.{NodeType, RelationshipType}
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -65,13 +65,14 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case Variable(varName) =>
         __.select(varName)
 
-      case Property(variable @ Variable(varName), PropertyKeyName(keyName: String)) =>
-        val typ = context.expressionTypes.get(variable)
+      case Property(expr, PropertyKeyName(keyName: String)) =>
+        val typ = context.expressionTypes.get(expr)
         val extractStep: String => GremlinSteps[T, P] = typ match {
-          case Some(MapType.instance) => __.select(_)
-          case _                      => __.values(_)
+          case Some(NodeType.instance)         => __.values(_)
+          case Some(RelationshipType.instance) => __.values(_)
+          case _                               => __.select(_)
         }
-        __.select(varName)
+        walkLocal(expr)
           .map(
             notNull(
               __.coalesce(
@@ -154,8 +155,8 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         val traversals = args.map(walkLocal)
         val traversal = fnName.toLowerCase match {
           case "abs"           => traversals.head.math("abs(_)")
-          case "exists"        => traversals.head.map(anyMatch(__.is(p.neq(NULL))))
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
+          case "exists"        => traversals.head.map(anyMatch(__.is(p.neq(NULL))))
           case "id"            => traversals.head.map(notNull(__.id(), context))
           case "keys"          => traversals.head.valueMap().select(Column.keys)
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
