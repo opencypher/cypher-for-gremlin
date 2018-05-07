@@ -15,39 +15,9 @@
  */
 package org.opencypher.gremlin;
 
-import static java.util.Collections.emptyMap;
-
-import java.util.Map;
-import org.apache.tinkerpop.gremlin.driver.Tokens;
-import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
-
 public final class ClientServerCommunication {
-    public static final String CYPHER_OP_PROCESSOR_NAME = "cypher";
-
     private ClientServerCommunication() {
     }
 
-    public static RequestMessage.Builder buildRequest(String cypher) {
-        return buildRequest(cypher, emptyMap(), CYPHER_OP_PROCESSOR_NAME);
-    }
-
-    public static RequestMessage.Builder buildRequest(String cypher, Map<String, ?> parameters) {
-        return buildRequest(cypher, parameters, CYPHER_OP_PROCESSOR_NAME);
-    }
-
-    public static RequestMessage.Builder buildRequest(
-        String query,
-        Map<String, ?> parameters,
-        String opProcessor
-    ) {
-        RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
-            .processor(opProcessor)
-            .add(Tokens.ARGS_GREMLIN, query);
-
-        if (parameters != null && !parameters.isEmpty()) {
-            request.addArg(Tokens.ARGS_BINDINGS, parameters);
-        }
-
-        return request;
-    }
+    public static final String CYPHER_OP_PROCESSOR_NAME = "cypher";
 }
