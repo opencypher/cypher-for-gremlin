@@ -15,12 +15,13 @@
  */
 package org.opencypher.gremlin.client;
 
-import static org.opencypher.gremlin.ClientServerCommunication.buildRequest;
+import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
+import org.apache.tinkerpop.gremlin.driver.Tokens;
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 
 final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
@@ -44,5 +45,17 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
         return resultSetFuture
             .thenApply(ResultSet::iterator)
             .thenApply(CypherResultSet::new);
+    }
+
+    private static RequestMessage.Builder buildRequest(String query, Map<String, ?> parameters) {
+        RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
+            .processor(CYPHER_OP_PROCESSOR_NAME)
+            .add(Tokens.ARGS_GREMLIN, query);
+
+        if (parameters != null && !parameters.isEmpty()) {
+            request.addArg(Tokens.ARGS_BINDINGS, parameters);
+        }
+
+        return request;
     }
 }
