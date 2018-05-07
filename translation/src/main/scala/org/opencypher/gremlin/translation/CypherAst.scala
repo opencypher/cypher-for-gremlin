@@ -208,14 +208,4 @@ object CypherAst {
         None
     }.toMap
   }
-
-  private def getTypeFromExpression(typeInfo: ExpressionTypeInfo): CypherType = {
-    val typeSpec = typeInfo.specified
-    if (typeSpec.ranges.lengthCompare(1) == 0) {
-      val typ = typeSpec.ranges.head.lower
-      typ
-    } else {
-      AnyType.instance
-    }
-  }
 }

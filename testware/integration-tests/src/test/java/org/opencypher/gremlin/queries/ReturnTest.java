@@ -58,6 +58,30 @@ public class ReturnTest {
     }
 
     @Test
+    public void nestedProperty() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH {foo: {bar: 'baz'}} AS nestedMap " +
+                "RETURN nestedMap.foo.bar AS nested"
+        );
+
+        assertThat(results)
+            .extracting("nested")
+            .containsExactly("baz");
+    }
+
+    @Test
+    public void propertyFromExpression() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH [{bar: 'baz'}, 1] AS list " +
+                "RETURN (list[0]).bar AS nested"
+        );
+
+        assertThat(results)
+            .extracting("nested")
+            .containsExactly("baz");
+    }
+
+    @Test
     public void collect() throws Exception {
         String cypher = "MATCH (n1) RETURN collect(n1)";
         List<Map<String, Object>> results = submitAndGet(cypher);
