@@ -82,9 +82,21 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction convertToString() {
         return new CustomFunction(
             "convertToString",
-            traverser -> Optional.ofNullable(traverser.get())
-                .map(String::valueOf)
-                .orElse(null)
+            traverser -> {
+                Object arg = tokenToNull(traverser.get());
+                boolean valid = arg == null ||
+                    arg instanceof Boolean ||
+                    arg instanceof Number ||
+                    arg instanceof String;
+                if (!valid) {
+                    String className = arg.getClass().getName();
+                    throw new TypeException("Cannot convert " + className + " to string");
+                }
+
+                return Optional.ofNullable(arg)
+                    .map(String::valueOf)
+                    .orElse(Tokens.NULL);
+            }
         );
     }
 
@@ -122,6 +134,14 @@ public class CustomFunction implements Function<Traverser, Object> {
             "convertToIntegerType",
             traverser -> {
                 Object arg = tokenToNull(traverser.get());
+                boolean valid = arg == null ||
+                    arg instanceof Number ||
+                    arg instanceof String;
+                if (!valid) {
+                    String className = arg.getClass().getName();
+                    throw new TypeException("Cannot convert " + className + " to integer");
+                }
+
                 // long in org.neo4j.driver.internal.value.IntegerValue#val
                 Long integer = convertToLong(arg);
                 return nullToToken(integer);
@@ -309,14 +329,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     }
 
     static Long convertToLong(Object arg) {
-        boolean valid = arg == null ||
-            arg instanceof Number ||
-            arg instanceof String;
-        if (!valid) {
-            String className = arg.getClass().getName();
-            throw new TypeException("Cannot convert " + className + " to integer");
-        }
-
         return Optional.ofNullable(arg)
             .map(String::valueOf)
             .map(v -> {
