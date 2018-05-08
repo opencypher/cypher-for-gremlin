@@ -451,28 +451,21 @@ apply plugin: 'org.ajoberstar.git-publish'
 gitPublish {
     repoUri = "git@github.com:${githubProject}.git"
     branch = 'gh-pages'
-    if (project.hasProperty("publishTck")) {
-        contents {
-            from(
-                project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
-                into "test-reports/snapshot"
-            }
+    contents {
+        from(allJavadoc) {
+            into "api/${project.version}/java"
         }
-        commitMessage = "Publish TCK report for build #${project.property('buildNumber')}"
-    } else {
-        contents {
-            from(allJavadoc) {
-                into "api/${project.version}/java"
-            }
-            from(project(':translation').getTasks().getByName('scaladoc')) {
-                into "api/${project.version}/scala"
-            }
-            from(project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
-                into "test-reports/${project.version}"
-            }
+        from(project(':translation').getTasks().getByName('scaladoc')) {
+            into "api/${project.version}/scala"
         }
-        commitMessage = "Publish release ${project.version}"
+        from(project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
+            into "test-reports/${project.version}"
+        }
     }
+    preserve {
+        include '**' // keep all existing files
+    }
+    commitMessage = "Publish release ${project.version}"
 }
 
 gitPublishCopy.dependsOn(allJavadoc, ':translation:scaladoc')
