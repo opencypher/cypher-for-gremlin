@@ -20,6 +20,7 @@ import java.{lang, util}
 
 import cucumber.api._
 import cucumber.api.event.{
+  Event,
   EventListener,
   TestCaseStarted,
   TestRunFinished,
@@ -36,12 +37,14 @@ import cucumber.runtime.{Argument, DefinitionMatch, Env, Match, RuntimeOptions}
 import gherkin.events.PickleEvent
 import gherkin.pickles.PickleStep
 import org.junit.jupiter.api.extension.{AfterAllCallback, BeforeAllCallback, ExtensionContext}
+import org.opencypher.gremlin.tck.TckScenarioProvider
 import org.opencypher.gremlin.tck.reports.tools.{CucumberEventFactory, SystemOutReader}
 import org.opencypher.tools.tck.api.events.TCKEvents
 import org.opencypher.tools.tck.api.events.TCKEvents.StepResult
 import org.opencypher.tools.tck.api.{Measure, SideEffects, Step}
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable.ListBuffer
 
 /** Generates Cucumber test report for TCK scenarios.
   *
@@ -63,9 +66,11 @@ import scala.collection.JavaConversions._
   */
 class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
 
-  private val DefaultReportFilePath = "cucumber.json"
+  private val DefaultReportFilePath = "build/reports/tests/cucumber/cucumber.json"
   private val DefaultReportFormat = "json"
 
+  private var currentFeature = ""
+  private val featureEvents = scala.collection.mutable.Map[String, ListBuffer[Event]]()
   private val featureUri = scala.collection.mutable.Map[String, String]()
   private val stepTimestamp = scala.collection.mutable.Map[String, Long]()
   private val stepUri = ""
@@ -96,7 +101,9 @@ class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
       val pickle = scenario.source
       val steps: util.List[TestStep] = mapTestSteps(pickle.getSteps)
       val testCase = CucumberEventFactory.testCase(steps, new PickleEvent(featureUri(scenario.featureName), pickle))
-      bus.send(new TestCaseStarted(bus.getTime, testCase))
+      val testCaseStartedEvent = new TestCaseStarted(bus.getTime, testCase)
+      currentFeature = s"${scenario.featureName}"
+      featureEvents.getOrElseUpdate(currentFeature, ListBuffer.empty) += testCaseStartedEvent
     })
 
     TCKEvents.stepStarted.subscribe(event => {
@@ -106,7 +113,7 @@ class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
       if (shouldReport(step)) {
         logStep(step)
         val cucumberEvent = new TestStepStarted(startedAt, new PickleTestStep(stepUri, step.source, definitionMatch))
-        bus.send(cucumberEvent)
+        featureEvents(currentFeature) += cucumberEvent
       }
     })
 
@@ -122,9 +129,22 @@ class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
         val cucumberEvent =
           new TestStepFinished(timeNow, testStep, new Result(status, duration, event.result.left.getOrElse(null)))
 
-        bus.send(cucumberEvent)
+        featureEvents(currentFeature) += cucumberEvent
       } else {
         output.clear()
+      }
+    })
+
+    TckScenarioProvider.skipStep.subscribe(step => {
+      if (shouldReport(step)) {
+        val timeStamp = bus.getTime
+        val duration = 0L
+        val status = Result.Type.PENDING
+        val testStep = new PickleTestStep(stepUri, step.source, definitionMatch)
+        val startedEvent = new TestStepStarted(timeStamp, new PickleTestStep(stepUri, step.source, definitionMatch))
+        val finishedEvent = new TestStepFinished(timeStamp, testStep, new Result(status, duration, null))
+        featureEvents(currentFeature) += startedEvent
+        featureEvents(currentFeature) += finishedEvent
       }
     })
 
@@ -154,7 +174,7 @@ class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
   private def logOutput(timeNow: lang.Long): Unit = {
     val log = output.readOutput()
     if (!log.isEmpty) {
-      bus.send(new WriteEvent(timeNow, log))
+      featureEvents(currentFeature) += new WriteEvent(timeNow, log)
     }
   }
 
@@ -201,6 +221,7 @@ class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
   }
 
   private def close(): Unit = {
+    featureEvents.values.flatten.foreach(event => bus.send(event))
     bus.send(new TestRunFinished(bus.getTime))
     output.close()
   }
