@@ -502,4 +502,33 @@ public class ReturnTest {
                 .containsExactly(result);
         }
     }
+
+    @Test
+    public void plusTest() throws Exception {
+        Map<String, Object> tests = new LinkedHashMap<>();
+        tests.put("1 AS a, 2 AS b", 3L);
+        tests.put("'1' AS a, '2' AS b", "12");
+        tests.put("1 AS a, '2' AS b", "12");
+        tests.put("'1' AS a, 2 AS b", "12");
+        tests.put("[1] AS a, [2] AS b", asList(1L, 2L));
+        tests.put("1 AS a, [2] AS b", asList(1L, 2L));
+        tests.put("[1] AS a, 2 AS b", asList(1L, 2L));
+        tests.put("'1' AS a, ['2'] AS b", asList("1", "2"));
+        tests.put("['1'] AS a, '2' AS b", asList("1", "2"));
+        tests.put("1 AS a, null AS b", null);
+        tests.put("'1' AS a, null AS b", null);
+        tests.put("[1] AS a, null AS b", null);
+
+        for (Map.Entry<String, Object> entry : tests.entrySet()) {
+            String expr = entry.getKey();
+            Object result = entry.getValue();
+            List<Map<String, Object>> results = submitAndGet(
+                "WITH " + expr + " RETURN a + b AS r"
+            );
+
+            assertThat(results)
+                .extracting("r")
+                .containsExactly(result);
+        }
+    }
 }
