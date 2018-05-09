@@ -65,7 +65,7 @@ public class CastTest {
     public void castInvalidToString() throws Exception {
         List<Throwable> throwables = Stream.of(
             "[]",
-            "{}"
+            "{a: 1}"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [1, " + literal + "] AS list\n" +
@@ -113,7 +113,7 @@ public class CastTest {
             "true",
             "false",
             "[]",
-            "{}"
+            "{a: 1}"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [1, " + literal + "] AS list\n" +
@@ -161,7 +161,7 @@ public class CastTest {
             "true",
             "false",
             "[]",
-            "{}"
+            "{a: 1}"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [1.0, " + literal + "] AS list\n" +
@@ -213,7 +213,7 @@ public class CastTest {
             "13",
             "3.14",
             "[]",
-            "{}"
+            "{a: 1}"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [true, " + literal + "] AS list\n" +
