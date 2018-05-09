@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.{NodeType, RelationshipType}
+import org.neo4j.cypher.internal.frontend.v3_3.symbols.{AnyType, IntegerType, NodeType, RelationshipType}
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -140,7 +140,16 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           )
         )
 
-      case Add(lhs, rhs)      => math(lhs, rhs, "+")
+      case Add(lhs, rhs) =>
+        val lhsType = context.expressionTypes.getOrElse(lhs, AnyType.instance)
+        val rhsType = context.expressionTypes.getOrElse(rhs, AnyType.instance)
+        (lhsType, rhsType) match {
+          case (_: IntegerType, _: IntegerType) =>
+            math(lhs, rhs, "+")
+          case _ =>
+            asList(lhs, rhs).map(CustomFunction.plus())
+        }
+
       case Subtract(lhs, rhs) => math(lhs, rhs, "-")
       case Multiply(lhs, rhs) => math(lhs, rhs, "*")
       case Divide(lhs, rhs)   => math(lhs, rhs, "/")
@@ -207,10 +216,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         }
 
       case ListLiteral(expressions @ _ :: _) =>
-        val keys = expressions.map(_ => context.generateName())
-        val traversal = __.project(keys: _*)
-        expressions.map(walkLocal).foreach(traversal.by)
-        traversal.select(Column.values)
+        asList(expressions: _*)
 
       case MapExpression(items @ _ :: _) =>
         val keys = items.map(_._1.name)
@@ -245,22 +251,37 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     )
   }
 
-  private def math(lhs: Expression, rhs: Expression, op: String): GremlinSteps[T, P] = {
+  private def asList(expressions: Expression*): GremlinSteps[T, P] = {
+    val keys = expressions.map(_ => context.generateName())
+    val traversal = __.project(keys: _*)
+    expressions.map(walkLocal).foreach(traversal.by)
+    traversal.select(Column.values)
+  }
+
+  private def bothNotNull(
+      lhs: Expression,
+      rhs: Expression,
+      ifTrue: GremlinSteps[T, P],
+      rhsName: String): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
 
     val lhsT = walkLocal(lhs)
     val rhsT = walkLocal(rhs)
 
-    val lhsName = context.generateName().replace(" ", "_") // name limited by MathStep#VARIABLE_PATTERN
-
-    lhsT
-      .as(lhsName)
-      .map(rhsT)
+    rhsT
+      .as(rhsName)
+      .map(lhsT)
       .choose(
-        __.or(__.is(p.isEq(NULL)), __.select(lhsName).is(p.isEq(NULL))),
+        __.or(__.is(p.isEq(NULL)), __.select(rhsName).is(p.isEq(NULL))),
         __.constant(NULL),
-        __.math(s"$lhsName $op _")
+        ifTrue
       )
+  }
+
+  private def math(lhs: Expression, rhs: Expression, op: String): GremlinSteps[T, P] = {
+    val rhsName = context.generateName().replace(" ", "_") // name limited by MathStep#VARIABLE_PATTERN
+    val traversal = __.math(s"_ $op $rhsName")
+    bothNotNull(lhs, rhs, traversal, rhsName)
   }
 
   private val injectHardLimit = 10000

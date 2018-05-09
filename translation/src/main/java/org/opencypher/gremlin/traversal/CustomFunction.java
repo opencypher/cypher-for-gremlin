@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ELEMENT;
 import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ID;
@@ -23,7 +24,6 @@ import static org.opencypher.gremlin.translation.Tokens.PROJECTION_OUTV;
 import static org.opencypher.gremlin.translation.Tokens.PROJECTION_RELATIONSHIP;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -233,7 +233,7 @@ public class CustomFunction implements Function<Traverser, Object> {
                     projectionRelationship.put(PROJECTION_INV, edge.inVertex().id());
                     projectionRelationship.put(PROJECTION_OUTV, edge.outVertex().id());
 
-                    result.put(PROJECTION_RELATIONSHIP, Arrays.asList(projectionRelationship));
+                    result.put(PROJECTION_RELATIONSHIP, asList(projectionRelationship));
 
                     result.put(PROJECTION_ELEMENT,
                         Stream.of(
@@ -326,6 +326,52 @@ public class CustomFunction implements Function<Traverser, Object> {
             "size", traverser -> traverser.get() instanceof String ?
             (long) ((String) traverser.get()).length() :
             (long) ((Collection) traverser.get()).size());
+    }
+
+    public static CustomFunction plus() {
+        return new CustomFunction(
+            "plus",
+            traverser -> {
+                List<?> args = (List<?>) traverser.get();
+                Object a = args.get(0);
+                Object b = args.get(1);
+
+                if (a == Tokens.NULL || b == Tokens.NULL) {
+                    return Tokens.NULL;
+                }
+
+                if (a instanceof List || b instanceof List) {
+                    List<Object> objects = new ArrayList<>();
+                    if (a instanceof List) {
+                        objects.addAll((List<?>) a);
+                    } else {
+                        objects.add(a);
+                    }
+                    if (b instanceof List) {
+                        objects.addAll((List<?>) b);
+                    } else {
+                        objects.add(b);
+                    }
+                    return objects;
+                }
+
+                if (!(a instanceof String || a instanceof Number) ||
+                    !(b instanceof String || b instanceof Number)) {
+                    throw new TypeException("Illegal use of plus operator");
+                }
+
+                if (a instanceof Number && b instanceof Number) {
+                    if (a instanceof Double || b instanceof Double ||
+                        a instanceof Float || b instanceof Float) {
+                        return ((Number) a).doubleValue() + ((Number) b).doubleValue();
+                    } else {
+                        return ((Number) a).longValue() + ((Number) b).longValue();
+                    }
+                } else {
+                    return String.valueOf(a) + String.valueOf(b);
+                }
+            }
+        );
     }
 
     static Long convertToLong(Object arg) {
