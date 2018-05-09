@@ -62,6 +62,24 @@ public class CastTest {
     }
 
     @Test
+    public void castInvalidToString() throws Exception {
+        List<Throwable> throwables = Stream.of(
+            "[]",
+            "{a: 1}"
+        )
+            .map(literal -> catchThrowable(() -> submitAndGet(
+                "WITH [1, " + literal + "] AS list\n" +
+                    "RETURN toString(list[1]) AS n"
+            )))
+            .collect(toList());
+
+        assertThat(throwables)
+            .allSatisfy(throwable ->
+                assertThat(throwable)
+                    .hasMessageContaining("Cannot convert"));
+    }
+
+    @Test
     public void castToInteger() throws Exception {
         List<Map<String, Object>> results = Stream.of(
             "13",
@@ -94,7 +112,8 @@ public class CastTest {
         List<Throwable> throwables = Stream.of(
             "true",
             "false",
-            "[]"
+            "[]",
+            "{a: 1}"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [1, " + literal + "] AS list\n" +
@@ -141,7 +160,8 @@ public class CastTest {
         List<Throwable> throwables = Stream.of(
             "true",
             "false",
-            "[]"
+            "[]",
+            "{a: 1}"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [1.0, " + literal + "] AS list\n" +
@@ -192,7 +212,8 @@ public class CastTest {
         List<Throwable> throwables = Stream.of(
             "13",
             "3.14",
-            "[]"
+            "[]",
+            "{a: 1}"
         )
             .map(literal -> catchThrowable(() -> submitAndGet(
                 "WITH [true, " + literal + "] AS list\n" +
