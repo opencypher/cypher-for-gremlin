@@ -121,6 +121,20 @@ jobs:
             - ~/repo/testware/tck/build/test-results/tck/TckTest-before.xml
           key: v1-tck-{{ .Branch }}-{{ checksum "~/.base-commit.txt" }}
 
+      - add_ssh_keys:
+          fingerprints:
+            - "ae:8a:99:8c:f8:6b:f1:0a:62:8f:88:0b:fa:ef:ee:f5"
+
+      - run:
+          name: Push TCK report to GitHub Pages
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              git config --global user.name "OpenCypher CI"
+              git config --global user.email "opencypher@noreply"
+              ./gradlew gitPublishPush -PpublishTck -PbuildNumber=${CIRCLE_BUILD_NUM}
+            fi
+
+
 workflows:
   version: 2
   build_and_tck:

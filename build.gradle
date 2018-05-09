@@ -451,6 +451,9 @@ apply plugin: 'org.ajoberstar.git-publish'
 gitPublish {
     repoUri = "git@github.com:${githubProject}.git"
     branch = 'gh-pages'
+    preserve {
+        include '**' // keep all existing files
+    }
     if (project.hasProperty("publishTck")) {
         contents {
             from(
@@ -472,10 +475,9 @@ gitPublish {
             }
         }
         commitMessage = "Publish release ${project.version}"
+        gitPublishCopy.dependsOn(allJavadoc, ':translation:scaladoc')
     }
 }
-
-gitPublishCopy.dependsOn(allJavadoc, ':translation:scaladoc')
 
 apply plugin: 'base'
 clean {
