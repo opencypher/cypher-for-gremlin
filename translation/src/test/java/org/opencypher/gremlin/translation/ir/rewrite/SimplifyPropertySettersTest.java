@@ -47,7 +47,10 @@ public class SimplifyPropertySettersTest {
             .hasTraversalBeforeReturn(
                 __.addV().as("  UNNAMED8")
                     .property("foo", "bar")
-                    .property("quux", parameter("x"))
+                    .property("quux", __.coalesce(
+                        __.constant(parameter("x")),
+                        __.constant(NULL)
+                    ))
                     .barrier().limit(0)
             );
     }

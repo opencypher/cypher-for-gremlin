@@ -456,54 +456,6 @@ public class ReturnTest {
     }
 
     @Test
-    public void ternaryLogic() throws Exception {
-        Map<String, Object> args = new HashMap<>();
-        args.put("t", true);
-        args.put("t2", true);
-        args.put("f", false);
-        args.put("f2", false);
-        args.put("n", null);
-        args.put("n2", null);
-
-        Map<String, Boolean> tests = new LinkedHashMap<>();
-        tests.put("NOT $n", null);
-        tests.put("NOT $t", false);
-        tests.put("NOT $f", true);
-
-        tests.put("$t AND $t2", true);
-        tests.put("$t AND $f", false);
-        tests.put("$f AND $f2", false);
-        tests.put("$t AND $n", null);
-        tests.put("$f AND $n", false);
-
-        tests.put("$t OR $t2", true);
-        tests.put("$t OR $f", true);
-        tests.put("$f OR $f2", false);
-        tests.put("$t OR $n", true);
-        tests.put("$f OR $n", null);
-
-        tests.put("$t XOR $t2", false);
-        tests.put("$f XOR $f2", false);
-        tests.put("$t XOR $f", true);
-        tests.put("$f XOR $t", true);
-        tests.put("$n XOR $n2", null);
-        tests.put("$n XOR $t", null);
-        tests.put("$t XOR $n", null);
-        tests.put("$n XOR $f", null);
-        tests.put("$f XOR $n", null);
-
-        for (Map.Entry<String, Boolean> entry : tests.entrySet()) {
-            String expr = entry.getKey();
-            Boolean result = entry.getValue();
-            List<Map<String, Object>> results = submitAndGet("RETURN " + expr, args);
-
-            assertThat(results)
-                .extracting(expr)
-                .containsExactly(result);
-        }
-    }
-
-    @Test
     public void plusTest() throws Exception {
         Map<String, Object> tests = new LinkedHashMap<>();
         tests.put("1 AS a, 2 AS b", 3L);
