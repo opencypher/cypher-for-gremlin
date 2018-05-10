@@ -212,6 +212,50 @@ public class CustomFunction implements Function<Traverser, Object> {
                 .collect(toList()));
     }
 
+    public static CustomFunction containerIndex() {
+        return new CustomFunction(
+            "containerIndex",
+            traverser -> {
+                List<?> args = (List<?>) traverser.get();
+                Object container = args.get(0);
+                Object index = args.get(1);
+
+                if (container == Tokens.NULL || index == Tokens.NULL) {
+                    return Tokens.NULL;
+                }
+
+                if (container instanceof List) {
+                    if (!(index instanceof Number)) {
+                        String indexClass = index.getClass().getName();
+                        throw new IllegalArgumentException("List element access by non-integer: " + indexClass);
+                    }
+                    List list = (List) container;
+                    int i = ((Number) index).intValue();
+                    if (i < 0 || i > list.size()) {
+                        return Tokens.NULL;
+                    }
+                    return list.get(i);
+                }
+
+                if (container instanceof Map) {
+                    if (!(index instanceof String)) {
+                        String indexClass = index.getClass().getName();
+                        throw new IllegalArgumentException("Map element access by non-string: " + indexClass);
+                    }
+                    Map map = (Map) container;
+                    String key = (String) index;
+                    return map.getOrDefault(key, Tokens.NULL);
+                }
+
+                String containerClass = container.getClass().getName();
+                String indexClass = index.getClass().getName();
+                throw new IllegalArgumentException(
+                    "Invalid element access of " + containerClass + " by " + indexClass
+                );
+            }
+        );
+    }
+
     public static CustomFunction pathComprehension() {
         return new CustomFunction(
             "pathComprehension",

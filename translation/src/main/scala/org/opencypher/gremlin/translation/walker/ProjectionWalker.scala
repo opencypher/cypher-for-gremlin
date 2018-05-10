@@ -198,9 +198,9 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
 
   private def isWherePrecondition(expression: Expression): Boolean = {
     expression match {
-      case _: Add | _: CountStar | _: Divide | _: FunctionInvocation | _: ListLiteral | _: Literal | _: MapExpression |
-          _: Modulo | _: Multiply | _: Null | _: Parameter | _: PatternComprehension | _: Pow | _: Property |
-          _: Subtract | _: Variable =>
+      case _: Add | _: ContainerIndex | _: CountStar | _: Divide | _: FunctionInvocation | _: ListLiteral | _: Literal |
+          _: MapExpression | _: Modulo | _: Multiply | _: Null | _: Parameter | _: PatternComprehension | _: Pow |
+          _: Property | _: Subtract | _: Variable =>
         false
       case _ =>
         true

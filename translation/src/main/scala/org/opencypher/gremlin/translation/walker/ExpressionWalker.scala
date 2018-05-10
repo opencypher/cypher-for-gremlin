@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.{AnyType, IntegerType, NodeType, RelationshipType}
+import org.neo4j.cypher.internal.frontend.v3_3.symbols._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -141,9 +141,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         )
 
       case Add(lhs, rhs) =>
-        val lhsType = context.expressionTypes.getOrElse(lhs, AnyType.instance)
-        val rhsType = context.expressionTypes.getOrElse(rhs, AnyType.instance)
-        (lhsType, rhsType) match {
+        (typeOf(lhs), typeOf(rhs)) match {
           case (_: IntegerType, _: IntegerType) =>
             math(lhs, rhs, "+")
           case _ =>
@@ -157,8 +155,16 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case Modulo(lhs, rhs)   => math(lhs, rhs, "%")
 
       case ContainerIndex(expr, idx) =>
-        val index = inlineExpressionValue(idx, context, classOf[java.lang.Number]).longValue()
-        walkLocal(expr).range(Scope.local, index, index + 1)
+        (typeOf(expr), idx) match {
+          case (_: ListType, _: IntegerLiteral) =>
+            val index = inlineExpressionValue(idx, context, classOf[java.lang.Long])
+            walkLocal(expr).coalesce(
+              __.range(Scope.local, index, index + 1),
+              __.constant(NULL)
+            )
+          case _ =>
+            asList(expr, idx).map(CustomFunction.containerIndex())
+        }
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
         val traversals = args.map(walkLocal)
@@ -237,6 +243,10 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       g.start().property(key, traversal),
       g.start().sideEffect(g.start().properties(key).drop())
     )
+  }
+
+  private def typeOf(expr: Expression): CypherType = {
+    context.expressionTypes.getOrElse(expr, AnyType.instance)
   }
 
   private def copy(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
