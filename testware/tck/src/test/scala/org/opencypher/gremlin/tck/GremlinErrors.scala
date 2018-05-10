@@ -34,7 +34,7 @@ object GremlinErrors {
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, VARIABLE_TYPE_CONFLICT),
     "Variable length (.+) cannot be used in (.+)" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, CREATING_VAR_LENGTH),
-    "A single relationship type must be specified for (.+)" ->
+    ".+ relationship type must be specified for (.+)" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, NO_SINGLE_RELATIONSHIP_TYPE),
     "Cannot use the same relationship variable '(.+)' for multiple patterns .+" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, RELATIONSHIP_UNIQUENESS_VIOLATION),
@@ -96,9 +96,15 @@ object GremlinErrors {
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, UNKNOWN_FUNCTION),
     "Unsupported graph element type: (.+)" ->
       ExecutionFailed(SYNTAX_ERROR, RUNTIME, PROPERTY_ACCESS_ON_NON_MAP),
+    "Procedure call cannot take an aggregating function as argument.+" ->
+      ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_AGGREGATION),
     "Cannot convert .+ to .+" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_VALUE),
+    ".+ cannot be cast to .+" ->
+      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_VALUE),
     "Number out of range: (.+)" ->
+      ExecutionFailed(ARGUMENT_ERROR, RUNTIME, NUMBER_OUT_OF_RANGE),
+    "step cannot be .+" ->
       ExecutionFailed(ARGUMENT_ERROR, RUNTIME, NUMBER_OUT_OF_RANGE),
     "Unable to convert param (.+)" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_TYPE),
