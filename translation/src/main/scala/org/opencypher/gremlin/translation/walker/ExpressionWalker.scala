@@ -18,16 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.{
-  AnyType,
-  CypherType,
-  IntegerType,
-  ListType,
-  MapType,
-  NodeType,
-  RelationshipType,
-  StringType
-}
+import org.neo4j.cypher.internal.frontend.v3_3.symbols._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
