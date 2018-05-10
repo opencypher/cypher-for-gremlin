@@ -109,6 +109,12 @@ object GremlinErrors {
     "Unable to convert param (.+)" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_TYPE),
     "Unable to convert result (.+)" ->
-      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_TYPE)
+      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_TYPE),
+    "List element access by non-integer: .+" ->
+      ExecutionFailed(TYPE_ERROR, RUNTIME, LIST_ELEMENT_ACCESS_BY_NON_INTEGER),
+    "Map element access by non-string: .+" ->
+      ExecutionFailed(TYPE_ERROR, RUNTIME, MAP_ELEMENT_ACCESS_BY_NON_STRING),
+    "Invalid element access of .+ by .+" ->
+      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ELEMENT_ACCESS)
   )
 }
