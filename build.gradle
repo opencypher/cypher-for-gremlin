@@ -340,6 +340,12 @@ project(':testware:tck') {
 
 apply plugin: 'pl.allegro.tech.build.axion-release'
 
+def signOff(message) {
+    def user = "git config user.name".execute().text.trim()
+    def email = "git config user.email".execute().text.trim()
+    "$message\n\nSigned-off-by: $user <$email>"
+}
+
 scmVersion {
     tag {
         prefix = tagPrefix
@@ -347,6 +353,7 @@ scmVersion {
     }
     hooks {
         pre 'fileUpdate', [files:  updateFilesOnRelease, pattern: {v, c -> /$v/}, replacement: {v, c -> "$v"}]
+        pre 'commit', {v, p -> signOff("Release $v")}
     }
     localOnly = true
 }
