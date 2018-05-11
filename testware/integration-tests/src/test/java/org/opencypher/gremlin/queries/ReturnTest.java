@@ -93,6 +93,24 @@ public class ReturnTest {
     }
 
     @Test
+    public void collectToMap() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (p:person)-[:created]->(s:software) " +
+                "RETURN collect({person: p.name, software: s.name}) AS creations"
+        );
+
+        assertThat(results)
+            .flatExtracting("creations")
+            .extracting("person", "software")
+            .containsExactlyInAnyOrder(
+                tuple("peter", "lop"),
+                tuple("josh", "lop"),
+                tuple("marko", "lop"),
+                tuple("josh", "ripple")
+            );
+    }
+
+    @Test
     public void distinct() throws Exception {
         String cypher = "MATCH (n1)-[r]->() RETURN DISTINCT n1.name, type(r)";
         List<Map<String, Object>> results = submitAndGet(cypher);
