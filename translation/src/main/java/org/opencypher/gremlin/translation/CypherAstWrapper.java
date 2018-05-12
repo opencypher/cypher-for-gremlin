@@ -68,15 +68,6 @@ public class CypherAstWrapper {
     }
 
     /**
-     * Gets extracted parameters for this query.
-     *
-     * @return map of extracted parameters
-     */
-    public Map<String, Object> getExtractedParameters() {
-        return ast.getExtractedParameters();
-    }
-
-    /**
      * Gets declared options for this query.
      *
      * @return set of statement options

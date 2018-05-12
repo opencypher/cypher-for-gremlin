@@ -40,14 +40,13 @@ import scala.collection.mutable
   * @param statement           AST root node
   * @param expressionTypes     expression Cypher types
   * @param returnTypes         return types by alias
-  * @param extractedParameters extracted parameters provided by Cypher parser
   * @param options             pre-parser options provided by Cypher parser
   */
 class CypherAst(
     val statement: Statement,
     val expressionTypes: Map[Expression, CypherType],
     val returnTypes: Map[String, CypherType],
-    val extractedParameters: Map[String, Any],
+    parameters: Map[String, Any],
     options: Seq[PreParserOption]) {
 
   /**
@@ -67,7 +66,7 @@ class CypherAst(
       )
       .build()
 
-    val context = StatementContext(irDsl, expressionTypes, returnTypes, extractedParameters)
+    val context = StatementContext(irDsl, expressionTypes, returnTypes, parameters)
     StatementWalker.walk(context, statement)
     val ir = irDsl.translate()
 
@@ -78,26 +77,6 @@ class CypherAst(
       .verify(flavor.postConditions: _*)
       .translate(dsl)
   }
-
-  private val javaExtractedParameters: util.Map[String, Object] =
-    new util.HashMap(extractedParameters.mapValues(deepToJava).asJava)
-
-  private def deepToJava(value: Any): Object = {
-    value match {
-      case null =>
-        Tokens.NULL
-      case seq: Seq[_] =>
-        val mappedSeq = seq.map(deepToJava)
-        new util.ArrayList(mappedSeq.asJava)
-      case map: Map[_, _] =>
-        val mappedMap = map.mapValues(deepToJava)
-        new util.LinkedHashMap[Any, Any](mappedMap.asJava)
-      case v =>
-        v.asInstanceOf[Object]
-    }
-  }
-
-  def getExtractedParameters: util.Map[String, Object] = new util.HashMap(javaExtractedParameters)
 
   private val javaOptions: util.Set[StatementOption] = options.flatMap {
     case ExplainOption => Some(StatementOption.EXPLAIN)
