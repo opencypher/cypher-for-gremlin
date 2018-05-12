@@ -128,11 +128,15 @@ public class ExpressionTest {
         Map<String, Boolean> tests = new LinkedHashMap<>();
         tests.put("$i2 IN $l", true);
         tests.put("$i3 IN $l", false);
+        tests.put("NOT $i2 IN $l", false);
+        tests.put("NOT $i3 IN $l", true);
 
         tests.put("$n IN $l", null);
         tests.put("$n IN $le", false);
+        tests.put("NOT $n IN $le", true);
         tests.put("$i2 IN $n", null);
         tests.put("$i2 IN $ln", true);
+        tests.put("NOT $i2 IN $ln", false);
         tests.put("$i3 IN $ln", null);
         tests.put("$n IN $ln", null);
 

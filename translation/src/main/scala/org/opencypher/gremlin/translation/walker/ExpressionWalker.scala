@@ -15,8 +15,6 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import java.util
-
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.neo4j.cypher.internal.frontend.v3_3.ast._
@@ -97,8 +95,8 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case EndsWith(lhs, rhs)           => comparison(lhs, rhs, p.endsWith)
       case Contains(lhs, rhs)           => comparison(lhs, rhs, p.contains)
 
-      case In(lhs, rhs)      => membership(lhs, rhs, x => p.within(x))
-      case Not(In(lhs, rhs)) => membership(lhs, rhs, x => p.within(x))
+      case In(lhs, rhs) =>
+        membership(lhs, rhs)
 
       case IsNull(expr) =>
         walkLocal(expr).map(anyMatch(__.is(p.isEq(NULL))))
@@ -319,7 +317,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     bothNotNull(lhs, rhs, traversal, rhsName)
   }
 
-  private def membership(lhs: Expression, rhs: Expression, predicate: String => P): GremlinSteps[T, P] = {
+  private def membership(lhs: Expression, rhs: Expression): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
     val lhsT = walkLocal(lhs)
     val rhsT = walkLocal(rhs)
@@ -339,12 +337,12 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             ),
             __.and(
               __.constant(NULL).where(p.within(rhsName)),
-              __.not(__.where(predicate(rhsName)))
+              __.not(__.where(p.within(rhsName)))
             )
           ),
           __.constant(NULL),
           __.choose(
-            __.where(predicate(rhsName)),
+            __.where(p.within(rhsName)),
             __.constant(true),
             __.constant(false)
           )
