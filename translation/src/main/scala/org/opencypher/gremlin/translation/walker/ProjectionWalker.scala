@@ -216,13 +216,14 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
   }
 
   private def reselectProjection(items: Seq[ReturnItem]): Unit = {
+    val name = context.generateName()
     if (items.lengthCompare(1) > 0) {
-      g.as(TEMP)
+      g.as(name)
     }
 
     items.toStream.zipWithIndex.foreach {
       case (AliasedReturnItem(_, Variable(alias)), i) =>
-        if (i > 0) g.select(TEMP)
+        if (i > 0) g.select(name)
         g.select(alias).as(alias)
         context.alias(alias)
       case _ =>

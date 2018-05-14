@@ -81,8 +81,8 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
               ),
               context))
 
-      case HasLabels(Variable(varName), List(LabelName(label))) =>
-        __.select(varName)
+      case HasLabels(expr, List(LabelName(label))) =>
+        walkLocal(expr)
           .map(notNull(anyMatch(__.hasLabel(label)), context))
 
       case Equals(lhs, rhs)             => comparison(lhs, rhs, p.isEq)
@@ -143,11 +143,12 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       case Xor(lhs, rhs) =>
         val lhsT = walkLocal(lhs)
         val rhsT = walkLocal(rhs)
+        val rhsName = context.generateName()
         __.choose(
           __.or(copy(lhsT).is(p.isEq(NULL)), copy(rhsT).is(p.isEq(NULL))),
           __.constant(NULL),
           __.choose(
-            copy(rhsT).as(TEMP).map(lhsT).where(p.neq(TEMP)),
+            copy(rhsT).as(rhsName).map(lhsT).where(p.neq(rhsName)),
             __.constant(true),
             __.constant(false)
           )
@@ -309,11 +310,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
 
   private def comparison(lhs: Expression, rhs: Expression, predicate: String => P): GremlinSteps[T, P] = {
     val rhsName = context.generateName()
-    val traversal = __.choose(
-      __.where(predicate(rhsName)),
-      __.constant(true),
-      __.constant(false)
-    )
+    val traversal = anyMatch(__.where(predicate(rhsName)))
     bothNotNull(lhs, rhs, traversal, rhsName)
   }
 
@@ -341,11 +338,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             )
           ),
           __.constant(NULL),
-          __.choose(
-            __.where(p.within(rhsName)),
-            __.constant(true),
-            __.constant(false)
-          )
+          anyMatch(__.where(p.within(rhsName)))
         )
       )
   }

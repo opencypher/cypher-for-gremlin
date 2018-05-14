@@ -25,7 +25,6 @@ import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.junit.Test;
-import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class GroupStepFiltersTest {
@@ -123,10 +122,7 @@ public class GroupStepFiltersTest {
                     .as("m").hasLabel("M").has("p", P.eq("m"))
                     .inE("R").as("r2").outV()
                     .as("k").hasLabel("K").has("p", P.eq("k"))
-                    .where(
-                        __.select("r2").as(Tokens.TEMP)
-                            .select("r1").where(P.neq(Tokens.TEMP))
-                    )
+                    .where(__.select("r1").where(P.neq("r2")))
                     .V().as("  GENERATED1").where(__.select("  GENERATED1").where(P.eq("k")))
                     .as(UNUSED)
                     .select("k", UNUSED)
