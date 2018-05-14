@@ -136,4 +136,14 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
     public void close() throws IOException {
         delegate.close();
     }
+
+    @Override
+    public boolean allowRemoteConsole() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
 }

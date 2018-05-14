@@ -24,9 +24,9 @@ import com.google.common.io.Files;
 import java.io.File;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
@@ -34,7 +34,6 @@ import org.junit.rules.TemporaryFolder;
 import org.opencypher.gremlin.rules.GremlinConsoleExternalResource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
-@Ignore("Flaky execution on CI")
 public class GremlinConsoleTest {
 
     @ClassRule
@@ -51,8 +50,14 @@ public class GremlinConsoleTest {
 
     @Before
     public void before() {
+        ignoreOnCi("flaky execution");
         systemOut.clearLog();
         waitForPrompt();
+    }
+
+    private static void ignoreOnCi(String reason) {
+        Assume.assumeFalse("Test skipped on CI: " + reason,
+            "true".equalsIgnoreCase(System.getenv("CI")));
     }
 
     @Test
@@ -100,9 +105,35 @@ public class GremlinConsoleTest {
             );
     }
 
+    @Test
+    public void remoteConsole() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration());
+        assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
+
+        String remoteConsole = eval(":remote console");
+        assertThat(remoteConsole).contains("All scripts will now be sent to Gremlin Server");
+
+        String queryResult = eval("MATCH (p:person) RETURN p.name AS name");
+        assertThat(queryResult)
+            .contains("CypherOpProcessor")
+            .contains("Cypher: MATCH (p:person) RETURN p.name AS name")
+            .contains(
+                "==>[name:marko]",
+                "==>[name:vadas]",
+                "==>[name:josh]",
+                "==>[name:peter]"
+            );
+
+        remoteConsole = eval(":remote console");
+        assertThat(remoteConsole).contains("All scripts will now be evaluated locally");
+    }
+
     private void waitForPrompt() {
         Awaitility.await()
-            .atMost(5, SECONDS)
+            .atMost(10, SECONDS)
             .until(() -> systemOut.getLog().contains("gremlin>"));
     }
 
