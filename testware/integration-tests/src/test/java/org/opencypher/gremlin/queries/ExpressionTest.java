@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
@@ -109,6 +111,34 @@ public class ExpressionTest {
         tests.put("$n STARTS WITH $sa", null);
         tests.put("$n CONTAINS $sa", null);
         tests.put("$n ENDS WITH $sa", null);
+
+        runExpressionTests(args, tests);
+    }
+
+    @Test
+    public void membership() throws Exception {
+        Map<String, Object> args = new HashMap<>();
+        args.put("l", asList(1L, 2L));
+        args.put("le", emptyList());
+        args.put("ln", asList(null, 2L));
+        args.put("i2", 2L);
+        args.put("i3", 3L);
+        args.put("n", null);
+
+        Map<String, Boolean> tests = new LinkedHashMap<>();
+        tests.put("$i2 IN $l", true);
+        tests.put("$i3 IN $l", false);
+        tests.put("NOT $i2 IN $l", false);
+        tests.put("NOT $i3 IN $l", true);
+
+        tests.put("$n IN $l", null);
+        tests.put("$n IN $le", false);
+        tests.put("NOT $n IN $le", true);
+        tests.put("$i2 IN $n", null);
+        tests.put("$i2 IN $ln", true);
+        tests.put("NOT $i2 IN $ln", false);
+        tests.put("$i3 IN $ln", null);
+        tests.put("$n IN $ln", null);
 
         runExpressionTests(args, tests);
     }

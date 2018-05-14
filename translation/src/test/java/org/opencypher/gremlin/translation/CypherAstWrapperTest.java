@@ -15,9 +15,7 @@
  */
 package org.opencypher.gremlin.translation;
 
-import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,29 +26,6 @@ import org.neo4j.cypher.internal.frontend.v3_3.symbols.IntegerType;
 import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
 
 public class CypherAstWrapperTest {
-
-    @Test
-    public void noAutoParameters() {
-        String cypher = "MATCH (p:person) WHERE 27 <= p.age < 32 RETURN p.name AS name";
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
-        Map<String, Object> extractedParameters = ast.getExtractedParameters();
-
-        assertThat(extractedParameters)
-            .isEmpty();
-    }
-
-    @Test
-    public void explicitParameters() {
-        String cypher = "MATCH (p:person) WHERE $low <= p.age < 32 RETURN p.name AS name";
-        Map<String, ?> parameters = singletonMap("low", 29L);
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
-        Map<String, Object> extractedParameters = ast.getExtractedParameters();
-
-        assertThat(extractedParameters)
-            .containsExactly(
-                entry("low", 29L)
-            );
-    }
 
     @Test
     public void duplicateNames() {

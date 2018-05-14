@@ -31,6 +31,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.traversal.ParameterNormalizer;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 final class InMemoryCypherGremlinClient implements CypherGremlinClient {
@@ -48,9 +49,10 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
 
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
+        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
         CypherAstWrapper ast;
         try {
-            ast = CypherAstWrapper.parse(cypher, parameters);
+            ast = CypherAstWrapper.parse(cypher, normalizedParameters);
         } catch (Exception e) {
             return completedFuture(exceptional(e));
         }

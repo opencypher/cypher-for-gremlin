@@ -15,8 +15,6 @@
  */
 package org.opencypher.gremlin.translation.bytecode;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode.Binding;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -85,10 +83,10 @@ public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
         return CustomPredicate.contains(inlineParameter(value));
     }
 
-    private static Object inlineParameters(Object... values) {
+    private static Object[] inlineParameters(Object... values) {
         return Stream.of(values)
             .map(BytecodeGremlinPredicates::inlineParameter)
-            .collect(toList());
+            .toArray();
     }
 
     private static Object inlineParameter(Object value) {
