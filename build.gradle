@@ -158,7 +158,9 @@ project(':tinkerpop:cypher-gremlin-server-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile project(':tinkerpop:tinkerpop-common')
+        compile (project(':tinkerpop:tinkerpop-common')) {
+            exclude group: 'org.apache.tinkerpop'
+        }
 
         compileOnly "org.apache.tinkerpop:gremlin-server:${tinkerpopVersion}"
     }
