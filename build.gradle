@@ -11,6 +11,7 @@ buildscript {
         tinkerpopVersion = '3.3.2'
         githubProject = "opencypher/cypher-for-gremlin"
         tagPrefix = 'v'
+        updateFilesOnRelease = []
     }
 
     repositories {
@@ -28,20 +29,9 @@ buildscript {
         classpath 'co.riiid:gradle-github-plugin:0.4.2'
         classpath 'org.ajoberstar:gradle-git-publish:0.3.3'
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.8.3'
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
     }
 }
-
-apply plugin: 'pl.allegro.tech.build.axion-release'
-
-scmVersion {
-    tag {
-        prefix = tagPrefix
-        versionSeparator = ''
-    }
-    localOnly = true
-}
-
-project.version = scmVersion.version
 
 task gitHooks(type: Copy) {
     from "${rootDir}/hooks"
@@ -123,7 +113,7 @@ project(':translation') {
     }
 
     scaladoc {
-        title "${project.ext.title} ${scmVersion.version} API"
+        title "${project.ext.title} ${->project.version} API"
     }
 }
 
@@ -183,7 +173,7 @@ project(':tinkerpop:cypher-gremlin-console-plugin') {
     task makeDist(type: Exec) {
         commandLine 'make'
         args = ["dist",
-                "PROJECT_VERSION=${scmVersion.version}",
+                "PROJECT_VERSION=${->project.version}",
                 "TINKERPOP_VERSION=${tinkerpopVersion}"]
     }
 }
@@ -313,7 +303,7 @@ project(':testware:tck') {
 
     task('tckReport', type: JavaExec) {
         onlyIf { project.hasTckTask() }
-        systemProperty("projectVersion", scmVersion.version)
+        systemProperty("projectVersion", "${->project.version}")
         systemProperty("buildNumber", project.findProperty("buildNumber"))
 
         main = 'org.opencypher.gremlin.tck.reports.OpenCypherTckReport'
@@ -350,9 +340,29 @@ project(':testware:tck') {
     }
 }
 
+apply plugin: 'pl.allegro.tech.build.axion-release'
+
+def signOff(message) {
+    def user = "git config user.name".execute().text.trim()
+    def email = "git config user.email".execute().text.trim()
+    "$message\n\nSigned-off-by: $user <$email>"
+}
+
+scmVersion {
+    tag {
+        prefix = tagPrefix
+        versionSeparator = ''
+    }
+    hooks {
+        pre 'fileUpdate', [files:  updateFilesOnRelease, pattern: {v, c -> /$v/}, replacement: {v, c -> "$v"}]
+        pre 'commit', {v, p -> signOff("Release $v")}
+    }
+    localOnly = true
+}
+
 allprojects {
     group 'org.opencypher.gremlin'
-    version scmVersion.version
+    version "${->scmVersion.version}"
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
     if (isReleaseVersion && project.hasProperty('releaseToMavenCentral')) {
@@ -384,8 +394,8 @@ allprojects {
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
                     repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                        authentication(userName: project.findProperty('ossrhUsername'),
-                            password: project.findProperty('ossrhPassword'))
+                        authentication(userName: project.findProperty('nexusUsername'),
+                            password: project.findProperty('nexusPassword'))
                     }
 
                     pom.project {
@@ -419,26 +429,31 @@ allprojects {
     }
 }
 
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    packageGroup = "org.opencypher"
+}
+
 apply plugin: 'co.riiid.gradle'
 
 github {
     owner 'opencypher'
     repo 'cypher-for-gremlin'
     token = project.findProperty('githubToken') ?: "undefined"
-    tagName "${tagPrefix}${project.version}"
-    name = "${project.version}"
+    tagName "${tagPrefix}${->project.version}"
+    name = "${->project.version}"
     body = ''
     draft true
     assets = [
-        "tinkerpop/cypher-gremlin-server-plugin/build/libs/cypher-gremlin-server-plugin-${project.version}-all.jar",
-        "tinkerpop/cypher-gremlin-console-plugin/build/libs/cypher-gremlin-console-plugin-${project.version}-all.jar",
+        "tinkerpop/cypher-gremlin-server-plugin/build/libs/cypher-gremlin-server-plugin-${->project.version}-all.jar",
+        "tinkerpop/cypher-gremlin-console-plugin/build/libs/cypher-gremlin-console-plugin-${->project.version}-all.jar",
         "tinkerpop/cypher-gremlin-console-plugin/build/dist/cypher-gremlin-console-${tinkerpopVersion}.zip"
     ]
 }
 
 task allJavadoc(type: Javadoc, group: "Documentation") {
     description = 'Generates combined Javadoc from all the modules'
-    title = "Cypher for Gremlin ${project.version} API"
+    title = "Cypher for Gremlin ${->project.version} API"
     def exportedProjects = allprojects.findAll { it.hasProperty('releaseToMavenCentral') }
     source exportedProjects.collect { it.sourceSets.main.allJava }
     classpath = files(exportedProjects.collect { it.sourceSets.main.compileClasspath })
@@ -453,31 +468,35 @@ apply plugin: 'org.ajoberstar.git-publish'
 gitPublish {
     repoUri = "git@github.com:${githubProject}.git"
     branch = 'gh-pages'
-    if (project.hasProperty("publishTck")) {
-        contents {
-            from(
-                project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
-                into "test-reports/snapshot"
-            }
+    contents {
+        from(allJavadoc) {
+            into "api/${->project.version}/java"
         }
-        commitMessage = "Publish TCK report for build #${project.property('buildNumber')}"
-    } else {
-        contents {
-            from(allJavadoc) {
-                into "api/${project.version}/java"
-            }
-            from(project(':translation').getTasks().getByName('scaladoc')) {
-                into "api/${project.version}/scala"
-            }
-            from(project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
-                into "test-reports/${project.version}"
-            }
+        from(project(':translation').getTasks().getByName('scaladoc')) {
+            into "api/${->project.version}/scala"
         }
-        commitMessage = "Publish release ${project.version}"
+        from(project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
+            into "test-reports/${->project.version}"
+        }
     }
+    preserve {
+        include '**' // keep all existing files
+    }
+    commitMessage = "Publish release ${->project.version}"
 }
 
 gitPublishCopy.dependsOn(allJavadoc, ':translation:scaladoc')
+
+def allReadme = {
+    def projects = allprojects.collect {
+        it.projectDir.absolutePath + "/README.md"
+    }
+    projects.findAll {
+        def file = new File(it)
+        file.exists()
+    }
+}
+updateFilesOnRelease.addAll(allReadme())
 
 apply plugin: 'base'
 clean {
