@@ -136,7 +136,6 @@ project(':tinkerpop:cypher-gremlin-server-client') {
         compile project(':tinkerpop:tinkerpop-common')
 
         compile "org.apache.tinkerpop:gremlin-driver:${tinkerpopVersion}"
-        compile "org.apache.tinkerpop:tinkergraph-gremlin:${tinkerpopVersion}"
     }
 }
 
@@ -258,6 +257,7 @@ project(':testware:performance-tests') {
 
     dependencies {
         jmh project(':tinkerpop:cypher-gremlin-server-client')
+        jmh "org.apache.tinkerpop:tinkergraph-gremlin:${tinkerpopVersion}"
         jmh "com.google.guava:guava:${guavaVersion}"
     }
 
