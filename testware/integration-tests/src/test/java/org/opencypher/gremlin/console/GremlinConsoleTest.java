@@ -24,9 +24,9 @@ import com.google.common.io.Files;
 import java.io.File;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
@@ -34,6 +34,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opencypher.gremlin.rules.GremlinConsoleExternalResource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
+@Ignore("Server interferes with other integration tests on CI")
 public class GremlinConsoleTest {
 
     @ClassRule
@@ -50,14 +51,8 @@ public class GremlinConsoleTest {
 
     @Before
     public void before() {
-        ignoreOnCi("flaky execution");
         systemOut.clearLog();
         waitForPrompt();
-    }
-
-    private static void ignoreOnCi(String reason) {
-        Assume.assumeFalse("Test skipped on CI: " + reason,
-            "true".equalsIgnoreCase(System.getenv("CI")));
     }
 
     @Test
