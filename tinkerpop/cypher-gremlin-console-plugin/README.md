@@ -24,8 +24,8 @@ The plugin and its dependencies can be automatically downloaded and installed in
 
 1. Install Gremlin Console Cypher plugin:
     ```
-    gremlin> :install org.opencypher.gremlin cypher-gremlin-console-plugin 0.9.5
-    ==>Loaded: [org.opencypher.gremlin, cypher-gremlin-console-plugin, 0.9.5] - restart the console to use [opencypher.gremlin]
+    gremlin> :install org.opencypher.gremlin cypher-gremlin-console-plugin 0.9.6
+    ==>Loaded: [org.opencypher.gremlin, cypher-gremlin-console-plugin, 0.9.6] - restart the console to use [opencypher.gremlin]
     ```
 
 1. Restart Gremlin Console
