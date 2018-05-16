@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher;
+package org.opencypher.gremlin.neo4j.driver;
 
 import java.net.URI;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.neo4j.driver.v1.Driver;
 
 /**
@@ -30,7 +31,7 @@ public class GremlinDatabase {
      * @return driver
      */
     public static Driver driver(String uri) {
-        return driver(URI.create(uri));
+        return driver(uri, Config.defaultConfig());
     }
 
     /**
@@ -40,12 +41,7 @@ public class GremlinDatabase {
      * @return driver
      */
     public static Driver driver(URI uri) {
-        Cluster cluster = Cluster.build()
-            .addContactPoint(uri.getHost())
-            .port(uri.getPort())
-            .create();
-
-        return new GremlinServerDriver(cluster, Config.defaultConfig());
+        return driver(uri, Config.defaultConfig());
     }
 
     /**
@@ -55,7 +51,17 @@ public class GremlinDatabase {
      * @return driver
      */
     public static Driver driver(Cluster cluster) {
-        return new GremlinServerDriver(cluster, Config.defaultConfig());
+        return driver(cluster, Config.defaultConfig());
+    }
+
+    /**
+     * Returns a driver for a Gremlin graph.
+     *
+     * @param graphTraversalSource Gremlin graph traversal source
+     * @return driver
+     */
+    public static Driver driver(GraphTraversalSource graphTraversalSource) {
+        return new GremlinGraphDriver(graphTraversalSource);
     }
 
     /**
@@ -95,6 +101,4 @@ public class GremlinDatabase {
     public static Driver driver(Cluster cluster, Config config) {
         return new GremlinServerDriver(cluster, config);
     }
-
-
 }

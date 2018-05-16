@@ -19,13 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.neo4j.driver.v1.Values.parameters;
 
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory;
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
-import org.opencypher.Config;
-import org.opencypher.GremlinDatabase;
+import org.opencypher.gremlin.neo4j.driver.Config;
+import org.opencypher.gremlin.neo4j.driver.GremlinDatabase;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class CypherGremlinNeo4jDriver {
@@ -78,5 +81,18 @@ public class CypherGremlinNeo4jDriver {
         // freshReadmeSnippet: useDriver
     }
 
+    @Test
+    public void inMemory() throws Exception {
+        // freshReadmeSnippet: inMemory
+        TinkerGraph graph = TinkerFactory.createModern();
+        GraphTraversalSource traversal = graph.traversal();
+        Driver driver = GremlinDatabase.driver(traversal);
+        // freshReadmeSnippet: inMemory
 
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("RETURN 'Hello'");
+            String message = result.single().get(0).asString();
+            assertThat(message).isEqualTo("Hello");
+        }
+    }
 }

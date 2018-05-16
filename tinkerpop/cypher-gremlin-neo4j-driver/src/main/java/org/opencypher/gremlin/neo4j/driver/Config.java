@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher;
+package org.opencypher.gremlin.neo4j.driver;
 
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
