@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher;
+package org.opencypher.gremlin.neo4j.driver;
 
 import static java.lang.String.format;
 import static org.opencypher.gremlin.translation.ReturnProperties.ALL_PROPERTIES;

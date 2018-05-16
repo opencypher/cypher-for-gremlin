@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher;
+package org.opencypher.gremlin.neo4j.driver;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,23 +27,23 @@ import org.junit.Test;
 import org.neo4j.driver.v1.Statement;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.exceptions.NoSuchRecordException;
-import org.opencypher.GremlinServerDriver.GremlinServerInfo;
+import org.opencypher.gremlin.neo4j.driver.GremlinServerDriver.GremlinServerInfo;
 
 public class GremlinServerStatementResultTest {
-    static final Statement statement = new Statement("RETURN 1;");
-    static final GremlinServerInfo serverInfo = new GremlinServerInfo("localhost:1111");
-    static final String KEY1 = "key1";
-    static final String KEY2 = "key2";
+    private static final Statement statement = new Statement("RETURN 1;");
+    private static final GremlinServerInfo serverInfo = new GremlinServerInfo("localhost:1111");
+    private static final String KEY1 = "key1";
+    private static final String KEY2 = "key2";
 
     @Test
     public void create() {
-        List<Map<String, Object>> results = Arrays.asList(
+        List<Map<String, Object>> results = asList(
             getRow(1),
             getRow(2),
             getRow(3)
         );
 
-        StatementResult statementResult = new GremlinServerDriver.GremlinServerStatementResult(serverInfo, statement, results.iterator());
+        StatementResult statementResult = new GremlinServerStatementResult(serverInfo, statement, results.iterator());
 
         assertThat(statementResult.keys()).containsExactly(KEY1, KEY2);
         assertThat(statementResult.peek().get(KEY1).asInt()).isEqualTo(1);
@@ -61,12 +62,12 @@ public class GremlinServerStatementResultTest {
 
     @Test
     public void consume() {
-        List<Map<String, Object>> results = Arrays.asList(
+        List<Map<String, Object>> results = asList(
             getRow(1),
             getRow(2)
         );
 
-        StatementResult statementResult = new GremlinServerDriver.GremlinServerStatementResult(serverInfo, statement, results.iterator());
+        StatementResult statementResult = new GremlinServerStatementResult(serverInfo, statement, results.iterator());
 
         assertThat(statementResult.hasNext()).isTrue();
         assertThat(statementResult.consume().server()).isEqualTo(serverInfo);
@@ -75,12 +76,12 @@ public class GremlinServerStatementResultTest {
 
     @Test
     public void map() {
-        List<Map<String, Object>> results = Arrays.asList(
+        List<Map<String, Object>> results = asList(
             getRow(1),
             getRow(2)
         );
 
-        StatementResult statementResult = new GremlinServerDriver.GremlinServerStatementResult(serverInfo, statement, results.iterator());
+        StatementResult statementResult = new GremlinServerStatementResult(serverInfo, statement, results.iterator());
 
         assertThat(statementResult.list(r -> r.get(KEY2).asString()))
             .containsExactly("value1", "value2");
@@ -88,23 +89,23 @@ public class GremlinServerStatementResultTest {
 
     @Test
     public void single() {
-        List<Map<String, Object>> results = Arrays.asList(getRow(1));
-        StatementResult statementResult = new GremlinServerDriver.GremlinServerStatementResult(serverInfo, statement, results.iterator());
+        List<Map<String, Object>> results = singletonList(getRow(1));
+        StatementResult statementResult = new GremlinServerStatementResult(serverInfo, statement, results.iterator());
 
         assertThat(statementResult.single().get(KEY1).asInt()).isEqualTo(1);
     }
 
     @Test(expected = NoSuchRecordException.class)
     public void singleMore() {
-        List<Map<String, Object>> results = Arrays.asList(getRow(1), getRow(2));
-        StatementResult statementResult = new GremlinServerDriver.GremlinServerStatementResult(serverInfo, statement, results.iterator());
+        List<Map<String, Object>> results = asList(getRow(1), getRow(2));
+        StatementResult statementResult = new GremlinServerStatementResult(serverInfo, statement, results.iterator());
 
         statementResult.single();
     }
 
     @Test(expected = NoSuchRecordException.class)
     public void singleZero() {
-        StatementResult statementResult = new GremlinServerDriver.GremlinServerStatementResult(serverInfo,
+        StatementResult statementResult = new GremlinServerStatementResult(serverInfo,
             statement, new ArrayList<Map<String, Object>>().iterator());
 
         statementResult.single();

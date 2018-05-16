@@ -35,7 +35,7 @@ You can also [build the snapshot](../README.md#development) from source.
 
 ## Usage
 
-Use `org.opencypher.GremlinDatabase` to create Gremlin Server-enabled driver instances (like `org.neo4j.driver.v1.GraphDatabase`):
+Use `org.opencypher.gremlin.neo4j.driver.GremlinDatabase` to create Gremlin Server-enabled driver instances (like `org.neo4j.driver.v1.GraphDatabase`):
 
 ```java
 Driver driver = GremlinDatabase.driver("//localhost:8182");
@@ -68,6 +68,15 @@ Config config = Config.build()
 
 String uri = "//localhost:" + port;
 Driver driver = GremlinDatabase.driver(uri, config);
+```
+
+You can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriver.java#inMemory) -->
+```java
+TinkerGraph graph = TinkerFactory.createModern();
+GraphTraversalSource traversal = graph.traversal();
+Driver driver = GremlinDatabase.driver(traversal);
 ```
 
 Otherwise, the API is the same:

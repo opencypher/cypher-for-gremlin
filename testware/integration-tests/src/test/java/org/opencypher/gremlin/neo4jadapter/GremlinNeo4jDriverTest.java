@@ -32,8 +32,8 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.types.Node;
 import org.neo4j.driver.v1.types.Path;
 import org.neo4j.driver.v1.types.Relationship;
-import org.opencypher.Config;
-import org.opencypher.GremlinDatabase;
+import org.opencypher.gremlin.neo4j.driver.Config;
+import org.opencypher.gremlin.neo4j.driver.GremlinDatabase;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
