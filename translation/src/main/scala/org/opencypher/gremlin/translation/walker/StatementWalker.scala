@@ -77,11 +77,16 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
 
   def walkSingle(node: SingleQuery): Unit = {
     val clauses = node.clauses
-    clauses.foreach(walkClause)
 
-    val returnClauses = clauses.count(_.isInstanceOf[Return])
-    if (returnClauses == 0) {
-      g.barrier().limit(0)
+    clauses match {
+      case Seq(callClause: UnresolvedCall) =>
+        CallWalker.walkStandalone(context, g, callClause)
+      case _ =>
+        clauses.foreach(walkClause)
+        val returnClauses = clauses.count(_.isInstanceOf[Return])
+        if (returnClauses == 0) {
+          g.barrier().limit(0)
+        }
     }
   }
 

@@ -27,6 +27,10 @@ object CallWalker {
   def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: UnresolvedCall): Unit = {
     new CallWalker(context, g).walk(node)
   }
+
+  def walkStandalone[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: UnresolvedCall): Unit = {
+    new CallWalker(context, g).walkStandalone(node)
+  }
 }
 
 private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
@@ -47,19 +51,48 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
           .map(procedureCall(qualifiedName))
           .as(resultsMapName)
 
-        results.map {
-          case ProcedureResult(items, _) =>
-            items.map {
-              case ProcedureResultItem(Some(ProcedureOutput(result)), Variable(alias)) =>
-                (result, alias)
-              case ProcedureResultItem(None, Variable(result)) =>
-                (result, result)
-            }
-        }.getOrElse(Seq()).foreach {
+        keyAliases(results).foreach {
           case (key, alias) =>
             g.select(resultsMapName).select(key).as(alias)
             context.alias(alias)
         }
     }
+  }
+
+  def walkStandalone(node: UnresolvedCall): Unit = {
+    if (context.isFirstStatement) {
+      context.markFirstStatement()
+      g.inject(START)
+    }
+
+    node match {
+      case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
+        val qualifiedName = namespaceParts.mkString(".") + "." + name
+        val arguments = argumentOption.getOrElse(Nil)
+
+        g.map(asList(arguments, context))
+          .map(procedureCall(qualifiedName))
+
+        val keyAliasMap = keyAliases(results)
+        if (results.nonEmpty) {
+          val keys = keyAliasMap.map(_._1)
+          val aliases = keyAliasMap.map(_._2)
+
+          g.project(aliases: _*)
+          keys.foreach(key => g.by(g.start().select(key)))
+        }
+    }
+  }
+
+  private def keyAliases(results: Option[ProcedureResult]) = {
+    results.map {
+      case ProcedureResult(items, _) =>
+        items.map {
+          case ProcedureResultItem(Some(ProcedureOutput(result)), Variable(alias)) =>
+            (result, alias)
+          case ProcedureResultItem(None, Variable(result)) =>
+            (result, result)
+        }
+    }.getOrElse(Seq())
   }
 }

@@ -36,14 +36,26 @@ public class ProcedureTest {
     }
 
     @Test
-    public void callYield() {
+    public void yield() {
         List<Map<String, Object>> results = submitAndGet(
-            "CALL test.getName() YIELD name AS out " +
+            "CALL test.getName() " +
+                "YIELD name AS out " +
                 "RETURN out"
         );
 
         assertThat(results)
             .extracting("out")
+            .containsExactly("marko");
+    }
+
+    @Test
+    public void standaloneCall() {
+        List<Map<String, Object>> results = submitAndGet(
+            "CALL test.getName()"
+        );
+
+        assertThat(results)
+            .extracting("name")
             .containsExactly("marko");
     }
 }
