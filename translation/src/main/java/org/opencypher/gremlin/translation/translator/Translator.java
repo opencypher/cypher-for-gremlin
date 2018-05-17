@@ -16,9 +16,12 @@
 package org.opencypher.gremlin.translation.translator;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.opencypher.gremlin.extension.CypherProcedure;
 import org.opencypher.gremlin.translation.GremlinBindings;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.translation.GremlinSteps;
@@ -44,15 +47,18 @@ public final class Translator<T, P> {
     private final GremlinPredicates<P> predicates;
     private final GremlinBindings bindings;
     private final TranslatorFlavor flavor;
+    private final Map<String, CypherProcedure> procedures;
 
     private Translator(GremlinSteps<T, P> steps,
                        GremlinPredicates<P> predicates,
                        GremlinBindings bindings,
-                       TranslatorFlavor flavor) {
+                       TranslatorFlavor flavor,
+                       Map<String, CypherProcedure> procedures) {
         this.steps = steps;
         this.predicates = predicates;
         this.bindings = bindings;
         this.flavor = flavor;
+        this.procedures = procedures;
     }
 
     /**
@@ -98,6 +104,16 @@ public final class Translator<T, P> {
     }
 
     /**
+     * Returns the procedure implementation for the given name.
+     *
+     * @param name procedure name
+     * @return procedure implementation
+     */
+    public CypherProcedure getProcedure(String name) {
+        return procedures.get(name);
+    }
+
+    /**
      * Creates a translation for the configured target.
      *
      * @return translation
@@ -137,7 +153,7 @@ public final class Translator<T, P> {
          * Builds a {@link Translator} that translates Cypher queries
          * to Gremlin bytecode.
          *
-         * @return builder for translator to Gremlin bytecode.
+         * @return builder for translator to Gremlin bytecode
          */
         public ParametrizedFlavorBuilder<Bytecode, org.apache.tinkerpop.gremlin.process.traversal.P> bytecode() {
             return new ParametrizedFlavorBuilder<>(
@@ -205,6 +221,7 @@ public final class Translator<T, P> {
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
         protected GremlinBindings bindings;
+        private final Map<String, CypherProcedure> procedures = new HashMap<>();
 
         private FlavorBuilder(GremlinSteps<T, P> steps,
                               GremlinPredicates<P> predicates,
@@ -212,6 +229,16 @@ public final class Translator<T, P> {
             this.steps = steps;
             this.predicates = predicates;
             this.bindings = bindings;
+        }
+
+        /**
+         * Registers a procedure in this {@link Translator}.
+         *
+         * @return builder for translator
+         */
+        public FlavorBuilder<T, P> registerProcedure(String name, CypherProcedure implementation) {
+            procedures.put(name, implementation);
+            return this;
         }
 
         /**
@@ -234,7 +261,8 @@ public final class Translator<T, P> {
                 steps,
                 predicates,
                 bindings,
-                flavor != null ? flavor : TranslatorFlavor.gremlinServer()
+                flavor != null ? flavor : TranslatorFlavor.gremlinServer(),
+                procedures
             );
         }
     }
@@ -249,7 +277,7 @@ public final class Translator<T, P> {
         /**
          * Builds a {@link Translator} that inlines query parameters.
          *
-         * @return builder for translator to Gremlin-Groovy string
+         * @return builder for translator
          */
         public FlavorBuilder<T, P> inlineParameters() {
             bindings = new TraversalGremlinBindings();

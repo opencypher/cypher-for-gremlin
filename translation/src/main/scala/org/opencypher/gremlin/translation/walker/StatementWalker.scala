@@ -101,6 +101,8 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
         SetWalker.walkClause(context, g, node)
       case projectionClause: ProjectionClause =>
         ProjectionWalker.walk(context, g, projectionClause)
+      case callClause: UnresolvedCall =>
+        CallWalker.walk(context, g, callClause)
       case _ =>
         context.unsupported("clause", node)
     }

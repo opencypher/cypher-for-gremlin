@@ -196,7 +196,7 @@ public final class ReturnNormalizer {
         return result;
     }
 
-    private Collection<?> normalizeCollection(Collection<?> value) {
+    Collection<?> normalizeCollection(Collection<?> value) {
         return value.stream()
             .map(this::normalizeValue)
             .collect(Collectors.toList());

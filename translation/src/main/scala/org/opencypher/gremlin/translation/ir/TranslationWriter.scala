@@ -22,7 +22,6 @@ import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter
 import org.opencypher.gremlin.translation.ir.verify.GremlinPostCondition
 import org.opencypher.gremlin.translation.translator.Translator
-import org.opencypher.gremlin.traversal.CustomFunction
 
 object TranslationWriter {
   def from(ir: Seq[GremlinStep]): TranslationWriter = {

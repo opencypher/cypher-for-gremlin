@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import java.util
 
+import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
@@ -117,5 +118,16 @@ object NodeUtils {
     val g = context.dsl.steps()
     val p = context.dsl.predicates()
     g.start().choose(p.neq(NULL), traversal, g.start().constant(NULL))
+  }
+
+  def asList[T, P](expressions: Seq[Expression], context: StatementContext[T, P]): GremlinSteps[T, P] = {
+    val g = context.dsl.steps()
+    if (expressions.isEmpty) {
+      return g.start().constant(new util.ArrayList())
+    }
+    val keys = expressions.map(_ => context.generateName())
+    val traversal = g.start().project(keys: _*)
+    expressions.map(ExpressionWalker.walkLocal(context, g, _)).foreach(traversal.by)
+    traversal.select(Column.values)
   }
 }

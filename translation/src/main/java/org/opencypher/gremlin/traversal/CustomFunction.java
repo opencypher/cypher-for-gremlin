@@ -53,7 +53,7 @@ public class CustomFunction implements Function<Traverser, Object> {
     private final Object[] args;
     private final Function<Traverser, Object> implementation;
 
-    private CustomFunction(String name, Function<Traverser, Object> reference, Object... args) {
+    CustomFunction(String name, Function<Traverser, Object> reference, Object... args) {
         this.name = name;
         this.args = args;
         this.implementation = reference;
