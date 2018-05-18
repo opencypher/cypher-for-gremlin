@@ -15,11 +15,13 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import static java.util.Collections.unmodifiableList;
+
 import java.util.List;
 import org.opencypher.gremlin.extension.CypherArgument;
 import org.opencypher.gremlin.extension.CypherProcedure;
 
-final class ProcedureDefinition {
+public final class ProcedureDefinition {
     private final List<CypherArgument> arguments;
     private final List<CypherArgument> results;
     private final CypherProcedure implementation;
@@ -27,8 +29,8 @@ final class ProcedureDefinition {
     ProcedureDefinition(List<CypherArgument> arguments,
                         List<CypherArgument> results,
                         CypherProcedure implementation) {
-        this.arguments = arguments;
-        this.results = results;
+        this.arguments = unmodifiableList(arguments);
+        this.results = unmodifiableList(results);
         this.implementation = implementation;
     }
 

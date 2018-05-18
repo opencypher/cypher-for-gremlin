@@ -53,14 +53,15 @@ public class ProcedureRegistry {
             procedures.put(name, new ProcedureDefinition(arguments, results, implementation)));
     }
 
+    public static ProcedureDefinition getDefinition(String name) {
+        return procedures.get(name);
+    }
+
     public static CustomFunction procedureCall(String name) {
         return new CustomFunction(
             "procedureCall",
             traverser -> {
                 ProcedureDefinition definition = procedures.get(name);
-                if (definition == null) {
-                    throw new IllegalArgumentException("Procedure not found: " + name);
-                }
                 Collection<?> value = (Collection<?>) traverser.get();
                 Object[] args = returnNormalizer.normalizeCollection(value).toArray();
                 List<CypherArgument> defArgs = definition.getArguments();

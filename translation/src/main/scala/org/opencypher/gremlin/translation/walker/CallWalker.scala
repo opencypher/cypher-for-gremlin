@@ -19,9 +19,14 @@ import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
+import org.opencypher.gremlin.traversal.ProcedureRegistry
 import org.opencypher.gremlin.traversal.ProcedureRegistry.procedureCall
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.InputPosition
+import org.opencypher.v9_0.util.symbols.AnyType
+
+import scala.collection.JavaConverters._
 
 object CallWalker {
   def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: UnresolvedCall): Unit = {
@@ -44,7 +49,14 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
         val qualifiedName = namespaceParts.mkString(".") + "." + name
-        val arguments = argumentOption.getOrElse(Nil)
+        val definition = ProcedureRegistry.getDefinition(qualifiedName)
+        if (definition == null) {
+          throw new IllegalArgumentException(s"Procedure not found: $qualifiedName")
+        }
+
+        val arguments = argumentOption.getOrElse {
+          throw new IllegalArgumentException(s"In-query call with implicit arguments: $qualifiedName")
+        }
         val resultsMapName = context.generateName()
 
         g.map(asList(arguments, context))
@@ -69,7 +81,20 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
         val qualifiedName = namespaceParts.mkString(".") + "." + name
-        val arguments = argumentOption.getOrElse(Nil)
+        val definition = ProcedureRegistry.getDefinition(qualifiedName)
+        if (definition == null) {
+          throw new IllegalArgumentException("Procedure not found: " + qualifiedName)
+        }
+
+        val arguments = argumentOption.getOrElse {
+          val argumentNames = definition.getArguments.asScala.map(_.getName)
+          argumentNames.foreach { argumentName =>
+            if (!context.parameterDefined(argumentName)) {
+              throw new IllegalArgumentException(s"Parameter $argumentName missing for procedure $qualifiedName")
+            }
+          }
+          argumentNames.map(Parameter(_, AnyType.instance)(InputPosition.NONE))
+        }
 
         g.map(asList(arguments, context))
           .map(procedureCall(qualifiedName))
@@ -86,7 +111,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
     }
   }
 
-  private def keyAliases(results: Option[ProcedureResult]) = {
+  private def keyAliases(results: Option[ProcedureResult]): Seq[(String, String)] = {
     results.map {
       case ProcedureResult(items, _) =>
         items.map {
