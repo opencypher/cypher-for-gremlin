@@ -15,21 +15,24 @@
  */
 package org.opencypher.gremlin.extension;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonMap;
+public final class CypherArgument {
+    private final String name;
+    private final Class<?> type;
 
-public class TestProcedureProvider implements CypherProcedureProvider {
-    @Override
-    public void apply(CypherProcedureRegistrar registry) {
-        registry.register(
-            "test.getName",
-            emptyList(),
-            emptyList(),
-            arguments -> asList(
-                singletonMap("name", "marko"),
-                singletonMap("name", "vadas")
-            )
-        );
+    public CypherArgument(String name, Class<?> type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    public static CypherArgument argument(String name, Class<?> type) {
+        return new CypherArgument(name, type);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Class<?> getType() {
+        return type;
     }
 }

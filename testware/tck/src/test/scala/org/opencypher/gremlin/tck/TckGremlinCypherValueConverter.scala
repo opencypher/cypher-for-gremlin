@@ -56,7 +56,7 @@ object TckGremlinCypherValueConverter {
   }
 
   def parseException(e: Exception): ExecutionFailed = {
-    val errors = GremlinErrors.mappings.filterKeys(k => e.getMessage matches k)
+    val errors = GremlinErrors.mappings.filterKeys(e.getMessage.split("\\r?\\n").head.matches(_))
 
     errors.size match {
       case 0 => ExecutionFailed(UNKNOWN_ERROR, RUNTIME, e.getMessage, Some(e))

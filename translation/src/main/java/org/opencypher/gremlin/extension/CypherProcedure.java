@@ -20,5 +20,5 @@ import java.util.Map;
 
 @FunctionalInterface
 public interface CypherProcedure {
-    List<Map<String, Object>> call(Object... arguments);
+    List<Map<String, Object>> call(Map<String, Object> arguments);
 }

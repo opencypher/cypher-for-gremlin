@@ -15,7 +15,12 @@
  */
 package org.opencypher.gremlin.extension;
 
+import java.util.List;
+
 @FunctionalInterface
 public interface CypherProcedureRegistrar {
-    void register(String name, CypherProcedure implementation);
+    void register(String name,
+                  List<CypherArgument> arguments,
+                  List<CypherArgument> results,
+                  CypherProcedure implementation);
 }
