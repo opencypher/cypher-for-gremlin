@@ -17,7 +17,9 @@ package org.opencypher.gremlin.extension;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static org.opencypher.gremlin.extension.CypherArgument.argument;
 
 public class TestProcedureProvider implements CypherProcedureProvider {
     @Override
@@ -25,7 +27,7 @@ public class TestProcedureProvider implements CypherProcedureProvider {
         registry.register(
             "test.getName",
             emptyList(),
-            emptyList(),
+            singletonList(argument("name", String.class)),
             arguments -> asList(
                 singletonMap("name", "marko"),
                 singletonMap("name", "vadas")
