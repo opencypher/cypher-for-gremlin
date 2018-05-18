@@ -290,6 +290,12 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def optional(optionalTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
+    : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Optional(optionalTraversal.current())
+    this
+  }
+
   override def or(orTraversals: GremlinSteps[Seq[GremlinStep], GremlinPredicate]*)
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Or(orTraversals.map(_.current): _*)

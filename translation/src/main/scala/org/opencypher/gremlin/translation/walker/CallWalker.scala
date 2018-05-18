@@ -60,11 +60,20 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
         val resultsMapName = context.generateName()
 
         g.map(asList(arguments, context))
+
+        val callG = g
+          .start()
           .map(procedureCall(qualifiedName))
           .unfold()
           .as(resultsMapName)
 
-        keyAliases(results).foreach {
+        val keyAliases = resultsAsPairs(results)
+        if (keyAliases.isEmpty) {
+          g.optional(callG)
+        } else {
+          g.map(callG)
+        }
+        keyAliases.foreach {
           case (key, alias) =>
             g.select(resultsMapName).select(key).as(alias)
             context.alias(alias)
@@ -100,10 +109,10 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
           .map(procedureCall(qualifiedName))
           .unfold()
 
-        val keyAliasMap = keyAliases(results)
+        val keyAliases = resultsAsPairs(results)
         if (results.nonEmpty) {
-          val keys = keyAliasMap.map(_._1)
-          val aliases = keyAliasMap.map(_._2)
+          val keys = keyAliases.map(_._1)
+          val aliases = keyAliases.map(_._2)
 
           g.project(aliases: _*)
           keys.foreach(key => g.by(g.start().select(key)))
@@ -111,7 +120,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
     }
   }
 
-  private def keyAliases(results: Option[ProcedureResult]): Seq[(String, String)] = {
+  private def resultsAsPairs(results: Option[ProcedureResult]): Seq[(String, String)] = {
     results.map {
       case ProcedureResult(items, _) =>
         items.map {
