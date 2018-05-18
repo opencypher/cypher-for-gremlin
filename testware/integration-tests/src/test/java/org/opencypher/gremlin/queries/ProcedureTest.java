@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -32,11 +34,15 @@ public class ProcedureTest {
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.cypherGremlinClient().submit(cypher).all();
+        return submitAndGet(cypher, emptyMap());
+    }
+
+    private List<Map<String, Object>> submitAndGet(String cypher, Map<String, ?> parameters) {
+        return gremlinServer.cypherGremlinClient().submit(cypher, parameters).all();
     }
 
     @Test
-    public void yield() {
+    public void callYield() {
         List<Map<String, Object>> results = submitAndGet(
             "CALL test.getName() " +
                 "YIELD name AS out " +
@@ -49,6 +55,31 @@ public class ProcedureTest {
     }
 
     @Test
+    public void callYieldWithArgument() {
+        List<Map<String, Object>> results = submitAndGet(
+            "CALL test.inc(3) " +
+                "YIELD r AS out " +
+                "RETURN out"
+        );
+
+        assertThat(results)
+            .extracting("out")
+            .containsExactly(4L);
+    }
+
+    @Test
+    public void callYieldNothing() {
+        List<Map<String, Object>> results = submitAndGet(
+            "CALL test.void() " +
+                "RETURN 1 AS out"
+        );
+
+        assertThat(results)
+            .extracting("out")
+            .containsExactly(1L);
+    }
+
+    @Test
     public void standaloneCall() {
         List<Map<String, Object>> results = submitAndGet(
             "CALL test.getName()"
@@ -57,5 +88,39 @@ public class ProcedureTest {
         assertThat(results)
             .extracting("name")
             .containsExactlyInAnyOrder("marko", "vadas");
+    }
+
+    @Test
+    public void standaloneCallWithArgument() {
+        List<Map<String, Object>> results = submitAndGet(
+            "CALL test.inc(2)"
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly(3L);
+    }
+
+    @Test
+    public void standaloneImplicitCall() {
+        List<Map<String, Object>> results = submitAndGet(
+            "CALL test.inc",
+            singletonMap("a", 1)
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly(2L);
+    }
+
+    @Test
+    public void standaloneCallOrder() {
+        List<Map<String, Object>> results = submitAndGet(
+            "CALL test.multi"
+        );
+
+        assertThat(results)
+            .flatExtracting(Map::values)
+            .containsExactly("foo", "bar");
     }
 }

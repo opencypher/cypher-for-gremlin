@@ -21,6 +21,9 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.opencypher.gremlin.extension.CypherArgument.argument;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class TestProcedureProvider implements CypherProcedureProvider {
     @Override
     public void apply(CypherProcedureRegistrar registry) {
@@ -32,6 +35,35 @@ public class TestProcedureProvider implements CypherProcedureProvider {
                 singletonMap("name", "marko"),
                 singletonMap("name", "vadas")
             )
+        );
+
+        registry.register(
+            "test.inc",
+            singletonList(argument("a", Long.class)),
+            singletonList(argument("r", String.class)),
+            arguments -> {
+                long a = (long) arguments.get("a");
+                return singletonList(singletonMap("r", a + 1));
+            }
+        );
+
+        registry.register(
+            "test.multi",
+            emptyList(),
+            asList(argument("foo", String.class), argument("bar", String.class)),
+            arguments -> {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("bar", "bar");
+                row.put("foo", "foo");
+                return singletonList(row);
+            }
+        );
+
+        registry.register(
+            "test.void",
+            emptyList(),
+            emptyList(),
+            arguments -> emptyList()
         );
     }
 }
