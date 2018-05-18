@@ -45,7 +45,7 @@ public class ProcedureTest {
 
         assertThat(results)
             .extracting("out")
-            .containsExactly("marko");
+            .containsExactlyInAnyOrder("marko", "vadas");
     }
 
     @Test
@@ -56,6 +56,6 @@ public class ProcedureTest {
 
         assertThat(results)
             .extracting("name")
-            .containsExactly("marko");
+            .containsExactlyInAnyOrder("marko", "vadas");
     }
 }

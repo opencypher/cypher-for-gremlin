@@ -49,6 +49,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
 
         g.map(asList(arguments, context))
           .map(procedureCall(qualifiedName))
+          .unfold()
           .as(resultsMapName)
 
         keyAliases(results).foreach {
@@ -72,6 +73,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
 
         g.map(asList(arguments, context))
           .map(procedureCall(qualifiedName))
+          .unfold()
 
         val keyAliasMap = keyAliases(results)
         if (results.nonEmpty) {

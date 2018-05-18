@@ -15,9 +15,10 @@
  */
 package org.opencypher.gremlin.extension;
 
+import java.util.List;
 import java.util.Map;
 
 @FunctionalInterface
 public interface CypherProcedure {
-    Map<String, Object> call(Object... arguments);
+    List<Map<String, Object>> call(Object... arguments);
 }

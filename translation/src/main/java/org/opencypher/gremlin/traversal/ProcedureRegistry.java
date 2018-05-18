@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.traversal;
 
 import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,11 +32,19 @@ public class ProcedureRegistry {
     private ProcedureRegistry() {
     }
 
+    public static void clear() {
+        procedures.clear();
+    }
+
     public static void load() {
         ServiceLoader<CypherProcedureProvider> serviceLoader = ServiceLoader.load(CypherProcedureProvider.class);
         for (CypherProcedureProvider provider : serviceLoader) {
-            provider.init(procedures::put);
+            register(provider);
         }
+    }
+
+    public static void register(CypherProcedureProvider provider) {
+        provider.apply(procedures::put);
     }
 
     public static CustomFunction procedureCall(String name) {
@@ -48,9 +57,10 @@ public class ProcedureRegistry {
                 }
 
                 Collection<?> value = (Collection<?>) traverser.get();
-                Collection<?> args = returnNormalizer.normalizeCollection(value);
-                Map<String, Object> result = implementation.call(args);
-                return ParameterNormalizer.normalize(result);
+                Object[] args = returnNormalizer.normalizeCollection(value).toArray();
+                return implementation.call(args).stream()
+                    .map(ParameterNormalizer::normalize)
+                    .collect(toList());
             },
             name
         );

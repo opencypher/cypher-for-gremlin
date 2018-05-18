@@ -20,16 +20,18 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
+import org.opencypher.gremlin.extension.{CypherProcedure, CypherProcedureProvider, CypherProcedureRegistrar}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.tck.GremlinQueries._
 import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.reports.CucumberReportAdapter
+import org.opencypher.gremlin.traversal.ProcedureRegistry
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
 import scala.collection.JavaConverters._
 
-object TinkerGraphServerEmbeddedGraph extends Graph {
+object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
   val TIME_OUT_SECONDS = 10
 
   val tinkerGraphServerEmbedded = new GremlinServerExternalResource
@@ -57,6 +59,43 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
     }
   }
 
+  private val signaturePattern = """^([\w\.]+)\(([^)]*)\) :: (?:\(([^)]*)\)|VOID)""".r("name", "arguments", "results")
+  private val argumentPattern = """(\w+) :: ([\w\?]+)""".r("name", "type")
+
+  override def registerProcedure(signature: String, values: CypherValueRecords): Unit = {
+    val signatureMatch = signaturePattern.findFirstMatchIn(signature).get
+    val name = signatureMatch.group("name")
+    val argumentNames = argumentPattern.findAllMatchIn(signatureMatch.group("arguments")).map(_.group("name")).toList
+    val resultNames = Option(signatureMatch.group("results"))
+      .map(argumentPattern.findAllMatchIn(_).map(_.group("name")).toList)
+      .getOrElse(Nil)
+
+    ProcedureRegistry.clear()
+    ProcedureRegistry.register(new CypherProcedureProvider {
+      override def apply(registry: CypherProcedureRegistrar): Unit = {
+        registry.register(
+          name,
+          new CypherProcedure {
+            override def call(arguments: AnyRef*): util.List[util.Map[String, AnyRef]] = {
+              val results = values.rows.filter { row =>
+                val resultArguments = argumentNames
+                  .map(row(_))
+                  .map(fromCypherValue)
+                arguments == resultArguments
+              }.map { result =>
+                val resultMap = resultNames
+                  .map(key => (key, fromCypherValue(result(key)).asInstanceOf[AnyRef]))
+                  .toMap
+                new util.HashMap[String, AnyRef](resultMap.asJava)
+              }
+              new util.ArrayList(results.asJava)
+            }
+          }
+        )
+      }
+    })
+  }
+
   override def close(): Unit = {
     tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
   }
@@ -70,8 +109,8 @@ class TckTest {
     val featureName = System.getProperty("feature")
 
     val scenarios = CypherTCK.allTckScenarios
-      .filter(s => scenarioName == null || s.name == scenarioName)
-      .filter(s => featureName == null || s.featureName == featureName)
+      .filter(s => Set(null, "", s.name).contains(scenarioName))
+      .filter(s => Set(null, "", s.featureName).contains(featureName))
 
     runScenarios(scenarios)
   }

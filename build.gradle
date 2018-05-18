@@ -296,6 +296,9 @@ project(':testware:tck') {
         useJUnitPlatform()
         ignoreFailures true
 
+        systemProperty 'feature', System.getProperty('feature')
+        systemProperty 'scenario', System.getProperty('scenario')
+
         if (project.hasProperty('ci')) {
             testLogging.showStandardStreams = true
             minHeapSize = '256m'

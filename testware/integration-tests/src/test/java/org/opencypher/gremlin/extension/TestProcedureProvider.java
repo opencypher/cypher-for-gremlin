@@ -15,11 +15,15 @@
  */
 package org.opencypher.gremlin.extension;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 
 public class TestProcedureProvider implements CypherProcedureProvider {
     @Override
-    public void init(CypherProcedureRegistry registry) {
-        registry.register("test.getName", arguments -> singletonMap("name", "marko"));
+    public void apply(CypherProcedureRegistrar registry) {
+        registry.register("test.getName", arguments -> asList(
+            singletonMap("name", "marko"),
+            singletonMap("name", "vadas")
+        ));
     }
 }

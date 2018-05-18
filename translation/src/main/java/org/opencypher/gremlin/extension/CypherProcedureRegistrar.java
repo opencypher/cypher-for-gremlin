@@ -16,6 +16,6 @@
 package org.opencypher.gremlin.extension;
 
 @FunctionalInterface
-public interface CypherProcedureRegistry {
+public interface CypherProcedureRegistrar {
     void register(String name, CypherProcedure implementation);
 }
