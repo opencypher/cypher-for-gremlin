@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.AnyType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.IntegerType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
+import org.opencypher.v9_0.util.symbols.AnyType;
+import org.opencypher.v9_0.util.symbols.CypherType;
+import org.opencypher.v9_0.util.symbols.IntegerType;
+import org.opencypher.v9_0.util.symbols.NodeType;
 
 public class CypherAstWrapperTest {
 

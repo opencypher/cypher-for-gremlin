@@ -16,9 +16,9 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.structure.Column
-import org.neo4j.cypher.internal.frontend.v3_3.ast.Delete
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
+import org.opencypher.v9_0.ast._
 
 object DeleteWalker {
   def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Delete): Unit = {

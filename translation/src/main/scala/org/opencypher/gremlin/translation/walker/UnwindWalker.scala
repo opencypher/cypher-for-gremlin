@@ -17,10 +17,11 @@ package org.opencypher.gremlin.translation.walker
 
 import java.util.Collections
 
-import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions._
 
 /**
   * AST walker that handles translation

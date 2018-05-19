@@ -15,10 +15,10 @@
  */
 package org.opencypher.gremlin.translation.context
 
-import org.neo4j.cypher.internal.frontend.v3_3.ast.Expression
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.v9_0.expressions.Expression
+import org.opencypher.v9_0.util.symbols.CypherType
 
 import scala.collection.mutable
 

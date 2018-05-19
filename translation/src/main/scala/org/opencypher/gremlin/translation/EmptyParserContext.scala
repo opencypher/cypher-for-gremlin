@@ -15,8 +15,9 @@
  */
 package org.opencypher.gremlin.translation
 
-import org.neo4j.cypher.internal.frontend.v3_3.phases._
-import org.neo4j.cypher.internal.frontend.v3_3.{CypherException, InputPosition, SemanticErrorDef, SyntaxException}
+import org.opencypher.v9_0.ast.semantics.SemanticErrorDef
+import org.opencypher.v9_0.frontend.phases._
+import org.opencypher.v9_0.util.{CypherException, InputPosition, SyntaxException}
 
 class EmptyParserContext(queryText: String, offset: Option[InputPosition]) extends BaseContext {
   override val tracer: CompilationPhaseTracer = CompilationPhaseTracer.NO_TRACING

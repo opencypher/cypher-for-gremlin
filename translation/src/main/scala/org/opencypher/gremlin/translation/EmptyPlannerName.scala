@@ -15,9 +15,10 @@
  */
 package org.opencypher.gremlin.translation
 
-import org.neo4j.cypher.internal.frontend.v3_3.PlannerName
+import org.opencypher.v9_0.frontend.PlannerName
 
 case object EmptyPlannerName extends PlannerName {
   val name = ""
   val toTextOutput = ""
+  val version: String = ""
 }

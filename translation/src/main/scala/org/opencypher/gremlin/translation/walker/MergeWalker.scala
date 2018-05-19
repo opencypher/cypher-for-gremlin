@@ -15,12 +15,13 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.neo4j.cypher.internal.frontend.v3_3.InputPosition
-import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils.getPathTraversalAliases
+import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 
 /**
   * AST walker that handles translation
@@ -89,7 +90,7 @@ private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     case _ => Seq.empty[Expression]
   }
 
-  private def extractWhereExpressionsFrom(node: NodePattern) = {
+  private def extractWhereExpressionsFrom(node: NodePattern): Seq[Expression] = {
     val NodePattern(Some(id), labels, props) = node
     var expressions = Seq[Expression]()
     if (labels.nonEmpty) expressions ++= Vector(HasLabels(id.copyId.asInstanceOf[Expression], labels)(node.position))
@@ -97,7 +98,7 @@ private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     expressions
   }
 
-  private def propertyPredicates(id: Variable, props: Expression): Seq[Expression] = props match {
+  private def propertyPredicates(id: LogicalVariable, props: Expression): Seq[Expression] = props match {
     case mapProps: MapExpression =>
       mapProps.items.map {
         // is taken from MatchPredicateNormalizer

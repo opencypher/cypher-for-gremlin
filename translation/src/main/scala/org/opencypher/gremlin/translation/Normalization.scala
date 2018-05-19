@@ -15,9 +15,9 @@
  */
 package org.opencypher.gremlin.translation
 
-import org.neo4j.cypher.internal.frontend.v3_3.ast.rewriters._
-import org.neo4j.cypher.internal.frontend.v3_3.phases.{BaseContext, Condition}
-import org.neo4j.cypher.internal.frontend.v3_3.{Rewriter, inSequence}
+import org.opencypher.v9_0.frontend.phases.{BaseContext, Condition, StatementRewriter}
+import org.opencypher.v9_0.rewriting.rewriters._
+import org.opencypher.v9_0.util.{Rewriter, inSequence}
 
 object Normalization extends StatementRewriter {
   override def instance(context: BaseContext): Rewriter = inSequence(

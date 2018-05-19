@@ -17,18 +17,19 @@ package org.opencypher.gremlin.translation
 
 import java.util
 
-import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.ast.rewriters.Never
-import org.neo4j.cypher.internal.frontend.v3_3.helpers.rewriting.RewriterStepSequencer
-import org.neo4j.cypher.internal.frontend.v3_3.phases._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.{AnyType, CypherType}
-import org.neo4j.cypher.internal.frontend.v3_3.{CypherException, ExpressionTypeInfo}
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
 import org.opencypher.gremlin.translation.preparser._
 import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.translation.walker.StatementWalker
+import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.frontend.phases.{BaseState, CompilationPhases, InitialState}
+import org.opencypher.v9_0.rewriting.RewriterStepSequencer
+import org.opencypher.v9_0.rewriting.rewriters.Never
+import org.opencypher.v9_0.util.symbols.{AnyType, CypherType}
+import org.opencypher.v9_0.util.{ASTNode, CypherException}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -134,7 +135,7 @@ object CypherAst {
   @throws[CypherException]
   private def parse(queryText: String, parameters: Map[String, Any]): CypherAst = {
     val PreParsedStatement(preParsedQueryText, options, offset) = CypherPreParser(queryText)
-    val startState = BaseStateImpl(preParsedQueryText, Some(offset), EmptyPlannerName)
+    val startState = InitialState(preParsedQueryText, Some(offset), EmptyPlannerName)
     val state = CompilationPhases
       .parsing(RewriterStepSequencer.newPlain, Never)
       .andThen(Normalization)
