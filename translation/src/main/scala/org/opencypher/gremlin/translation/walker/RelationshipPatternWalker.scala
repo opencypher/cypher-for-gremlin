@@ -16,11 +16,11 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.neo4j.cypher.internal.frontend.v3_3.SemanticDirection.{BOTH, INCOMING, OUTGOING}
-import org.neo4j.cypher.internal.frontend.v3_3.ast.{UnsignedDecimalIntegerLiteral => UDIL, _}
-import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
+import org.opencypher.v9_0.expressions.SemanticDirection._
+import org.opencypher.v9_0.expressions.{UnsignedDecimalIntegerLiteral => UDIL, _}
 
 /**
   * AST walker that handles translation
@@ -32,7 +32,7 @@ object RelationshipPatternWalker {
       maybeName: Option[String],
       context: StatementContext[T, P],
       g: GremlinSteps[T, P],
-      node: RelationshipPattern) {
+      node: RelationshipPattern): Unit = {
     new RelationshipPatternWalker(context, g).walk(maybeName, node)
   }
 }
@@ -47,13 +47,13 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
     val RelationshipPattern(variableOption, types, length, _, direction, _) = node
     val typeNames = types.map { case RelTypeName(relName) => relName }.distinct
 
-    val addVariableName: TraversalFunction = (g) =>
+    val addVariableName: TraversalFunction = g =>
       variableOption match {
-        case Some(Variable(name)) => asUniqueName(name, g, context)
-        case None                 => g
+        case Some(LogicalVariable(name)) => asUniqueName(name, g, context)
+        case None                        => g
     }
 
-    val addDirection: TraversalFunction = (g) =>
+    val addDirection: TraversalFunction = g =>
       maybeName match {
         case Some(pathName) =>
           direction match {

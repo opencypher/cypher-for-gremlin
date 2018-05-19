@@ -17,14 +17,14 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
-import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
+import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.symbols._
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.NumericRange

@@ -15,11 +15,13 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.neo4j.cypher.internal.frontend.v3_3.SemanticDirection.INCOMING
-import org.neo4j.cypher.internal.frontend.v3_3.ast._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
+import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions.SemanticDirection.INCOMING
+import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.ASTNode
 
 import scala.collection.mutable
 

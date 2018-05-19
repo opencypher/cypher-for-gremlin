@@ -17,14 +17,15 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.Column
-import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols._
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
+import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.symbols._
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
@@ -68,7 +69,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       orderBy: Option[OrderBy],
       skip: Option[Skip],
       limit: Option[Limit],
-      finalize: Boolean) {
+      finalize: Boolean): Unit = {
     if (context.isFirstStatement) {
       context.markFirstStatement()
       g.inject(START)
@@ -85,7 +86,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       items: Seq[ReturnItem],
       orderBy: Option[OrderBy],
       skip: Option[Skip],
-      limit: Option[Limit]) {
+      limit: Option[Limit]): Unit = {
 
     applyWherePreconditions(items)
     walk(distinct, items, orderBy, skip, limit, finalize = false)
@@ -230,7 +231,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
   }
 
-  private def getPivotTraversal(pivots: Map[String, GremlinSteps[T, P]]) = {
+  private def getPivotTraversal(pivots: Map[String, GremlinSteps[T, P]]): GremlinSteps[T, P] = {
     if (pivots.size == 1) {
       pivots.values.head
     } else {
@@ -269,7 +270,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }.get
   }
 
-  private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String) = {
+  private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String): GremlinSteps[T, P] = {
     def hasInnerType(typ: CypherType, expected: CypherType): Boolean =
       typ.isInstanceOf[ListType] && typ.asInstanceOf[ListType].innerType == expected
 

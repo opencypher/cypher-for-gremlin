@@ -3,8 +3,8 @@ buildscript {
         assertjVersion = '3.8.0'
         guavaVersion = '22.0'
         junitVersion = '4.12'
-        cypherVersion = '3.3'
-        cypherPatchVersion = '3'
+        cypherVersion = '9.0'
+        cypherFrontendVersion = '1.0.0'
         scalaVersion = '2.11'
         scalaPatchVersion = '12'
         springBootVersion = '1.5.6.RELEASE'
@@ -109,7 +109,7 @@ project(':translation') {
         compile "org.apache.tinkerpop:gremlin-core:${tinkerpopVersion}"
         compile "org.scala-lang:scala-library:${scalaVersion}.${scalaPatchVersion}"
         compile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
-        compile "org.neo4j:neo4j-cypher-frontend-${cypherVersion}:${cypherVersion}.${cypherPatchVersion}"
+        compile "org.opencypher:front-end-${cypherVersion}:${cypherFrontendVersion}"
     }
 
     scaladoc {

@@ -19,8 +19,8 @@ import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 import java.util.Set;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.v9_0.util.symbols.CypherType;
 
 /**
  * Parsed Cypher AST wrapper that can transform it in a suitable format

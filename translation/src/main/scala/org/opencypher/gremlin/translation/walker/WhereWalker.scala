@@ -15,12 +15,13 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.neo4j.cypher.internal.frontend.v3_3.ast._
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.{MapType, NodeType, RelationshipType}
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
+import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.symbols._
 
 import scala.collection.mutable
 
@@ -40,7 +41,7 @@ object WhereWalker {
   def walkRelationshipChain[T, P](
       context: StatementContext[T, P],
       g: GremlinSteps[T, P],
-      relationshipChain: RelationshipChain) {
+      relationshipChain: RelationshipChain): Unit = {
     new WhereWalker(context, g).walkRelationshipChain(relationshipChain: RelationshipChain)
   }
 }

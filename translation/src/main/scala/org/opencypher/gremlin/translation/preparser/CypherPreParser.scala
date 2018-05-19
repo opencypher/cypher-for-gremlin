@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.preparser
 
-import org.neo4j.cypher.internal.frontend.v3_3.parser.Base
+import org.opencypher.v9_0.parser.Base
 import org.parboiled.scala.{Parser, Rule1}
 
 object CypherPreParser extends Parser with Base {

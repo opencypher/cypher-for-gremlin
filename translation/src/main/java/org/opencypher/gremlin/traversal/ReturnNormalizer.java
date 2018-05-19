@@ -43,13 +43,13 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.util.detached.DetachedVertexProperty;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.CypherType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.IntegerType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.ListType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.NodeType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.PathType;
-import org.neo4j.cypher.internal.frontend.v3_3.symbols.RelationshipType;
 import org.opencypher.gremlin.translation.Tokens;
+import org.opencypher.v9_0.util.symbols.CypherType;
+import org.opencypher.v9_0.util.symbols.IntegerType;
+import org.opencypher.v9_0.util.symbols.ListType;
+import org.opencypher.v9_0.util.symbols.NodeType;
+import org.opencypher.v9_0.util.symbols.PathType;
+import org.opencypher.v9_0.util.symbols.RelationshipType;
 
 public final class ReturnNormalizer {
     private final Map<String, CypherType> variableTypes;
