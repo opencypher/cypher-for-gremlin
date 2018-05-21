@@ -18,6 +18,7 @@ package org.opencypher.gremlin.queries;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
@@ -80,6 +81,32 @@ public class ProcedureTest {
     }
 
     @Test
+    public void matchYieldNothing() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (s:software) " +
+                "CALL test.void() " +
+                "RETURN s.name"
+        );
+
+        assertThat(results)
+            .extracting("s.name")
+            .containsExactlyInAnyOrder("lop", "ripple");
+    }
+
+    @Test
+    public void callYieldUnionTypeCasts() {
+        List<Map<String, Object>> results = submitAndGet(
+            "CALL test.inc(2.0) YIELD r " +
+                "UNION ALL " +
+                "CALL test.incF(2) YIELD r "
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly(3L, 3.0);
+    }
+
+    @Test
     public void standaloneCall() {
         List<Map<String, Object>> results = submitAndGet(
             "CALL test.getName()"
@@ -99,6 +126,16 @@ public class ProcedureTest {
         assertThat(results)
             .extracting("r")
             .containsExactly(3L);
+    }
+
+    @Test
+    public void standaloneCallFailsOnWrongType() {
+        Throwable throwable = catchThrowable(() -> submitAndGet(
+            "CALL test.inc(true)"
+        ));
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid argument types for test.inc");
     }
 
     @Test

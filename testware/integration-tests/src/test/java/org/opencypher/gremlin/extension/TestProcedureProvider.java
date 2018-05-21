@@ -40,9 +40,19 @@ public class TestProcedureProvider implements CypherProcedureProvider {
         registry.register(
             "test.inc",
             singletonList(argument("a", Long.class)),
-            singletonList(argument("r", String.class)),
+            singletonList(argument("r", Long.class)),
             arguments -> {
                 long a = (long) arguments.get("a");
+                return singletonList(singletonMap("r", a + 1));
+            }
+        );
+
+        registry.register(
+            "test.incF",
+            singletonList(argument("a", Double.class)),
+            singletonList(argument("r", Double.class)),
+            arguments -> {
+                double a = (double) arguments.get("a");
                 return singletonList(singletonMap("r", a + 1));
             }
         );
