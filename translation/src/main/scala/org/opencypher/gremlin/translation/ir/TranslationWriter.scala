@@ -22,7 +22,6 @@ import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter
 import org.opencypher.gremlin.translation.ir.verify.GremlinPostCondition
 import org.opencypher.gremlin.translation.translator.Translator
-import org.opencypher.gremlin.traversal.CustomFunction
 
 object TranslationWriter {
   def from(ir: Seq[GremlinStep]): TranslationWriter = {
@@ -165,6 +164,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.min()
         case Not(notTraversal) =>
           g.not(generateSteps(notTraversal))
+        case Optional(optionalTraversal) =>
+          g.optional(generateSteps(optionalTraversal))
         case Or(orTraversals @ _*) =>
           g.or(orTraversals.map(generateSteps): _*)
         case Order =>

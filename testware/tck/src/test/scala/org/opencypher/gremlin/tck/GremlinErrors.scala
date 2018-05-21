@@ -96,6 +96,16 @@ object GremlinErrors {
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, UNKNOWN_FUNCTION),
     "Unsupported graph element type: (.+)" ->
       ExecutionFailed(SYNTAX_ERROR, RUNTIME, PROPERTY_ACCESS_ON_NON_MAP),
+    "Procedure not found: .+" ->
+      ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, PROCEDURE_NOT_FOUND),
+    "In-query call with implicit arguments: .+" ->
+      ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_ARGUMENT_PASSING_MODE),
+    "Parameter .+ missing for procedure .+" ->
+      ExecutionFailed(PARAMETER_MISSING, COMPILE_TIME, MISSING_PARAMETER),
+    "Invalid number of arguments for .+" ->
+      ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_NUMBER_OF_ARGUMENTS),
+    "Invalid argument types for .+" ->
+      ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_ARGUMENT_TYPE),
     "Procedure call cannot take an aggregating function as argument.+" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_AGGREGATION),
     "Cannot convert .+ to .+" ->

@@ -353,6 +353,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
         return this;
     }
 
+    @Override
+    public GremlinSteps<String, GroovyPredicate> optional(GremlinSteps<String, GroovyPredicate> optionalTraversal) {
+        g.append(chain("optional", traversal(optionalTraversal)));
+        return this;
+    }
+
     @SafeVarargs
     @Override
     public final GremlinSteps<String, GroovyPredicate> or(GremlinSteps<String, GroovyPredicate>... orTraversals) {

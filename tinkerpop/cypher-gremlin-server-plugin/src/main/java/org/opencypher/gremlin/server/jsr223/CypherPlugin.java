@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.server.jsr223;
 
+import java.lang.reflect.Method;
 import java.util.Optional;
 import org.apache.tinkerpop.gremlin.jsr223.Customizer;
 import org.apache.tinkerpop.gremlin.jsr223.DefaultImportCustomizer;
@@ -22,13 +23,23 @@ import org.apache.tinkerpop.gremlin.jsr223.GremlinPlugin;
 import org.apache.tinkerpop.gremlin.jsr223.ImportCustomizer;
 import org.opencypher.gremlin.traversal.CustomFunction;
 import org.opencypher.gremlin.traversal.CustomPredicate;
+import org.opencypher.gremlin.traversal.ProcedureRegistry;
 
 public class CypherPlugin implements GremlinPlugin {
 
     private static final ImportCustomizer imports = DefaultImportCustomizer.build()
         .addMethodImports(CustomPredicate.class.getDeclaredMethods())
         .addMethodImports(CustomFunction.class.getDeclaredMethods())
+        .addMethodImports(getDeclaredMethod(ProcedureRegistry.class, "procedureCall", String.class))
         .create();
+
+    private static Method getDeclaredMethod(Class<?> klass, String name, Class<?>... parameterTypes) {
+        try {
+            return klass.getDeclaredMethod(name, parameterTypes);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("Missing in classpath: " + klass + "#" + name);
+        }
+    }
 
     @Override
     public String getName() {

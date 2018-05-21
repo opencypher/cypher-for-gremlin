@@ -24,12 +24,13 @@ import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.tck.GremlinQueries._
 import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.reports.CucumberReportAdapter
+import org.opencypher.gremlin.traversal.ProcedureRegistry
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
 import scala.collection.JavaConverters._
 
-object TinkerGraphServerEmbeddedGraph extends Graph {
+object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
   val TIME_OUT_SECONDS = 10
 
   val tinkerGraphServerEmbedded = new GremlinServerExternalResource
@@ -57,8 +58,15 @@ object TinkerGraphServerEmbeddedGraph extends Graph {
     }
   }
 
+  override def registerProcedure(signature: String, values: CypherValueRecords): Unit = {
+    val header = values.header.asJava
+    val rows = values.rows.map(row => row.mapValues(fromCypherValue(_).asInstanceOf[Object]).asJava).asJava
+    PredefinedProcedureRegistry.register(signature, header, rows)
+  }
+
   override def close(): Unit = {
     tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
+    ProcedureRegistry.clear()
   }
 }
 
@@ -70,8 +78,8 @@ class TckTest {
     val featureName = System.getProperty("feature")
 
     val scenarios = CypherTCK.allTckScenarios
-      .filter(s => scenarioName == null || s.name == scenarioName)
-      .filter(s => featureName == null || s.featureName == featureName)
+      .filter(s => Set(null, "", s.name).contains(scenarioName))
+      .filter(s => Set(null, "", s.featureName).contains(featureName))
 
     runScenarios(scenarios)
   }

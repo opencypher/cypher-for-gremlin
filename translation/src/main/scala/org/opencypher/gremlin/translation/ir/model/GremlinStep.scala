@@ -201,6 +201,16 @@ case class Not(notTraversal: Seq[GremlinStep]) extends GremlinStep {
   }
 }
 
+case class Optional(optionalTraversal: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    Optional(f(optionalTraversal))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(z, optionalTraversal)
+  }
+}
+
 case class Or(orTraversals: Seq[GremlinStep]*) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
     Or(orTraversals.map(f): _*)

@@ -27,8 +27,8 @@ object StatementContext {
       dsl: Translator[T, P],
       expressionTypes: Map[Expression, CypherType],
       returnTypes: Map[String, CypherType],
-      extractedParameters: Map[String, Any]): StatementContext[T, P] = {
-    new StatementContext(dsl, expressionTypes, returnTypes, extractedParameters)
+      parameters: Map[String, Any]): StatementContext[T, P] = {
+    new StatementContext(dsl, expressionTypes, returnTypes, parameters)
   }
 }
 
@@ -38,27 +38,31 @@ object StatementContext {
   * @param dsl                 reference to [[Translator]] implementation in use
   * @param expressionTypes     expression Cypher types
   * @param returnTypes         return types by alias
-  * @param extractedParameters Cypher query parameters
+  * @param parameters Cypher query parameters
   */
 sealed class StatementContext[T, P](
     val dsl: Translator[T, P],
     val expressionTypes: Map[Expression, CypherType],
     val returnTypes: Map[String, CypherType],
-    private val extractedParameters: Map[String, Any]) {
+    private val parameters: Map[String, Any]) {
 
   def parameter(name: String): Object = {
-    val value = extractedParameters.get(name).orNull
+    val value = parameters.get(name).orNull
     val parameter = dsl.bindings().bind(name, value)
     parameter.asInstanceOf[Object]
   }
 
   def inlineParameter[R](name: String, klass: Class[R]): R = {
-    val value = extractedParameters.get(name).orNull
+    val value = parameters.get(name).orNull
     if (klass.isInstance(value)) {
       value.asInstanceOf[R]
     } else {
       unsupported("inlined parameter", value)
     }
+  }
+
+  def parameterDefined(name: String): Boolean = {
+    parameters.contains(name)
   }
 
   private var midTraversals = 0
@@ -118,7 +122,7 @@ sealed class StatementContext[T, P](
   }
 
   def copy(): StatementContext[T, P] = {
-    val result = StatementContext(dsl, expressionTypes, returnTypes, extractedParameters)
+    val result = StatementContext(dsl, expressionTypes, returnTypes, parameters)
     result.referencedAliases ++= referencedAliases
     result.nameGenerator = nameGenerator
     result
