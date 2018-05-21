@@ -83,7 +83,7 @@ Translator.builder()
     .build();
 ```
 
-Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.6/org/opencypher/gremlin/translation/package-summary.html) for more information.
+Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.6/java/org/opencypher/gremlin/translation/package-summary.html) for more information.
 
 ## Running Cypher
 
