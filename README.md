@@ -34,10 +34,11 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 ### Major Limitations
 
 * Some functionality is exclusive to Gremlin Servers with the [Cypher plugin](tinkerpop/cypher-gremlin-server-plugin) installed, including:
-  - Accessing [list](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) elements by index
-  - [List comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-list-comprehension)
-  - [Returning named paths](https://neo4j.com/docs/developer-manual/current/cypher/clauses/match/#named-paths)
-  - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `length`, `nodes`, `percentileDisc`, `percentileCont`, `properties`, `relationships`, `size`, `toBoolean`, `toFloat`, `toInteger`, `toString`
+  - [List](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) access by non-constant index
+  - [Map](https://neo4j.com/docs/developer-manual/current/cypher/syntax/maps/) access
+  - Non-numeric and non-constant plus operator
+  - [Pattern comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-pattern-comprehension)
+  - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `length`, `nodes`, `percentileCont`, `percentileDisc`, `properties`, `relationships`, `size`, `toBoolean`, `toFloat`, `toInteger`, `toString`
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 
 See the current [TCK report](testware/tck) for a detailed overview of language coverage.
