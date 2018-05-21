@@ -15,6 +15,12 @@
  */
 package org.opencypher.gremlin.extension;
 
+/**
+ * User-defined procedure registration callback.
+ * Can be loaded via SPI.
+ *
+ * @see org.opencypher.gremlin.traversal.ProcedureRegistry
+ */
 @FunctionalInterface
 public interface CypherProcedureProvider {
     void apply(CypherProcedureRegistrar registry);

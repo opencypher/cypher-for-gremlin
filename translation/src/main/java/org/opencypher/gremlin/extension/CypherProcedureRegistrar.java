@@ -17,6 +17,11 @@ package org.opencypher.gremlin.extension;
 
 import java.util.List;
 
+/**
+ * User-defined procedure registration service.
+ *
+ * @see org.opencypher.gremlin.traversal.ProcedureRegistry
+ */
 @FunctionalInterface
 public interface CypherProcedureRegistrar {
     void register(String name,

@@ -30,6 +30,9 @@ import org.opencypher.gremlin.extension.CypherArgument;
 import org.opencypher.gremlin.extension.CypherProcedure;
 import org.opencypher.gremlin.extension.CypherProcedureProvider;
 
+/**
+ * Facility to manage user-defined procedures that can be called with the {@code CALL} keyword.
+ */
 public class ProcedureRegistry {
     private static final Map<String, ProcedureDefinition> procedures = new HashMap<>();
     private static final ReturnNormalizer returnNormalizer = ReturnNormalizer.create(emptyMap());
@@ -37,10 +40,18 @@ public class ProcedureRegistry {
     private ProcedureRegistry() {
     }
 
+    /**
+     * Removes all currently-registered procedures.
+     */
     public static void clear() {
         procedures.clear();
     }
 
+    /**
+     * Loads all procedures that are exposed via SPI.
+     *
+     * @see CypherProcedureProvider
+     */
     public static void load() {
         ServiceLoader<CypherProcedureProvider> serviceLoader = ServiceLoader.load(CypherProcedureProvider.class);
         for (CypherProcedureProvider provider : serviceLoader) {
@@ -48,6 +59,11 @@ public class ProcedureRegistry {
         }
     }
 
+    /**
+     * Explicitly registers provided procedures.
+     *
+     * @param provider procedure provider
+     */
     public static void register(CypherProcedureProvider provider) {
         provider.apply((name, arguments, results, implementation) ->
             procedures.put(name, new ProcedureDefinition(arguments, results, implementation)));
