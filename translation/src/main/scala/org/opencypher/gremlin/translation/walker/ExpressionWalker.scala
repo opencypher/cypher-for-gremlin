@@ -184,11 +184,15 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
         val fromIdx = maybeFrom.getOrElse(SignedDecimalIntegerLiteral("0")(InputPosition.NONE))
         val toIdx = maybeTo.getOrElse(SignedDecimalIntegerLiteral("-1")(InputPosition.NONE))
         (fromIdx, toIdx) match {
+          case (from: IntegerLiteral, to: IntegerLiteral)
+              if from.value == to.value || (from.value > to.value && to.value >= 0) =>
+            walkLocal(expr).limit(0).fold()
           case (from: IntegerLiteral, to: IntegerLiteral) if from.value >= 0 && (to.value >= 1 || to.value == -1) =>
-            walkLocal(expr).coalesce(
-              __.range(Scope.local, from.value, to.value),
-              __.constant(NULL)
-            )
+            val rangeT = __.range(Scope.local, from.value, to.value)
+            if (to.value - from.value == 1) {
+              rangeT.fold()
+            }
+            walkLocal(expr).coalesce(rangeT, __.constant(NULL))
           case _ =>
             asList(expr, fromIdx, toIdx).map(CustomFunction.listSlice())
         }

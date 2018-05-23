@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.queries;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
@@ -122,92 +121,6 @@ public class ContainerIndexTest {
         assertThat(results)
             .extracting("n1", "n2")
             .containsExactly(tuple(null, null));
-    }
-
-    @Test
-    public void listRange() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3, 4, 5] AS list " +
-                "RETURN list[1..3] AS r"
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactly(asList(2L, 3L));
-    }
-
-    @Test
-    public void listRangeImplicitEnd() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list " +
-                "RETURN list[1..] AS r"
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactly(asList(2L, 3L));
-    }
-
-    @Test
-    public void listRangeImplicitStart() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list " +
-                "RETURN list[..2] AS r"
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactly(asList(1L, 2L));
-    }
-
-    @Test
-    public void listNegativeRange() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list " +
-                "RETURN list[-3..-1] AS r"
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactly(asList(1L, 2L));
-    }
-
-    @Test
-    public void listExceedingRange() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list " +
-                "RETURN list[-5..5] AS r"
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactly(asList(1L, 2L, 3L));
-    }
-
-    @Test
-    public void listRangeParametrized() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list " +
-                "RETURN list[$from..$to] AS r",
-            new HashMap<>(ImmutableMap.of("from", 1, "to", 3))
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactly(asList(2L, 3L));
-    }
-
-    @Test
-    public void listParametrizedEmptyRange() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "WITH [1, 2, 3] AS list " +
-                "RETURN list[$from..$to] AS r",
-            new HashMap<>(ImmutableMap.of("from", 3, "to", 1))
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactly(emptyList());
     }
 
     @Test
