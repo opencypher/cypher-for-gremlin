@@ -156,6 +156,20 @@ public class ContainerIndexTest {
     }
 
     @Test
+    public void listIndexOnAnyType() {
+        submitAndGet("CREATE (n:N {p1: 1, p2: 2})");
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:N {p1: 1}) " +
+                "WITH [n] AS l, 'p2' AS k " +
+                "RETURN l[0][k] AS p2"
+        );
+
+        assertThat(results)
+            .extracting("p2")
+            .containsExactly(2L);
+    }
+
+    @Test
     public void mapIndexInReturn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
