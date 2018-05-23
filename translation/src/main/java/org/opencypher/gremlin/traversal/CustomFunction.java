@@ -255,10 +255,10 @@ public class CustomFunction implements Function<Traverser, Object> {
                 }
 
                 String containerClass = container.getClass().getName();
-                String indexClass = index.getClass().getName();
-                throw new IllegalArgumentException(
-                    "Invalid element access of " + containerClass + " by " + indexClass
-                );
+                if (index instanceof String) {
+                    throw new IllegalArgumentException("Invalid property access of " + containerClass);
+                }
+                throw new IllegalArgumentException("Invalid element access of " + containerClass);
             }
         );
     }
