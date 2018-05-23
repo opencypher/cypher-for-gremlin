@@ -26,7 +26,6 @@ import net.masterthought.cucumber.ReportBuilder;
  * https://github.com/damianszczepanik/cucumber-reporting
  */
 public class OpenCypherTckReport {
-
     private static final String CUCUMBER_BASE = "build/reports/tests/cucumber/";
     private static final String JSON_REPORT = CUCUMBER_BASE + "cucumber.json";
 
@@ -54,10 +53,6 @@ public class OpenCypherTckReport {
         new ReportBuilder(jsonFiles, configuration).generateReports();
 
         File result = new File(CUCUMBER_BASE + "/cucumber-html-reports/overview-features.html");
-        System.out.println("\n" +
-            "================================================================================\n" +
-            "| Cucumber HTML report generated successfully:\n" +
-            "| " + result.getAbsolutePath() + "\n" +
-            "================================================================================");
+        System.out.println("\nCucumber HTML report saved to: " + result.toURI());
     }
 }

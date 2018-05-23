@@ -30,12 +30,8 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import org.opencypher.gremlin.tck.regression.TckResultsComparator.Diff;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TckRegressionReport {
-    private static final Logger logger = LoggerFactory.getLogger(TckRegressionReport.class);
-
     public static void generate(Diff diff) throws IOException, TemplateException {
         File resourcesDir = new File("src/test/resources/");
         File outputDir = new File("build/reports/tests/");
@@ -53,7 +49,7 @@ public class TckRegressionReport {
             copy(resourcesDir, outputDir, "success.png");
             Template template = cfg.getTemplate("Regression.ftl");
             template.process(input, fileWriter);
-            logger.info("\n\nRegression report saved to " + report.getAbsolutePath());
+            System.out.println("\nRegression report saved to " + report.toURI());
         }
     }
 
