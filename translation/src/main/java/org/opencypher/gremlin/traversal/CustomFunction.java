@@ -225,13 +225,10 @@ public class CustomFunction implements Function<Traverser, Object> {
                 }
 
                 if (container instanceof List) {
-                    if (!(index instanceof Number)) {
-                        String indexClass = index.getClass().getName();
-                        throw new IllegalArgumentException("List element access by non-integer: " + indexClass);
-                    }
                     List list = (List) container;
-                    int i = ((Number) index).intValue();
-                    if (i < 0 || i > list.size()) {
+                    int size = list.size();
+                    int i = normalizeContainerIndex(index, size);
+                    if (i < 0 || i > size) {
                         return Tokens.NULL;
                     }
                     return list.get(i);
@@ -254,6 +251,58 @@ public class CustomFunction implements Function<Traverser, Object> {
                 );
             }
         );
+    }
+
+    public static CustomFunction listSlice() {
+        return new CustomFunction(
+            "listSlice",
+            traverser -> {
+                List<?> args = (List<?>) traverser.get();
+                Object container = args.get(0);
+                Object from = args.get(1);
+                Object to = args.get(2);
+
+                if (container == Tokens.NULL) {
+                    return Tokens.NULL;
+                }
+
+                if (container instanceof List) {
+                    List list = (List) container;
+                    int size = list.size();
+                    int f = normalizeRangeIndex(from, size);
+                    int t = normalizeRangeIndex(to, size);
+                    if (f >= t) {
+                        return new ArrayList<>();
+                    }
+                    return new ArrayList<>(list.subList(f, t));
+                }
+
+                String containerClass = container.getClass().getName();
+                throw new IllegalArgumentException(
+                    "Invalid element access of " + containerClass + " by range"
+                );
+            }
+        );
+    }
+
+    private static int normalizeContainerIndex(Object index, int containerSize) {
+        if (!(index instanceof Number)) {
+            String indexClass = index.getClass().getName();
+            throw new IllegalArgumentException("List element access by non-integer: " + indexClass);
+        }
+        int i = ((Number) index).intValue();
+        return (i >= 0) ? i : containerSize + i;
+    }
+
+    private static int normalizeRangeIndex(Object index, int size) {
+        int i = normalizeContainerIndex(index, size);
+        if (i < 0) {
+            return 0;
+        }
+        if (i > size) {
+            return size;
+        }
+        return i;
     }
 
     public static CustomFunction pathComprehension() {
