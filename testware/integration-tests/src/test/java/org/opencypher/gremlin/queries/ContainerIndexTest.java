@@ -20,6 +20,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.tuple;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
@@ -99,6 +100,30 @@ public class ContainerIndexTest {
     }
 
     @Test
+    public void listNegativeIndex() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH [1, 2, 3] AS list " +
+                "RETURN list[-1] AS i1, list[-3] AS i2"
+        );
+
+        assertThat(results)
+            .extracting("i1", "i2")
+            .containsExactly(tuple(3L, 1L));
+    }
+
+    @Test
+    public void nonExistentListIndex() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH [1, 2, 3] AS list " +
+                "RETURN list[3] AS n1, list[-4] AS n2"
+        );
+
+        assertThat(results)
+            .extracting("n1", "n2")
+            .containsExactly(tuple(null, null));
+    }
+
+    @Test
     public void nullList() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH null AS list\n" +
@@ -163,5 +188,17 @@ public class ContainerIndexTest {
         assertThat(results)
             .extracting("i")
             .containsExactly((Object) null);
+    }
+
+    @Test
+    public void mapInMap() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH {foo: {bar: 'baz'}} AS map " +
+                "RETURN map['foo']['bar'] AS r"
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly("baz");
     }
 }

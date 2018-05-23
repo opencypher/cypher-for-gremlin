@@ -24,6 +24,7 @@ import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.InputPosition
 import org.opencypher.v9_0.util.symbols._
 
 import scala.collection.JavaConverters._
@@ -170,14 +171,30 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
 
       case ContainerIndex(expr, idx) =>
         (typeOf(expr), idx) match {
-          case (_: ListType, _: IntegerLiteral) =>
-            val index = inlineExpressionValue(idx, context, classOf[java.lang.Long])
+          case (_: ListType, l: IntegerLiteral) if l.value >= 0 =>
             walkLocal(expr).coalesce(
-              __.range(Scope.local, index, index + 1),
+              __.range(Scope.local, l.value, l.value + 1),
               __.constant(NULL)
             )
           case _ =>
             asList(expr, idx).map(CustomFunction.containerIndex())
+        }
+
+      case ListSlice(expr, maybeFrom, maybeTo) =>
+        val fromIdx = maybeFrom.getOrElse(SignedDecimalIntegerLiteral("0")(InputPosition.NONE))
+        val toIdx = maybeTo.getOrElse(SignedDecimalIntegerLiteral("-1")(InputPosition.NONE))
+        (fromIdx, toIdx) match {
+          case (from: IntegerLiteral, to: IntegerLiteral)
+              if from.value == to.value || (from.value > to.value && to.value >= 0) =>
+            walkLocal(expr).limit(0).fold()
+          case (from: IntegerLiteral, to: IntegerLiteral) if from.value >= 0 && (to.value >= 1 || to.value == -1) =>
+            val rangeT = __.range(Scope.local, from.value, to.value)
+            if (to.value - from.value == 1) {
+              rangeT.fold()
+            }
+            walkLocal(expr).coalesce(rangeT, __.constant(NULL))
+          case _ =>
+            asList(expr, fromIdx, toIdx).map(CustomFunction.listSlice())
         }
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
