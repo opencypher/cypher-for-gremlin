@@ -17,7 +17,7 @@ package org.apache.tinkerpop.gremlin.process.traversal.step.map;
 
 import java.util.Set;
 
-public class MathStepAcessor {
+public class MathStepAccessor {
     public static Set<String> getVariables(String equation) {
         return MathStep.getVariables(equation);
     }

@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.{MathStep, MathStepAcessor}
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.{MathStep, MathStepAccessor}
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -49,7 +49,7 @@ object RemoveUnusedAliases extends GremlinRewriter {
         case To(toStepLabel) :: _          => increment(toStepLabel)
         case SelectK(selectKeys @ _*) :: _ => increment(selectKeys: _*)
         case WhereP(predicate) :: _        => increment(predicateAliases(predicate): _*)
-        case Math(expression) :: _         => increment(MathStepAcessor.getVariables(expression).asScala.toSeq: _*)
+        case Math(expression) :: _         => increment(MathStepAccessor.getVariables(expression).asScala.toSeq: _*)
       })(localSteps).flatten
     })(steps)
 
