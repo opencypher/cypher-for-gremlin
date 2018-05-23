@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Scope
+import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext
@@ -95,20 +97,27 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
         __.select(freshIds.getOrElse(varName, varName))
 
       case Property(expr, PropertyKeyName(keyName: String)) =>
-        val typ = context.expressionTypes.get(expr)
+        val typ = context.expressionTypes.getOrElse(expr, AnyType.instance)
         val maybeExtractStep: Option[String => GremlinSteps[T, P]] = typ match {
-          case Some(NodeType.instance)         => Some(__.values(_))
-          case Some(RelationshipType.instance) => Some(__.values(_))
-          case Some(MapType.instance)          => Some(__.select(_))
-          case _                               => None
+          case NodeType.instance         => Some(__.values(_))
+          case RelationshipType.instance => Some(__.values(_))
+          case MapType.instance          => Some(__.select(_))
+          case _                         => None
         }
         maybeExtractStep.map { extractStep =>
-          walkExpression(expr)
-            .map(extractStep(keyName))
+          walkExpression(expr).map(extractStep(keyName))
         }.getOrElse {
           val key = StringLiteral(keyName)(InputPosition.NONE)
-          asList(Seq(expr, key), context)
-            .map(CustomFunction.containerIndex())
+          asList(expr, key).map(CustomFunction.containerIndex()).is(p.neq(NULL))
+        }
+
+      case ContainerIndex(expr, idx) =>
+        val typ = context.expressionTypes.getOrElse(expr, AnyType.instance)
+        (typ, idx) match {
+          case (_: ListType, l: IntegerLiteral) if l.value >= 0 =>
+            walkExpression(expr).range(Scope.local, l.value, l.value + 1)
+          case _ =>
+            asList(expr, idx).map(CustomFunction.containerIndex()).is(p.neq(NULL))
         }
 
       case HasLabels(expr, List(LabelName(label))) =>
@@ -150,8 +159,11 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
         WhereWalker.walkRelationshipChain(context, traversal, relationshipChain)
         traversal
 
+      case l: Literal =>
+        __.constant(l.value)
+
       case _ =>
-        ExpressionWalker.walkLocal(context, g, node)
+        ExpressionWalker.walkLocal(context, g, node).is(p.neq(NULL))
     }
   }
 
@@ -172,6 +184,13 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
           .map(lhsT)
           .where(predicate(rhsName))
     }
+  }
+
+  private def asList(expressions: Expression*): GremlinSteps[T, P] = {
+    val keys = expressions.map(_ => context.generateName())
+    val traversal = __.project(keys: _*)
+    expressions.map(walkExpression).foreach(traversal.by)
+    traversal.select(Column.values)
   }
 
   def walkRelationshipChain(relationshipChain: RelationshipChain): Unit = {
