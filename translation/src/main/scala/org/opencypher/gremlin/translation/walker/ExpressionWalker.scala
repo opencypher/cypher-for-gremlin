@@ -68,19 +68,25 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
 
       case Property(expr, PropertyKeyName(keyName: String)) =>
         val typ = context.expressionTypes.get(expr)
-        val extractStep: String => GremlinSteps[T, P] = typ match {
-          case Some(NodeType.instance)         => __.values(_)
-          case Some(RelationshipType.instance) => __.values(_)
-          case _                               => __.select(_)
+        val maybeExtractStep: Option[String => GremlinSteps[T, P]] = typ match {
+          case Some(NodeType.instance)         => Some(__.values(_))
+          case Some(RelationshipType.instance) => Some(__.values(_))
+          case Some(MapType.instance)          => Some(__.select(_))
+          case _                               => None
         }
-        walkLocal(expr)
-          .map(
-            notNull(
-              __.coalesce(
-                extractStep(keyName),
-                __.constant(NULL)
-              ),
-              context))
+        maybeExtractStep.map { extractStep =>
+          walkLocal(expr)
+            .map(
+              notNull(
+                __.coalesce(
+                  extractStep(keyName),
+                  __.constant(NULL)
+                ),
+                context))
+        }.getOrElse {
+          val key = StringLiteral(keyName)(InputPosition.NONE)
+          asList(expr, key).map(CustomFunction.containerIndex())
+        }
 
       case HasLabels(expr, List(LabelName(label))) =>
         walkLocal(expr)

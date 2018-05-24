@@ -124,7 +124,9 @@ object GremlinErrors {
       ExecutionFailed(TYPE_ERROR, RUNTIME, LIST_ELEMENT_ACCESS_BY_NON_INTEGER),
     "Map element access by non-string: .+" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, MAP_ELEMENT_ACCESS_BY_NON_STRING),
-    "Invalid element access of .+ by .+" ->
+    "Invalid property access of .+" ->
+      ExecutionFailed(TYPE_ERROR, RUNTIME, PROPERTY_ACCESS_ON_NON_MAP),
+    "Invalid element access of .+" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ELEMENT_ACCESS)
   )
 }

@@ -244,11 +244,21 @@ public class CustomFunction implements Function<Traverser, Object> {
                     return map.getOrDefault(key, Tokens.NULL);
                 }
 
+                if (container instanceof Element) {
+                    if (!(index instanceof String)) {
+                        String indexClass = index.getClass().getName();
+                        throw new IllegalArgumentException("Property access by non-string: " + indexClass);
+                    }
+                    Element element = (Element) container;
+                    String key = (String) index;
+                    return element.property(key).orElse(Tokens.NULL);
+                }
+
                 String containerClass = container.getClass().getName();
-                String indexClass = index.getClass().getName();
-                throw new IllegalArgumentException(
-                    "Invalid element access of " + containerClass + " by " + indexClass
-                );
+                if (index instanceof String) {
+                    throw new IllegalArgumentException("Invalid property access of " + containerClass);
+                }
+                throw new IllegalArgumentException("Invalid element access of " + containerClass);
             }
         );
     }
