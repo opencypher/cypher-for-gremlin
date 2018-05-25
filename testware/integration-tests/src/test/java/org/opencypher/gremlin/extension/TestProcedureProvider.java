@@ -20,14 +20,19 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.opencypher.gremlin.extension.CypherArgument.argument;
+import static org.opencypher.gremlin.extension.CypherProcedure.cypherProcedure;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
-public class TestProcedureProvider implements CypherProcedureProvider {
-    @Override
-    public void apply(CypherProcedureRegistrar registry) {
-        registry.register(
+public final class TestProcedureProvider implements CypherProcedureProvider {
+
+    private final HashSet<CypherProcedure> procedures = new HashSet<>();
+
+    public TestProcedureProvider() {
+        procedures.add(cypherProcedure(
             "test.getName",
             emptyList(),
             singletonList(argument("name", String.class)),
@@ -35,9 +40,9 @@ public class TestProcedureProvider implements CypherProcedureProvider {
                 singletonMap("name", "marko"),
                 singletonMap("name", "vadas")
             )
-        );
+        ));
 
-        registry.register(
+        procedures.add(cypherProcedure(
             "test.inc",
             singletonList(argument("a", Long.class)),
             singletonList(argument("r", Long.class)),
@@ -45,9 +50,9 @@ public class TestProcedureProvider implements CypherProcedureProvider {
                 long a = (long) arguments.get("a");
                 return singletonList(singletonMap("r", a + 1));
             }
-        );
+        ));
 
-        registry.register(
+        procedures.add(cypherProcedure(
             "test.incF",
             singletonList(argument("a", Double.class)),
             singletonList(argument("r", Double.class)),
@@ -55,9 +60,9 @@ public class TestProcedureProvider implements CypherProcedureProvider {
                 double a = (double) arguments.get("a");
                 return singletonList(singletonMap("r", a + 1));
             }
-        );
+        ));
 
-        registry.register(
+        procedures.add(cypherProcedure(
             "test.multi",
             emptyList(),
             asList(argument("foo", String.class), argument("bar", String.class)),
@@ -67,13 +72,18 @@ public class TestProcedureProvider implements CypherProcedureProvider {
                 row.put("foo", "foo");
                 return singletonList(row);
             }
-        );
+        ));
 
-        registry.register(
+        procedures.add(cypherProcedure(
             "test.void",
             emptyList(),
             emptyList(),
             arguments -> emptyList()
-        );
+        ));
+    }
+
+    @Override
+    public Set<CypherProcedure> get() {
+        return procedures;
     }
 }

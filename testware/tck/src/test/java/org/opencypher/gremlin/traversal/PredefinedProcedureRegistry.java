@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.tck;
+package org.opencypher.gremlin.traversal;
 
 import static java.util.stream.Collectors.toList;
 import static org.opencypher.gremlin.extension.CypherArgument.argument;
+import static org.opencypher.gremlin.extension.CypherProcedure.cypherProcedure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.opencypher.gremlin.extension.CypherArgument;
-import org.opencypher.gremlin.traversal.ProcedureRegistry;
 
 public final class PredefinedProcedureRegistry {
     private PredefinedProcedureRegistry() {
@@ -45,7 +45,7 @@ public final class PredefinedProcedureRegistry {
         List<CypherArgument> arguments = matchArguments(signatureMatcher.group("arguments"));
         List<CypherArgument> results = matchArguments(signatureMatcher.group("results"));
 
-        ProcedureRegistry.register(registry -> registry.register(
+        GlobalProcedureContext.get().unsafeRegister(cypherProcedure(
             name,
             arguments,
             results,
@@ -56,7 +56,12 @@ public final class PredefinedProcedureRegistry {
                     .filter(row -> extractKeys(in, row).equals(args))
                     .map(row -> extractKeys(out, row))
                     .collect(toList());
-            }));
+            }
+        ));
+    }
+
+    public static void clear() {
+        GlobalProcedureContext.get().unsafeClear();
     }
 
     private static List<CypherArgument> matchArguments(String input) {

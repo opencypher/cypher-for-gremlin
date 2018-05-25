@@ -35,10 +35,10 @@ object StatementContext {
 /**
   * Context used by AST walkers to share global translation state.
   *
-  * @param dsl                 reference to [[Translator]] implementation in use
-  * @param expressionTypes     expression Cypher types
-  * @param returnTypes         return types by alias
-  * @param parameters Cypher query parameters
+  * @param dsl             reference to [[Translator]] implementation in use
+  * @param expressionTypes expression Cypher types
+  * @param returnTypes     return types by alias
+  * @param parameters      Cypher query parameters
   */
 sealed class StatementContext[T, P](
     val dsl: Translator[T, P],

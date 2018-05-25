@@ -17,13 +17,42 @@ package org.opencypher.gremlin.extension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-/**
- * User-defined procedure implementation.
- *
- * @see org.opencypher.gremlin.traversal.ProcedureRegistry
- */
-@FunctionalInterface
 public interface CypherProcedure {
+    String name();
+
+    List<CypherArgument> arguments();
+
+    List<CypherArgument> results();
+
     List<Map<String, Object>> call(Map<String, Object> arguments);
+
+    static CypherProcedure cypherProcedure(
+        String name,
+        List<CypherArgument> arguments,
+        List<CypherArgument> results,
+        Function<Map<String, Object>, List<Map<String, Object>>> implementation) {
+        return new CypherProcedure() {
+            @Override
+            public String name() {
+                return name;
+            }
+
+            @Override
+            public List<CypherArgument> arguments() {
+                return arguments;
+            }
+
+            @Override
+            public List<CypherArgument> results() {
+                return results;
+            }
+
+            @Override
+            public List<Map<String, Object>> call(Map<String, Object> arguments) {
+                return implementation.apply(arguments);
+            }
+        };
+    }
 }

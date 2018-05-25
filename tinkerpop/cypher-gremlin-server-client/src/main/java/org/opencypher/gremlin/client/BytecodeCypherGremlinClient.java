@@ -29,6 +29,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.traversal.GlobalProcedureContext;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
@@ -61,7 +62,11 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(explain(ast));
         }
 
-        Translator<Bytecode, P> translator = Translator.builder().bytecode().build(flavor);
+        Translator<Bytecode, P> translator = Translator.builder()
+            .bytecode()
+            .procedures(GlobalProcedureContext.get().all())
+            .build(flavor);
+
         Bytecode bytecode = ast.buildTranslation(translator);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(bytecode);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
