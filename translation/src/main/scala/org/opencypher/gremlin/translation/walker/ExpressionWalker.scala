@@ -210,7 +210,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
           case "exists"        => traversals.head.map(anyMatch(__.is(p.neq(NULL))))
           case "id"            => traversals.head.map(notNull(__.id(), context))
-          case "keys"          => traversals.head.valueMap().select(Column.keys)
+          case "keys"          => traversals.head.properties().key().fold()
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "length"        => traversals.head.map(CustomFunction.length())
           case "nodes"         => traversals.head.map(CustomFunction.nodes())
