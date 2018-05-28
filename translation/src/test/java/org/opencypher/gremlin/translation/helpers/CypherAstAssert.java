@@ -18,7 +18,6 @@ package org.opencypher.gremlin.translation.helpers;
 import static java.util.function.Function.identity;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 import static org.opencypher.gremlin.translation.helpers.TraversalAssertions.traversalContains;
-import static org.opencypher.gremlin.translation.helpers.TraversalAssertions.traversalEquals;
 import static org.opencypher.gremlin.translation.helpers.TraversalAssertions.traversalNotContains;
 
 import java.util.Objects;
@@ -31,7 +30,6 @@ import org.opencypher.gremlin.translation.helpers.TraversalAssertions.TraversalA
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinBindings;
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates;
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinSteps;
-import org.opencypher.gremlin.translation.ir.helpers.TraversalTestHelper;
 import org.opencypher.gremlin.translation.ir.model.GremlinPredicate;
 import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter;
@@ -73,42 +71,27 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
         return this;
     }
 
-    public CypherAstAssert hasTraversalBeforeReturn(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
-        // Extract everything up to the start of the RETURN clause translation
-        extractor = TraversalTestHelper::beforeReturn;
-        return assertTraversal(traversal, traversalEquals);
-    }
-
-    @SafeVarargs
-    public final CypherAstAssert adds(GremlinSteps<Seq<GremlinStep>, GremlinPredicate>... traversals) {
-        for (GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal : traversals) {
-            assertTraversal(traversal,  traversalNotContains);
-            assertTraversal(rewriteTraversal(), traversal, traversalContains);
-        }
+    public final CypherAstAssert adds(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
+        assertTraversal(traversal, traversalNotContains);
+        assertTraversal(rewriteTraversal(), traversal, traversalContains);
         return this;
     }
 
-    @SafeVarargs
-    public final CypherAstAssert removes(GremlinSteps<Seq<GremlinStep>, GremlinPredicate>... traversals) {
-        for (GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal : traversals) {
+    public final CypherAstAssert removes(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
             assertTraversal(traversal, traversalContains);
             assertTraversal(rewriteTraversal(), traversal, traversalNotContains);
-        }
         return this;
     }
 
-    @SafeVarargs
-    public final CypherAstAssert keeps(GremlinSteps<Seq<GremlinStep>, GremlinPredicate>... traversals) {
-        for (GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal : traversals) {
+    public final CypherAstAssert keeps(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
             assertTraversal(traversal, traversalContains);
             assertTraversal(rewriteTraversal(), traversal, traversalContains);
-        }
         return this;
     }
 
     private CypherAstAssert assertTraversal(Seq<GremlinStep> actual,
                                             GremlinSteps<Seq<GremlinStep>, GremlinPredicate> expected,
-                                TraversalAssertion assertion) {
+                                            TraversalAssertion assertion) {
         assertion.accept(extractor.apply(actual), expected.current());
         return this;
     }
@@ -140,4 +123,10 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
             )
             .build(flavor);
     }
+
+    public static GremlinSteps<Seq<GremlinStep>, GremlinPredicate> __() {
+        return new IRGremlinSteps();
+    }
+
+    public static final IRGremlinPredicates P = new IRGremlinPredicates();
 }

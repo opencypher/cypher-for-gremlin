@@ -15,13 +15,13 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
 import static org.opencypher.gremlin.translation.Tokens.UNUSED;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 
@@ -40,8 +40,8 @@ public class SimplifySingleProjectionsTest {
         )
             .withFlavor(flavor)
             .rewritingWith(SimplifySingleProjections$.MODULE$)
-            .removes(__.as(UNUSED))
-            .removes(__.select("n", UNUSED));
+            .removes(__().as(UNUSED))
+            .removes(__().select("n", UNUSED));
     }
 
     @Test
@@ -49,8 +49,8 @@ public class SimplifySingleProjectionsTest {
         assertThat(parse("MATCH (n1)-[r]->(n2) RETURN count(n1)"))
             .withFlavor(flavor)
             .rewritingWith(SimplifySingleProjections$.MODULE$)
-            .removes(__.as(UNUSED))
-            .removes(__.select("n1", UNUSED));
+            .removes(__().as(UNUSED))
+            .removes(__().select("n1", UNUSED));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class SimplifySingleProjectionsTest {
         assertThat(parse("MATCH (n) RETURN n"))
             .withFlavor(flavor)
             .rewritingWith(SimplifySingleProjections$.MODULE$)
-            .removes(__.as(UNUSED))
-            .removes(__.select("n", UNUSED));
+            .removes(__().as(UNUSED))
+            .removes(__().select("n", UNUSED));
     }
 }

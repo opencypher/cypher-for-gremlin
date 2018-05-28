@@ -15,9 +15,9 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 
 import org.junit.Test;
 import org.opencypher.gremlin.translation.GremlinSteps;
@@ -31,7 +31,7 @@ public class InlineMapTraversalTest {
     @Test
     public void inlineProjectionMap() {
         GremlinSteps<Seq<GremlinStep>, GremlinPredicate> projection =
-            __.project("n").by(__.constant(1));
+            __().project("n").by(__().constant(1));
 
         assertThat(parse(
             "WITH 1 AS n " +
@@ -40,7 +40,7 @@ public class InlineMapTraversalTest {
             .withFlavor(TranslatorFlavor.empty())
             .rewritingWith(InlineMapTraversal$.MODULE$)
             .removes(
-                __.map(projection))
+                __().map(projection))
             .keeps(
                 projection
             );

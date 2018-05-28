@@ -16,11 +16,11 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static java.util.Collections.emptyMap;
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
 import static org.opencypher.gremlin.translation.Tokens.NULL;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.P;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import java.util.ArrayList;
@@ -48,9 +48,9 @@ public class SimplifyPropertySettersTest {
             .withFlavor(flavor)
             .rewritingWith(SimplifyPropertySetters$.MODULE$)
             .removes(
-                __.property("foo", __.constant("bar")))
+                __().property("foo", __().constant("bar")))
             .adds(
-                __.property("foo", "bar"));
+                __().property("foo", "bar"));
     }
 
     @Test
@@ -66,19 +66,19 @@ public class SimplifyPropertySettersTest {
             .withFlavor(flavor)
             .rewritingWith(SimplifyPropertySetters$.MODULE$)
             .removes(
-                __.choose(
-                    __.constant(EMPTY_LIST).is(P.neq(NULL)).unfold(),
-                    __.property("p1", __.constant(EMPTY_LIST)),
-                    __.sideEffect(__.properties("p1").drop())
+                __().choose(
+                    __().constant(EMPTY_LIST).is(P.neq(NULL)).unfold(),
+                    __().property("p1", __().constant(EMPTY_LIST)),
+                    __().sideEffect(__().properties("p1").drop())
                 )
             )
             .keeps(
-                __.sideEffect(__.properties("p1").drop()))
+                __().sideEffect(__().properties("p1").drop()))
             .keeps(
-                __.property("p2", __.project("  GENERATED1").by(__.constant(1)).select(Column.values)))
+                __().property("p2", __().project("  GENERATED1").by(__().constant(1)).select(Column.values)))
             .adds(
-                __.property("p3", emptyMap()))
+                __().property("p3", emptyMap()))
             .keeps(
-                __.property("p4", __.project("k").by(__.constant(1))));
+                __().property("p4", __().project("k").by(__().constant(1))));
     }
 }

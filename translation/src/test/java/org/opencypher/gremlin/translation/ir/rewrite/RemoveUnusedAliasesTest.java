@@ -15,9 +15,9 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.translator.TranslatorFlavor.empty;
 
 import org.junit.Test;
@@ -32,11 +32,9 @@ public class RemoveUnusedAliasesTest {
         ))
             .withFlavor(empty())
             .rewritingWith(RemoveUnusedAliases$.MODULE$)
-            .removes(
-                __.as("  UNNAMED10"),
-                __.as("  UNNAMED13"))
-            .keeps(
-                __.as("n"));
+            .removes(__().as("  UNNAMED10"))
+            .removes(__().as("  UNNAMED13"))
+            .keeps(__().as("n"));
     }
 
     @Test
@@ -47,11 +45,9 @@ public class RemoveUnusedAliasesTest {
         ))
             .withFlavor(empty())
             .rewritingWith(RemoveUnusedAliases$.MODULE$)
-            .removes(
-                __.as("r"),
-                __.as("m"))
-            .keeps(
-                __.as("n"));
+            .removes(__().as("r"))
+            .removes(__().as("m"))
+            .keeps(__().as("n"));
     }
 
     @Test
@@ -61,11 +57,9 @@ public class RemoveUnusedAliasesTest {
         ))
             .withFlavor(empty())
             .rewritingWith(RemoveUnusedAliases$.MODULE$)
-            .removes(
-                __.as("  UNNAMED11"))
-            .keeps(
-                __.as("n"),
-                __.as("m"));
+            .removes(__().as("  UNNAMED11"))
+            .keeps(__().as("n"))
+            .keeps(__().as("m"));
     }
 
     @Test
@@ -77,12 +71,10 @@ public class RemoveUnusedAliasesTest {
         ))
             .withFlavor(empty())
             .rewritingWith(RemoveUnusedAliases$.MODULE$)
-            .removes(
-                __.as("  UNNAMED10"),
-                __.as("  UNNAMED26"))
-            .keeps(
-                __.as("n"),
-                __.as("m"));
+            .removes(__().as("  UNNAMED10"))
+            .removes(__().as("  UNNAMED26"))
+            .keeps(__().as("n"))
+            .keeps(__().as("m"));
     }
 
 }

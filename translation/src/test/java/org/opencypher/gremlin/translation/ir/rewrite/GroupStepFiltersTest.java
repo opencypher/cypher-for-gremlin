@@ -15,10 +15,10 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.P;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
@@ -42,12 +42,13 @@ public class GroupStepFiltersTest {
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
             .removes(
-                __.where(__.select("n").hasLabel("N")))
+                __().where(__().select("n").hasLabel("N")))
             .keeps(
-                __.hasLabel("N"));
+                __().hasLabel("N"));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void singleWhere() {
         assertThat(parse(
             "MATCH (n) " +
@@ -58,13 +59,13 @@ public class GroupStepFiltersTest {
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
             .removes(
-                __.where(__.and(
-                    __.select("n").values("p").is(P.isEq("n")),
-                    __.constant(1).is(P.neq(2))
+                __().where(__().and(
+                    __().select("n").values("p").is(P.isEq("n")),
+                    __().constant(1).is(P.neq(2))
                 )))
             .adds(
-                __.has("p", P.isEq("n"))
-                    .where(__.constant(1).is(P.neq(2))));
+                __().has("p", P.isEq("n"))
+                    .where(__().constant(1).is(P.neq(2))));
     }
 
     @Test
@@ -76,12 +77,12 @@ public class GroupStepFiltersTest {
         ))
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
-            .removes(__.select("n").values("p").is(P.isEq("n")))
-            .removes(__.select("r").values("p").is(P.isEq("r")))
-            .removes(__.select("m").values("p").is(P.isEq("m")))
-            .adds(__.hasLabel("N").has("p", P.isEq("n")))
-            .adds(__.as("r").has("p", P.isEq("r")))
-            .adds(__.hasLabel("M").has("p", P.isEq("m")));
+            .removes(__().select("n").values("p").is(P.isEq("n")))
+            .removes(__().select("r").values("p").is(P.isEq("r")))
+            .removes(__().select("m").values("p").is(P.isEq("m")))
+            .adds(__().hasLabel("N").has("p", P.isEq("n")))
+            .adds(__().as("r").has("p", P.isEq("r")))
+            .adds(__().hasLabel("M").has("p", P.isEq("m")));
     }
 
     @Test
@@ -95,12 +96,12 @@ public class GroupStepFiltersTest {
         ))
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
-            .removes(__.select("n").values("p").is(P.isEq("n")))
-            .removes(__.select("r").values("p").is(P.isEq("r")))
-            .removes(__.select("m").values("p").is(P.isEq("m")))
-            .adds(__.hasLabel("N").has("p", P.isEq("n")))
-            .adds(__.as("r").has("p", P.isEq("r")))
-            .adds(__.hasLabel("M").has("p", P.isEq("m")));
+            .removes(__().select("n").values("p").is(P.isEq("n")))
+            .removes(__().select("r").values("p").is(P.isEq("r")))
+            .removes(__().select("m").values("p").is(P.isEq("m")))
+            .adds(__().hasLabel("N").has("p", P.isEq("n")))
+            .adds(__().as("r").has("p", P.isEq("r")))
+            .adds(__().hasLabel("M").has("p", P.isEq("m")));
     }
 
     @Test
@@ -112,15 +113,16 @@ public class GroupStepFiltersTest {
         ))
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
-            .removes(__.select("n").values("p").is(P.isEq("n")))
-            .removes(__.select("k").values("p").is(P.isEq("k")))
-            .removes(__.select("m").values("p").is(P.isEq("m")))
-            .adds(__.as("n").hasLabel("N").has("p", P.isEq("n")))
-            .adds(__.as("m").hasLabel("M").has("p", P.isEq("m")))
-            .adds(__.as("k").hasLabel("K").has("p", P.isEq("k")));
+            .removes(__().select("n").values("p").is(P.isEq("n")))
+            .removes(__().select("k").values("p").is(P.isEq("k")))
+            .removes(__().select("m").values("p").is(P.isEq("m")))
+            .adds(__().as("n").hasLabel("N").has("p", P.isEq("n")))
+            .adds(__().as("m").hasLabel("M").has("p", P.isEq("m")))
+            .adds(__().as("k").hasLabel("K").has("p", P.isEq("k")));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void variablePath() {
         assertThat(parse(
             "MATCH (n:N {p: 'n'})-[r*1..2]->(m) " +
@@ -129,11 +131,11 @@ public class GroupStepFiltersTest {
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
             .removes(
-                __.where(__.and(
-                    __.select("n").values("p").is(P.isEq("n")),
-                    __.select("n").hasLabel("N"))))
+                __().where(__().and(
+                    __().select("n").values("p").is(P.isEq("n")),
+                    __().select("n").hasLabel("N"))))
             .adds(
-                __.as("n").hasLabel("N").has("p", P.isEq("n")));
+                __().as("n").hasLabel("N").has("p", P.isEq("n")));
     }
 
     @Test
@@ -145,11 +147,11 @@ public class GroupStepFiltersTest {
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
             .removes(
-                __.where(__.and(
-                    __.select("n").hasLabel("N"),
-                    __.select("n").values("p").is(P.isEq("n")))))
+                __().where(__().and(
+                    __().select("n").hasLabel("N"),
+                    __().select("n").values("p").is(P.isEq("n")))))
             .adds(
-                __.as("n").hasLabel("N").has("p", P.isEq("n")));
+                __().as("n").hasLabel("N").has("p", P.isEq("n")));
 
     }
 

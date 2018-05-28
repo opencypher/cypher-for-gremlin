@@ -20,7 +20,7 @@ import static org.assertj.core.api.Fail.fail;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import org.opencypher.gremlin.translation.ir.TranslationWriter;
-import org.opencypher.gremlin.translation.ir.helpers.TraversalTestHelper;
+import org.opencypher.gremlin.translation.ir.helpers.TraversalMatcher;
 import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.Translator;
 import scala.collection.Seq;
@@ -40,7 +40,7 @@ public class TraversalAssertions {
     };
 
     public static TraversalAssertion traversalContains = (actual, expected) -> {
-        if (!TraversalTestHelper.containsSteps(actual, expected)) {
+        if (!TraversalMatcher.containsSteps(actual, expected)) {
             fail(
                 "Actual traversal does not contain expected steps!\nSteps expected: <%s>\n  Actual: <%s>",
                 print(expected), print(actual)
@@ -49,7 +49,7 @@ public class TraversalAssertions {
     };
 
     public static TraversalAssertion traversalNotContains = (actual, expected) -> {
-        if (TraversalTestHelper.containsSteps(actual, expected)) {
+        if (TraversalMatcher.containsSteps(actual, expected)) {
             fail(
                 "Actual traversal expected not to contain steps!\nSteps not expected: <%s>\n  Actual: <%s>",
                 print(expected), print(actual)

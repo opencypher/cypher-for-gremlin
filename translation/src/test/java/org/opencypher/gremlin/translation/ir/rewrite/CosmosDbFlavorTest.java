@@ -15,9 +15,9 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
@@ -42,9 +42,9 @@ public class CosmosDbFlavorTest {
             .withFlavor(flavor)
             .rewritingWith(CosmosDbFlavor$.MODULE$)
             .removes(
-                __.values("p"))
+                __().values("p"))
             .adds(
-                __.properties().hasKey("p").value());
+                __().properties().hasKey("p").value());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class CosmosDbFlavorTest {
             .withFlavor(flavor)
             .rewritingWith(CosmosDbFlavor$.MODULE$)
             .removes(
-                __.repeat(__.loops()
+                __().repeat(__().loops()
                     .aggregate("  GENERATED1"))
                     .times(4)
                     .cap("  GENERATED1")
@@ -65,6 +65,6 @@ public class CosmosDbFlavorTest {
                     .limit(3)
             )
             .adds(
-                __.inject(1, 2, 3));
+                __().inject(1, 2, 3));
     }
 }

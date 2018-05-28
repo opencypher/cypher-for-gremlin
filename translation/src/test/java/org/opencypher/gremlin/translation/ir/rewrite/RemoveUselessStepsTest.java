@@ -15,12 +15,12 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class RemoveUselessStepsTest {
@@ -42,7 +42,7 @@ public class RemoveUselessStepsTest {
             .withFlavor(flavor)
             .rewritingWith(RemoveUselessSteps$.MODULE$)
             .removes(
-                __.fold().unfold()
+                __().fold().unfold()
             );
     }
 }
