@@ -59,4 +59,13 @@ object TranslatorFlavor {
     postConditions = Seq(
       NoCustomFunctions
     ))
+
+  /**
+    * Empty translator flavor without rewriting and post conditions.
+    */
+  val empty: TranslatorFlavor = TranslatorFlavor(
+    rewriters = Nil,
+    postConditions = Nil
+  )
+
 }

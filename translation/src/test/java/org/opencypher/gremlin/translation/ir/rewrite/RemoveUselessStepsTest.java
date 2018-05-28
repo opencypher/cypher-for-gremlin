@@ -15,9 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
-import static org.opencypher.gremlin.translation.Tokens.UNUSED;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
@@ -29,8 +27,7 @@ public class RemoveUselessStepsTest {
 
     private final TranslatorFlavor flavor = new TranslatorFlavor(
         seq(
-            InlineMapTraversal$.MODULE$,
-            RemoveUselessSteps$.MODULE$
+            InlineMapTraversal$.MODULE$
         ),
         seq()
     );
@@ -43,11 +40,9 @@ public class RemoveUselessStepsTest {
                 "RETURN l"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V().as("n").select("n")
-                    .label().is(P.neq("vertex")).as("l")
-                    .as(UNUSED).select("l", UNUSED)
+            .rewritingWith(RemoveUselessSteps$.MODULE$)
+            .removes(
+                __.fold().unfold()
             );
     }
-
 }
