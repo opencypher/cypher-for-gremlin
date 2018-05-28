@@ -47,8 +47,8 @@ import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
-import org.opencypher.gremlin.traversal.GlobalProcedureContext;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
+import org.opencypher.gremlin.traversal.ProcedureContext;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 import org.slf4j.Logger;
 
@@ -99,7 +99,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
             .gremlinGroovy()
             .inlineParameters()
-            .procedures(GlobalProcedureContext.get().all())
+            .procedures(ProcedureContext.global().all())
             .build();
 
         String gremlin = ast.buildTranslation(stringTranslator);
@@ -112,7 +112,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
             .traversal(g)
-            .procedures(GlobalProcedureContext.get().all())
+            .procedures(ProcedureContext.global().all())
             .build();
 
         GraphTraversal<?, ?> traversal = ast.buildTranslation(traversalTranslator);

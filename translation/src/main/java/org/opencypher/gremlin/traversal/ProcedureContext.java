@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.traversal;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -29,13 +30,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.opencypher.gremlin.extension.CypherArgument;
+import org.opencypher.gremlin.extension.CypherBinding;
 import org.opencypher.gremlin.extension.CypherProcedure;
 
 public final class ProcedureContext {
 
     private final Map<String, CypherProcedure> procedures;
     private final ReturnNormalizer returnNormalizer = ReturnNormalizer.create(emptyMap());
+
+    private static final class LazyHolder {
+        private static final ProcedureContext GLOBAL = new ProcedureContext(emptySet());
+    }
+
+    public static ProcedureContext global() {
+        return LazyHolder.GLOBAL;
+    }
 
     public ProcedureContext(Set<CypherProcedure> procedures) {
         this.procedures = procedures.stream()
@@ -79,12 +88,12 @@ public final class ProcedureContext {
     private Object call(String name, Collection<?> arguments) {
         CypherProcedure procedure = findOrThrow(name);
         Object[] args = returnNormalizer.normalizeCollection(arguments).toArray();
-        List<CypherArgument> defArgs = procedure.arguments();
+        List<CypherBinding> defArgs = procedure.arguments();
         List<Object> callArgs = Arrays.asList(args);
 
         // Defined argument types
         List<Class<?>> defArgTypes = defArgs.stream()
-            .map(CypherArgument::getType)
+            .map(CypherBinding::getType)
             .map(type -> Number.class.isAssignableFrom(type) ? Number.class : type)
             .collect(toList());
 
@@ -120,11 +129,11 @@ public final class ProcedureContext {
         List<Map<String, Object>> rows = procedure.call(implArgs);
 
         // Reorder and normalize
-        List<CypherArgument> defResults = procedure.results();
+        List<CypherBinding> defResults = procedure.results();
         List<Map<String, Object>> results = new ArrayList<>();
         for (Map<String, Object> row : rows) {
             Map<String, Object> orderedRow = new LinkedHashMap<>();
-            for (CypherArgument res : defResults) {
+            for (CypherBinding res : defResults) {
                 String resName = res.getName();
                 Class<?> resType = res.getType();
                 Object resValue = numericCast(row.get(resName), resType);

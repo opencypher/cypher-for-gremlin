@@ -23,7 +23,6 @@ import org.apache.tinkerpop.gremlin.jsr223.GremlinPlugin;
 import org.apache.tinkerpop.gremlin.jsr223.ImportCustomizer;
 import org.opencypher.gremlin.traversal.CustomFunction;
 import org.opencypher.gremlin.traversal.CustomPredicate;
-import org.opencypher.gremlin.traversal.GlobalProcedureContext;
 
 public class CypherPlugin implements GremlinPlugin {
 
@@ -32,8 +31,6 @@ public class CypherPlugin implements GremlinPlugin {
         .addMethodImports(CustomPredicate.class.getDeclaredMethods())
         .addClassImports(CustomFunction.class)
         .addMethodImports(CustomFunction.class.getDeclaredMethods())
-        .addClassImports(GlobalProcedureContext.class)
-        .addMethodImports(getDeclaredMethod(GlobalProcedureContext.class, "procedureCall", String.class))
         .create();
 
     private static Method getDeclaredMethod(Class<?> klass, String name, Class<?>... parameterTypes) {

@@ -20,18 +20,19 @@ import java.util.Map;
 import java.util.function.Function;
 
 public interface CypherProcedure {
+
     String name();
 
-    List<CypherArgument> arguments();
+    List<CypherBinding> arguments();
 
-    List<CypherArgument> results();
+    List<CypherBinding> results();
 
     List<Map<String, Object>> call(Map<String, Object> arguments);
 
     static CypherProcedure cypherProcedure(
         String name,
-        List<CypherArgument> arguments,
-        List<CypherArgument> results,
+        List<CypherBinding> arguments,
+        List<CypherBinding> results,
         Function<Map<String, Object>, List<Map<String, Object>>> implementation) {
         return new CypherProcedure() {
             @Override
@@ -40,12 +41,12 @@ public interface CypherProcedure {
             }
 
             @Override
-            public List<CypherArgument> arguments() {
+            public List<CypherBinding> arguments() {
                 return arguments;
             }
 
             @Override
-            public List<CypherArgument> results() {
+            public List<CypherBinding> results() {
                 return results;
             }
 

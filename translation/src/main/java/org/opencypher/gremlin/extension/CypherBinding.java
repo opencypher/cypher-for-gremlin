@@ -15,8 +15,24 @@
  */
 package org.opencypher.gremlin.extension;
 
-import java.util.Set;
-import java.util.function.Supplier;
+public final class CypherBinding {
+    private final String name;
+    private final Class<?> type;
 
-public interface CypherProcedureProvider extends Supplier<Set<CypherProcedure>> {
+    public CypherBinding(String name, Class<?> type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    public static CypherBinding binding(String name, Class<?> type) {
+        return new CypherBinding(name, type);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
 }
