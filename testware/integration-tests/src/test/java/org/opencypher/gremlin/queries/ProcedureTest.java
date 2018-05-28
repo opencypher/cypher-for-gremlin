@@ -17,29 +17,54 @@ package org.opencypher.gremlin.queries;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
-import org.junit.ClassRule;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.Test;
-import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.extension.TestProcedures;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
+import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
+import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
 /**
- * @see org.opencypher.gremlin.extension.TestProcedureProvider
+ * @see TestProcedures
  */
+@Category({
+    SkipWithBytecode.class,
+    SkipWithGremlinGroovy.class
+})
 public class ProcedureTest {
 
-    @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+    private GraphTraversalSource gts = TinkerGraph.open().traversal();
+    private TestProcedures testProcedures = new TestProcedures();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return submitAndGet(cypher, emptyMap());
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher, Map<String, ?> parameters) {
-        return gremlinServer.cypherGremlinClient().submit(cypher, parameters).all();
+        DefaultGraphTraversal g = new DefaultGraphTraversal(gts);
+        Translator<GraphTraversal, P> translator = Translator.builder()
+            .traversal(g)
+            .procedures(testProcedures.get())
+            .build();
+        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(translator);
+        ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
+        return traversal.toStream()
+            .map(returnNormalizer::normalize)
+            .collect(toList());
     }
 
     @Test
@@ -83,14 +108,14 @@ public class ProcedureTest {
     @Test
     public void matchYieldNothing() {
         List<Map<String, Object>> results = submitAndGet(
-            "MATCH (s:software) " +
+            "UNWIND ['foo', 'bar'] AS r " +
                 "CALL test.void() " +
-                "RETURN s.name"
+                "RETURN r"
         );
 
         assertThat(results)
-            .extracting("s.name")
-            .containsExactlyInAnyOrder("lop", "ripple");
+            .extracting("r")
+            .containsExactlyInAnyOrder("foo", "bar");
     }
 
     @Test

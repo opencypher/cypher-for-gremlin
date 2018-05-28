@@ -16,8 +16,9 @@
 package org.opencypher.gremlin.translation.translator;
 
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -35,6 +36,7 @@ import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinBindings;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinPredicates;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinSteps;
+import org.opencypher.gremlin.traversal.ProcedureContext;
 
 /**
  * Abstraction over the process of building a translation
@@ -47,13 +49,13 @@ public final class Translator<T, P> {
     private final GremlinPredicates<P> predicates;
     private final GremlinBindings bindings;
     private final TranslatorFlavor flavor;
-    private final Map<String, CypherProcedure> procedures;
+    private final ProcedureContext procedures;
 
     private Translator(GremlinSteps<T, P> steps,
                        GremlinPredicates<P> predicates,
                        GremlinBindings bindings,
                        TranslatorFlavor flavor,
-                       Map<String, CypherProcedure> procedures) {
+                       ProcedureContext procedures) {
         this.steps = steps;
         this.predicates = predicates;
         this.bindings = bindings;
@@ -104,13 +106,12 @@ public final class Translator<T, P> {
     }
 
     /**
-     * Returns the procedure implementation for the given name.
+     * Returns the registered procedure context.
      *
-     * @param name procedure name
-     * @return procedure implementation
+     * @return procedure context
      */
-    public CypherProcedure getProcedure(String name) {
-        return procedures.get(name);
+    public ProcedureContext procedures() {
+        return procedures;
     }
 
     /**
@@ -221,7 +222,7 @@ public final class Translator<T, P> {
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
         protected GremlinBindings bindings;
-        private final Map<String, CypherProcedure> procedures = new HashMap<>();
+        private final Set<CypherProcedure> procedureSet = new HashSet<>();
 
         private FlavorBuilder(GremlinSteps<T, P> steps,
                               GremlinPredicates<P> predicates,
@@ -236,8 +237,18 @@ public final class Translator<T, P> {
          *
          * @return builder for translator
          */
-        public FlavorBuilder<T, P> registerProcedure(String name, CypherProcedure implementation) {
-            procedures.put(name, implementation);
+        public FlavorBuilder<T, P> procedure(CypherProcedure procedure) {
+            procedureSet.add(procedure);
+            return this;
+        }
+
+        /**
+         * Registers multiple procedures in this {@link Translator}.
+         *
+         * @return builder for translator
+         */
+        public FlavorBuilder<T, P> procedures(Collection<CypherProcedure> procedures) {
+            procedureSet.addAll(procedures);
             return this;
         }
 
@@ -262,7 +273,7 @@ public final class Translator<T, P> {
                 predicates,
                 bindings,
                 flavor != null ? flavor : TranslatorFlavor.gremlinServer(),
-                procedures
+                new ProcedureContext(procedureSet)
             );
         }
     }

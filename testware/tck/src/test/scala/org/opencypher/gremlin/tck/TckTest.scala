@@ -24,7 +24,7 @@ import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.tck.GremlinQueries._
 import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.reports.CucumberReportAdapter
-import org.opencypher.gremlin.traversal.ProcedureRegistry
+import org.opencypher.gremlin.traversal.PredefinedProcedureRegistry
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
@@ -66,7 +66,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
 
   override def close(): Unit = {
     tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
-    ProcedureRegistry.clear()
+    PredefinedProcedureRegistry.clear();
   }
 }
 

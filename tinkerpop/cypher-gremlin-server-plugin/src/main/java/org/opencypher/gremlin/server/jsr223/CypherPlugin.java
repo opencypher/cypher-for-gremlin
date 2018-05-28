@@ -23,14 +23,14 @@ import org.apache.tinkerpop.gremlin.jsr223.GremlinPlugin;
 import org.apache.tinkerpop.gremlin.jsr223.ImportCustomizer;
 import org.opencypher.gremlin.traversal.CustomFunction;
 import org.opencypher.gremlin.traversal.CustomPredicate;
-import org.opencypher.gremlin.traversal.ProcedureRegistry;
 
 public class CypherPlugin implements GremlinPlugin {
 
     private static final ImportCustomizer imports = DefaultImportCustomizer.build()
+        .addClassImports(CustomPredicate.class)
         .addMethodImports(CustomPredicate.class.getDeclaredMethods())
+        .addClassImports(CustomFunction.class)
         .addMethodImports(CustomFunction.class.getDeclaredMethods())
-        .addMethodImports(getDeclaredMethod(ProcedureRegistry.class, "procedureCall", String.class))
         .create();
 
     private static Method getDeclaredMethod(Class<?> klass, String name, Class<?>... parameterTypes) {

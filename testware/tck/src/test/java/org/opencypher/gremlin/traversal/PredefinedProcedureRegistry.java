@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.tck;
+package org.opencypher.gremlin.traversal;
 
 import static java.util.stream.Collectors.toList;
-import static org.opencypher.gremlin.extension.CypherArgument.argument;
+import static org.opencypher.gremlin.extension.CypherBinding.binding;
+import static org.opencypher.gremlin.extension.CypherProcedure.cypherProcedure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.opencypher.gremlin.extension.CypherArgument;
-import org.opencypher.gremlin.traversal.ProcedureRegistry;
+import org.opencypher.gremlin.extension.CypherBinding;
 
 public final class PredefinedProcedureRegistry {
     private PredefinedProcedureRegistry() {
@@ -42,10 +42,10 @@ public final class PredefinedProcedureRegistry {
             throw new IllegalArgumentException("Unparsable procedure signature: " + signature);
         }
         String name = signatureMatcher.group("name");
-        List<CypherArgument> arguments = matchArguments(signatureMatcher.group("arguments"));
-        List<CypherArgument> results = matchArguments(signatureMatcher.group("results"));
+        List<CypherBinding> arguments = matchArguments(signatureMatcher.group("arguments"));
+        List<CypherBinding> results = matchArguments(signatureMatcher.group("results"));
 
-        ProcedureRegistry.register(registry -> registry.register(
+        ProcedureContext.global().unsafeRegister(cypherProcedure(
             name,
             arguments,
             results,
@@ -56,11 +56,16 @@ public final class PredefinedProcedureRegistry {
                     .filter(row -> extractKeys(in, row).equals(args))
                     .map(row -> extractKeys(out, row))
                     .collect(toList());
-            }));
+            }
+        ));
     }
 
-    private static List<CypherArgument> matchArguments(String input) {
-        List<CypherArgument> arguments = new ArrayList<>();
+    public static void clear() {
+        ProcedureContext.global().unsafeClear();
+    }
+
+    private static List<CypherBinding> matchArguments(String input) {
+        List<CypherBinding> arguments = new ArrayList<>();
         if (input == null) {
             return arguments;
         }
@@ -68,7 +73,7 @@ public final class PredefinedProcedureRegistry {
         while (matcher.find()) {
             String name = matcher.group("name");
             Class<?> type = typeFromSignature(matcher.group("type"));
-            arguments.add(argument(name, type));
+            arguments.add(binding(name, type));
         }
         return arguments;
     }

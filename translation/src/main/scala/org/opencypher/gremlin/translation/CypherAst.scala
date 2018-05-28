@@ -65,6 +65,7 @@ class CypherAst(
         new IRGremlinPredicates,
         new IRGremlinBindings
       )
+      .procedures(dsl.procedures().all())
       .build()
 
     val context = StatementContext(irDsl, expressionTypes, returnTypes, parameters)
