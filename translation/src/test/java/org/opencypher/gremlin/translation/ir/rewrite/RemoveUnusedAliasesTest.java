@@ -15,22 +15,14 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
-import static org.opencypher.gremlin.translation.Tokens.UNUSED;
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
-import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
+import static org.opencypher.gremlin.translation.translator.TranslatorFlavor.empty;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class RemoveUnusedAliasesTest {
-
-    private final TranslatorFlavor flavor = new TranslatorFlavor(
-        seq(RemoveUnusedAliases$.MODULE$),
-        seq()
-    );
 
     @Test
     public void generated() {
@@ -38,14 +30,11 @@ public class RemoveUnusedAliasesTest {
             "MATCH (n)-->() " +
                 "RETURN n"
         ))
-            .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n")
-                    .outE().inV()
-                    .as(UNUSED)
-                    .select("n", UNUSED)
-            );
+            .withFlavor(empty())
+            .rewritingWith(RemoveUnusedAliases$.MODULE$)
+            .removes(__().as("  UNNAMED10"))
+            .removes(__().as("  UNNAMED13"))
+            .keeps(__().as("n"));
     }
 
     @Test
@@ -54,14 +43,11 @@ public class RemoveUnusedAliasesTest {
             "MATCH (n)-[r]->(m) " +
                 "RETURN n"
         ))
-            .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n")
-                    .outE().inV()
-                    .as(UNUSED)
-                    .select("n", UNUSED)
-            );
+            .withFlavor(empty())
+            .rewritingWith(RemoveUnusedAliases$.MODULE$)
+            .removes(__().as("r"))
+            .removes(__().as("m"))
+            .keeps(__().as("n"));
     }
 
     @Test
@@ -69,13 +55,11 @@ public class RemoveUnusedAliasesTest {
         assertThat(parse(
             "CREATE (n)-[:R]->(m)"
         ))
-            .withFlavor(flavor)
-            .hasTraversal(
-                __.addV().as("n")
-                    .addV().as("m")
-                    .addE("R").from("n").to("m")
-                    .barrier().limit(0)
-            );
+            .withFlavor(empty())
+            .rewritingWith(RemoveUnusedAliases$.MODULE$)
+            .removes(__().as("  UNNAMED11"))
+            .keeps(__().as("n"))
+            .keeps(__().as("m"));
     }
 
     @Test
@@ -85,18 +69,12 @@ public class RemoveUnusedAliasesTest {
                 "MATCH (m)-->(k) " +
                 "RETURN n"
         ))
-            .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n")
-                    .outE().inV()
-                    .as("m")
-                    .V()
-                    .as("  GENERATED1").where(__.select("  GENERATED1").where(P.eq("m")))
-                    .outE().inV()
-                    .as(UNUSED)
-                    .select("n", UNUSED)
-            );
+            .withFlavor(empty())
+            .rewritingWith(RemoveUnusedAliases$.MODULE$)
+            .removes(__().as("  UNNAMED10"))
+            .removes(__().as("  UNNAMED26"))
+            .keeps(__().as("n"))
+            .keeps(__().as("m"));
     }
 
 }

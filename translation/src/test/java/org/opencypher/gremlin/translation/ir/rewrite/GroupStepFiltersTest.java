@@ -15,15 +15,12 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
-import static org.opencypher.gremlin.translation.Tokens.START;
-import static org.opencypher.gremlin.translation.Tokens.UNUSED;
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.P;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
-import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
@@ -31,8 +28,7 @@ public class GroupStepFiltersTest {
 
     private final TranslatorFlavor flavor = new TranslatorFlavor(
         seq(
-            InlineMapTraversal$.MODULE$,
-            GroupStepFilters$.MODULE$
+            InlineMapTraversal$.MODULE$
         ),
         seq()
     );
@@ -44,15 +40,15 @@ public class GroupStepFiltersTest {
                 "RETURN n"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n").hasLabel("N")
-                    .as(UNUSED)
-                    .select("n", UNUSED)
-            );
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .removes(
+                __().where(__().select("n").hasLabel("N")))
+            .keeps(
+                __().hasLabel("N"));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void singleWhere() {
         assertThat(parse(
             "MATCH (n) " +
@@ -61,13 +57,15 @@ public class GroupStepFiltersTest {
                 "RETURN n"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n").has("p", P.eq("n"))
-                    .where(__.constant(1).is(P.neq(2)))
-                    .as(UNUSED)
-                    .select("n", UNUSED)
-            );
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .removes(
+                __().where(__().and(
+                    __().select("n").values("p").is(P.isEq("n")),
+                    __().constant(1).is(P.neq(2))
+                )))
+            .adds(
+                __().has("p", P.isEq("n"))
+                    .where(__().constant(1).is(P.neq(2))));
     }
 
     @Test
@@ -78,14 +76,13 @@ public class GroupStepFiltersTest {
                 "RETURN n, r, m"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n").hasLabel("N").has("p", P.eq("n"))
-                    .outE("R").as("r").has("p", P.eq("r")).inV()
-                    .as("m").hasLabel("M").has("p", P.eq("m"))
-                    .where(__.constant(1).is(P.neq(2)))
-                    .select("n", "r", "m")
-            );
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .removes(__().select("n").values("p").is(P.isEq("n")))
+            .removes(__().select("r").values("p").is(P.isEq("r")))
+            .removes(__().select("m").values("p").is(P.isEq("m")))
+            .adds(__().hasLabel("N").has("p", P.isEq("n")))
+            .adds(__().as("r").has("p", P.isEq("r")))
+            .adds(__().hasLabel("M").has("p", P.isEq("m")));
     }
 
     @Test
@@ -98,13 +95,13 @@ public class GroupStepFiltersTest {
                 "RETURN n, r, m"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n").hasLabel("N").has("p", P.eq("n"))
-                    .outE("R").as("r").has("p", P.eq("r")).inV()
-                    .as("m").hasLabel("M").has("p", P.eq("m"))
-                    .select("n", "r", "m")
-            );
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .removes(__().select("n").values("p").is(P.isEq("n")))
+            .removes(__().select("r").values("p").is(P.isEq("r")))
+            .removes(__().select("m").values("p").is(P.isEq("m")))
+            .adds(__().hasLabel("N").has("p", P.isEq("n")))
+            .adds(__().as("r").has("p", P.isEq("r")))
+            .adds(__().hasLabel("M").has("p", P.isEq("m")));
     }
 
     @Test
@@ -115,37 +112,30 @@ public class GroupStepFiltersTest {
                 "RETURN k"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n").hasLabel("N").has("p", P.eq("n"))
-                    .outE("R").as("r1").inV()
-                    .as("m").hasLabel("M").has("p", P.eq("m"))
-                    .inE("R").as("r2").outV()
-                    .as("k").hasLabel("K").has("p", P.eq("k"))
-                    .where(__.select("r1").where(P.neq("r2")))
-                    .V().as("  GENERATED1").where(__.select("  GENERATED1").where(P.eq("k")))
-                    .as(UNUSED)
-                    .select("k", UNUSED)
-            );
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .removes(__().select("n").values("p").is(P.isEq("n")))
+            .removes(__().select("k").values("p").is(P.isEq("k")))
+            .removes(__().select("m").values("p").is(P.isEq("m")))
+            .adds(__().as("n").hasLabel("N").has("p", P.isEq("n")))
+            .adds(__().as("m").hasLabel("M").has("p", P.isEq("m")))
+            .adds(__().as("k").hasLabel("K").has("p", P.isEq("k")));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void variablePath() {
         assertThat(parse(
             "MATCH (n:N {p: 'n'})-[r*1..2]->(m) " +
                 "RETURN m"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n").hasLabel("N").has("p", P.eq("n"))
-                    .emit().repeat(__.outE().as("r").inV())
-                    .until(__.path().count(Scope.local).is(P.gte(5)))
-                    .where(__.path().count(Scope.local).is(P.between(3, 6)))
-                    .as("m")
-                    .as(UNUSED)
-                    .select("m", UNUSED)
-            );
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .removes(
+                __().where(__().and(
+                    __().select("n").values("p").is(P.isEq("n")),
+                    __().select("n").hasLabel("N"))))
+            .adds(
+                __().as("n").hasLabel("N").has("p", P.isEq("n")));
     }
 
     @Test
@@ -155,12 +145,14 @@ public class GroupStepFiltersTest {
             "MERGE (n:N {p: 'n'})"
         ))
             .withFlavor(flavor)
-            .hasTraversal(
-                __.inject(START).coalesce(
-                    __.start().V().as("n").hasLabel("N").has("p", P.eq("n")),
-                    __.start().addV("N").as("n").property("p", __.constant("n"))
-                ).as("n").barrier().limit(0)
-            );
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .removes(
+                __().where(__().and(
+                    __().select("n").hasLabel("N"),
+                    __().select("n").values("p").is(P.isEq("n")))))
+            .adds(
+                __().as("n").hasLabel("N").has("p", P.isEq("n")));
+
     }
 
 }

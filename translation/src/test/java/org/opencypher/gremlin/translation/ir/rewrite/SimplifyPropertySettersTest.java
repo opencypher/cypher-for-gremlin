@@ -16,24 +16,26 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static java.util.Collections.emptyMap;
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
 import static org.opencypher.gremlin.translation.Tokens.NULL;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.P;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parameter;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class SimplifyPropertySettersTest {
 
+    private static final List<Object> EMPTY_LIST = new ArrayList<>();
+
     private final TranslatorFlavor flavor = new TranslatorFlavor(
         seq(
-            InlineMapTraversal$.MODULE$,
-            SimplifyPropertySetters$.MODULE$
+            InlineMapTraversal$.MODULE$
         ),
         seq()
     );
@@ -44,15 +46,11 @@ public class SimplifyPropertySettersTest {
             "CREATE ({foo: 'bar', baz: null, quux: $x})"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.addV().as("  UNNAMED8")
-                    .property("foo", "bar")
-                    .property("quux", __.coalesce(
-                        __.constant(parameter("x")),
-                        __.constant(NULL)
-                    ))
-                    .barrier().limit(0)
-            );
+            .rewritingWith(SimplifyPropertySetters$.MODULE$)
+            .removes(
+                __().property("foo", __().constant("bar")))
+            .adds(
+                __().property("foo", "bar"));
     }
 
     @Test
@@ -66,30 +64,21 @@ public class SimplifyPropertySettersTest {
                 "n.p4 = {k:1}"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V().as("n")
-                    .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.sideEffect(__.properties("p1").drop()),
-                        __.constant(NULL))
-                    .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.property("p2", __.project("  GENERATED1").by(__.constant(1)).select(Column.values)),
-                        __.constant(NULL))
-                    .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.property("p3", emptyMap()),
-                        __.constant(NULL))
-                    .select("n")
-                    .choose(
-                        P.neq(NULL),
-                        __.property("p4", __.project("k").by(__.constant(1))),
-                        __.constant(NULL))
-                    .barrier().limit(0)
-            );
+            .rewritingWith(SimplifyPropertySetters$.MODULE$)
+            .removes(
+                __().choose(
+                    __().constant(EMPTY_LIST).is(P.neq(NULL)).unfold(),
+                    __().property("p1", __().constant(EMPTY_LIST)),
+                    __().sideEffect(__().properties("p1").drop())
+                )
+            )
+            .keeps(
+                __().sideEffect(__().properties("p1").drop()))
+            .keeps(
+                __().property("p2", __().project("  GENERATED1").by(__().constant(1)).select(Column.values)))
+            .adds(
+                __().property("p3", emptyMap()))
+            .keeps(
+                __().property("p4", __().project("k").by(__().constant(1))));
     }
-
 }

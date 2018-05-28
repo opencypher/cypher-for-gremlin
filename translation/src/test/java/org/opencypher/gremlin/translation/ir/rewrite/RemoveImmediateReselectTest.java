@@ -15,40 +15,36 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
-import static org.opencypher.gremlin.translation.Tokens.UNUSED;
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class RemoveImmediateReselectTest {
 
     private final TranslatorFlavor flavor = new TranslatorFlavor(
         seq(
-            InlineMapTraversal$.MODULE$,
-            RemoveUselessSteps$.MODULE$
+            InlineMapTraversal$.MODULE$
         ),
         seq()
     );
 
     @Test
     public void aliasProjection() {
+
         assertThat(parse(
             "MATCH (n) " +
-                "WITH n AS m " +
-                "RETURN m"
+                "UNWIND labels(n) as l " +
+                "RETURN l"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.V()
-                    .as("n")
-                    .as(UNUSED).select("n", UNUSED)
-                    .project("m").by(__.select("n"))
-                    .select("m").as("m").as(UNUSED).select("m", UNUSED)
-            );
+            .rewritingWith(RemoveImmediateReselect$.MODULE$)
+            .removes(
+                __().as("n").select("n"))
+            .keeps(
+                __().as("n"));
     }
-
 }

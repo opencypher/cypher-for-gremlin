@@ -15,50 +15,50 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
 import static org.opencypher.gremlin.translation.Tokens.UNUSED;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
-import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 
 public class SimplifySingleProjectionsTest {
 
+    private TranslatorFlavor flavor = new TranslatorFlavor(
+        seq(InlineMapTraversal$.MODULE$),
+        seq()
+    );
+
     @Test
     public void pivotAndAggregation() {
-        assertThat(translate("MATCH (n:Person) RETURN\n" +
+        assertThat(parse("MATCH (n:Person) RETURN\n" +
             "n.lastName," +
-            "collect(n.firstName)"))
-            .doesNotContain(UNUSED);
+            "collect(n.firstName)")
+        )
+            .withFlavor(flavor)
+            .rewritingWith(SimplifySingleProjections$.MODULE$)
+            .removes(__().as(UNUSED))
+            .removes(__().select("n", UNUSED));
     }
 
     @Test
     public void aggregation() throws Exception {
-        assertThat(translate("MATCH (n1)-[r]->(n2) RETURN count(n1)"))
-            .doesNotContain(UNUSED);
+        assertThat(parse("MATCH (n1)-[r]->(n2) RETURN count(n1)"))
+            .withFlavor(flavor)
+            .rewritingWith(SimplifySingleProjections$.MODULE$)
+            .removes(__().as(UNUSED))
+            .removes(__().select("n1", UNUSED));
     }
 
     @Test
-    public void pivot() throws Exception {
-        assertThat(translate("MATCH (n) RETURN n"))
-            .doesNotContain(UNUSED);
-    }
-
-    private String translate(String queryText) {
-        TranslatorFlavor flavor = new TranslatorFlavor(
-            seq(InlineMapTraversal$.MODULE$,
-                SimplifySingleProjections$.MODULE$),
-            seq()
-        );
-
-        Translator<String, GroovyPredicate> translator = Translator.builder()
-            .gremlinGroovy()
-            .build(flavor);
-
-        return parse(queryText).buildTranslation(translator);
+    public void pivot() {
+        assertThat(parse("MATCH (n) RETURN n"))
+            .withFlavor(flavor)
+            .rewritingWith(SimplifySingleProjections$.MODULE$)
+            .removes(__().as(UNUSED))
+            .removes(__().select("n", UNUSED));
     }
 }

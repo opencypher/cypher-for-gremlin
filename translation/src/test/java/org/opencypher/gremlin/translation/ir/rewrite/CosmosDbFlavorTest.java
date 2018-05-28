@@ -15,12 +15,9 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
-import static org.opencypher.gremlin.translation.Tokens.NULL;
-import static org.opencypher.gremlin.translation.Tokens.UNUSED;
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.P;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
@@ -31,8 +28,7 @@ public class CosmosDbFlavorTest {
     private final TranslatorFlavor flavor = new TranslatorFlavor(
         seq(
             InlineMapTraversal$.MODULE$,
-            RemoveUselessSteps$.MODULE$,
-            CosmosDbFlavor$.MODULE$
+            RemoveUselessSteps$.MODULE$
         ),
         seq()
     );
@@ -44,17 +40,11 @@ public class CosmosDbFlavorTest {
                 "RETURN n.p"
         ))
             .withFlavor(flavor)
-            .hasTraversal(
-                __.V().as("n").where(__.select("n").hasLabel("N")).as(UNUSED)
-                    .select("n", UNUSED)
-                    .project("n.p").by(
-                        __.select("n").choose(
-                            P.neq(NULL),
-                            __.coalesce(
-                                __.properties().hasKey("p").value(),
-                                __.constant(NULL)),
-                            __.constant(NULL)))
-            );
+            .rewritingWith(CosmosDbFlavor$.MODULE$)
+            .removes(
+                __().values("p"))
+            .adds(
+                __().properties().hasKey("p").value());
     }
 
     @Test
@@ -64,9 +54,17 @@ public class CosmosDbFlavorTest {
                 "RETURN i"
         ))
             .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.inject(1, 2, 3).as("i").as(UNUSED)
-                    .select("i", UNUSED)
-            );
+            .rewritingWith(CosmosDbFlavor$.MODULE$)
+            .removes(
+                __().repeat(__().loops()
+                    .aggregate("  GENERATED1"))
+                    .times(4)
+                    .cap("  GENERATED1")
+                    .unfold()
+                    .skip(1)
+                    .limit(3)
+            )
+            .adds(
+                __().inject(1, 2, 3));
     }
 }

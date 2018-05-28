@@ -15,34 +15,34 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite;
 
-import static org.opencypher.gremlin.translation.Tokens.START;
-import static org.opencypher.gremlin.translation.Tokens.UNUSED;
+import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.__;
-import static org.opencypher.gremlin.translation.helpers.CypherAstHelpers.parse;
-import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
+import org.opencypher.gremlin.translation.GremlinSteps;
+import org.opencypher.gremlin.translation.ir.model.GremlinPredicate;
+import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import scala.collection.Seq;
 
 public class InlineMapTraversalTest {
 
-    private final TranslatorFlavor flavor = new TranslatorFlavor(
-        seq(InlineMapTraversal$.MODULE$),
-        seq()
-    );
-
     @Test
     public void inlineProjectionMap() {
+        GremlinSteps<Seq<GremlinStep>, GremlinPredicate> projection =
+            __().project("n").by(__().constant(1));
+
         assertThat(parse(
             "WITH 1 AS n " +
                 "RETURN n"
         ))
-            .withFlavor(flavor)
-            .hasTraversalBeforeReturn(
-                __.inject(START).project("n").by(__.constant(1))
-                    .select("n").as("n").as(UNUSED).select("n", UNUSED)
+            .withFlavor(TranslatorFlavor.empty())
+            .rewritingWith(InlineMapTraversal$.MODULE$)
+            .removes(
+                __().map(projection))
+            .keeps(
+                projection
             );
     }
-
 }
