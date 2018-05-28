@@ -73,7 +73,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
         return this;
     }
 
-    public CypherAstAssert hasTraversalBeforeReturn(GremlinSteps traversal) {
+    public CypherAstAssert hasTraversalBeforeReturn(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
         // Extract everything up to the start of the RETURN clause translation
         extractor = TraversalTestHelper::beforeReturn;
         return assertTraversal(traversal, traversalEquals);
