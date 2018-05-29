@@ -25,7 +25,7 @@ import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.gremlin.translation.walker.StatementWalker
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
-import org.opencypher.v9_0.frontend.phases.{BaseState, CompilationPhases, InitialState}
+import org.opencypher.v9_0.frontend.phases._
 import org.opencypher.v9_0.rewriting.RewriterStepSequencer
 import org.opencypher.v9_0.rewriting.rewriters.Never
 import org.opencypher.v9_0.util.symbols.{AnyType, CypherType}
@@ -140,6 +140,7 @@ object CypherAst {
     val state = CompilationPhases
       .parsing(RewriterStepSequencer.newPlain, Never)
       .andThen(Normalization)
+      .andThen(SemanticAnalysis(warn = false))
       .transform(startState, EmptyParserContext(preParsedQueryText, Some(offset)))
 
     val params = parameters ++ state.extractedParams()

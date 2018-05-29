@@ -155,4 +155,15 @@ public class GroupStepFiltersTest {
 
     }
 
+    @Test
+    public void unnamedVariables() {
+        assertThat(parse(
+            "MATCH (:person {name: 'marko'})-[r:knows]->(:person {name: 'josh'}) RETURN r"
+        ))
+            .withFlavor(flavor)
+            .rewritingWith(GroupStepFilters$.MODULE$)
+            .adds(__().V().as("  UNNAMED7").hasLabel("person").has("name", P.isEq("marko")))
+            .adds(__().inV().as("  UNNAMED44").hasLabel("person").has("name", P.isEq("josh")));
+    }
+
 }
