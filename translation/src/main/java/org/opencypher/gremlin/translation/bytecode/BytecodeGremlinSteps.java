@@ -168,8 +168,8 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
-    public GremlinSteps<Bytecode, P> dedup() {
-        bytecode.addStep(Symbols.dedup);
+    public GremlinSteps<Bytecode, P> dedup(String... dedupLabels) {
+        bytecode.addStep(Symbols.dedup, (Object[]) dedupLabels);
         return this;
     }
 

@@ -106,8 +106,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.count()
         case CountS(scope) =>
           g.count(scope)
-        case Dedup =>
-          g.dedup()
+        case Dedup(dedupLabels @ _*) =>
+          g.dedup(dedupLabels: _*)
         case Drop =>
           g.drop()
         case Emit =>

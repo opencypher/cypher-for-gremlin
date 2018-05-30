@@ -197,8 +197,8 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
-    public GremlinSteps<GraphTraversal, P> dedup() {
-        g.dedup();
+    public GremlinSteps<GraphTraversal, P> dedup(String... dedupLabels) {
+        g.dedup(dedupLabels);
         return this;
     }
 
