@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.{MathStep, MathStepAccessor}
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.MathStepAccessor
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 

@@ -23,8 +23,6 @@ import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions.SemanticDirection.BOTH
 import org.opencypher.v9_0.expressions._
 
-import scala.collection.mutable
-
 object MatchWalker {
 
   def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Match): Unit = {

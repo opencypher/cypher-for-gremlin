@@ -16,10 +16,10 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
+import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.PATH_EDGE
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
-import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.v9_0.expressions.SemanticDirection._
 import org.opencypher.v9_0.expressions.{UnsignedDecimalIntegerLiteral => UDIL, _}
 

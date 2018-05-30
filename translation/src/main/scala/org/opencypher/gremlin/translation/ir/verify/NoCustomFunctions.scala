@@ -15,8 +15,8 @@
  */
 package org.opencypher.gremlin.translation.ir.verify
 
-import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
+import org.opencypher.gremlin.translation.ir.model._
 
 /**
   * This post-condition verifies that custom functions are not used.
