@@ -48,6 +48,7 @@ object RemoveUnusedAliases extends GremlinRewriter {
         case From(fromStepLabel) :: _      => increment(fromStepLabel)
         case To(toStepLabel) :: _          => increment(toStepLabel)
         case SelectK(selectKeys @ _*) :: _ => increment(selectKeys: _*)
+        case Dedup(dedupLabels @ _*) :: _  => increment(dedupLabels: _*)
         case WhereP(predicate) :: _        => increment(predicateAliases(predicate): _*)
         case Math(expression) :: _         => increment(MathStepAccessor.getVariables(expression).asScala.toSeq: _*)
       })(localSteps).flatten

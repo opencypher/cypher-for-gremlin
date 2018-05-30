@@ -140,8 +140,8 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
-  override def dedup(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
-    buf += Dedup
+  override def dedup(dedupLabels: String*): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Dedup(dedupLabels: _*)
     this
   }
 

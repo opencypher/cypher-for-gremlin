@@ -194,6 +194,74 @@ public class ComplexExamplesTest {
     }
 
     @Test
+    public void selfReferentialNodeUndirected() throws Exception {
+        submitAndGet(
+            "CREATE " +
+                "(a:A {name: 'a'})-[:R]->(l:Looper {name: 'l'}), " +
+                "(l)-[:LOOP]->(l)"
+        );
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)--(b) " +
+                "RETURN a.name, b.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name", "b.name")
+            .containsExactlyInAnyOrder(
+                tuple("a", "l"),
+                tuple("l", "a"),
+                tuple("l", "l")
+            );
+    }
+
+    @Test
+    public void selfReferentialNodeWithUndirectedSegment() throws Exception {
+        submitAndGet(
+            "CREATE (:A {name: 'a'})-[:T1]->(l:Looper {name: 'l'}), " +
+                "(l)-[:LOOP]->(l), " +
+                "(l)-[:T2]->(:B {name: 'b'})"
+        );
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)--(b)--(c) " +
+                "RETURN a.name, b.name, c.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name", "b.name", "c.name")
+            .containsExactlyInAnyOrder(
+                tuple("a", "l", "l"),
+                tuple("a", "l", "b"),
+                tuple("l", "l", "a"),
+                tuple("l", "l", "b"),
+                tuple("b", "l", "l"),
+                tuple("b", "l", "a")
+            );
+    }
+
+    @Test
+    public void biDirectionalPath() throws Exception {
+        submitAndGet(
+            "CREATE " +
+                "(a:A {name: 'a'}), (b:B {name: 'b'}), " +
+                "(a)-[:R1 {name: 'r1'}]->(b), " +
+                "(b)-[:R2 {name: 'r2'}]->(a)"
+        );
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)-[r1]-(b)-[r2]-(c) " +
+                "RETURN a.name, r1.name, b.name, r2.name, c.name"
+        );
+
+        assertThat(results)
+            .extracting("a.name", "r1.name", "b.name", "r2.name", "c.name")
+            .containsExactlyInAnyOrder(
+                tuple("a", "r1", "b", "r2", "a"),
+                tuple("a", "r2", "b", "r1", "a"),
+                tuple("b", "r1", "a", "r2", "b"),
+                tuple("b", "r2", "a", "r1", "b")
+            );
+    }
+
+    @Test
     public void matchAndReverseOptionalMatch() throws Exception {
         submitAndGet("CREATE (:A {name: 'A'})-[:T {name: 'T'}]->(:B {name: 'B'})");
         List<Map<String, Object>> results = submitAndGet(
@@ -225,9 +293,9 @@ public class ComplexExamplesTest {
         );
 
         assertThat(results)
-                    .extracting("n.name", "x.name")
-                    .containsExactly(tuple("house1", "house3"),
-                        tuple("house1", "house4"));
+            .extracting("n.name", "x.name")
+            .containsExactly(tuple("house1", "house3"),
+                tuple("house1", "house4"));
     }
 
     @Test

@@ -20,7 +20,10 @@ import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions.SemanticDirection.BOTH
 import org.opencypher.v9_0.expressions._
+
+import scala.collection.mutable
 
 object MatchWalker {
 
@@ -101,13 +104,24 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       g.V()
       context.markFirstStatement()
     }
-    flattenRelationshipChain(patternElement).foreach {
+
+    val chain = flattenRelationshipChain(patternElement)
+    chain.foreach {
       case NodePattern(Some(Variable(name)), _, _) =>
         asUniqueName(name, g, context)
       case r: RelationshipPattern =>
         RelationshipPatternWalker.walk(maybeName, context, g, r)
       case n =>
         context.unsupported("relationship pattern element", n)
+    }
+
+    val undirected = chain.exists {
+      case RelationshipPattern(_, _, _, _, BOTH, _) => true
+      case _                                        => false
+    }
+    if (undirected) {
+      val aliases = getPathTraversalAliases(patternElement)
+      g.dedup(aliases: _*)
     }
   }
 }
