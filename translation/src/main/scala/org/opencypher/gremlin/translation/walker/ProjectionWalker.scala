@@ -290,14 +290,14 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
             .by(__.outV().id())
         )
       case Some(typ) if typ.isInstanceOf[ListType] && hasInnerType(typ, RelationshipType.instance) =>
-        __.map(subTraversal)
-          .unfold()
-          .is(p.neq(NULL))
-          .project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
-          .by(__.valueMap(true))
-          .by(__.inV().id())
-          .by(__.outV().id())
-          .fold()
+        nullIfNull(
+          subTraversal,
+          __.unfold()
+            .project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
+            .by(__.valueMap(true))
+            .by(__.inV().id())
+            .by(__.outV().id())
+            .fold())
       case Some(typ) if typ.isInstanceOf[PathType] =>
         nullIfNull(
           subTraversal,
