@@ -424,6 +424,13 @@ public class CustomFunction implements Function<Traverser, Object> {
         return sorted.get(index);
     }
 
+    public static CustomFunction raise(Function<Traverser, RuntimeException> exceptionMapper) {
+        return new CustomFunction(
+            "raise",
+            traverser -> { throw exceptionMapper.apply(traverser); }
+        );
+    }
+
     public static CustomFunction size() {
         return new CustomFunction(
             "size", traverser -> traverser.get() instanceof String ?

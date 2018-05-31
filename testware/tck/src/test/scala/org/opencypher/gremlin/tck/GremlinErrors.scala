@@ -127,6 +127,8 @@ object GremlinErrors {
     "Invalid property access of .+" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, PROPERTY_ACCESS_ON_NON_MAP),
     "Invalid element access of .+" ->
-      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ELEMENT_ACCESS)
+      ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ELEMENT_ACCESS),
+    "Cannot delete node<.+>, because it still has relationships.+" ->
+      ExecutionFailed(CONSTRAINT_VERIFICATION_FAILED, RUNTIME, DELETE_CONNECTED_NODE)
   )
 }
