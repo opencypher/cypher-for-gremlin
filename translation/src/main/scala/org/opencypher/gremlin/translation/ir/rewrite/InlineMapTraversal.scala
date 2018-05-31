@@ -24,8 +24,10 @@ import org.opencypher.gremlin.translation.ir.model._
   */
 object InlineMapTraversal extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    mapTraversals(replace({
-      case MapT(traversal) :: rest => traversal ++ rest
-    }))(steps)
+    mapTraversals(traversal =>
+      traversal.flatMap {
+        case MapT(t) => t
+        case s       => Seq(s)
+    })(steps)
   }
 }

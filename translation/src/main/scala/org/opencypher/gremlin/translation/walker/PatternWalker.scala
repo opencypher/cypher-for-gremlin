@@ -22,28 +22,67 @@ import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.expressions.SemanticDirection._
 import org.opencypher.v9_0.expressions.{UnsignedDecimalIntegerLiteral => UDIL, _}
+import org.opencypher.v9_0.util.InputPosition.NONE
 
 /**
   * AST walker that handles translation
-  * of relationship pattern nodes of the Cypher AST.
+  * of match pattern nodes of the Cypher AST.
   */
-object RelationshipPatternWalker {
-
-  def walk[T, P](
-      maybeName: Option[String],
+object PatternWalker {
+  def walkMatch[T, P](
       context: StatementContext[T, P],
       g: GremlinSteps[T, P],
-      node: RelationshipPattern): Unit = {
-    new RelationshipPatternWalker(context, g).walk(maybeName, node)
+      node: PatternElement,
+      pathName: Option[String]): Unit = {
+    new PatternWalker(context, g).walk(node, pathName)
+  }
+
+  def walkExpression[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: PatternElement): Unit = {
+    new PatternWalker(context, g).walk(node, pathName = None, selectFirst = true)
   }
 }
 
-class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+  def walk(node: PatternElement, pathName: Option[String], selectFirst: Boolean = false): Unit = {
+    val chain = flattenRelationshipChain(node)
+    var firstNode = true
+    chain.foreach {
+      case node: NodePattern =>
+        walkNode(node, selectFirst && firstNode)
+        firstNode = false
+      case relationship: RelationshipPattern =>
+        walkRelationship(pathName, relationship)
+      case n =>
+        context.unsupported("pattern element", n)
+    }
+
+    val undirected = chain.exists {
+      case RelationshipPattern(_, _, _, _, BOTH, _) => true
+      case _                                        => false
+    }
+    if (undirected) {
+      val aliases = getPathTraversalAliases(node)
+      g.dedup(aliases: _*)
+    }
+  }
+
+  private def walkNode(node: NodePattern, select: Boolean): Unit = {
+    val NodePattern(variableOption, labels, properties) = node
+    val variable @ Variable(name) = variableOption
+      .getOrElse(Variable(context.generateName())(NONE))
+    if (select) {
+      g.select(name)
+    } else {
+      asUniqueName(name, g, context)
+    }
+    g.map(hasLabels(labels))
+    properties.map(hasProperties(variable, _)).foreach(g.map)
+  }
 
   val traversalStepsHardLimit: Int = context.lowerBound(10)
 
-  def walk(maybeName: Option[String], node: RelationshipPattern): Unit = {
-    val RelationshipPattern(variableOption, types, length, _, direction, _) = node
+  private def walkRelationship(pathName: Option[String], relationship: RelationshipPattern): Unit = {
+    val RelationshipPattern(variableOption, types, length, properties, direction, _) = relationship
     val typeNames = types.map { case RelTypeName(relName) => relName }.distinct
 
     val directionT = g.start()
@@ -53,9 +92,11 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
       case OUTGOING => directionT.outE(typeNames: _*)
     }
     variableOption.foreach {
-      case LogicalVariable(name) => asUniqueName(name, directionT, context)
+      case variable @ Variable(name) =>
+        asUniqueName(name, directionT, context)
+        properties.map(hasProperties(variable, _)).foreach(directionT.map)
     }
-    maybeName.foreach(pathName => directionT.aggregate(PATH_EDGE + pathName))
+    pathName.foreach(name => directionT.aggregate(PATH_EDGE + name))
     direction match {
       case BOTH     => directionT.otherV()
       case INCOMING => directionT.outV()
@@ -106,6 +147,32 @@ class RelationshipPatternWalker[T, P](context: StatementContext[T, P], g: Gremli
         }
       case _ =>
         context.unsupported("path pattern length", length)
+    }
+  }
+
+  private def hasLabels(labels: Seq[LabelName]): GremlinSteps[T, P] = {
+    labels match {
+      case LabelName(name) :: Nil =>
+        g.start().hasLabel(name)
+      case Nil =>
+        g.start()
+      case _ =>
+        context.unsupported("label sequence", labels)
+    }
+  }
+
+  private def hasProperties(variable: Variable, propertyMap: Expression): GremlinSteps[T, P] = {
+    propertyMap match {
+      case MapExpression(items) =>
+        val traversal = g.start()
+        items.foreach {
+          case (name, expr) =>
+            val equality = Equals(Property(variable, name)(NONE), expr)(NONE)
+            WhereWalker.walk(context, traversal, equality)
+        }
+        traversal
+      case _ =>
+        context.unsupported("property map", propertyMap)
     }
   }
 }

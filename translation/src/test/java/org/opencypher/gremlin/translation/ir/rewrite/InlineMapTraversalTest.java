@@ -45,4 +45,17 @@ public class InlineMapTraversalTest {
                 projection
             );
     }
+
+    @Test
+    public void adjacentMap() {
+        assertThat(parse(
+            "MATCH (n) " +
+                "WHERE (n)-->(:L) " +
+                "RETURN n"
+        ))
+            .withFlavor(TranslatorFlavor.empty())
+            .rewritingWith(InlineMapTraversal$.MODULE$)
+            .removes(__().select("n").map(__()).map(__().outE().inV()))
+            .adds(__().select("n").outE().inV());
+    }
 }

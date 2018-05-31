@@ -20,7 +20,6 @@ import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
-import org.opencypher.v9_0.expressions.SemanticDirection.BOTH
 import org.opencypher.v9_0.expressions._
 
 object MatchWalker {
@@ -62,15 +61,7 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     val nullG = g.start().constant(NULL)
     val contextNullG = context.copy()
 
-    val pathAliases = patternParts.head match {
-      case EveryPath(patternElement) =>
-        getPathTraversalAliases(patternElement)
-      case NamedPatternPart(Variable(pathName), EveryPath(patternElement)) =>
-        getPathTraversalAliases(patternElement) :+ pathName
-      case n =>
-        context.unsupported("match pattern", n)
-    }
-
+    val pathAliases = getPathTraversalAliases(patternParts.head)
     if (pathAliases.length > 1) {
       val nullAliases = pathAliases.map(name => contextNullG.alias(name).getOrElse(name))
       nullAliases.foreach(nullG.as)
@@ -103,23 +94,6 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       context.markFirstStatement()
     }
 
-    val chain = flattenRelationshipChain(patternElement)
-    chain.foreach {
-      case NodePattern(Some(Variable(name)), _, _) =>
-        asUniqueName(name, g, context)
-      case r: RelationshipPattern =>
-        RelationshipPatternWalker.walk(maybeName, context, g, r)
-      case n =>
-        context.unsupported("relationship pattern element", n)
-    }
-
-    val undirected = chain.exists {
-      case RelationshipPattern(_, _, _, _, BOTH, _) => true
-      case _                                        => false
-    }
-    if (undirected) {
-      val aliases = getPathTraversalAliases(patternElement)
-      g.dedup(aliases: _*)
-    }
+    PatternWalker.walkMatch(context, g, patternElement, maybeName)
   }
 }
