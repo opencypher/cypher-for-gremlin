@@ -94,6 +94,6 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       context.markFirstStatement()
     }
 
-    PatternWalker.walk(maybeName, context, g, patternElement)
+    PatternWalker.walkMatch(context, g, patternElement, maybeName)
   }
 }

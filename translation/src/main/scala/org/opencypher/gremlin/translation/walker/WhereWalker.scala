@@ -41,13 +41,6 @@ object WhereWalker {
   def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], expression: Expression): Unit = {
     new WhereWalker(context, g).walk(expression)
   }
-
-  def walkRelationshipChain[T, P](
-      context: StatementContext[T, P],
-      g: GremlinSteps[T, P],
-      relationshipChain: RelationshipChain): Unit = {
-    new WhereWalker(context, g).walkRelationshipChain(relationshipChain: RelationshipChain)
-  }
 }
 
 private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
@@ -156,7 +149,7 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
 
       case PatternExpression(RelationshipsPattern(relationshipChain)) =>
         val traversal = g.start()
-        WhereWalker.walkRelationshipChain(context, traversal, relationshipChain)
+        PatternWalker.walkExpression(context, traversal, relationshipChain)
         traversal
 
       case l: Literal =>
@@ -191,28 +184,5 @@ private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
     val traversal = __.project(keys: _*)
     expressions.map(walkExpression).foreach(traversal.by)
     traversal.select(Column.values)
-  }
-
-  def walkRelationshipChain(relationshipChain: RelationshipChain): Unit = {
-    var firstNode = true
-    flattenRelationshipChain(relationshipChain).foreach {
-      case NodePattern(variableOption, labelNames, _) =>
-        variableOption.foreach {
-          case Variable(name) =>
-            if (firstNode) {
-              g.select(name)
-            } else {
-              asUniqueName(name, g, context)
-            }
-        }
-        firstNode = false
-        if (labelNames.nonEmpty) {
-          g.hasLabel(labelNames.head.name)
-        }
-      case r: RelationshipPattern =>
-        RelationshipPatternWalker.walk(None, context, g, r)
-      case n =>
-        context.unsupported("pattern predicate", n)
-    }
   }
 }

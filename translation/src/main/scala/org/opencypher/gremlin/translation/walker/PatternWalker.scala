@@ -29,22 +29,27 @@ import org.opencypher.v9_0.util.InputPosition.NONE
   * of match pattern nodes of the Cypher AST.
   */
 object PatternWalker {
-
-  def walk[T, P](
-      pathName: Option[String],
+  def walkMatch[T, P](
       context: StatementContext[T, P],
       g: GremlinSteps[T, P],
-      node: PatternElement): Unit = {
-    new PatternWalker(context, g).walk(pathName, node)
+      node: PatternElement,
+      pathName: Option[String]): Unit = {
+    new PatternWalker(context, g).walk(node, pathName)
+  }
+
+  def walkExpression[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: PatternElement): Unit = {
+    new PatternWalker(context, g).walk(node, pathName = None, selectFirst = true)
   }
 }
 
 class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
-  def walk(pathName: Option[String], node: PatternElement): Unit = {
+  def walk(node: PatternElement, pathName: Option[String], selectFirst: Boolean = false): Unit = {
     val chain = flattenRelationshipChain(node)
+    var firstNode = true
     chain.foreach {
       case node: NodePattern =>
-        walkNode(node)
+        walkNode(node, selectFirst && firstNode)
+        firstNode = false
       case relationship: RelationshipPattern =>
         walkRelationship(pathName, relationship)
       case n =>
@@ -61,9 +66,15 @@ class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]
     }
   }
 
-  private def walkNode(node: NodePattern): Unit = {
-    val NodePattern(Some(variable @ Variable(name)), labels, properties) = node
-    asUniqueName(name, g, context)
+  private def walkNode(node: NodePattern, select: Boolean): Unit = {
+    val NodePattern(variableOption, labels, properties) = node
+    val variable @ Variable(name) = variableOption
+      .getOrElse(Variable(context.generateName())(NONE))
+    if (select) {
+      g.select(name)
+    } else {
+      asUniqueName(name, g, context)
+    }
     g.map(hasLabels(labels))
     properties.map(hasProperties(variable, _)).foreach(g.map)
   }
