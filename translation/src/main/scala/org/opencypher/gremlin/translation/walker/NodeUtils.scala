@@ -75,6 +75,15 @@ object NodeUtils {
     }
   }
 
+  def getPathTraversalAliases(patternPart: PatternPart): Vector[String] = {
+    patternPart match {
+      case NamedPatternPart(Variable(pathName), EveryPath(patternElement)) =>
+        getPathTraversalAliases(patternElement) :+ pathName
+      case _ =>
+        getPathTraversalAliases(patternPart.element)
+    }
+  }
+
   def getPathTraversalAliases(patternElement: PatternElement): Vector[String] = {
     flattenRelationshipChain(patternElement).foldLeft(Vector.empty[String]) { (acc, element) =>
       element match {

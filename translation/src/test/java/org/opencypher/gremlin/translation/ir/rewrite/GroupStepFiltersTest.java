@@ -147,11 +147,9 @@ public class GroupStepFiltersTest {
             .withFlavor(flavor)
             .rewritingWith(GroupStepFilters$.MODULE$)
             .removes(
-                __().where(__().and(
-                    __().select("n").hasLabel("N"),
-                    __().select("n").values("p").is(P.isEq("n")))))
+                __().select("n").values("p").is(P.isEq("n")))
             .adds(
-                __().as("n").hasLabel("N").has("p", P.isEq("n")));
+                __().as("n").has("p", P.isEq("n")));
 
     }
 

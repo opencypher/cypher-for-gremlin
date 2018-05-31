@@ -142,6 +142,45 @@ public class MergeTest {
     }
 
     @Test
+    public void byRelationship() {
+        submitAndGet(
+            "CREATE (a:A), (b:B) " +
+                "CREATE (a)-[:TYPE {name: 'r1'}]->(b) " +
+                "CREATE (a)-[:TYPE {name: 'r2'}]->(b)"
+        );
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:A), (b:B) " +
+                "MERGE (a)-[r:TYPE {name: 'r2'}]->(b) " +
+                "RETURN count(r) AS count"
+        );
+
+        assertThat(results)
+            .extracting("count")
+            .containsExactly(1L);
+    }
+
+    @Test
+    public void byRelationshipListProperty() {
+        submitAndGet(
+            "CREATE (a:A), (b:B) " +
+                "CREATE (a)-[:T {prop: [42, 43]}]->(b)"
+        );
+        submitAndGet(
+            "MATCH (a:A), (b:B) " +
+                "MERGE (a)-[r:T {prop: [42, 43]}]->(b)"
+        );
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)-[r:T {prop: [42, 43]}]->(b) " +
+                "RETURN count(*) AS count"
+        );
+
+        assertThat(results)
+            .extracting("count")
+            .containsExactly(1L);
+    }
+
+    @Test
     public void mergeImmediatelyAfterCreate() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "CREATE (a:X) " +
