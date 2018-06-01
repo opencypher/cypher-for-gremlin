@@ -417,9 +417,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
 
     val name = contextWhere.generateName()
-    g.sideEffect(
-      select.aggregate(name)
-    )
+    g.sideEffect(select.aggregate(name)).barrier()
 
     name
   }

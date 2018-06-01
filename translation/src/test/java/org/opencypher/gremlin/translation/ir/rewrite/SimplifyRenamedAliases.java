@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.Tokens.NULL;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
@@ -43,6 +44,6 @@ public class SimplifyRenamedAliases {
             .withFlavor(flavor)
             .rewritingWith(SimplifyRenamedAliases$.MODULE$)
             .removes(__().V().as("  GENERATED1").where(__().select("  GENERATED1").where(P.isEq("n"))).outE())
-            .adds(__().select("n").outE());
+            .adds(__().select("n").is(P.neq(NULL)).outE());
     }
 }
