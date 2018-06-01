@@ -16,47 +16,33 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.GremlinSteps;
-import org.opencypher.gremlin.translation.ir.model.GremlinPredicate;
-import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
-import scala.collection.Seq;
 
-public class InlineMapTraversalTest {
+public class SimplifyRenamedAliases {
 
-    @Test
-    public void inlineProjectionMap() {
-        GremlinSteps<Seq<GremlinStep>, GremlinPredicate> projection =
-            __().project("n").by(__().constant(1));
-
-        assertThat(parse(
-            "WITH 1 AS n " +
-                "RETURN n"
-        ))
-            .withFlavor(TranslatorFlavor.empty())
-            .rewritingWith(InlineMapTraversal$.MODULE$)
-            .removes(
-                __().map(projection))
-            .keeps(
-                projection
-            );
-    }
+    private final TranslatorFlavor flavor = new TranslatorFlavor(
+        seq(
+            InlineMapTraversal$.MODULE$
+        ),
+        seq()
+    );
 
     @Test
-    public void adjacentMap() {
+    public void whereMatchPattern() {
         assertThat(parse(
             "MATCH (n) " +
                 "WHERE (n)-->(:L) " +
                 "RETURN n"
         ))
-            .withFlavor(TranslatorFlavor.empty())
-            .rewritingWith(InlineMapTraversal$.MODULE$)
-            .removes(__().map(__()))
-            .removes(__().as("  cypher.path.start.GENERATED2").map(__().outE().inV()))
-            .adds(__().as("  cypher.path.start.GENERATED2").outE().inV());
+            .withFlavor(flavor)
+            .rewritingWith(SimplifyRenamedAliases$.MODULE$)
+            .removes(__().V().as("  GENERATED1").where(__().select("  GENERATED1").where(P.isEq("n"))).outE())
+            .adds(__().select("n").outE());
     }
 }

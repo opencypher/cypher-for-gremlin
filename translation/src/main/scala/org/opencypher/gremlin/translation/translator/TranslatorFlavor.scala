@@ -40,6 +40,7 @@ object TranslatorFlavor {
     rewriters = Seq(
       InlineMapTraversal,
       SimplifyPropertySetters,
+      SimplifyRenamedAliases,
       GroupStepFilters,
       SimplifySingleProjections,
       RemoveImmediateReselect,
