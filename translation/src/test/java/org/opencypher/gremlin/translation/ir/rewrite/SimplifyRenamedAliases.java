@@ -43,8 +43,14 @@ public class SimplifyRenamedAliases {
         ))
             .withFlavor(flavor)
             .rewritingWith(SimplifyRenamedAliases$.MODULE$)
-            .removes(__().V().as("  GENERATED1").where(__().select("  GENERATED1").where(P.isEq("n"))).outE())
-            .adds(__().select("n").outE());
+            .removes(
+                __().V().as("  GENERATED1")
+                    .where(__().select("  GENERATED1").where(P.isEq("n")))
+                    .as("  cypher.path.start.GENERATED2"))
+            .adds(
+                __().select("n")
+                    .as("  cypher.path.start.GENERATED2")
+            );
     }
 
     @Test
@@ -56,7 +62,12 @@ public class SimplifyRenamedAliases {
         ))
             .withFlavor(flavor)
             .rewritingWith(SimplifyRenamedAliases$.MODULE$)
-            .removes(__().V().as("  GENERATED1").where(__().select("  GENERATED1").where(P.isEq("m"))).outE())
-            .adds(__().select("m").is(P.neq(NULL)).outE());
+            .removes(
+                __().V().as("  GENERATED2")
+                    .where(__().select("  GENERATED2").where(P.isEq("m")))
+                    .as("  cypher.path.start.GENERATED3"))
+            .adds(
+                __().select("m").is(P.neq(NULL))
+                    .as("  cypher.path.start.GENERATED3"));
     }
 }
