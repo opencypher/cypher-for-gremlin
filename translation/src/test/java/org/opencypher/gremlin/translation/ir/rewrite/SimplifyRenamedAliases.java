@@ -44,6 +44,19 @@ public class SimplifyRenamedAliases {
             .withFlavor(flavor)
             .rewritingWith(SimplifyRenamedAliases$.MODULE$)
             .removes(__().V().as("  GENERATED1").where(__().select("  GENERATED1").where(P.isEq("n"))).outE())
-            .adds(__().select("n").is(P.neq(NULL)).outE());
+            .adds(__().select("n").outE());
+    }
+
+    @Test
+    public void whereNonStartMatchPattern() {
+        assertThat(parse(
+            "MATCH (n)-->(m) " +
+                "WHERE (m)-->(:L) " +
+                "RETURN m"
+        ))
+            .withFlavor(flavor)
+            .rewritingWith(SimplifyRenamedAliases$.MODULE$)
+            .removes(__().V().as("  GENERATED1").where(__().select("  GENERATED1").where(P.isEq("m"))).outE())
+            .adds(__().select("m").is(P.neq(NULL)).outE());
     }
 }

@@ -26,10 +26,33 @@ import org.opencypher.gremlin.translation.ir.model._
 object SimplifyRenamedAliases extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    splitAfter({
+      case MapT(Project(_*) :: _) => true
+      case Project(_*)            => true
+      case _                      => false
+    })(steps)
+      .flatMap(rewriteSegment)
+  }
+
+  private def rewriteSegment(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    // Find all step labels of vertex start steps
+    val startLabels = extract({
+      case Vertex :: As(asLabel) :: WhereT(SelectK(selectLabel) :: WhereP(Eq(_)) :: Nil) :: _
+          if asLabel == selectLabel =>
+        None
+      case Vertex :: As(stepLabel) :: _ =>
+        Some(stepLabel)
+    })(steps).flatten.toSet
+
     mapTraversals(replace({
       case Vertex :: As(asLabel) :: WhereT(SelectK(selectLabel) :: WhereP(Eq(eqLabel: String)) :: Nil) :: rest
           if asLabel == selectLabel =>
-        SelectK(eqLabel) :: Is(Neq(NULL)) :: rest
+        if (startLabels.contains(eqLabel)) {
+          // Vertex traverser should be non-null
+          SelectK(eqLabel) :: rest
+        } else {
+          SelectK(eqLabel) :: Is(Neq(NULL)) :: rest
+        }
     }))(steps)
   }
 }
