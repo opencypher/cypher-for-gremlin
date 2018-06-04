@@ -194,8 +194,18 @@ public class VariableLengthPathTest {
 
         assertThat(results)
             .extracting("n.name", "m.name")
-            .containsExactlyInAnyOrder( tuple("marko", "josh"),
+            .containsExactlyInAnyOrder(tuple("marko", "josh"),
                 tuple("marko", "ripple"),
                 tuple("josh", "ripple"));
+    }
+
+    @Test
+    public void multipleVarLengthRelationships() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH p = (a {name: 'marko'})-[:knows*0..1]->(b)-[:created*0..1]->(c)\n" +
+                "RETURN p");
+
+        assertThat(results)
+            .hasSize(6);
     }
 }

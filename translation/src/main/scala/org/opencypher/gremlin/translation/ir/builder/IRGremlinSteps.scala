@@ -376,6 +376,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def simplePath(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += SimplePath
+    this
+  }
+
   override def skip(skip: Long): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Skip(skip)
     this

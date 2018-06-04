@@ -16,10 +16,10 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.PATH_EDGE
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.v9_0.expressions.SemanticDirection._
 import org.opencypher.v9_0.expressions.{UnsignedDecimalIntegerLiteral => UDIL, _}
 import org.opencypher.v9_0.util.InputPosition.NONE
@@ -79,7 +79,7 @@ class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]
     properties.map(hasProperties(variable, _)).foreach(g.map)
   }
 
-  val traversalStepsHardLimit: Int = context.lowerBound(10)
+  val traversalStepsHardLimit: Int = gremlinPathLength(10)
 
   private def walkRelationship(pathName: Option[String], relationship: RelationshipPattern): Unit = {
     val RelationshipPattern(variableOption, types, length, properties, direction, _) = relationship
@@ -103,7 +103,10 @@ class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]
       case OUTGOING => directionT.inV()
     }
 
-    def pathLengthT = g.start().path().count(Scope.local)
+    val pathStart = Tokens.PATH_START + pathName.getOrElse(context.generateName().trim())
+
+    g.as(pathStart)
+    def pathLengthT = g.start().path().from(pathStart).count(Scope.local)
 
     val p = context.dsl.predicates()
     length match {
@@ -120,30 +123,38 @@ class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]
         range match {
           case Range(Some(UDIL(lower)), None) =>
             // -[*m..]->
-            val lowerBound = context.lowerBound(lower.toInt)
+            val lowerBound = gremlinPathLength(lower.toInt)
             g.emit()
               .repeat(directionT)
               .until(pathLengthT.is(p.gte(traversalStepsHardLimit)))
               .where(pathLengthT.is(p.gte(lowerBound)))
+              .simplePath()
+              .from(pathStart)
           case Range(None, Some(UDIL(upper))) =>
             // -[*..n]->
-            val upperBound = context.upperBound(upper.toInt)
+            val upperBound = gremlinPathLength(upper.toInt)
             g.repeat(directionT)
               .emit()
               .until(pathLengthT.is(p.gte(upperBound)))
               .where(pathLengthT.is(p.lte(upperBound)))
+              .simplePath()
+              .from(pathStart)
           case Range(Some(UDIL(lower)), Some(UDIL(upper))) if lower == upper =>
             // -[*n]->
             g.times(lower.toInt)
               .repeat(directionT)
+              .simplePath()
+              .from(pathStart)
           case Range(Some(UDIL(lower)), Some(UDIL(upper))) =>
             // -[*m..n]->
-            val lowerBound = context.lowerBound(lower.toInt)
-            val upperBound = context.upperBound(upper.toInt)
+            val lowerBound = gremlinPathLength(lower.toInt)
+            val upperBound = gremlinPathLength(upper.toInt)
             g.emit()
               .repeat(directionT)
               .until(pathLengthT.is(p.gte(upperBound)))
               .where(pathLengthT.is(p.between(lowerBound, upperBound + 1)))
+              .simplePath()
+              .from(pathStart)
         }
       case _ =>
         context.unsupported("path pattern length", length)
@@ -175,4 +186,6 @@ class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]
         context.unsupported("property map", propertyMap)
     }
   }
+
+  private def gremlinPathLength(edges: Int): Int = if (edges == 0) 0 else edges * 2 + 1
 }

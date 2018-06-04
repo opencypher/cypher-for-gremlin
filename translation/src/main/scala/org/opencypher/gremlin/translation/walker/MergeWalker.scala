@@ -16,9 +16,8 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation.context.StatementContext
-import org.opencypher.gremlin.translation.walker.NodeUtils.{asUniqueName, getPathTraversalAliases}
+import org.opencypher.gremlin.translation.walker.NodeUtils.{getPathTraversalAliases, _}
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.util.InputPosition.NONE
@@ -45,11 +44,7 @@ private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
       g: GremlinSteps[T, P],
       patternParts: Seq[PatternPart],
       actions: Seq[MergeAction]): GremlinSteps[T, P] = {
-
-    if (context.isFirstStatement) {
-      g.inject(START)
-      context.markFirstStatement()
-    }
+    ensureFirstStatement(g, context)
 
     val matchSubG = g.start()
     MatchWalker.walkPatternParts(context.copy(), matchSubG, patternParts, None)

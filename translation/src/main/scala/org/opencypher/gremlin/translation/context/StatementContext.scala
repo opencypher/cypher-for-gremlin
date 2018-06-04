@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.context
 
-import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.translator.Translator
 import org.opencypher.v9_0.expressions.Expression
 import org.opencypher.v9_0.util.symbols.CypherType
@@ -64,17 +63,6 @@ sealed class StatementContext[T, P](
   def parameterDefined(name: String): Boolean = {
     parameters.contains(name)
   }
-
-  private var midTraversals = 0
-
-  def midTraversal(g: GremlinSteps[T, P]): Unit = {
-    midTraversals += 1
-    g.V()
-  }
-
-  def lowerBound(edges: Int): Int = if (edges == 0) 0 else edges * 2 + 1
-
-  def upperBound(edges: Int): Int = lowerBound(edges) + midTraversals
 
   def unsupported(description: String, node: Any): Nothing = {
     throw new UnsupportedOperationException(s"Unsupported $description: $node")

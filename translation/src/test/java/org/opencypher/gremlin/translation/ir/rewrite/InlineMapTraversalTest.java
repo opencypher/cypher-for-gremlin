@@ -55,7 +55,7 @@ public class InlineMapTraversalTest {
         ))
             .withFlavor(TranslatorFlavor.empty())
             .rewritingWith(InlineMapTraversal$.MODULE$)
-            .removes(__().select("n").map(__()).map(__().outE().inV()))
-            .adds(__().select("n").outE().inV());
+            .removes(__().select("n").map(__()).as("  cypher.path.start.GENERATED1").map(__().outE().inV()))
+            .adds(__().select("n").as("  cypher.path.start.GENERATED1").outE().inV());
     }
 }

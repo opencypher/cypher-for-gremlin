@@ -273,6 +273,8 @@ case class SideEffect(sideEffectTraversal: Seq[GremlinStep]) extends GremlinStep
   }
 }
 
+case object SimplePath extends GremlinStep
+
 case class Skip(skip: Long) extends GremlinStep
 
 case object Sum extends GremlinStep
