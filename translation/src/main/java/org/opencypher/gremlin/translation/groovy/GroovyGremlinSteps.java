@@ -451,6 +451,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> simplePath() {
+        g.append(chain("simplePath"));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> skip(long skip) {
         g.append(chain("skip", skip));
         return this;

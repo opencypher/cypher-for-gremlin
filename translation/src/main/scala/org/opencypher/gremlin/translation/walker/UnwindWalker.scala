@@ -18,8 +18,8 @@ package org.opencypher.gremlin.translation.walker
 import java.util.Collections
 
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
 
@@ -42,10 +42,7 @@ private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinStep
       case Null() =>
         g.inject(Collections.emptyList).unfold().as(varName)
       case _: Expression =>
-        if (context.isFirstStatement) {
-          context.markFirstStatement()
-          g.inject(START)
-        }
+        ensureFirstStatement(g, context)
         ExpressionWalker.walk(context, g, expression)
         g.unfold().as(varName)
     }

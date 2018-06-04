@@ -16,7 +16,6 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.Tokens.START
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
@@ -39,10 +38,7 @@ object CallWalker {
 private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
   def walk(node: UnresolvedCall): Unit = {
-    if (context.isFirstStatement) {
-      context.markFirstStatement()
-      g.inject(START)
-    }
+    ensureFirstStatement(g, context)
 
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
@@ -78,10 +74,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
   }
 
   def walkStandalone(node: UnresolvedCall): Unit = {
-    if (context.isFirstStatement) {
-      context.markFirstStatement()
-      g.inject(START)
-    }
+    ensureFirstStatement(g, context)
 
     val procedures = context.dsl.procedures()
     node match {

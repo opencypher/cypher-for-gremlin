@@ -196,6 +196,8 @@ sealed private[ir] class TranslationGenerator[T, P](translator: Translator[T, P]
           g.select(column)
         case SideEffect(sideEffectTraversal) =>
           g.sideEffect(generateSteps(sideEffectTraversal))
+        case SimplePath =>
+          g.simplePath()
         case Skip(skip) =>
           g.skip(skip)
         case Sum =>

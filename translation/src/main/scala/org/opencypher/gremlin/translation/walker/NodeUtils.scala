@@ -139,4 +139,11 @@ object NodeUtils {
     expressions.map(ExpressionWalker.walkLocal(context, g, _)).foreach(traversal.by)
     traversal.select(Column.values)
   }
+
+  def ensureFirstStatement[T, P](traversal: GremlinSteps[T, P], context: StatementContext[T, P]): Unit = {
+    if (context.isFirstStatement) {
+      traversal.inject(Tokens.START)
+      context.markFirstStatement()
+    }
+  }
 }

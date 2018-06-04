@@ -70,10 +70,7 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       skip: Option[Skip],
       limit: Option[Limit],
       finalize: Boolean): Unit = {
-    if (context.isFirstStatement) {
-      context.markFirstStatement()
-      g.inject(START)
-    }
+    ensureFirstStatement(g, context)
 
     val subTraversals = returnSubTraversals(items, finalize)
 

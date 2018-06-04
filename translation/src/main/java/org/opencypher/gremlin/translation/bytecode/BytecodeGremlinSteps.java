@@ -443,6 +443,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> simplePath() {
+        bytecode.addStep(Symbols.simplePath);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> skip(long skip) {
         bytecode.addStep(Symbols.skip, skip);
         return this;

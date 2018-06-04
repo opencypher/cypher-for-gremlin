@@ -480,6 +480,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> simplePath() {
+        g.simplePath();
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> skip(long skip) {
         g.skip(skip);
         return this;

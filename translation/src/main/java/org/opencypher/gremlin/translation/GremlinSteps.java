@@ -183,6 +183,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> sideEffect(GremlinSteps<T, P> sideEffectTraversal);
 
+    GremlinSteps<T, P> simplePath();
+
     GremlinSteps<T, P> skip(long skip);
 
     GremlinSteps<T, P> sum();
