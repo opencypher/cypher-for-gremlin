@@ -158,6 +158,19 @@ public class WhereTest {
             .containsExactlyInAnyOrder("marko", "josh", "peter");
     }
 
+    @Test
+    public void reversePattern() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) " +
+                "WHERE (:software)<-[:created]-(n) " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("marko", "josh", "peter");
+    }
+
     /**
      * Custom predicate deserialization is not implemented
      */

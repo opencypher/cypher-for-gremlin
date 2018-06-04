@@ -25,16 +25,27 @@ import org.opencypher.gremlin.translation.ir.model._
   */
 object RemoveUselessSteps extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    mapTraversals(replace({
-      // Remove `fold` and `unfold` pairs, since the former is an inverse of the latter.
-      case Fold :: Unfold :: rest =>
-        rest
-      case Unfold :: Fold :: rest =>
-        rest
-
-      // Remove unused projections
-      case Project(projectKey) :: By(Identity :: Nil, None) :: SelectK(selectKey) :: rest if projectKey == selectKey =>
-        rest
-    }))(steps)
+    mapTraversals(
+      firstPass
+        .andThen(secondPass)
+    )(steps)
   }
+
+  private val firstPass: Seq[GremlinStep] => Seq[GremlinStep] = replace({
+    // Remove `fold` and `unfold` pairs, since the former is an inverse of the latter.
+    case Fold :: Unfold :: rest =>
+      rest
+    case Unfold :: Fold :: rest =>
+      rest
+
+    // Remove unused projections
+    case Project(projectKey) :: By(Identity :: Nil, None) :: SelectK(selectKey) :: rest if projectKey == selectKey =>
+      rest
+  })
+
+  private val secondPass: Seq[GremlinStep] => Seq[GremlinStep] = replace({
+    // Remove duplicate `as` steps
+    case As(stepLabel1) :: As(stepLabel2) :: rest if stepLabel1 == stepLabel2 =>
+      As(stepLabel1) :: rest
+  })
 }

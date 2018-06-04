@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.opencypher.gremlin.translation.Tokens.NULL
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
@@ -72,21 +72,14 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   def walkPatternParts(patternParts: Seq[PatternPart], whereOption: Option[Where]): Unit = {
     patternParts.foreach {
       case EveryPath(patternElement) =>
-        foldPatternElement(None, patternElement)
+        PatternWalker.walk(context, g, patternElement)
       case NamedPatternPart(Variable(pathName), EveryPath(patternElement)) =>
-        foldPatternElement(Some(pathName), patternElement)
+        PatternWalker.walk(context, g, patternElement, Some(pathName))
         g.path().as(pathName)
       case n =>
         context.unsupported("match pattern", n)
     }
 
     whereOption.foreach(WhereWalker.walk(context, g, _))
-  }
-
-  private def foldPatternElement(maybeName: Option[String], patternElement: PatternElement): Unit = {
-    context.markFirstStatement()
-    g.V()
-
-    PatternWalker.walkMatch(context, g, patternElement, maybeName)
   }
 }

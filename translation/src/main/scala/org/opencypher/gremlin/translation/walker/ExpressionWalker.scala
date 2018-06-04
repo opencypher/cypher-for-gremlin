@@ -409,7 +409,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
       projection: Expression): String = {
     val select = __
     val contextWhere = context.copy()
-    PatternWalker.walkExpression(contextWhere, select, relationshipChain)
+    PatternWalker.walk(contextWhere, select, relationshipChain)
     maybePredicate.foreach(WhereWalker.walk(contextWhere, select, _))
 
     if (projection.isInstanceOf[PathExpression]) {
@@ -417,9 +417,7 @@ private class ExpressionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     }
 
     val name = contextWhere.generateName()
-    g.sideEffect(
-      select.aggregate(name)
-    )
+    g.sideEffect(select.aggregate(name)).barrier()
 
     name
   }

@@ -104,10 +104,9 @@ private class ProjectionWalker[T, P](context: StatementContext[T, P], g: Gremlin
     for (item <- items) {
       val AliasedReturnItem(expression, Variable(alias)) = item
 
-      val (_, traversalUnfold) = pivot(alias, expression, finalize)
       val (returnType, traversal) = pivot(alias, expression, finalize)
 
-      allCollector.put(alias, traversalUnfold)
+      allCollector.put(alias, traversal)
 
       returnType match {
         case Pivot       => pivotCollector.put(alias, traversal)
