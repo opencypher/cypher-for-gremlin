@@ -317,4 +317,16 @@ public class ComplexExamplesTest {
             .extracting("id")
             .containsExactly("text");
     }
+
+    @Test
+    public void optionalMatchOnEmptyGraph() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "OPTIONAL MATCH (n) " +
+                "RETURN n"
+        );
+
+        assertThat(results)
+            .extracting("n")
+            .containsExactly((Object) null);
+    }
 }
