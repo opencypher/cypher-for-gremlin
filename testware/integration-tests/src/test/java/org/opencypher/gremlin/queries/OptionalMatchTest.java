@@ -189,4 +189,18 @@ public class OptionalMatchTest {
             .extracting("manager")
             .containsExactly("vadas");
     }
+
+    @Test
+    public void correlated() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a:person {name: 'marko'}) " +
+                "OPTIONAL MATCH (a)-->(x:software) " +
+                "OPTIONAL MATCH (x)-[r]->(b:person) " +
+                "RETURN x.name, r"
+        );
+
+        assertThat(results)
+            .extracting("x.name", "r")
+            .containsExactly(tuple("lop", null));
+    }
 }
