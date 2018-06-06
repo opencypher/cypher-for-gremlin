@@ -329,4 +329,20 @@ public class ComplexExamplesTest {
             .extracting("n")
             .containsExactly((Object) null);
     }
+
+    @Test
+    public void doubleWithMerge() throws Exception {
+        submitAndGet("CREATE ({id: 0})");
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                "WITH n AS a, n AS b " +
+                "WITH a AS x " +
+                "MERGE (a) " +
+                "RETURN x.id AS x"
+        );
+
+        assertThat(results)
+            .extracting("x")
+            .containsExactly(0L);
+    }
 }

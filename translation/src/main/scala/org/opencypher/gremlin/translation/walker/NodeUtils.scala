@@ -146,4 +146,14 @@ object NodeUtils {
       context.markFirstStatement()
     }
   }
+
+  def selectNestedAliases[T, P](keys: Seq[String], context: StatementContext[T, P]): GremlinSteps[T, P] = {
+    val g = context.dsl.steps().start()
+    val mapName = context.generateName()
+    g.as(mapName)
+    keys
+      .filter(context.alias(_).isEmpty)
+      .map(alias => g.select(mapName).select(alias).as(alias))
+    g
+  }
 }
