@@ -102,7 +102,7 @@ public class CreateTest {
 
     @Test
     public void matchCreateMix() throws Exception {
-        long rootId = (long) ((Map) submitAndGet("CREATE (d:D) RETURN d").get(0).get("d")).get(ID);
+        Object rootId = ((Map) submitAndGet("CREATE (d:D) RETURN d").get(0).get("d")).get(ID);
 
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (d:D) " +
@@ -112,10 +112,10 @@ public class CreateTest {
 
         assertThat(results).isEmpty();
 
-        List<Long> createdIds = submitAndGet("MATCH (n:E) RETURN n")
+        List<Object> createdIds = submitAndGet("MATCH (n:E) RETURN n")
             .stream()
             .map(m -> (Map) m.get("n"))
-            .map(v -> (Long) v.get(ID))
+            .map(v -> v.get(ID))
             .collect(toList());
 
         assertThat(createdIds).hasSize(2);
@@ -128,11 +128,11 @@ public class CreateTest {
 
         Map edge1 = matchCreates.get(0);
         assertThat(edge1.get(OUTV)).isEqualTo(rootId);
-        assertThat(createdIds).contains((Long) edge1.get(INV));
+        assertThat(createdIds).contains(edge1.get(INV));
 
         Map edge2 = matchCreates.get(1);
         assertThat(edge2.get(OUTV)).isEqualTo(rootId);
-        assertThat(createdIds).contains((Long) edge2.get(INV));
+        assertThat(createdIds).contains(edge2.get(INV));
     }
 
     @Test
@@ -167,8 +167,8 @@ public class CreateTest {
                 "(vadas:person {name: \"vadas\"}) " +
                 "RETURN marko, vadas"
         ).get(0);
-        long markoId = (long) ((Map) created.get("marko")).get(ID);
-        long vadasId = (long) ((Map) created.get("vadas")).get(ID);
+        Object markoId = ((Map) created.get("marko")).get(ID);
+        Object vadasId = ((Map) created.get("vadas")).get(ID);
 
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (marko:person),(vadas:person) " +
