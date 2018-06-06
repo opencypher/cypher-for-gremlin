@@ -47,7 +47,9 @@ object TranslatorFlavor {
       RemoveUnusedAliases,
       RemoveUselessSteps
     ),
-    postConditions = Nil
+    postConditions = Seq(
+      NoEmptyTraversals
+    )
   )
 
   /**
@@ -59,7 +61,8 @@ object TranslatorFlavor {
     ),
     postConditions = Seq(
       NoCustomFunctions
-    ))
+    )
+  )
 
   /**
     * Empty translator flavor without rewriting and post conditions.
