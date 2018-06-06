@@ -153,7 +153,7 @@ public class WithTest {
 
         assertThat(results)
             .extracting("a.name", "s.name")
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 tuple("lop", "marko"),
                 tuple("lop", "josh"),
                 tuple("lop", "peter"),

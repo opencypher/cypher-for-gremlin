@@ -81,7 +81,7 @@ public class OptionalMatchTest {
 
         assertThat(results)
             .extracting("soft")
-            .containsExactly("lop", null, "ripple", "lop", "lop");
+            .containsExactlyInAnyOrder("lop", null, "ripple", "lop", "lop");
     }
 
     @Test
