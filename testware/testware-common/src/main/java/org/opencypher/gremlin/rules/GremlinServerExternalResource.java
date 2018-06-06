@@ -30,6 +30,7 @@ import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.traversal.FixedTraversalStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ public class GremlinServerExternalResource extends ExternalResource {
             logger.info("Running tests using embeded TinkerGraph");
             gremlinServer = tinkerGraph();
             gremlinServer.start();
+            FixedTraversalStrategies.tinkerGraph();
             int port = gremlinServer.getPort();
             gremlinClient = GremlinClientFactory.create(port);
         }
