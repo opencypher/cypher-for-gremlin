@@ -239,4 +239,17 @@ public class MergeTest {
             .containsExactly(1L);
     }
 
+    @Test
+    public void withMerge() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH 42 AS i " +
+                "MERGE (n:N {value: i}) " +
+                "RETURN n.value"
+        );
+
+        assertThat(results)
+            .extracting("n.value")
+            .containsExactly(42L);
+    }
+
 }

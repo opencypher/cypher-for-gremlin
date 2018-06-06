@@ -45,7 +45,9 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     private boolean isStarted() {
-        return g.asAdmin().getSteps().size() > 0;
+        int stepCount = g.asAdmin().getSteps().size();
+        Object graph = g.asAdmin().getGraph().orElseGet(EmptyGraph::instance);
+        return stepCount > 0 || graph instanceof EmptyGraph;
     }
 
     private boolean isSubTraversal() {

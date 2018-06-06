@@ -323,6 +323,19 @@ public class CreateTest {
     }
 
     @Test
+    public void withCreate() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH 42 AS i " +
+                "CREATE (n:N {value: i}) " +
+                "RETURN n.value"
+        );
+
+        assertThat(results)
+            .extracting("n.value")
+            .containsExactly(42L);
+    }
+
+    @Test
     public void unwindCreate() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "UNWIND [3, 7, 11] AS i " +
