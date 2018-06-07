@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/Chart.min.js"></script>
+<script type="text/javascript" src="js/moment.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
+<link rel="stylesheet" href="css/cucumber.css" type="text/css"/>
+<link rel="stylesheet" href="css/font-awesome.min.css"/>
+<link rel="shortcut icon" href="images/favicon.png"/>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // this will tell tablesorter to try looking for the data-value attribute
+    // if present, it'll sort by that instead
+    // otherwise, it'll sort by the text content of the table cell
+    $("#tablesorter").tablesorter({
+        textAttribute: 'data-value',
+        // ignores the first row of the header, the 'scenario', 'steps', since
+        // sorting those doesn't make sense
+        selectorHeaders: '> thead tr:not(.dont-sort) th',
+        // use a stable sort
+        sortStable: true
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  
+<title>Cucumber Reports (no 0.9.9) - Feature: ComparisonOperatorAcceptance</title>
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navigation">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse">
+      <p class="navbar-text navbar-left">Cucumber Report</p>
+      <ul class="nav navbar-nav navbar-right">
+                <li role="presentation" ><a href="overview-features.html">Features</a></li>
+        <li role="presentation" ><a href="overview-tags.html">Tags</a></li>
+        <li role="presentation" ><a href="overview-steps.html">Steps</a></li>
+                <li role="presentation" ><a href="overview-failures.html">Failures</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container-fluid">
+  <div class="col-md-5 col-md-offset-1">
+    
+<table class="table table-bordered" id="build-info">
+  <thead>
+    <tr>
+      <th>Project</th>
+              <th>Number</th>
+            <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="info">
+      <td>cypher-for-gremlin</td>
+              <td>0.9.9</td>
+            <td>07 Jun 2018, 12:04</td>
+    </tr>
+  </tbody>
+</table>
+
+  </div>
+  <div class="col-md-3 col-md-offset-2">
+      </div>
+</div>
+
+
+<div id="report-lead" class="container-fluid">
+  <div class="col-md-10 col-md-offset-1">
+    <h2>Feature Report</h2>
+      </div>
+</div>
+
+
+<div class="container-fluid" id="report">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <table class="stats-table">
+
+        
+<thead>
+  <tr class="header dont-sort">
+        <th></th>
+    <th colspan="6">Steps</th>
+    <th colspan="3">Scenarios</th>
+    <th colspan="2">Features</th>
+  </tr>
+  <tr>
+    <th>Feature</th>
+        <th class="passed">Passed</th>
+    <th class="failed">Failed</th>
+    <th class="skipped">Skipped</th>
+    <th class="pending">Pending</th>
+    <th class="undefined">Undefined</th>
+    <th class="total">Total</th>
+
+    <th class="passed">Passed</th>
+    <th class="failed">Failed</th>
+    <th class="total">Total</th>
+
+    <th>Duration</th>
+    <th>Status</th>
+  </tr>
+</thead>
+
+
+        <tbody>
+        <tr>
+          <td class="tagname">ComparisonOperatorAcceptance</td>
+                    <td      class="passed"    >50</td>
+          <td >0</td>
+          <td >0</td>
+          <td >0</td>
+          <td >0</td>
+          <td class="total">50</td>
+
+          <td  class="passed"    >10</td>
+          <td >0</td>
+          <td class="total">10</td>
+
+          <td class="duration" data-value="847717744">0.847</td>
+          <td class="passed">Passed</td>
+        </tr>
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-10">
+      <i class="fa fa-chevron-circle-down fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('show')"></i>
+      <i class="fa fa-chevron-circle-up fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('hide')"></i>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid" id="report">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="feature">
+        
+<div class="tags indention">
+  </div>
+
+        
+<div class="brief passed">
+  <span class="keyword indention">Feature</span>
+  <span class="name">ComparisonOperatorAcceptance</span>
+  
+
+  </div>
+
+        <div class="description indention"></div>
+
+        <div class="elements inner-level">
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.123</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling numerical ranges 1</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-1" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.023</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-3" class="collapse collapsable-details">
+        <pre>UNWIND [1, 2, 3] AS i
+CREATE ({value: i})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-4">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-4" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.169 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND [1, 2, 3] AS i CREATE ({value: i})
+12:03:09.178 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values).unfold().as('i').addV().property('value', __.select('i')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.030</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 1 &lt; n.value &lt; 3
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-6">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-6" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.282 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 1 &lt; n.value &lt; 3 RETURN n.value
+12:03:09.304 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lt(3)).has('value', gt(1)).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.069</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-7">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-7" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.313 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:09.319 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.324 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:09.342 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.350 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:09.357 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.068</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-8">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling numerical ranges 2</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-8" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-9">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-9" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.012</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-10" class="collapse collapsable-details">
+        <pre>UNWIND [1, 2, 3] AS i
+CREATE ({value: i})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-11">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-11" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.382 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND [1, 2, 3] AS i CREATE ({value: i})
+12:03:09.386 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values).unfold().as('i').addV().property('value', __.select('i')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.014</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 1 &lt; n.value &lt;= 3
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-13">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-13" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.436 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 1 &lt; n.value &lt;= 3 RETURN n.value
+12:03:09.447 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lte(3)).has('value', gt(1)).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.041</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-14">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-14" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.450 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:09.456 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.457 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:09.460 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.463 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:09.468 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.059</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling numerical ranges 3</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-15" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-16">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-16" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.013</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-17">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-17" class="collapse collapsable-details">
+        <pre>UNWIND [1, 2, 3] AS i
+CREATE ({value: i})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-18">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-18" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.495 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND [1, 2, 3] AS i CREATE ({value: i})
+12:03:09.500 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values).unfold().as('i').addV().property('value', __.select('i')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.009</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-19">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-19" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 1 &lt;= n.value &lt; 3
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-20">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-20" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.542 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 1 &lt;= n.value &lt; 3 RETURN n.value
+12:03:09.549 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lt(3)).has('value', gte(1)).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.035</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-21">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-21" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.552 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:09.555 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.556 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:09.562 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.567 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:09.573 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.071</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling numerical ranges 4</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-22" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-23">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-23" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.012</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-24" class="collapse collapsable-details">
+        <pre>UNWIND [1, 2, 3] AS i
+CREATE ({value: i})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-25">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-25" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.603 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND [1, 2, 3] AS i CREATE ({value: i})
+12:03:09.607 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values).unfold().as('i').addV().property('value', __.select('i')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.007</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-26">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-26" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 1 &lt;= n.value &lt;= 3
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-27">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-27" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.647 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 1 &lt;= n.value &lt;= 3 RETURN n.value
+12:03:09.653 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lte(3)).has('value', gte(1)).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.051</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-28">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-28" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.655 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:09.658 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.659 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:09.670 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.683 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:09.689 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.141</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-29">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling string ranges 1</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-29" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-30">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-30" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.009</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-31">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-31" class="collapse collapsable-details">
+        <pre>UNWIND ['a', 'b', 'c'] AS c
+CREATE ({value: c})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-32">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-32" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.707 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND ['a', 'b', 'c'] AS c CREATE ({value: c})
+12:03:09.711 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant('a')).by(__.constant('b')).by(__.constant('c')).select(values).unfold().as('c').addV().property('value', __.select('c')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.018</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-33" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 'a' &lt; n.value &lt; 'c'
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-34">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-34" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.777 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 'a' &lt; n.value &lt; 'c' RETURN n.value
+12:03:09.793 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lt('c')).has('value', gt('a')).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>'b'</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.113</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-35">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-35" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.796 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:09.802 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.804 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:09.811 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:09.815 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:09.837 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.097</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-36">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling string ranges 2</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-36" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-37">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-37" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.011</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-38">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-38" class="collapse collapsable-details">
+        <pre>UNWIND ['a', 'b', 'c'] AS c
+CREATE ({value: c})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-39">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-39" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.913 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND ['a', 'b', 'c'] AS c CREATE ({value: c})
+12:03:09.916 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant('a')).by(__.constant('b')).by(__.constant('c')).select(values).unfold().as('c').addV().property('value', __.select('c')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.034</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-40" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 'a' &lt; n.value &lt;= 'c'
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-41">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-41" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:09.973 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 'a' &lt; n.value &lt;= 'c' RETURN n.value
+12:03:10.000 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lte('c')).has('value', gt('a')).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>'b'</td>
+                              </tr>
+                          <tr>
+                                  <td>'c'</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.052</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-42">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-42" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.008 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:10.017 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.019 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:10.024 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.034 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:10.040 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.072</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-43">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling string ranges 3</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-43" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-44">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-44" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.011</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-45">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-45" class="collapse collapsable-details">
+        <pre>UNWIND ['a', 'b', 'c'] AS c
+CREATE ({value: c})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-46">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-46" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.059 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND ['a', 'b', 'c'] AS c CREATE ({value: c})
+12:03:10.066 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant('a')).by(__.constant('b')).by(__.constant('c')).select(values).unfold().as('c').addV().property('value', __.select('c')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.008</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-47">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-47" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 'a' &lt;= n.value &lt; 'c'
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-48">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-48" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.137 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 'a' &lt;= n.value &lt; 'c' RETURN n.value
+12:03:10.143 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lt('c')).has('value', gte('a')).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>'a'</td>
+                              </tr>
+                          <tr>
+                                  <td>'b'</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.052</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-49">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-49" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.146 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:10.155 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.169 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:10.173 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.178 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:10.183 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.084</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-50">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling string ranges 4</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-50" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-51">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-51" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.011</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-52">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-52" class="collapse collapsable-details">
+        <pre>UNWIND ['a', 'b', 'c'] AS c
+CREATE ({value: c})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-53">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-53" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.207 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: UNWIND ['a', 'b', 'c'] AS c CREATE ({value: c})
+12:03:10.211 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant('a')).by(__.constant('b')).by(__.constant('c')).select(values).unfold().as('c').addV().property('value', __.select('c')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.021</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-54">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-54" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 'a' &lt;= n.value &lt;= 'c'
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-55">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-55" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.256 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 'a' &lt;= n.value &lt;= 'c' RETURN n.value
+12:03:10.271 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', lte('c')).has('value', gte('a')).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                          <tr>
+                                  <td>'a'</td>
+                              </tr>
+                          <tr>
+                                  <td>'b'</td>
+                              </tr>
+                          <tr>
+                                  <td>'c'</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.051</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-56">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-56" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.285 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:10.291 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.292 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:10.299 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.305 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:10.310 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.061</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-57">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling empty range</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-57" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-58">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-58" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.007</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-59">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-59" class="collapse collapsable-details">
+        <pre>CREATE ({value: 3})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-60">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-60" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.331 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: CREATE ({value: 3})
+12:03:10.333 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.addV().property('value', 3).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.020</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-61">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-61" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WHERE 10 &lt; n.value &lt;= 3
+RETURN n.value</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-62">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-62" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.393 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) WHERE 10 &lt; n.value &lt;= 3 RETURN n.value
+12:03:10.404 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').has('value', gt(10)).has('value', lte(3)).select('n').project('n.value').by(__.choose(neq('  cypher.null'), __.coalesce(__.values('value'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>n.value</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.034</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-63">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-63" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.413 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:10.416 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.418 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:10.422 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.428 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:10.431 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.067</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-64">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Handling long chains of operators</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-64" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-65">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-65" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.029</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-66">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-66" class="collapse collapsable-details">
+        <pre>CREATE (a:A {prop1: 3, prop2: 4})
+CREATE (b:B {prop1: 4, prop2: 5})
+CREATE (c:C {prop1: 4, prop2: 4})
+CREATE (a)-[:R]-&gt;(b)
+CREATE (b)-[:R]-&gt;(c)
+CREATE (c)-[:R]-&gt;(a)</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-67">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-67" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.459 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: CREATE (a:A {prop1: 3, prop2: 4}) CREATE (b:B {prop1: 4, prop2: 5}) CREATE (c:C {prop1: 4, prop2: 4}) CREATE (a)-[:R]-&gt;(b) CREATE (b)-[:R]-&gt;(c) CREATE (c)-[:R]-&gt;(a)
+12:03:10.470 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.addV('A').as('a').property('prop1', 3).property('prop2', 4).addV('B').as('b').property('prop1', 4).property('prop2', 5).addV('C').as('c').property('prop1', 4).property('prop2', 4).addE('R').from('a').to('b').addE('R').from('b').to('c').addE('R').from('c').to('a').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.012</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-68">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-68" class="collapse collapsable-details">
+        <pre>MATCH (n)--&gt;(m)
+WHERE n.prop1 &lt; m.prop1 = n.prop2 &lt;&gt; m.prop2
+RETURN labels(m)</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-69">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-69" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.529 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n)--&gt;(m) WHERE n.prop1 &lt; m.prop1 = n.prop2 &lt;&gt; m.prop2 RETURN labels(m)
+12:03:10.538 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('n').outE().inV().as('m').where(__.and(__.select('m').values('prop1').as('  GENERATED2').select('n').values('prop1').where(lt('  GENERATED2')), __.select('n').values('prop2').as('  GENERATED3').select('m').values('prop1').where(eq('  GENERATED3')), __.select('m').values('prop2').as('  GENERATED4').select('n').values('prop2').where(neq('  GENERATED4')))).select('m').project('labels(m)').by(__.label().is(neq('vertex')).fold())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>labels(m)</td>
+                              </tr>
+                          <tr>
+                                  <td>['B']</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.025</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-70">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-70" class="collapse collapsable-details " >
+          
+          <pre><p>12:03:10.541 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+12:03:10.544 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.547 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+12:03:10.550 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').outE().as('r').inV().select('r').project('id(r)').by(__.choose(neq('  cypher.null'), __.id(), __.constant('  cypher.null')))
+12:03:10.551 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+12:03:10.554 [gremlin-server-worker-1] INFO  o.o.g.s.op.cypher.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                  </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-10">
+      <i class="fa fa-chevron-circle-down fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('show')"></i>
+      <i class="fa fa-chevron-circle-up fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('hide')"></i>
+    </div>
+  </div>
+</div>
+
+<br>
+
+<nav class="navbar navbar-default" id="footer">
+  <div class="container-fluid">
+    <p class="navbar-text navbar-right">
+        <small>generate Cucumber HTML reports via:&nbsp;</small>
+        <a class="navbar-link" href="https://github.com/jenkinsci/cucumber-reports-plugin">Jenkins Plugin</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-reporting">Standalone</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-sandwich">Sandwich</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/maven-cucumber-reporting">Maven</a>
+        &nbsp;&nbsp;
+    </p>
+  </div>
+</nav>
+
+</body>
+</html>
