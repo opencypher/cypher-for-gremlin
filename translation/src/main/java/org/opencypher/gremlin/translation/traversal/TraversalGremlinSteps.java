@@ -44,16 +44,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
         return g.asAdmin().clone();
     }
 
-    private boolean isStarted() {
-        int stepCount = g.asAdmin().getSteps().size();
-        Object graph = g.asAdmin().getGraph().orElseGet(EmptyGraph::instance);
-        return stepCount > 0 || graph instanceof EmptyGraph;
-    }
-
-    private boolean isSubTraversal() {
-        return g.asAdmin().getGraph()
+    private boolean isStartedOrSubTraversal() {
+        boolean hasSteps = g.asAdmin().getSteps().size() > 0;
+        boolean isSubTraversal = g.asAdmin().getGraph()
             .filter(graph -> graph instanceof EmptyGraph)
             .isPresent();
+        return hasSteps || isSubTraversal;
     }
 
     @Override
@@ -64,7 +60,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> V() {
-        if (isStarted() || isSubTraversal()) {
+        if (isStartedOrSubTraversal()) {
             g.V();
         } else {
             // Workaround for constructing `GraphStep` with `isStart == true`
@@ -82,7 +78,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> addV() {
-        if (isStarted()) {
+        if (isStartedOrSubTraversal()) {
             g.addV();
         } else {
             // Workaround for constructing `GraphStep` with `isStart == true`
@@ -94,7 +90,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> addV(String vertexLabel) {
-        if (isStarted()) {
+        if (isStartedOrSubTraversal()) {
             g.addV(vertexLabel);
         } else {
             // Workaround for constructing `GraphStep` with `isStart == true`
