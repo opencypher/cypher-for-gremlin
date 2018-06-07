@@ -16,11 +16,15 @@
 package org.opencypher.gremlin.queries;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
+import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class DeleteTest {
@@ -52,6 +56,60 @@ public class DeleteTest {
         assertThat(afterDelete)
             .extracting("count(s)")
             .containsExactly(0L);
+    }
+
+    @Test
+    @Category({SkipWithBytecode.class, SkipWithGremlinGroovy.class})
+    public void deleteConnectedNodes() {
+        assertThatThrownBy(() -> submitAndGet(
+            "MATCH (s:software) DELETE s"
+        ))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Cannot delete node<3>, because it still has relationships");
+
+        assertThat(submitAndGet(
+            "MATCH (s:software) RETURN count(s)"
+        ))
+            .extracting("count(s)")
+            .containsExactly(2L);
+    }
+
+    @Test
+    @Category(SkipWithGremlinGroovy.class)
+    public void deleteConnectedNodeAndRelationship() {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (s:software {name: 'ripple'})<-[r:created]-(p:person) " +
+                "DELETE s, r"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .isEmpty();
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(5L);
+    }
+
+    @Test
+    @Category(SkipWithGremlinGroovy.class)
+    public void deleteOnNullNode() throws Exception {
+        submitAndGet(
+            "MATCH (n) DETACH DELETE n"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "OPTIONAL MATCH (n) DELETE n"
+        );
+
+        assertThat(onDelete)
+            .isEmpty();
     }
 
     @Test
@@ -123,6 +181,7 @@ public class DeleteTest {
     }
 
     @Test
+    @Category(SkipWithGremlinGroovy.class)
     public void deleteWithReturn() throws Exception {
         submitAndGet("MATCH (n) DETACH DELETE n");
         submitAndGet("CREATE ()-[:R]->()");
@@ -148,6 +207,7 @@ public class DeleteTest {
     }
 
     @Test
+    @Category(SkipWithGremlinGroovy.class)
     public void deleteOptionalMatch() throws Exception {
         submitAndGet("MATCH (n) DETACH DELETE n");
         submitAndGet("CREATE ()");
