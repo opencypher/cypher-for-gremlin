@@ -27,7 +27,6 @@ import org.opencypher.v9_0.util.InputPosition.NONE
   * of the `MERGE` clause nodes in the Cypher AST.
   */
 object MergeWalker {
-
   def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Merge): Unit = {
     new MergeWalker(context, g).walkClause(node)
   }
@@ -35,36 +34,40 @@ object MergeWalker {
 
 private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
 
-  def walkClause(node: Merge): GremlinSteps[T, P] = {
+  def walkClause(node: Merge): Unit = {
     val Merge(Pattern(patternParts), actions: Seq[MergeAction], _) = node
     walkMerge(g, patternParts, actions)
   }
 
-  private def walkMerge(
-      g: GremlinSteps[T, P],
-      patternParts: Seq[PatternPart],
-      actions: Seq[MergeAction]): GremlinSteps[T, P] = {
+  private def walkMerge(g: GremlinSteps[T, P], patternParts: Seq[PatternPart], actions: Seq[MergeAction]): Unit = {
     ensureFirstStatement(g, context)
 
-    val matchSubG = g.start()
-    MatchWalker.walkPatternParts(context.copy(), matchSubG, patternParts, None)
-    val createSubG = g.start()
-    CreateWalker.walkClause(context, createSubG, Create(Pattern(patternParts)(NONE))(NONE))
+    val matchG = g.start()
+    val contextMatchG = context.copy()
+    MatchWalker.walkPatternParts(contextMatchG, matchG, patternParts, None)
+
+    val createG = g.start().identity()
+    val contextCreateG = context.copy()
+    CreateWalker.walkClause(contextCreateG, createG, Create(Pattern(patternParts)(NONE))(NONE))
 
     actions.foreach {
-      case OnMatch(action: SetClause)  => SetWalker.walkClause(context, matchSubG, action)
-      case OnCreate(action: SetClause) => SetWalker.walkClause(context, createSubG, action)
+      case OnMatch(action: SetClause)  => SetWalker.walkClause(contextMatchG, matchG, action)
+      case OnCreate(action: SetClause) => SetWalker.walkClause(contextCreateG, createG, action)
     }
 
     val pathAliases = getPathTraversalAliases(patternParts.head)
     if (pathAliases.length > 1) {
       g.coalesce(
-        matchSubG.select(pathAliases: _*),
-        createSubG.select(pathAliases: _*)
-      )
+          matchG.select(pathAliases: _*),
+          createG.select(pathAliases: _*)
+        )
+        .map(selectNestedAliases(pathAliases, context))
     } else {
-      g.coalesce(matchSubG, createSubG)
-        .as(pathAliases.head)
+      g.coalesce(matchG, createG)
+      val pathAlias = pathAliases.head
+      if (context.alias(pathAlias).isEmpty) {
+        g.as(pathAlias)
+      }
     }
   }
 }
