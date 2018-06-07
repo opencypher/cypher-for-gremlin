@@ -15,7 +15,7 @@ To add a dependency using Maven:
 <dependency>
     <groupId>org.opencypher.gremlin</groupId>
     <artifactId>cypher-gremlin-server-client</artifactId>
-    <version>0.9.8</version>
+    <version>0.9.9</version>
 </dependency>
 ```
 
@@ -23,7 +23,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.8'
+  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.9'
 }
 ```
 
@@ -84,7 +84,7 @@ String cypher = "MATCH (p:person) WHERE p.age > 25 RETURN p.name";
 List<Map<String, Object>> results = cypherGremlinClient.submit(cypher).all();
 ```
 
-Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.8/java/org/opencypher/gremlin/client/package-summary.html) for more information.
+Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.9/java/org/opencypher/gremlin/client/package-summary.html) for more information.
 
 ## Neo4j driver-like API
 
