@@ -20,8 +20,6 @@ import org.opencypher.gremlin.translation.context.StatementContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 
-import scala.collection.mutable
-
 /**
   * AST walker that starts translation of the Cypher AST.
   */
@@ -49,11 +47,12 @@ class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, 
   def walkUnion(node: Union): Unit = {
     ensureFirstStatement(g, context)
 
-    val subGs = mutable.ArrayBuffer.empty[GremlinSteps[T, P]]
-    for (query <- flattenUnion(Vector(), node)) {
+    val queries = flattenUnion(Vector(), node)
+    val subGs = queries.map { query =>
+      val subContext = context.copy()
       val subG = g.start()
-      new StatementWalker(context, subG).walkSingle(query)
-      subGs += subG
+      new StatementWalker(subContext, subG).walkSingle(query)
+      subG
     }
     g.union(subGs: _*)
 

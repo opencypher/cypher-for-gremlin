@@ -91,11 +91,24 @@ public class UnionTest {
     }
 
     @Test
-    public void counts() throws Exception {
+    public void count() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (s:software) RETURN count(s) AS num " +
                 "UNION ALL " +
                 "MATCH (p:person) RETURN count(p) AS num"
+        );
+
+        assertThat(results)
+            .extracting("num")
+            .containsExactly(2L, 4L);
+    }
+
+    @Test
+    public void countSameVariable() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:software) RETURN count(n) AS num " +
+                "UNION ALL " +
+                "MATCH (n:person) RETURN count(n) AS num"
         );
 
         assertThat(results)

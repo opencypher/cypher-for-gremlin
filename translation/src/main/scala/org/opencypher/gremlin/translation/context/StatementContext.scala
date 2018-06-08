@@ -111,6 +111,7 @@ sealed class StatementContext[T, P](
 
   def copy(): StatementContext[T, P] = {
     val result = StatementContext(dsl, expressionTypes, returnTypes, parameters)
+    result.firstStatement = firstStatement
     result.referencedAliases ++= referencedAliases
     result.nameGenerator = nameGenerator
     result
