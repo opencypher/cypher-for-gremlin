@@ -42,32 +42,18 @@ private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   private def walkMerge(g: GremlinSteps[T, P], patternParts: Seq[PatternPart], actions: Seq[MergeAction]): Unit = {
     ensureFirstStatement(g, context)
 
-    val matchG = g.start()
-    val contextMatchG = context.copy()
-    MatchWalker.walkPatternParts(contextMatchG, matchG, patternParts, None)
-
     val createG = g.start().identity()
     val contextCreateG = context.copy()
     CreateWalker.walkClause(contextCreateG, createG, Create(Pattern(patternParts)(NONE))(NONE))
 
+    val matchG = g.start()
+    MatchWalker.walkPatternParts(context, matchG, patternParts, None)
+
     actions.foreach {
-      case OnMatch(action: SetClause)  => SetWalker.walkClause(contextMatchG, matchG, action)
+      case OnMatch(action: SetClause)  => SetWalker.walkClause(context, matchG, action)
       case OnCreate(action: SetClause) => SetWalker.walkClause(contextCreateG, createG, action)
     }
 
-    val pathAliases = getPathTraversalAliases(patternParts.head)
-    if (pathAliases.length > 1) {
-      g.coalesce(
-          matchG.select(pathAliases: _*),
-          createG.select(pathAliases: _*)
-        )
-        .map(selectNestedAliases(pathAliases, context))
-    } else {
-      g.coalesce(matchG, createG)
-      val pathAlias = pathAliases.head
-      if (context.alias(pathAlias).isEmpty) {
-        g.as(pathAlias)
-      }
-    }
+    g.choose(matchG, matchG, createG)
   }
 }

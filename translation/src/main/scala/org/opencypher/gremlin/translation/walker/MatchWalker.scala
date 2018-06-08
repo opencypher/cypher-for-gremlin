@@ -51,26 +51,16 @@ private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps
   private def walkOptionalMatch(patternParts: Seq[PatternPart], whereOption: Option[Where]): Unit = {
     ensureFirstStatement(g, context)
 
-    val subG = g.start()
-    val contextSubG = context.copy()
-    MatchWalker.walkPatternParts(contextSubG, subG, patternParts, whereOption)
-
     val nullG = g.start().constant(NULL)
     val contextNullG = context.copy()
+    getPathTraversalAliases(patternParts.head)
+      .map(name => contextNullG.alias(name).getOrElse(name))
+      .foreach(nullG.as)
 
-    val pathAliases = getPathTraversalAliases(patternParts.head)
-    if (pathAliases.length > 1) {
-      val nullAliases = pathAliases.map(name => contextNullG.alias(name).getOrElse(name))
-      nullAliases.foreach(nullG.as)
-      g.coalesce(
-          subG.select(pathAliases: _*),
-          nullG.select(nullAliases: _*)
-        )
-        .map(selectNestedAliases(pathAliases, context))
-    } else {
-      g.coalesce(subG, nullG)
-      asUniqueName(pathAliases.head, g, context)
-    }
+    val subG = g.start()
+    MatchWalker.walkPatternParts(context, subG, patternParts, whereOption)
+
+    g.choose(subG, subG, nullG)
   }
 
   def walkPatternParts(patternParts: Seq[PatternPart], whereOption: Option[Where]): Unit = {
