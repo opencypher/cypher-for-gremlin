@@ -19,6 +19,7 @@ import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 
 /**
@@ -53,6 +54,6 @@ public class TranslationFacade {
     public String toGremlinGroovy(String cypher, Map<String, Object> parameters) {
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
-        return ast.buildTranslation(translator);
+        return ast.buildTranslation(translator, TranslationContext.DEFAULT);
     }
 }

@@ -30,6 +30,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTrav
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
@@ -63,7 +64,7 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
 
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
         Translator<GraphTraversal, P> translator = Translator.builder().traversal(g).build();
-        GraphTraversal<?, ?> traversal = ast.buildTranslation(translator);
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(translator, TranslationContext.DEFAULT);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         List<Result> results = traversal.toStream()
             .map(returnNormalizer::normalize)

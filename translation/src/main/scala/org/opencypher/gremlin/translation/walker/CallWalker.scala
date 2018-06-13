@@ -42,7 +42,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
 
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
-        val procedures = context.dsl.procedures()
+        val procedures = context.ctx.procedures()
         val qualifiedName = namespaceParts.mkString(".") + "." + name
         procedures.findOrThrow(qualifiedName)
 
@@ -76,7 +76,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
   def walkStandalone(node: UnresolvedCall): Unit = {
     ensureFirstStatement(g, context)
 
-    val procedures = context.dsl.procedures()
+    val procedures = context.ctx.procedures()
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
         val qualifiedName = namespaceParts.mkString(".") + "." + name

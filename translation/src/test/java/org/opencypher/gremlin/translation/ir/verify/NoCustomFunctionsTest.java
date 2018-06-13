@@ -21,6 +21,7 @@ import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
@@ -40,9 +41,10 @@ public class NoCustomFunctionsTest {
             "AND s CONTAINS 'x' " +
             "RETURN length(s), toString(s)";
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
-        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build(flavor);
+        TranslationContext translationContext = TranslationContext.builder().build(flavor);
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
 
-        assertThatThrownBy(() -> ast.buildTranslation(translator))
+        assertThatThrownBy(() -> ast.buildTranslation(translator, translationContext))
             .hasMessageContaining("contains, convertToString, endsWith, length, starsWith");
     }
 }

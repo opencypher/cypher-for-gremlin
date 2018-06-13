@@ -18,10 +18,12 @@ package org.opencypher.gremlin.translation
 import java.util
 
 import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
+import org.opencypher.gremlin.translation.ir.model.GremlinStep
 import org.opencypher.gremlin.translation.preparser._
-import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.gremlin.translation.translator.{TranslationContext, Translator}
 import org.opencypher.gremlin.translation.walker.StatementWalker
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
@@ -51,33 +53,45 @@ class CypherAst(
     options: Seq[PreParserOption]) {
 
   /**
-    * Create a translation by passing the wrapped AST, parameters, and options
-    * to [[StatementWalker.walk]].
+    * Create an intermediate representation of the translation.
     *
-    * @param dsl instance of [[Translator]]
+    * @param ctx instance of [[TranslationContext]]
     * @return to-Gremlin translation
     */
-  def buildTranslation[T, P](dsl: Translator[T, P]): T = {
-    val irDsl = Translator
+  def translate(ctx: TranslationContext): Seq[GremlinStep] = {
+    val dsl = Translator
       .builder()
       .custom(
         new IRGremlinSteps,
         new IRGremlinPredicates,
         new IRGremlinBindings
       )
-      .procedures(dsl.procedures().all())
       .build()
 
-    val context = StatementContext(irDsl, expressionTypes, returnTypes, parameters)
+    val context = StatementContext(dsl, ctx, expressionTypes, returnTypes, parameters)
     StatementWalker.walk(context, statement)
-    val ir = irDsl.translate()
+    val ir = dsl.translate()
 
-    val flavor = dsl.flavor()
-    TranslationWriter
-      .from(ir)
-      .rewrite(flavor.rewriters: _*)
-      .verify(flavor.postConditions: _*)
-      .translate(dsl)
+    val flavor = ctx.flavor()
+    val rewritten = flavor.rewriters.foldLeft(ir)((ir, rewriter) => rewriter(ir))
+
+    flavor.postConditions
+      .flatMap(postCondition => postCondition(rewritten))
+      .foreach(msg => throw new SyntaxException(msg))
+
+    rewritten
+  }
+
+  /**
+    * Create a translation.
+    *
+    * @param dsl instance of [[Translator]]
+    * @param ctx instance of [[TranslationContext]]
+    * @return to-Gremlin translation
+    */
+  def buildTranslation[T, P](dsl: Translator[T, P], ctx: TranslationContext): T = {
+    val ir = translate(ctx)
+    TranslationWriter.translate(ir, dsl)
   }
 
   private val javaOptions: util.Set[StatementOption] = options.flatMap {

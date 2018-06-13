@@ -46,6 +46,7 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
 import org.opencypher.gremlin.traversal.ProcedureContext;
@@ -66,6 +67,11 @@ import org.slf4j.Logger;
 public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
     private static final Logger logger = getLogger(CypherOpProcessor.class);
+
+    private static final TranslationContext translationContext =
+        TranslationContext.builder()
+            .procedures(ProcedureContext.global().all())
+            .build();
 
     public CypherOpProcessor() {
         super(true);
@@ -99,10 +105,9 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
             .gremlinGroovy()
             .inlineParameters()
-            .procedures(ProcedureContext.global().all())
             .build();
 
-        String gremlin = ast.buildTranslation(stringTranslator);
+        String gremlin = ast.buildTranslation(stringTranslator, translationContext);
         logger.info("Gremlin: {}", gremlin);
 
         if (ast.getOptions().contains(EXPLAIN)) {
@@ -112,10 +117,9 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
             .traversal(g)
-            .procedures(ProcedureContext.global().all())
             .build();
 
-        GraphTraversal<?, ?> traversal = ast.buildTranslation(traversalTranslator);
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(traversalTranslator, translationContext);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(returnNormalizer::normalize);
         inTransaction(gts, () -> handleIterator(context, normalizedTraversal));

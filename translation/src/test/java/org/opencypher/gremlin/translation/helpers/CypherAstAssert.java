@@ -33,6 +33,7 @@ import org.opencypher.gremlin.translation.ir.builder.IRGremlinSteps;
 import org.opencypher.gremlin.translation.ir.model.GremlinPredicate;
 import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import scala.collection.Seq;
@@ -78,14 +79,14 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     }
 
     public final CypherAstAssert removes(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
-            assertTraversal(traversal, traversalContains);
-            assertTraversal(rewriteTraversal(), traversal, traversalNotContains);
+        assertTraversal(traversal, traversalContains);
+        assertTraversal(rewriteTraversal(), traversal, traversalNotContains);
         return this;
     }
 
     public final CypherAstAssert keeps(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
-            assertTraversal(traversal, traversalContains);
-            assertTraversal(rewriteTraversal(), traversal, traversalContains);
+        assertTraversal(traversal, traversalContains);
+        assertTraversal(rewriteTraversal(), traversal, traversalContains);
         return this;
     }
 
@@ -102,25 +103,35 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     }
 
     private Seq<GremlinStep> actualTraversal() {
-        Seq<GremlinStep> steps = actual.buildTranslation(irTranslator(flavor));
+        Seq<GremlinStep> steps = actual.buildTranslation(
+            irTranslator(),
+            flavorContext(flavor)
+        );
         steps = extractor.apply(steps);
         return steps;
     }
 
     private Seq<GremlinStep> rewriteTraversal() {
         Preconditions.checkNotNull(rewriter, "Rewriter not set! Use `CypherAstAssert.rewritingWith`");
-        Seq<GremlinStep> steps = actual.buildTranslation(irTranslator(flavor.extend(seq(rewriter), seq())));
+        Seq<GremlinStep> steps = actual.buildTranslation(
+            irTranslator(),
+            flavorContext(flavor.extend(seq(rewriter), seq()))
+        );
         return steps;
     }
 
-    private Translator<Seq<GremlinStep>, GremlinPredicate> irTranslator(TranslatorFlavor flavor) {
-        return Translator
-            .builder()
+    private Translator<Seq<GremlinStep>, GremlinPredicate> irTranslator() {
+        return Translator.builder()
             .custom(
                 new IRGremlinSteps(),
                 new IRGremlinPredicates(),
                 new IRGremlinBindings()
             )
+            .build();
+    }
+
+    private TranslationContext flavorContext(TranslatorFlavor flavor) {
+        return TranslationContext.builder()
             .build(flavor);
     }
 

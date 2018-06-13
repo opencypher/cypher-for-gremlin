@@ -28,6 +28,7 @@ import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
@@ -53,7 +54,7 @@ public class Translation {
         String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
-        String gremlin = ast.buildTranslation(translator);
+        String gremlin = ast.buildTranslation(translator, TranslationContext.DEFAULT);
         // freshReadmeSnippet: verbose
 
         assertThat(gremlin).startsWith("g.V()");
@@ -75,9 +76,12 @@ public class Translation {
     @Test
     public void translatorCosmosDb() throws Exception {
         // freshReadmeSnippet: cosmosdb
+        TranslationContext translationContext = TranslationContext.builder()
+            .build(TranslatorFlavor.cosmosDb());
+
         Translator<String, GroovyPredicate> translator = Translator.builder()
             .gremlinGroovy()
-            .build(TranslatorFlavor.cosmosDb());
+            .build();
         // freshReadmeSnippet: cosmosdb
 
         translator.steps().V();

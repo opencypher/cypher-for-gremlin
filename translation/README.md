@@ -47,7 +47,7 @@ A bit more verbose version of the above, demonstrating several extension points:
 String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
 CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
 Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
-String gremlin = ast.buildTranslation(translator);
+String gremlin = ast.buildTranslation(translator, TranslationContext.DEFAULT);
 ```
 
 Note that `Translator` instances are not reusable. A new one has to be created for each `buildTranslation` call. `TranslationFacade` handles this for you.
@@ -65,9 +65,12 @@ Some translation targets can be customized with a flavor, like Azure Cosmos DB:
 
 <!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/Translation.java#cosmosdb) -->
 ```java
+TranslationContext translationContext = TranslationContext.builder()
+    .build(TranslatorFlavor.cosmosDb());
+
 Translator<String, GroovyPredicate> translator = Translator.builder()
     .gremlinGroovy()
-    .build(TranslatorFlavor.cosmosDb());
+    .build();
 ```
 
 Custom translation targets can be provided by implementing `GremlinSteps`, `GremlinPredicates`, and `GremlinParameters`:

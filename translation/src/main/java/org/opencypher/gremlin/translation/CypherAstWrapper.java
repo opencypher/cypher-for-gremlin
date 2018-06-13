@@ -19,6 +19,7 @@ import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 import java.util.Set;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.v9_0.util.symbols.CypherType;
 
@@ -59,12 +60,13 @@ public class CypherAstWrapper {
      * Creates a translation to Gremlin.
      *
      * @param translator {@link Translator} configuration
+     * @param context    {@link TranslationContext} configuration
      * @param <T>        translation target type
      * @param <P>        predicate target type
      * @return to-Gremlin translation
      */
-    public <T, P> T buildTranslation(Translator<T, P> translator) {
-        return ast.buildTranslation(translator);
+    public <T, P> T buildTranslation(Translator<T, P> translator, TranslationContext context) {
+        return ast.buildTranslation(translator, context);
     }
 
     /**

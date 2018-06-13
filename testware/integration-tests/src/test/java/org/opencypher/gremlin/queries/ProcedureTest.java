@@ -34,6 +34,7 @@ import org.opencypher.gremlin.extension.TestProcedures;
 import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
@@ -47,7 +48,9 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 public class ProcedureTest {
 
     private GraphTraversalSource gts = TinkerGraph.open().traversal();
-    private TestProcedures testProcedures = new TestProcedures();
+    private TranslationContext translationContext = TranslationContext.builder()
+        .procedures(new TestProcedures().get())
+        .build();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return submitAndGet(cypher, emptyMap());
@@ -57,10 +60,9 @@ public class ProcedureTest {
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts);
         Translator<GraphTraversal, P> translator = Translator.builder()
             .traversal(g)
-            .procedures(testProcedures.get())
             .build();
         CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
-        GraphTraversal<?, ?> traversal = ast.buildTranslation(translator);
+        GraphTraversal<?, ?> traversal = ast.buildTranslation(translator, translationContext);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return traversal.toStream()
             .map(returnNormalizer::normalize)

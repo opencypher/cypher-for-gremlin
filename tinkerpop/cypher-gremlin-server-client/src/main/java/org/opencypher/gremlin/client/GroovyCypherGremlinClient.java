@@ -26,6 +26,7 @@ import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.opencypher.gremlin.translation.CypherAstWrapper;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
@@ -34,11 +35,11 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 final class GroovyCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final TranslatorFlavor flavor;
+    private final TranslationContext translationContext;
 
     GroovyCypherGremlinClient(Client client, TranslatorFlavor flavor) {
         this.client = client;
-        this.flavor = flavor;
+        translationContext = TranslationContext.builder().build(flavor);
     }
 
     @Override
@@ -60,8 +61,8 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(explain(ast));
         }
 
-        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build(flavor);
-        String gremlin = ast.buildTranslation(translator);
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
+        String gremlin = ast.buildTranslation(translator, translationContext);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, normalizedParameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture
