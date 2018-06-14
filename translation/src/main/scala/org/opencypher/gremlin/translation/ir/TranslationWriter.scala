@@ -20,15 +20,30 @@ import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.translator.Translator
 
+/**
+  * Translation writer that produces to-Gremlin translation
+  * based on intermediate representation of a query.
+  */
 object TranslationWriter {
-  def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P]): T = {
-    val generator = new TranslationWriter(translator)
+
+  /**
+    * Produces query translation.
+    *
+    * @param ir         intermediate representation of the translation
+    * @param translator instance of [[Translator]]
+    * @param parameters Cypher query parameters
+    * @tparam T translation target type
+    * @tparam P predicate target type
+    * @return to-Gremlin translation
+    */
+  def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P], parameters: Map[String, Any]): T = {
+    val generator = new TranslationWriter(translator, parameters)
     generator.writeSteps(ir, translator.steps())
     translator.translate()
   }
 }
 
-sealed class TranslationWriter[T, P] private (translator: Translator[T, P]) {
+sealed class TranslationWriter[T, P] private (translator: Translator[T, P], parameters: Map[String, Any]) {
   private val g = translator.steps()
   private val p = translator.predicates()
   private val b = translator.bindings()
@@ -224,8 +239,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P]) {
 
   def writeValue(value: Any): Object = {
     value match {
-      case GremlinBinding(name, bValue) => b.bind(name, bValue)
-      case _                            => value.asInstanceOf[AnyRef]
+      case GremlinBinding(name) => b.bind(name, parameters.get(name).orNull)
+      case _                    => value.asInstanceOf[AnyRef]
     }
   }
 }

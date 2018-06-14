@@ -109,7 +109,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
             .inlineParameters()
             .build();
 
-        String gremlin = TranslationWriter.write(ir, stringTranslator);
+        String gremlin = TranslationWriter.write(ir, stringTranslator, ast.parameters());
         logger.info("Gremlin: {}", gremlin);
 
         if (ast.getOptions().contains(EXPLAIN)) {
@@ -121,7 +121,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
             .traversal(g)
             .build();
 
-        GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, traversalTranslator);
+        GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, traversalTranslator, ast.parameters());
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(returnNormalizer::normalize);
         inTransaction(gts, () -> handleIterator(context, normalizedTraversal));

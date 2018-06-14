@@ -43,20 +43,20 @@ import scala.collection.mutable
   * for executing a Gremlin traversal.
   *
   * @param statement       AST root node
+  * @param parameters      Cypher query parameters
   * @param expressionTypes expression Cypher types
   * @param returnTypes     return types by alias
-  * @param parameters      Cypher query parameters
   * @param options         pre-parser options provided by Cypher parser
   */
 class CypherAst private (
     val statement: Statement,
-    val expressionTypes: Map[Expression, CypherType],
-    val returnTypes: Map[String, CypherType],
-    parameters: Map[String, Any],
+    val parameters: Map[String, Any],
+    expressionTypes: Map[Expression, CypherType],
+    returnTypes: Map[String, CypherType],
     options: Seq[PreParserOption]) {
 
   /**
-    * Create an intermediate representation of the translation.
+    * Creates an intermediate representation of the translation.
     *
     * @param flavor     translation flavor
     * @param procedures registered procedure context
@@ -86,7 +86,7 @@ class CypherAst private (
   }
 
   /**
-    * Create a translation to Gremlin.
+    * Creates a translation to Gremlin.
     *
     * @param dsl instance of [[Translator]]
     * @tparam T translation target type
@@ -95,7 +95,7 @@ class CypherAst private (
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
     val ir = translate(dsl.flavor(), ProcedureContext.empty())
-    TranslationWriter.write(ir, dsl)
+    TranslationWriter.write(ir, dsl, parameters)
   }
 
   private val javaOptions: util.Set[StatementOption] = options.flatMap {
@@ -185,11 +185,11 @@ object CypherAst {
   }
 
   @throws[CypherException]
-  private def parse(queryText: String, parameters: Map[String, Any]) = {
+  private def parse(queryText: String, parameters: Map[String, Any]): CypherAst = {
     val PreParsedStatement(preParsedQueryText, options, offset) = CypherPreParser(queryText)
     val startState = InitialState(preParsedQueryText, Some(offset), EmptyPlannerName)
     val state = CompilationPhases
-      .parsing(RewriterStepSequencer.newPlain, Never)
+      .parsing(RewriterStepSequencer.newPlain, literalExtraction = Never)
       .andThen(Normalization)
       .andThen(SemanticAnalysis(warn = false))
       .transform(startState, EmptyParserContext(preParsedQueryText, Some(offset)))
@@ -199,7 +199,7 @@ object CypherAst {
     val expressionTypes = getExpressionTypes(state)
     val returnTypes = getReturnTypes(expressionTypes, statement)
 
-    new CypherAst(statement, expressionTypes, returnTypes, params, options)
+    new CypherAst(statement, params, expressionTypes, returnTypes, options)
   }
 
   private def getExpressionTypes(state: BaseState): Map[Expression, CypherType] = {

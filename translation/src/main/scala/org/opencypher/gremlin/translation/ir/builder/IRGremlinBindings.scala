@@ -19,5 +19,5 @@ import org.opencypher.gremlin.translation.GremlinBindings
 import org.opencypher.gremlin.translation.ir.model.GremlinBinding
 
 class IRGremlinBindings extends GremlinBindings {
-  override def bind(name: String, value: scala.Any): AnyRef = GremlinBinding(name, value)
+  override def bind(name: String, value: scala.Any): AnyRef = GremlinBinding(name)
 }

@@ -24,6 +24,7 @@ import org.opencypher.gremlin.translation.ir.TranslationWriter;
 import org.opencypher.gremlin.translation.ir.helpers.TraversalMatcher;
 import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.Translator;
+import scala.collection.Map$;
 import scala.collection.Seq;
 
 public class TraversalAssertions {
@@ -60,6 +61,6 @@ public class TraversalAssertions {
 
     private static String print(Seq<GremlinStep> traversal) {
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
-        return TranslationWriter.write(traversal, translator);
+        return TranslationWriter.write(traversal, translator, Map$.MODULE$.empty());
     }
 }
