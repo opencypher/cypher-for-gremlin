@@ -59,14 +59,14 @@ public class ProcedureTest {
         return submitAndGet(cypher, emptyMap());
     }
 
-    private List<Map<String, Object>> submitAndGet(String cypher, Map<String, ?> parameters) {
+    private List<Map<String, Object>> submitAndGet(String cypher, Map<String, Object> parameters) {
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts);
         Translator<GraphTraversal, P> translator = Translator.builder()
             .traversal(g)
             .build();
         CypherAst ast = CypherAst.parse(cypher, parameters);
         Seq<GremlinStep> ir = ast.translate(flavor, procedureContext);
-        GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, translator, ast.parameters());
+        GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, translator, parameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return traversal.toStream()
             .map(returnNormalizer::normalize)

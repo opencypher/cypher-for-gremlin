@@ -15,10 +15,14 @@
  */
 package org.opencypher.gremlin.translation.ir
 
+import java.util
+
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.translator.Translator
+
+import scala.collection.JavaConverters._
 
 /**
   * Translation writer that produces to-Gremlin translation
@@ -36,6 +40,10 @@ object TranslationWriter {
     * @tparam P predicate target type
     * @return to-Gremlin translation
     */
+  def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P], parameters: util.Map[String, Any]): T = {
+    write(ir, translator, parameters.asScala.toMap)
+  }
+
   def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P], parameters: Map[String, Any]): T = {
     val generator = new TranslationWriter(translator, parameters)
     generator.writeSteps(ir, translator.steps())

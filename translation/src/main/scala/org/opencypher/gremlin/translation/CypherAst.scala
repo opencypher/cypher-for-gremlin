@@ -50,7 +50,7 @@ import scala.collection.mutable
   */
 class CypherAst private (
     val statement: Statement,
-    val parameters: Map[String, Any],
+    parameters: Map[String, Any],
     expressionTypes: Map[Expression, CypherType],
     returnTypes: Map[String, CypherType],
     options: Seq[PreParserOption]) {
@@ -194,12 +194,11 @@ object CypherAst {
       .andThen(SemanticAnalysis(warn = false))
       .transform(startState, EmptyParserContext(preParsedQueryText, Some(offset)))
 
-    val params = parameters ++ state.extractedParams()
     val statement = state.statement()
     val expressionTypes = getExpressionTypes(state)
     val returnTypes = getReturnTypes(expressionTypes, statement)
 
-    new CypherAst(statement, params, expressionTypes, returnTypes, options)
+    new CypherAst(statement, parameters, expressionTypes, returnTypes, options)
   }
 
   private def getExpressionTypes(state: BaseState): Map[Expression, CypherType] = {
