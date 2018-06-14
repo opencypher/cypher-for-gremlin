@@ -16,15 +16,17 @@
 package org.opencypher.gremlin.translation
 
 import java.util
+import java.util.Collections
 
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
 import org.opencypher.gremlin.translation.ir.model.GremlinStep
 import org.opencypher.gremlin.translation.preparser._
-import org.opencypher.gremlin.translation.translator.{TranslationContext, Translator}
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
 import org.opencypher.gremlin.translation.walker.StatementWalker
+import org.opencypher.gremlin.traversal.ProcedureContext
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.frontend.phases._
@@ -40,12 +42,13 @@ import scala.collection.mutable
   * Parsed Cypher AST wrapper that can transform it in a suitable format
   * for executing a Gremlin traversal.
   *
-  * @param statement           AST root node
-  * @param expressionTypes     expression Cypher types
-  * @param returnTypes         return types by alias
-  * @param options             pre-parser options provided by Cypher parser
+  * @param statement       AST root node
+  * @param expressionTypes expression Cypher types
+  * @param returnTypes     return types by alias
+  * @param parameters      Cypher query parameters
+  * @param options         pre-parser options provided by Cypher parser
   */
-class CypherAst(
+class CypherAst private (
     val statement: Statement,
     val expressionTypes: Map[Expression, CypherType],
     val returnTypes: Map[String, CypherType],
@@ -55,10 +58,11 @@ class CypherAst(
   /**
     * Create an intermediate representation of the translation.
     *
-    * @param ctx instance of [[TranslationContext]]
+    * @param flavor     translation flavor
+    * @param procedures registered procedure context
     * @return to-Gremlin translation
     */
-  def translate(ctx: TranslationContext): Seq[GremlinStep] = {
+  def translate(flavor: TranslatorFlavor, procedures: ProcedureContext): Seq[GremlinStep] = {
     val dsl = Translator
       .builder()
       .custom(
@@ -68,11 +72,10 @@ class CypherAst(
       )
       .build()
 
-    val context = StatementContext(dsl, ctx, expressionTypes, returnTypes, parameters)
+    val context = WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)
     StatementWalker.walk(context, statement)
     val ir = dsl.translate()
 
-    val flavor = ctx.flavor()
     val rewritten = flavor.rewriters.foldLeft(ir)((ir, rewriter) => rewriter(ir))
 
     flavor.postConditions
@@ -83,15 +86,16 @@ class CypherAst(
   }
 
   /**
-    * Create a translation.
+    * Create a translation to Gremlin.
     *
     * @param dsl instance of [[Translator]]
-    * @param ctx instance of [[TranslationContext]]
+    * @tparam T translation target type
+    * @tparam P predicate target type
     * @return to-Gremlin translation
     */
-  def buildTranslation[T, P](dsl: Translator[T, P], ctx: TranslationContext): T = {
-    val ir = translate(ctx)
-    TranslationWriter.translate(ir, dsl)
+  def buildTranslation[T, P](dsl: Translator[T, P]): T = {
+    val ir = translate(dsl.flavor(), ProcedureContext.empty())
+    TranslationWriter.write(ir, dsl)
   }
 
   private val javaOptions: util.Set[StatementOption] = options.flatMap {
@@ -99,10 +103,25 @@ class CypherAst(
     case _             => None // ignore unknown
   }.toSet.asJava
 
-  def getOptions: util.Set[StatementOption] = new util.HashSet(javaOptions)
+  /**
+    * Gets declared options for this query.
+    *
+    * @return set of statement options
+    */
+  def getOptions = new util.HashSet(javaOptions)
 
-  def getReturnTypes: util.HashMap[String, CypherType] = new util.HashMap[String, CypherType](returnTypes.asJava)
+  /**
+    * Gets types or return items
+    *
+    * @return map of aliases to types
+    */
+  def getReturnTypes = new util.HashMap[String, CypherType](returnTypes.asJava)
 
+  /**
+    * Pretty-prints the Cypher AST.
+    *
+    * @return string representation
+    */
   override def toString: String = {
     val acc = mutable.ArrayBuffer.empty[(String, Int)]
     flattenText(acc, statement, 0)
@@ -139,6 +158,24 @@ class CypherAst(
   */
 object CypherAst {
 
+  /**
+    * Constructs a new Cypher AST from the provided query.
+    *
+    * @param queryText Cypher query
+    * @return Cypher AST wrapper
+    */
+  @throws[CypherException]
+  def parse(queryText: String): CypherAst = {
+    parse(queryText, Collections.emptyMap[String, Any]())
+  }
+
+  /**
+    * Constructs a new Cypher AST from the provided query.
+    *
+    * @param queryText  Cypher query
+    * @param parameters Cypher query parameters
+    * @return Cypher AST wrapper
+    */
   @throws[CypherException]
   def parse(queryText: String, parameters: util.Map[String, _]): CypherAst = {
     val scalaParameters = Option(parameters)
@@ -148,7 +185,7 @@ object CypherAst {
   }
 
   @throws[CypherException]
-  private def parse(queryText: String, parameters: Map[String, Any]): CypherAst = {
+  private def parse(queryText: String, parameters: Map[String, Any]) = {
     val PreParsedStatement(preParsedQueryText, options, offset) = CypherPreParser(queryText)
     val startState = InitialState(preParsedQueryText, Some(offset), EmptyPlannerName)
     val state = CompilationPhases

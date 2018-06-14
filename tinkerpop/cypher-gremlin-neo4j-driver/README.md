@@ -43,7 +43,7 @@ Driver driver = GremlinDatabase.driver("//localhost:8182");
 
 It is also possible to create a driver from a `org.apache.tinkerpop.gremlin.driver.Cluster` instance:
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriver.java#createDriver) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#createDriver) -->
 ```java
 Cluster cluster1 = Cluster.build()
     .enableSsl(true)
@@ -60,7 +60,7 @@ Driver driver2 = GremlinDatabase.driver(cluster2);
 
 By default Cypher queries will be sent without translation, expecting [Cypher plugin](../cypher-gremlin-server-plugin) to be installed on the server. If the target Gremlin Server does not have the plugin installed, translation can be done on the client's thread:
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriver.java#createConfiguration) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#createConfiguration) -->
 ```java
 Config config = Config.build()
     .withTranslation()
@@ -72,7 +72,7 @@ Driver driver = GremlinDatabase.driver(uri, config);
 
 You can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriver.java#inMemory) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#inMemory) -->
 ```java
 TinkerGraph graph = TinkerFactory.createModern();
 GraphTraversalSource traversal = graph.traversal();
@@ -81,7 +81,7 @@ Driver driver = GremlinDatabase.driver(traversal);
 
 Otherwise, the API is the same:
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriver.java#useDriver) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#useDriver) -->
 ```java
 try (Session session = driver.session()) {
     StatementResult result = session.run("CREATE (a:Greeting) " +

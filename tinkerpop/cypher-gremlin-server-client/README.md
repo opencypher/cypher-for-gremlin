@@ -33,7 +33,7 @@ You can also [build the snapshot](../README.md#development) from source.
 
 To send Cypher queries to a Cypher-enabled Gremlin Server and get Cypher-style results:
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClient.java#gremlinStyle) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#gremlinStyle) -->
 ```java
 Cluster cluster = Cluster.open(configuration);
 Client gremlinClient = cluster.connect();
@@ -45,7 +45,7 @@ List<Map<String, Object>> results = resultSet.all();
 
 Result sets can be consumed in various ways (all share the same iterator, so pick _one_):
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClient.java#workingWithCypherGremlinClient) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#workingWithCypherGremlinClient) -->
 ```java
 List<Map<String, Object>> list = cypherGremlinClient.submit(cypher).all(); // as a list
 Stream<Map<String, Object>> stream = cypherGremlinClient.submit(cypher).stream(); // as a stream
@@ -55,7 +55,7 @@ Iterable<Map<String, Object>> iterable = cypherGremlinClient.submit(cypher); // 
 
 Queries can be submitted asynchronously:
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClient.java#async) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#async) -->
 ```java
 String cypher = "MATCH (p:person) WHERE p.age > 25 RETURN p.name";
 CompletableFuture<CypherResultSet> future = cypherGremlinClient.submitAsync(cypher);
@@ -68,14 +68,14 @@ future
 
 If the target Gremlin Server does not have the [Cypher plugin](../cypher-gremlin-server-plugin) installed, translation can be done on the client's thread:
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClient.java#translating) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#translating) -->
 ```java
 CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(gremlinClient);
 ```
 
 You can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClient.java#inMemory) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#inMemory) -->
 ```java
 TinkerGraph graph = TinkerFactory.createModern();
 GraphTraversalSource traversal = graph.traversal();

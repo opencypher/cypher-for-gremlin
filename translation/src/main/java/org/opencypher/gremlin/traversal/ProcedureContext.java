@@ -46,6 +46,10 @@ public final class ProcedureContext {
         return LazyHolder.GLOBAL;
     }
 
+    public static ProcedureContext empty() {
+        return new ProcedureContext(emptySet());
+    }
+
     public ProcedureContext(Set<CypherProcedure> procedures) {
         this.procedures = procedures.stream()
             .collect(Collectors.toMap(

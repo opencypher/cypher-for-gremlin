@@ -24,9 +24,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
-import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
@@ -35,11 +34,11 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 final class GroovyCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final TranslationContext translationContext;
+    private final TranslatorFlavor flavor;
 
     GroovyCypherGremlinClient(Client client, TranslatorFlavor flavor) {
         this.client = client;
-        translationContext = TranslationContext.builder().build(flavor);
+        this.flavor = flavor;
     }
 
     @Override
@@ -50,9 +49,9 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
-        CypherAstWrapper ast;
+        CypherAst ast;
         try {
-            ast = CypherAstWrapper.parse(cypher, normalizedParameters);
+            ast = CypherAst.parse(cypher, normalizedParameters);
         } catch (Exception e) {
             return completedFuture(exceptional(e));
         }
@@ -61,8 +60,8 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(explain(ast));
         }
 
-        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
-        String gremlin = ast.buildTranslation(translator, translationContext);
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build(flavor);
+        String gremlin = ast.buildTranslation(translator);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, normalizedParameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture

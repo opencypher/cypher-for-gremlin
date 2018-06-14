@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.util.Preconditions;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.helpers.TraversalAssertions.TraversalAssertion;
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinBindings;
@@ -33,19 +33,18 @@ import org.opencypher.gremlin.translation.ir.builder.IRGremlinSteps;
 import org.opencypher.gremlin.translation.ir.model.GremlinPredicate;
 import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.ir.rewrite.GremlinRewriter;
-import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import scala.collection.Seq;
 
-public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
+public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAst> {
 
-    private final CypherAstWrapper actual;
+    private final CypherAst actual;
     private TranslatorFlavor flavor;
     private GremlinRewriter rewriter;
     private Function<Seq<GremlinStep>, Seq<GremlinStep>> extractor = identity();
 
-    CypherAstAssert(CypherAstWrapper actual) {
+    CypherAstAssert(CypherAst actual) {
         super(actual, CypherAstAssert.class);
         this.actual = actual;
     }
@@ -62,7 +61,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
 
     public CypherAstAssert normalizedTo(String expected) {
         String actualString = actual.toString();
-        String expectedString = CypherAstWrapper.parse(expected).toString();
+        String expectedString = CypherAst.parse(expected).toString();
         if (!Objects.equals(actualString, expectedString)) {
             failWithMessage(
                 "AST mismatch!\nExpected: <%s>\n  Actual: <%s>",
@@ -103,35 +102,24 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     }
 
     private Seq<GremlinStep> actualTraversal() {
-        Seq<GremlinStep> steps = actual.buildTranslation(
-            irTranslator(),
-            flavorContext(flavor)
-        );
+        Seq<GremlinStep> steps = actual.buildTranslation(irTranslator(flavor));
         steps = extractor.apply(steps);
         return steps;
     }
 
     private Seq<GremlinStep> rewriteTraversal() {
         Preconditions.checkNotNull(rewriter, "Rewriter not set! Use `CypherAstAssert.rewritingWith`");
-        Seq<GremlinStep> steps = actual.buildTranslation(
-            irTranslator(),
-            flavorContext(flavor.extend(seq(rewriter), seq()))
-        );
+        Seq<GremlinStep> steps = actual.buildTranslation(irTranslator(flavor.extend(seq(rewriter), seq())));
         return steps;
     }
 
-    private Translator<Seq<GremlinStep>, GremlinPredicate> irTranslator() {
+    private Translator<Seq<GremlinStep>, GremlinPredicate> irTranslator(TranslatorFlavor flavor) {
         return Translator.builder()
             .custom(
                 new IRGremlinSteps(),
                 new IRGremlinPredicates(),
                 new IRGremlinBindings()
             )
-            .build();
-    }
-
-    private TranslationContext flavorContext(TranslatorFlavor flavor) {
-        return TranslationContext.builder()
             .build(flavor);
     }
 

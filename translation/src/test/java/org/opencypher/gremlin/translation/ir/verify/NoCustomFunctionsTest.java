@@ -19,9 +19,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.opencypher.gremlin.translation.helpers.ScalaHelpers.seq;
 
 import org.junit.Test;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
-import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
@@ -40,11 +39,10 @@ public class NoCustomFunctionsTest {
             "AND s ENDS WITH 'x' " +
             "AND s CONTAINS 'x' " +
             "RETURN length(s), toString(s)";
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
-        TranslationContext translationContext = TranslationContext.builder().build(flavor);
-        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
+        CypherAst ast = CypherAst.parse(cypher);
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build(flavor);
 
-        assertThatThrownBy(() -> ast.buildTranslation(translator, translationContext))
+        assertThatThrownBy(() -> ast.buildTranslation(translator))
             .hasMessageContaining("contains, convertToString, endsWith, length, starsWith");
     }
 }

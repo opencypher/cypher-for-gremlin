@@ -43,13 +43,16 @@ public final class Translator<T, P> {
     private final GremlinSteps<T, P> steps;
     private final GremlinPredicates<P> predicates;
     private final GremlinBindings bindings;
+    private final TranslatorFlavor flavor;
 
     private Translator(GremlinSteps<T, P> steps,
                        GremlinPredicates<P> predicates,
-                       GremlinBindings bindings) {
+                       GremlinBindings bindings,
+                       TranslatorFlavor flavor) {
         this.steps = steps;
         this.predicates = predicates;
         this.bindings = bindings;
+        this.flavor = flavor;
     }
 
     /**
@@ -86,6 +89,15 @@ public final class Translator<T, P> {
     }
 
     /**
+     * Returns the flavor of this translation.
+     *
+     * @return translation flavor
+     */
+    public TranslatorFlavor flavor() {
+        return flavor;
+    }
+
+    /**
      * Creates a translation for the configured target.
      *
      * @return translation
@@ -113,8 +125,8 @@ public final class Translator<T, P> {
          *
          * @return builder for translator to Gremlin-Groovy string
          */
-        public ParametrizedConfiguredBuilder<String, GroovyPredicate> gremlinGroovy() {
-            return new ParametrizedConfiguredBuilder<>(
+        public ParametrizedFlavorBuilder<String, GroovyPredicate> gremlinGroovy() {
+            return new ParametrizedFlavorBuilder<>(
                 new GroovyGremlinSteps(),
                 new GroovyGremlinPredicates(),
                 new GroovyGremlinBindings()
@@ -127,8 +139,8 @@ public final class Translator<T, P> {
          *
          * @return builder for translator to Gremlin bytecode
          */
-        public ParametrizedConfiguredBuilder<Bytecode, org.apache.tinkerpop.gremlin.process.traversal.P> bytecode() {
-            return new ParametrizedConfiguredBuilder<>(
+        public ParametrizedFlavorBuilder<Bytecode, org.apache.tinkerpop.gremlin.process.traversal.P> bytecode() {
+            return new ParametrizedFlavorBuilder<>(
                 new BytecodeGremlinSteps(),
                 new BytecodeGremlinPredicates(),
                 new BytecodeGremlinBindings()
@@ -143,7 +155,7 @@ public final class Translator<T, P> {
          *
          * @return builder for translator to Gremlin traversal
          */
-        public ConfiguredBuilder<GraphTraversal, org.apache.tinkerpop.gremlin.process.traversal.P> traversal() {
+        public FlavorBuilder<GraphTraversal, org.apache.tinkerpop.gremlin.process.traversal.P> traversal() {
             return traversal(new DefaultGraphTraversal());
         }
 
@@ -157,8 +169,8 @@ public final class Translator<T, P> {
          * @param g traversal to modify with translated steps
          * @return builder for translator to Gremlin traversal
          */
-        public ConfiguredBuilder<GraphTraversal, org.apache.tinkerpop.gremlin.process.traversal.P> traversal(GraphTraversal g) {
-            return new ConfiguredBuilder<>(
+        public FlavorBuilder<GraphTraversal, org.apache.tinkerpop.gremlin.process.traversal.P> traversal(GraphTraversal g) {
+            return new FlavorBuilder<>(
                 new TraversalGremlinSteps(g),
                 new TraversalGremlinPredicates(),
                 new TraversalGremlinBindings()
@@ -176,12 +188,12 @@ public final class Translator<T, P> {
          * @param <P>        predicate target type
          * @return builder for translator to custom format
          */
-        public <T, P> ConfiguredBuilder<T, P> custom(
+        public <T, P> FlavorBuilder<T, P> custom(
             GremlinSteps<T, P> steps,
             GremlinPredicates<P> predicates,
             GremlinBindings parameters
         ) {
-            return new ConfiguredBuilder<>(
+            return new FlavorBuilder<>(
                 steps,
                 predicates,
                 parameters
@@ -189,14 +201,14 @@ public final class Translator<T, P> {
         }
     }
 
-    public static class ConfiguredBuilder<T, P> {
+    public static class FlavorBuilder<T, P> {
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
         protected GremlinBindings bindings;
 
-        private ConfiguredBuilder(GremlinSteps<T, P> steps,
-                                  GremlinPredicates<P> predicates,
-                                  GremlinBindings bindings) {
+        private FlavorBuilder(GremlinSteps<T, P> steps,
+                              GremlinPredicates<P> predicates,
+                              GremlinBindings bindings) {
             this.steps = steps;
             this.predicates = predicates;
             this.bindings = bindings;
@@ -208,18 +220,29 @@ public final class Translator<T, P> {
          * @return translator
          */
         public Translator<T, P> build() {
+            return build(null);
+        }
+
+        /**
+         * Builds a {@link Translator} with the given translator flavor.
+         *
+         * @param flavor translation flavor
+         * @return translator
+         */
+        public Translator<T, P> build(TranslatorFlavor flavor) {
             return new Translator<>(
                 steps,
                 predicates,
-                bindings
+                bindings,
+                flavor != null ? flavor : TranslatorFlavor.gremlinServer()
             );
         }
     }
 
-    public static final class ParametrizedConfiguredBuilder<T, P> extends ConfiguredBuilder<T, P> {
-        private ParametrizedConfiguredBuilder(GremlinSteps<T, P> steps,
-                                              GremlinPredicates<P> predicates,
-                                              GremlinBindings bindings) {
+    public static final class ParametrizedFlavorBuilder<T, P> extends FlavorBuilder<T, P> {
+        private ParametrizedFlavorBuilder(GremlinSteps<T, P> steps,
+                                          GremlinPredicates<P> predicates,
+                                          GremlinBindings bindings) {
             super(steps, predicates, bindings);
         }
 
@@ -228,7 +251,7 @@ public final class Translator<T, P> {
          *
          * @return builder for translator
          */
-        public ConfiguredBuilder<T, P> inlineParameters() {
+        public FlavorBuilder<T, P> inlineParameters() {
             bindings = new TraversalGremlinBindings();
             return this;
         }

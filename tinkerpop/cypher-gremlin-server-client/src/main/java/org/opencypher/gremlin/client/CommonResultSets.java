@@ -21,22 +21,21 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Result;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
-import org.opencypher.gremlin.translation.translator.TranslationContext;
 import org.opencypher.gremlin.translation.translator.Translator;
 
 final class CommonResultSets {
     private CommonResultSets() {
     }
 
-    static CypherResultSet explain(CypherAstWrapper ast) {
+    static CypherResultSet explain(CypherAst ast) {
         Map<String, Object> explanation = new LinkedHashMap<>();
         Translator<String, GroovyPredicate> translator = Translator.builder()
             .gremlinGroovy()
             .inlineParameters()
             .build();
-        explanation.put("translation", ast.buildTranslation(translator, TranslationContext.DEFAULT));
+        explanation.put("translation", ast.buildTranslation(translator));
         explanation.put("options", ast.getOptions().toString());
         Iterator<Result> iterator = singletonIterator(() -> new Result(explanation));
         return new CypherResultSet(iterator);

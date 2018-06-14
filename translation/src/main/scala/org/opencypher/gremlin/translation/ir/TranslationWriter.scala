@@ -21,23 +21,19 @@ import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.translator.Translator
 
 object TranslationWriter {
-  def translate[T, P](ir: Seq[GremlinStep], translator: Translator[T, P]): T = {
-    val generator = new TranslationGenerator(translator)
-    generator.generate(ir)
+  def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P]): T = {
+    val generator = new TranslationWriter(translator)
+    generator.writeSteps(ir, translator.steps())
     translator.translate()
   }
 }
 
-sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
+sealed class TranslationWriter[T, P] private (translator: Translator[T, P]) {
   private val g = translator.steps()
   private val p = translator.predicates()
   private val b = translator.bindings()
 
-  def generate(ir: Seq[GremlinStep]): GremlinSteps[T, P] = {
-    generateSteps(ir, g)
-  }
-
-  private def generateSteps(ir: Seq[GremlinStep], g: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+  private def writeSteps(ir: Seq[GremlinStep], g: GremlinSteps[T, P]): GremlinSteps[T, P] = {
     for (step <- ir) {
       step match {
         case Vertex =>
@@ -51,7 +47,7 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case Aggregate(sideEffectKey) =>
           g.aggregate(sideEffectKey)
         case And(andTraversals @ _*) =>
-          g.and(andTraversals.map(generateSteps): _*)
+          g.and(andTraversals.map(writeLocalSteps): _*)
         case As(stepLabel) =>
           g.as(stepLabel)
         case Barrier =>
@@ -60,24 +56,24 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
           g.bothE(edgeLabels: _*)
         case By(traversal, order) =>
           order
-            .map(g.by(generateSteps(traversal), _))
-            .getOrElse(g.by(generateSteps(traversal)))
+            .map(g.by(writeLocalSteps(traversal), _))
+            .getOrElse(g.by(writeLocalSteps(traversal)))
         case Cap(sideEffectKey) =>
           g.cap(sideEffectKey)
         case ChooseT(traversalPredicate, trueChoice, falseChoice) =>
           if (trueChoice.nonEmpty && falseChoice.nonEmpty) {
-            g.choose(generateSteps(traversalPredicate), generateSteps(trueChoice), generateSteps(falseChoice))
+            g.choose(writeLocalSteps(traversalPredicate), writeLocalSteps(trueChoice), writeLocalSteps(falseChoice))
           }
         case ChooseP(predicate, trueChoice, falseChoice) =>
           if (trueChoice.nonEmpty && falseChoice.nonEmpty) {
-            g.choose(generatePredicate(predicate), generateSteps(trueChoice), generateSteps(falseChoice))
+            g.choose(writePredicate(predicate), writeLocalSteps(trueChoice), writeLocalSteps(falseChoice))
           } else if (trueChoice.nonEmpty) {
-            g.choose(generatePredicate(predicate), generateSteps(trueChoice))
+            g.choose(writePredicate(predicate), writeLocalSteps(trueChoice))
           }
         case Coalesce(coalesceTraversals @ _*) =>
-          g.coalesce(coalesceTraversals.map(generateSteps): _*)
+          g.coalesce(coalesceTraversals.map(writeLocalSteps): _*)
         case Constant(e) =>
-          g.constant(generateValue(e))
+          g.constant(writeValue(e))
         case Count =>
           g.count()
         case CountS(scope) =>
@@ -97,7 +93,7 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case Has(propertyKey) =>
           g.has(propertyKey)
         case HasP(propertyKey, predicate) =>
-          g.has(propertyKey, generatePredicate(predicate))
+          g.has(propertyKey, writePredicate(predicate))
         case HasKey(labels @ _*) =>
           g.hasKey(labels: _*)
         case HasLabel(labels @ _*) =>
@@ -113,9 +109,9 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case InV =>
           g.inV()
         case Inject(injections @ _*) =>
-          g.inject(injections.map(generateValue): _*)
+          g.inject(injections.map(writeValue): _*)
         case Is(predicate) =>
-          g.is(generatePredicate(predicate))
+          g.is(writePredicate(predicate))
         case Key =>
           g.key()
         case Label =>
@@ -123,13 +119,13 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case Limit(limit) =>
           g.limit(limit)
         case Local(traversal) =>
-          g.local(generateSteps(traversal))
+          g.local(writeLocalSteps(traversal))
         case Loops =>
           g.loops()
         case MapF(function) =>
           g.map(function)
         case MapT(traversal) =>
-          g.map(generateSteps(traversal))
+          g.map(writeLocalSteps(traversal))
         case Math(expression) =>
           g.math(expression)
         case Max =>
@@ -139,11 +135,11 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case Min =>
           g.min()
         case Not(notTraversal) =>
-          g.not(generateSteps(notTraversal))
+          g.not(writeLocalSteps(notTraversal))
         case Optional(optionalTraversal) =>
-          g.optional(generateSteps(optionalTraversal))
+          g.optional(writeLocalSteps(optionalTraversal))
         case Or(orTraversals @ _*) =>
-          g.or(orTraversals.map(generateSteps): _*)
+          g.or(orTraversals.map(writeLocalSteps): _*)
         case Order =>
           g.order()
         case OtherV =>
@@ -157,21 +153,21 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case Properties(propertyKeys @ _*) =>
           g.properties(propertyKeys: _*)
         case PropertyV(key, value) =>
-          g.property(key, generateValue(value))
+          g.property(key, writeValue(value))
         case PropertyT(key, traversal) =>
-          g.property(key, generateSteps(traversal))
+          g.property(key, writeLocalSteps(traversal))
         case Project(keys @ _*) =>
           g.project(keys: _*)
         case Range(scope: Scope, low: Long, high: Long) =>
           g.range(scope, low, high)
         case Repeat(repeatTraversal) =>
-          g.repeat(generateSteps(repeatTraversal))
+          g.repeat(writeLocalSteps(repeatTraversal))
         case SelectK(selectKeys @ _*) =>
           g.select(selectKeys: _*)
         case SelectC(column) =>
           g.select(column)
         case SideEffect(sideEffectTraversal) =>
-          g.sideEffect(generateSteps(sideEffectTraversal))
+          g.sideEffect(writeLocalSteps(sideEffectTraversal))
         case SimplePath =>
           g.simplePath()
         case Skip(skip) =>
@@ -185,9 +181,9 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case Unfold =>
           g.unfold()
         case Union(unionTraversals @ _*) =>
-          g.union(unionTraversals.map(generateSteps): _*)
+          g.union(unionTraversals.map(writeLocalSteps): _*)
         case Until(untilTraversal) =>
-          g.until(generateSteps(untilTraversal))
+          g.until(writeLocalSteps(untilTraversal))
         case Value =>
           g.value()
         case ValueMap =>
@@ -197,36 +193,36 @@ sealed private class TranslationGenerator[T, P](translator: Translator[T, P]) {
         case Values(propertyKeys @ _*) =>
           g.values(propertyKeys: _*)
         case WhereT(whereTraversal) =>
-          g.where(generateSteps(whereTraversal))
+          g.where(writeLocalSteps(whereTraversal))
         case WhereP(predicate) =>
-          g.where(generatePredicate(predicate))
+          g.where(writePredicate(predicate))
       }
     }
     g
   }
 
-  private def generateSteps(ir: Seq[GremlinStep]): GremlinSteps[T, P] = {
-    generateSteps(ir, g.start())
+  private def writeLocalSteps(ir: Seq[GremlinStep]): GremlinSteps[T, P] = {
+    writeSteps(ir, g.start())
   }
 
-  def generatePredicate(predicate: GremlinPredicate): P = {
+  def writePredicate(predicate: GremlinPredicate): P = {
     predicate match {
-      case Eq(value)              => p.isEq(generateValue(value))
-      case Gt(value)              => p.gt(generateValue(value))
-      case Gte(value)             => p.gte(generateValue(value))
-      case Lt(value)              => p.lt(generateValue(value))
-      case Lte(value)             => p.lte(generateValue(value))
-      case Neq(value)             => p.neq(generateValue(value))
-      case Between(first, second) => p.between(generateValue(first), generateValue(second))
-      case Within(values @ _*)    => p.within(values.map(generateValue): _*)
-      case Without(values @ _*)   => p.without(values.map(generateValue): _*)
-      case StartsWith(value)      => p.startsWith(generateValue(value))
-      case EndsWith(value)        => p.endsWith(generateValue(value))
-      case Contains(value)        => p.contains(generateValue(value))
+      case Eq(value)              => p.isEq(writeValue(value))
+      case Gt(value)              => p.gt(writeValue(value))
+      case Gte(value)             => p.gte(writeValue(value))
+      case Lt(value)              => p.lt(writeValue(value))
+      case Lte(value)             => p.lte(writeValue(value))
+      case Neq(value)             => p.neq(writeValue(value))
+      case Between(first, second) => p.between(writeValue(first), writeValue(second))
+      case Within(values @ _*)    => p.within(values.map(writeValue): _*)
+      case Without(values @ _*)   => p.without(values.map(writeValue): _*)
+      case StartsWith(value)      => p.startsWith(writeValue(value))
+      case EndsWith(value)        => p.endsWith(writeValue(value))
+      case Contains(value)        => p.contains(writeValue(value))
     }
   }
 
-  def generateValue(value: Any): Object = {
+  def writeValue(value: Any): Object = {
     value match {
       case GremlinBinding(name, bValue) => b.bind(name, bValue)
       case _                            => value.asInstanceOf[AnyRef]

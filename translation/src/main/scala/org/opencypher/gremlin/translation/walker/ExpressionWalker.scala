@@ -19,7 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
@@ -35,16 +35,16 @@ import scala.collection.immutable.NumericRange
   * of evaluable expression nodes in the Cypher AST.
   */
 object ExpressionWalker {
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Expression): Unit = {
+  def walk[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Expression): Unit = {
     new ExpressionWalker(context, g).walk(node)
   }
 
-  def walkLocal[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Expression): GremlinSteps[T, P] = {
+  def walkLocal[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Expression): GremlinSteps[T, P] = {
     new ExpressionWalker(context, g).walkLocal(node)
   }
 
   def walkProperty[T, P](
-      context: StatementContext[T, P],
+      context: WalkerContext[T, P],
       g: GremlinSteps[T, P],
       key: String,
       value: Expression): GremlinSteps[T, P] = {
@@ -52,7 +52,7 @@ object ExpressionWalker {
   }
 }
 
-private class ExpressionWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   def walk(node: Expression): Unit = {
     g.map(walkLocal(node))
   }

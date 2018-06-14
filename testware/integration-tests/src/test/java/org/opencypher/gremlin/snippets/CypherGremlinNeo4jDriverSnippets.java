@@ -31,7 +31,7 @@ import org.opencypher.gremlin.neo4j.driver.Config;
 import org.opencypher.gremlin.neo4j.driver.GremlinDatabase;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
-public class CypherGremlinNeo4jDriver {
+public class CypherGremlinNeo4jDriverSnippets {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();

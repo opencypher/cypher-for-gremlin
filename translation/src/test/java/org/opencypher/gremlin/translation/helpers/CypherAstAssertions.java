@@ -16,10 +16,10 @@
 package org.opencypher.gremlin.translation.helpers;
 
 import org.assertj.core.api.Assertions;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 
 public class CypherAstAssertions extends Assertions {
-    public static CypherAstAssert assertThat(CypherAstWrapper actual) {
+    public static CypherAstAssert assertThat(CypherAst actual) {
         return new CypherAstAssert(actual);
     }
 }

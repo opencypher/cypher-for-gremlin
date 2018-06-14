@@ -19,7 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation._
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
@@ -34,16 +34,16 @@ import scala.collection.mutable
   * of the `WHERE` clause nodes in the Cypher AST.
   */
 object WhereWalker {
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Where): Unit = {
+  def walk[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Where): Unit = {
     new WhereWalker(context, g).walk(node)
   }
 
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], expression: Expression): Unit = {
+  def walk[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], expression: Expression): Unit = {
     new WhereWalker(context, g).walk(expression)
   }
 }
 
-private class WhereWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   private val freshIds = mutable.HashMap.empty[String, String]
 

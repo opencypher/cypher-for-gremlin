@@ -60,6 +60,6 @@ public class TraversalAssertions {
 
     private static String print(Seq<GremlinStep> traversal) {
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
-        return TranslationWriter.translate(traversal, translator);
+        return TranslationWriter.write(traversal, translator);
     }
 }

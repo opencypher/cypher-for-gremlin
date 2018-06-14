@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import java.util.Collections
 
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
@@ -29,12 +29,12 @@ import org.opencypher.v9_0.expressions._
   */
 object UnwindWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Unwind): Unit = {
+  def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Unwind): Unit = {
     new UnwindWalker(context, g).walkClause(node)
   }
 }
 
-private class UnwindWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class UnwindWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Unwind): Unit = {
     val Unwind(expression, Variable(varName)) = node

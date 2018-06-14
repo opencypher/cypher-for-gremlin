@@ -26,8 +26,7 @@ import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
-import org.opencypher.gremlin.translation.translator.TranslationContext;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
@@ -36,11 +35,11 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 final class BytecodeCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
-    private final TranslationContext translationContext;
+    private final TranslatorFlavor flavor;
 
     BytecodeCypherGremlinClient(Client client, TranslatorFlavor flavor) {
         this.client = client;
-        translationContext = TranslationContext.builder().build(flavor);
+        this.flavor = flavor;
     }
 
     @Override
@@ -51,9 +50,9 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
-        CypherAstWrapper ast;
+        CypherAst ast;
         try {
-            ast = CypherAstWrapper.parse(cypher, normalizedParameters);
+            ast = CypherAst.parse(cypher, normalizedParameters);
         } catch (Exception e) {
             return completedFuture(exceptional(e));
         }
@@ -62,8 +61,8 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(explain(ast));
         }
 
-        Translator<Bytecode, P> translator = Translator.builder().bytecode().build();
-        Bytecode bytecode = ast.buildTranslation(translator, translationContext);
+        Translator<Bytecode, P> translator = Translator.builder().bytecode().build(flavor);
+        Bytecode bytecode = ast.buildTranslation(translator);
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(bytecode);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
 
