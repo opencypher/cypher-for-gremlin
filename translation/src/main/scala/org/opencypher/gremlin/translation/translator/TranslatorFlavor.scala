@@ -65,6 +65,18 @@ object TranslatorFlavor {
   )
 
   /**
+    * A translator flavor that is suitable for AWS Neptune.
+    */
+  val neptune: TranslatorFlavor = gremlinServer.extend(
+    rewriters = Seq(
+      NeptuneFlavor
+    ),
+    postConditions = Seq(
+      NoCustomFunctions
+    )
+  )
+
+  /**
     * Empty translator flavor without rewriting and post conditions.
     */
   val empty: TranslatorFlavor = TranslatorFlavor(

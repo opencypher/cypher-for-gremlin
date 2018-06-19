@@ -301,6 +301,8 @@ project(':testware:tck') {
         useJUnitPlatform()
         ignoreFailures true
 
+        systemProperty 'configPath', System.getProperty('configPath')
+        systemProperty 'translate', System.getProperty('translate')
         systemProperty 'feature', System.getProperty('feature')
         systemProperty 'scenario', System.getProperty('scenario')
 
