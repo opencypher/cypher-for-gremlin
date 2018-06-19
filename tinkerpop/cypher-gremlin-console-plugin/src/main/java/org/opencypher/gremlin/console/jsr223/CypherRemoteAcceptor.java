@@ -83,9 +83,14 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
         switch (name) {
             case "cosmosdb":
                 return TranslatorFlavor.cosmosDb();
+            case "neptune":
+                return TranslatorFlavor.neptune();
             case "gremlin":
-            default:
                 return TranslatorFlavor.gremlinServer();
+            case "":
+                return TranslatorFlavor.gremlinServer();
+            default:
+                throw new IllegalArgumentException("Unknown translation flavor: " + name);
         }
     }
 
