@@ -17,7 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.NULL
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils.notNull
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
@@ -28,12 +28,12 @@ import org.opencypher.v9_0.util.InputPosition
   * of the `SET` clause nodes in the Cypher AST.
   */
 object SetWalker {
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Clause): Unit = {
+  def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Clause): Unit = {
     new SetWalker(context, g).walkClause(node)
   }
 }
 
-private class SetWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class SetWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Clause): Unit = {
     node match {

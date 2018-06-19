@@ -51,7 +51,7 @@ public class TranslationFacade {
      * @return Gremlin Groovy query
      */
     public String toGremlinGroovy(String cypher, Map<String, Object> parameters) {
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
+        CypherAst ast = CypherAst.parse(cypher, parameters);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
         return ast.buildTranslation(translator);
     }

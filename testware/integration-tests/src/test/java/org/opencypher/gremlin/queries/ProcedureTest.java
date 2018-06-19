@@ -33,9 +33,14 @@ import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.extension.TestProcedures;
 import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.groups.SkipWithGremlinGroovy;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
+import org.opencypher.gremlin.translation.ir.TranslationWriter;
+import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.traversal.ProcedureContext;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
+import scala.collection.Seq;
 
 /**
  * @see TestProcedures
@@ -47,20 +52,21 @@ import org.opencypher.gremlin.traversal.ReturnNormalizer;
 public class ProcedureTest {
 
     private GraphTraversalSource gts = TinkerGraph.open().traversal();
-    private TestProcedures testProcedures = new TestProcedures();
+    private ProcedureContext procedureContext = new ProcedureContext(new TestProcedures().get());
+    private TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return submitAndGet(cypher, emptyMap());
     }
 
-    private List<Map<String, Object>> submitAndGet(String cypher, Map<String, ?> parameters) {
+    private List<Map<String, Object>> submitAndGet(String cypher, Map<String, Object> parameters) {
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts);
         Translator<GraphTraversal, P> translator = Translator.builder()
             .traversal(g)
-            .procedures(testProcedures.get())
             .build();
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
-        GraphTraversal<?, ?> traversal = ast.buildTranslation(translator);
+        CypherAst ast = CypherAst.parse(cypher, parameters);
+        Seq<GremlinStep> ir = ast.translate(flavor, procedureContext);
+        GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, translator, parameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return traversal.toStream()
             .map(returnNormalizer::normalize)

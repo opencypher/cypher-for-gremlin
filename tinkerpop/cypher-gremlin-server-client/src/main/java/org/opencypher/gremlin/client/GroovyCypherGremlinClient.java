@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
@@ -49,9 +49,9 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
         Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
-        CypherAstWrapper ast;
+        CypherAst ast;
         try {
-            ast = CypherAstWrapper.parse(cypher, normalizedParameters);
+            ast = CypherAst.parse(cypher, normalizedParameters);
         } catch (Exception e) {
             return completedFuture(exceptional(e));
         }

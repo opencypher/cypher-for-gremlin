@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.ir.rewrite;
 
 import static java.util.Collections.emptyMap;
-import static org.opencypher.gremlin.translation.CypherAstWrapper.parse;
+import static org.opencypher.gremlin.translation.CypherAst.parse;
 import static org.opencypher.gremlin.translation.Tokens.NULL;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.P;
 import static org.opencypher.gremlin.translation.helpers.CypherAstAssert.__;

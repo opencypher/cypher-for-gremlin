@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
@@ -26,23 +26,23 @@ import org.opencypher.v9_0.util.symbols.AnyType
 import scala.collection.JavaConverters._
 
 object CallWalker {
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: UnresolvedCall): Unit = {
+  def walk[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: UnresolvedCall): Unit = {
     new CallWalker(context, g).walk(node)
   }
 
-  def walkStandalone[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: UnresolvedCall): Unit = {
+  def walkStandalone[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: UnresolvedCall): Unit = {
     new CallWalker(context, g).walkStandalone(node)
   }
 }
 
-private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walk(node: UnresolvedCall): Unit = {
     ensureFirstStatement(g, context)
 
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
-        val procedures = context.dsl.procedures()
+        val procedures = context.procedures
         val qualifiedName = namespaceParts.mkString(".") + "." + name
         procedures.findOrThrow(qualifiedName)
 
@@ -76,7 +76,7 @@ private class CallWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[
   def walkStandalone(node: UnresolvedCall): Unit = {
     ensureFirstStatement(g, context)
 
-    val procedures = context.dsl.procedures()
+    val procedures = context.procedures
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
         val qualifiedName = namespaceParts.mkString(".") + "." + name

@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.util.Preconditions;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.translation.helpers.TraversalAssertions.TraversalAssertion;
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinBindings;
@@ -37,14 +37,14 @@ import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import scala.collection.Seq;
 
-public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWrapper> {
+public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAst> {
 
-    private final CypherAstWrapper actual;
+    private final CypherAst actual;
     private TranslatorFlavor flavor;
     private GremlinRewriter rewriter;
     private Function<Seq<GremlinStep>, Seq<GremlinStep>> extractor = identity();
 
-    CypherAstAssert(CypherAstWrapper actual) {
+    CypherAstAssert(CypherAst actual) {
         super(actual, CypherAstAssert.class);
         this.actual = actual;
     }
@@ -61,7 +61,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
 
     public CypherAstAssert normalizedTo(String expected) {
         String actualString = actual.toString();
-        String expectedString = CypherAstWrapper.parse(expected).toString();
+        String expectedString = CypherAst.parse(expected).toString();
         if (!Objects.equals(actualString, expectedString)) {
             failWithMessage(
                 "AST mismatch!\nExpected: <%s>\n  Actual: <%s>",
@@ -78,14 +78,14 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     }
 
     public final CypherAstAssert removes(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
-            assertTraversal(traversal, traversalContains);
-            assertTraversal(rewriteTraversal(), traversal, traversalNotContains);
+        assertTraversal(traversal, traversalContains);
+        assertTraversal(rewriteTraversal(), traversal, traversalNotContains);
         return this;
     }
 
     public final CypherAstAssert keeps(GremlinSteps<Seq<GremlinStep>, GremlinPredicate> traversal) {
-            assertTraversal(traversal, traversalContains);
-            assertTraversal(rewriteTraversal(), traversal, traversalContains);
+        assertTraversal(traversal, traversalContains);
+        assertTraversal(rewriteTraversal(), traversal, traversalContains);
         return this;
     }
 
@@ -114,8 +114,7 @@ public class CypherAstAssert extends AbstractAssert<CypherAstAssert, CypherAstWr
     }
 
     private Translator<Seq<GremlinStep>, GremlinPredicate> irTranslator(TranslatorFlavor flavor) {
-        return Translator
-            .builder()
+        return Translator.builder()
             .custom(
                 new IRGremlinSteps(),
                 new IRGremlinPredicates(),

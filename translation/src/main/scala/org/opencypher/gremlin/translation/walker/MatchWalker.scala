@@ -17,19 +17,19 @@ package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation._
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
 
 object MatchWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Match): Unit = {
+  def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Match): Unit = {
     new MatchWalker(context, g).walkClause(node)
   }
 
   def walkPatternParts[T, P](
-      context: StatementContext[T, P],
+      context: WalkerContext[T, P],
       g: GremlinSteps[T, P],
       patternParts: Seq[PatternPart],
       whereOption: Option[Where]): Unit = {
@@ -37,7 +37,7 @@ object MatchWalker {
   }
 }
 
-private class MatchWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class MatchWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Match): Unit = {
     val Match(optional, Pattern(patternParts), _, whereOption) = node

@@ -25,14 +25,14 @@ import org.opencypher.v9_0.util.symbols.CypherType;
 import org.opencypher.v9_0.util.symbols.IntegerType;
 import org.opencypher.v9_0.util.symbols.NodeType;
 
-public class CypherAstWrapperTest {
+public class CypherAstTest {
 
     @Test
     public void duplicateNames() {
         String cypher = "MATCH (n:person)-[r:knows]->(friend:person)\n" +
                         "WHERE n.name = 'marko'\n" +
                         "RETURN n, friend.name AS friend";
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("n")).isInstanceOf(NodeType.class);
@@ -42,7 +42,7 @@ public class CypherAstWrapperTest {
     @Test
     public void duplicateNameInAggregation() {
         String cypher = "MATCH (n) RETURN n.prop AS n, count(n) AS count";
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
         Map<String, CypherType> extractedParameters = ast.getReturnTypes();
 
         assertThat(extractedParameters.get("n")).isInstanceOf(AnyType.class);
@@ -55,7 +55,7 @@ public class CypherAstWrapperTest {
             "UNION\n" +
             "MATCH (b:B)\n" +
             "RETURN b AS a";
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);
@@ -65,7 +65,7 @@ public class CypherAstWrapperTest {
     public void variableInTypeTable() {
         String cypher = "MATCH (a)\n" +
             "RETURN a, count(a) + 3";
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);

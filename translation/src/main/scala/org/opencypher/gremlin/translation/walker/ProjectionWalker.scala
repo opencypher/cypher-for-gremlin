@@ -19,7 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
@@ -36,7 +36,7 @@ import scala.util.Try
   * of the `RETURN` clause node in the Cypher AST.
   */
 object ProjectionWalker {
-  def walk[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: ProjectionClause): Unit = {
+  def walk[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: ProjectionClause): Unit = {
     node match {
       case Return(distinct, ReturnItems(_, items), _, orderBy, skip, limit, _) =>
         new ProjectionWalker(context, g).walk(distinct, items, orderBy, skip, limit, finalize = true)
@@ -47,7 +47,7 @@ object ProjectionWalker {
   }
 }
 
-private class ProjectionWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   case class SubTraversals(
       select: Seq[String],

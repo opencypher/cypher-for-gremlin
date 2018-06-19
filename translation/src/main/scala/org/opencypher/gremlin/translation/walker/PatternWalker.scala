@@ -17,7 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.opencypher.gremlin.translation.Tokens.PATH_EDGE
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.v9_0.expressions.SemanticDirection._
@@ -30,7 +30,7 @@ import org.opencypher.v9_0.util.InputPosition.NONE
   */
 object PatternWalker {
   def walk[T, P](
-      context: StatementContext[T, P],
+      context: WalkerContext[T, P],
       g: GremlinSteps[T, P],
       node: PatternElement,
       pathName: Option[String] = None): Unit = {
@@ -38,7 +38,7 @@ object PatternWalker {
   }
 }
 
-class PatternWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   def walk(node: PatternElement, pathName: Option[String]): Unit = {
     context.markFirstStatement()
     g.V()

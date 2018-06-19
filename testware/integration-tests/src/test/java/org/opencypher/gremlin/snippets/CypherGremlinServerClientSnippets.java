@@ -37,7 +37,7 @@ import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
-public class CypherGremlinServerClient {
+public class CypherGremlinServerClientSnippets {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();

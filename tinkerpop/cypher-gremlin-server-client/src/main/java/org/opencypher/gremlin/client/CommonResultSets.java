@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Result;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 
@@ -29,7 +29,7 @@ final class CommonResultSets {
     private CommonResultSets() {
     }
 
-    static CypherResultSet explain(CypherAstWrapper ast) {
+    static CypherResultSet explain(CypherAst ast) {
         Map<String, Object> explanation = new LinkedHashMap<>();
         Translator<String, GroovyPredicate> translator = Translator.builder()
             .gremlinGroovy()

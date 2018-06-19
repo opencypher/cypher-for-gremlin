@@ -16,18 +16,20 @@
 package org.opencypher.gremlin.translation.context
 
 import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.gremlin.traversal.ProcedureContext
 import org.opencypher.v9_0.expressions.Expression
 import org.opencypher.v9_0.util.symbols.CypherType
 
 import scala.collection.mutable
 
-object StatementContext {
+object WalkerContext {
   def apply[T, P](
       dsl: Translator[T, P],
       expressionTypes: Map[Expression, CypherType],
       returnTypes: Map[String, CypherType],
-      parameters: Map[String, Any]): StatementContext[T, P] = {
-    new StatementContext(dsl, expressionTypes, returnTypes, parameters)
+      procedures: ProcedureContext,
+      parameters: Map[String, Any]): WalkerContext[T, P] = {
+    new WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)
   }
 }
 
@@ -37,12 +39,14 @@ object StatementContext {
   * @param dsl             reference to [[Translator]] implementation in use
   * @param expressionTypes expression Cypher types
   * @param returnTypes     return types by alias
+  * @param procedures      registered procedure context
   * @param parameters      Cypher query parameters
   */
-sealed class StatementContext[T, P](
+sealed class WalkerContext[T, P](
     val dsl: Translator[T, P],
     val expressionTypes: Map[Expression, CypherType],
     val returnTypes: Map[String, CypherType],
+    val procedures: ProcedureContext,
     private val parameters: Map[String, Any]) {
 
   def parameter(name: String): Object = {
@@ -109,8 +113,8 @@ sealed class StatementContext[T, P](
     nameGenerator.next()
   }
 
-  def copy(): StatementContext[T, P] = {
-    val result = StatementContext(dsl, expressionTypes, returnTypes, parameters)
+  def copy(): WalkerContext[T, P] = {
+    val result = WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)
     result.firstStatement = firstStatement
     result.referencedAliases ++= referencedAliases
     result.nameGenerator = nameGenerator

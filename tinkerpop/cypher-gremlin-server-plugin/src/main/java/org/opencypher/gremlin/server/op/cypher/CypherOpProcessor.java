@@ -44,13 +44,17 @@ import org.apache.tinkerpop.gremlin.server.op.AbstractEvalOpProcessor;
 import org.apache.tinkerpop.gremlin.server.op.OpProcessorException;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.ir.TranslationWriter;
+import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
 import org.opencypher.gremlin.traversal.ProcedureContext;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 import org.slf4j.Logger;
+import scala.collection.Seq;
 
 /**
  * {@link OpProcessor} implementation for processing Cypher {@link RequestMessage}s:
@@ -94,15 +98,18 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         GraphTraversalSource gts = traversal(context);
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
         Map<String, Object> parameters = ParameterNormalizer.normalize(getParameters(args));
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher, parameters);
+        CypherAst ast = CypherAst.parse(cypher, parameters);
+
+        ProcedureContext procedureContext = ProcedureContext.global();
+        TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
+        Seq<GremlinStep> ir = ast.translate(flavor, procedureContext);
 
         Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
             .gremlinGroovy()
             .inlineParameters()
-            .procedures(ProcedureContext.global().all())
             .build();
 
-        String gremlin = ast.buildTranslation(stringTranslator);
+        String gremlin = TranslationWriter.write(ir, stringTranslator, parameters);
         logger.info("Gremlin: {}", gremlin);
 
         if (ast.getOptions().contains(EXPLAIN)) {
@@ -112,10 +119,9 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
             .traversal(g)
-            .procedures(ProcedureContext.global().all())
             .build();
 
-        GraphTraversal<?, ?> traversal = ast.buildTranslation(traversalTranslator);
+        GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, traversalTranslator, parameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(returnNormalizer::normalize);
         inTransaction(gts, () -> handleIterator(context, normalizedTraversal));
@@ -192,7 +198,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         }
     }
 
-    private void explainQuery(Context context, CypherAstWrapper ast, String gremlin) {
+    private void explainQuery(Context context, CypherAst ast, String gremlin) {
         Map<String, Object> explanation = new LinkedHashMap<>();
         explanation.put("translation", gremlin);
         explanation.put("options", ast.getOptions().toString());

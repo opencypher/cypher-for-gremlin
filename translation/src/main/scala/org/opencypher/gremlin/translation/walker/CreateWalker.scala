@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions.SemanticDirection.INCOMING
@@ -31,13 +31,13 @@ import scala.collection.mutable
   */
 object CreateWalker {
 
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Create): Unit = {
+  def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Create): Unit = {
     new CreateWalker(context, g).walk(node.pattern.patternParts)
   }
 
 }
 
-private class CreateWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   private val nodeHistory = new mutable.Stack[String]
 
   def walk(patternParts: Seq[PatternPart]): Unit = {

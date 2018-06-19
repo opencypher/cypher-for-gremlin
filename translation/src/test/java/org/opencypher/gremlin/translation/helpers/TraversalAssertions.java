@@ -19,10 +19,12 @@ import static org.assertj.core.api.Fail.fail;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.ir.TranslationWriter;
 import org.opencypher.gremlin.translation.ir.helpers.TraversalMatcher;
 import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.Translator;
+import scala.collection.Map$;
 import scala.collection.Seq;
 
 public class TraversalAssertions {
@@ -58,8 +60,7 @@ public class TraversalAssertions {
     };
 
     private static String print(Seq<GremlinStep> traversal) {
-        return TranslationWriter
-            .from(traversal)
-            .translate(Translator.builder().gremlinGroovy().build());
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
+        return TranslationWriter.write(traversal, translator, Map$.MODULE$.empty());
     }
 }

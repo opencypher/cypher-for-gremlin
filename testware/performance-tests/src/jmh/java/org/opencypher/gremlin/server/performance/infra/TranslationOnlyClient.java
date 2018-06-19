@@ -18,7 +18,7 @@ package org.opencypher.gremlin.server.performance.infra;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -32,7 +32,7 @@ public class TranslationOnlyClient implements CypherClient {
 
     @Override
     public void run(String cypher) {
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
+        CypherAst ast = CypherAst.parse(cypher);
         DefaultGraphTraversal g = new DefaultGraphTraversal();
         Translator<GraphTraversal, P> translator = Translator.builder().traversal(g).build();
         blackhole.consume(ast.buildTranslation(translator));

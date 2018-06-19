@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation._
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 
@@ -24,13 +24,13 @@ import org.opencypher.v9_0.ast._
   * AST walker that starts translation of the Cypher AST.
   */
 object StatementWalker {
-  def walk[T, P](context: StatementContext[T, P], node: Statement): Unit = {
+  def walk[T, P](context: WalkerContext[T, P], node: Statement): Unit = {
     val g = context.dsl.steps()
     new StatementWalker(context, g).walk(node)
   }
 }
 
-class StatementWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+class StatementWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walk(node: Statement): Unit = {
     node match {

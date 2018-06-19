@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.GremlinSteps
-import org.opencypher.gremlin.translation.context.StatementContext
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils.{getPathTraversalAliases, _}
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
@@ -27,12 +27,12 @@ import org.opencypher.v9_0.util.InputPosition.NONE
   * of the `MERGE` clause nodes in the Cypher AST.
   */
 object MergeWalker {
-  def walkClause[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P], node: Merge): Unit = {
+  def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Merge): Unit = {
     new MergeWalker(context, g).walkClause(node)
   }
 }
 
-private class MergeWalker[T, P](context: StatementContext[T, P], g: GremlinSteps[T, P]) {
+private class MergeWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Merge): Unit = {
     val Merge(Pattern(patternParts), actions: Seq[MergeAction], _) = node

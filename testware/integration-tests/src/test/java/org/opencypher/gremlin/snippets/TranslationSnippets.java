@@ -22,7 +22,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.translation.CypherAstWrapper;
+import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.TranslationFacade;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
@@ -31,7 +31,7 @@ import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
-public class Translation {
+public class TranslationSnippets {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
@@ -51,7 +51,7 @@ public class Translation {
     public void translateVerbose() throws Exception {
         // freshReadmeSnippet: verbose
         String cypher = "MATCH (p:Person) WHERE p.age > 25 RETURN p.name";
-        CypherAstWrapper ast = CypherAstWrapper.parse(cypher);
+        CypherAst ast = CypherAst.parse(cypher);
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
         String gremlin = ast.buildTranslation(translator);
         // freshReadmeSnippet: verbose

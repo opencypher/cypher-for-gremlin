@@ -15,4 +15,4 @@
  */
 package org.opencypher.gremlin.translation.ir.model
 
-sealed case class GremlinBinding(name: String, value: Any)
+sealed case class GremlinBinding(name: String)
