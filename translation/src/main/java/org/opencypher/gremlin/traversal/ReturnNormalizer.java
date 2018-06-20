@@ -203,15 +203,10 @@ public final class ReturnNormalizer {
     }
 
     private Object normalizeInteger(Object value) {
-        String s = String.valueOf(value);
-        try {
-            return Long.valueOf(s);
-        } catch (NumberFormatException e1) {
-            try {
-                return Double.valueOf(s).longValue();
-            } catch (NumberFormatException e2) {
-                return value;
-            }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        } else {
+            return value;
         }
     }
 
