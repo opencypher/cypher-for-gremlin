@@ -83,6 +83,7 @@ public class CastTest {
     public void castToInteger() throws Exception {
         List<Map<String, Object>> results = Stream.of(
             "13",
+            "9007199254740993", // Cannot be stored as Double
             "3.14",
             "'13'",
             "'3.14'",
@@ -99,6 +100,7 @@ public class CastTest {
             .extracting("r")
             .containsExactly(
                 13L,
+                9007199254740993L,
                 3L,
                 13L,
                 3L,
