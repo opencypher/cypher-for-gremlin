@@ -104,7 +104,7 @@ public final class ReturnNormalizer {
         } else if (type instanceof PathType) {
             return normalizePath((Map<?, ?>) value);
         } else if (type instanceof IntegerType) {
-            return CustomFunction.convertToLong(value);
+            return normalizeInteger(value);
         } else if (type instanceof ListType) {
             CypherType cypherType = ((ListType) type).innerType();
             return ((Collection<?>) value)
@@ -200,6 +200,19 @@ public final class ReturnNormalizer {
         return value.stream()
             .map(this::normalizeValue)
             .collect(Collectors.toList());
+    }
+
+    private Object normalizeInteger(Object value) {
+        String s = String.valueOf(value);
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e1) {
+            try {
+                return Double.valueOf(s).longValue();
+            } catch (NumberFormatException e2) {
+                return value;
+            }
+        }
     }
 
     private Object elementPropertyMap(Element element) {

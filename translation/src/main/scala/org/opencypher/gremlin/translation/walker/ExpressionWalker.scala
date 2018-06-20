@@ -222,7 +222,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "type"          => traversals.head.map(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
           case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
-          case "tointeger"     => traversals.head.map(CustomFunction.convertToIntegerType())
+          case "tointeger"     => traversals.head.map(CustomFunction.convertToInteger())
           case "tostring"      => traversals.head.map(CustomFunction.convertToString())
           case _ =>
             throw new SyntaxException(s"Unknown function '$fnName'")
