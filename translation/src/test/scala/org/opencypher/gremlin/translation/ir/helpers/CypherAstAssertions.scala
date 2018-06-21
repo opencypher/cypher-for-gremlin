@@ -15,15 +15,8 @@
  */
 package org.opencypher.gremlin.translation.ir.helpers
 
-import org.opencypher.gremlin.translation.ir.TraversalHelper
-import org.opencypher.gremlin.translation.ir.model.GremlinStep
+import org.opencypher.gremlin.translation.CypherAst
 
-object TraversalMatcher {
-  def containsSteps(steps: Seq[GremlinStep], subSteps: Seq[GremlinStep]): Boolean = {
-    TraversalHelper.foldTraversals(false)(containsReducer(subSteps))(steps)
-  }
-
-  private def containsReducer(subSteps: Seq[GremlinStep]) = (has: Boolean, steps: Seq[GremlinStep]) => {
-    has || steps.containsSlice(subSteps)
-  }
+object CypherAstAssertions {
+  def assertThat(actual: CypherAst) = new CypherAstAssert(actual)
 }

@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.helpers;
+package org.opencypher.gremlin.translation.ir.rewrite
+import org.opencypher.gremlin.translation.ir.model.GremlinStep
 
-import scala.collection.immutable.List;
-import scala.collection.immutable.Seq;
-
-public final class ScalaHelpers {
-    private ScalaHelpers() {
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Seq<T> seq(T... values) {
-        List<T> list = (List<T>) List.empty();
-        for (T value : values) {
-            list = list.$colon$colon(value);
-        }
-        return list.reverse();
-    }
+object IdentityRewriter extends GremlinRewriter {
+  override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    steps
+  }
 }

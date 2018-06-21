@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.translation.helpers;
+package org.opencypher.gremlin.translation.ir.helpers
 
-import org.assertj.core.api.Assertions;
-import org.opencypher.gremlin.translation.CypherAst;
+import org.assertj.core.api.{AbstractThrowableAssert, Assertions}
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable
 
-public class CypherAstAssertions extends Assertions {
-    public static CypherAstAssert assertThat(CypherAst actual) {
-        return new CypherAstAssert(actual);
-    }
+object JavaHelpers {
+  def objects(values: Any*): Seq[Object] = {
+    values.asInstanceOf[Seq[Object]]
+  }
+
+  def assertThatThrownBy(shouldRaiseThrowable: () => Unit): AbstractThrowableAssert[_, _ <: Throwable] = {
+    Assertions.assertThatThrownBy(new ThrowingCallable { // SAM not enabled by default
+      override def call(): Unit = shouldRaiseThrowable()
+    })
+  }
 }

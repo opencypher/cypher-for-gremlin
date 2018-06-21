@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation;
 
 import static org.opencypher.gremlin.translation.CypherAst.parse;
-import static org.opencypher.gremlin.translation.helpers.CypherAstAssertions.assertThat;
+import static org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat;
 
 import org.junit.Test;
 
