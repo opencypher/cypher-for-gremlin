@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.opencypher.gremlin.translation.ir.rewrite
+
+import org.junit.Test
+import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
+import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
+import org.opencypher.gremlin.translation.ir.helpers.JavaHelpers.objects
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor
+
+class CosmosDbFlavorTest {
+
+  val flavor = new TranslatorFlavor(
+    rewriters = Seq(
+      InlineMapTraversal,
+      RemoveUselessSteps
+    ),
+    postConditions = Nil
+  )
+
+  @Test
+  def values(): Unit = {
+    assertThat(parse("""
+        |MATCH (n:N)
+        |RETURN n.p
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(__.values("p"))
+      .adds(__.properties().hasKey("p").value())
+  }
+
+  @Test
+  def loops(): Unit = {
+    assertThat(parse("""
+        |UNWIND range(1, 3) AS i
+        |RETURN i
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(
+        __.repeat(__.loops().aggregate("  GENERATED1"))
+          .times(4)
+          .cap("  GENERATED1")
+          .unfold()
+          .skip(1)
+          .limit(3)
+      )
+      .adds(__.inject(objects(1, 2, 3): _*))
+  }
+}

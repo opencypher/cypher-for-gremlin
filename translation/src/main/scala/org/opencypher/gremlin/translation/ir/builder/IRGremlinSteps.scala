@@ -125,7 +125,7 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
-  override def constant(e: scala.Any): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+  override def constant(e: Any): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Constant(e)
     this
   }
@@ -332,7 +332,7 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
-  override def property(key: String, value: scala.Any): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+  override def property(key: String, value: Any): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += PropertyV(key, value)
     this
   }

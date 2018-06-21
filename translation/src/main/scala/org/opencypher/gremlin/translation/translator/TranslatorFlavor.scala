@@ -32,7 +32,8 @@ object TranslatorFlavor {
 
   /**
     * A translator flavor that is suitable
-    * for a fully-compliant Gremlin Server or a compatible graph database.
+    * for a fully-compliant Gremlin Server or a compatible graph database
+    * with Cypher for Gremlin plugin.
     *
     * This is the default flavor.
     */
@@ -53,27 +54,35 @@ object TranslatorFlavor {
   )
 
   /**
-    * A translator flavor that is suitable for Cosmos DB.
+    * A translator flavor that is suitable
+    * for a fully-compliant Gremlin Server or a compatible graph database
+    * without Cypher for Gremlin plugin.
     */
-  val cosmosDb: TranslatorFlavor = gremlinServer.extend(
-    rewriters = Seq(
-      CosmosDbFlavor
-    ),
+  val gremlinServerVanilla: TranslatorFlavor = gremlinServer.extend(
+    rewriters = Nil,
     postConditions = Seq(
       NoCustomFunctions
     )
   )
 
   /**
+    * A translator flavor that is suitable for Cosmos DB.
+    */
+  val cosmosDb: TranslatorFlavor = gremlinServerVanilla.extend(
+    rewriters = Seq(
+      CosmosDbFlavor
+    ),
+    postConditions = Nil
+  )
+
+  /**
     * A translator flavor that is suitable for AWS Neptune.
     */
-  val neptune: TranslatorFlavor = gremlinServer.extend(
+  val neptune: TranslatorFlavor = gremlinServerVanilla.extend(
     rewriters = Seq(
       NeptuneFlavor
     ),
-    postConditions = Seq(
-      NoCustomFunctions
-    )
+    postConditions = Nil
   )
 
   /**

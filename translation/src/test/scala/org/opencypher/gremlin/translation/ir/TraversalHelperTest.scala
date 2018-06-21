@@ -24,7 +24,7 @@ class TraversalHelperTest {
   @Test
   def extractOne(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val relWithLabel: String => PartialFunction[Seq[GremlinStep], String] = (stepLabel) => {
+    val relWithLabel: String => PartialFunction[Seq[GremlinStep], String] = stepLabel => {
       case OutE(edgeLabel) :: As(`stepLabel`) :: InV :: _ => edgeLabel
     }
     val extracted = TraversalHelper.extract(relWithLabel("r"))(seq)
