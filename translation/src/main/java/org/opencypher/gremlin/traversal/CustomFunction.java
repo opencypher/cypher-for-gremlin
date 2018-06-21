@@ -129,9 +129,9 @@ public class CustomFunction implements Function<Traverser, Object> {
             });
     }
 
-    public static CustomFunction convertToIntegerType() {
+    public static CustomFunction convertToInteger() {
         return new CustomFunction(
-            "convertToIntegerType",
+            "convertToInteger",
             traverser -> {
                 Object arg = tokenToNull(traverser.get());
                 boolean valid = arg == null ||
@@ -142,9 +142,21 @@ public class CustomFunction implements Function<Traverser, Object> {
                     throw new TypeException("Cannot convert " + className + " to integer");
                 }
 
-                // long in org.neo4j.driver.internal.value.IntegerValue#val
-                Long integer = convertToLong(arg);
-                return nullToToken(integer);
+                return nullToToken(
+                    Optional.ofNullable(arg)
+                        .map(String::valueOf)
+                        .map(v -> {
+                            try {
+                                return Long.valueOf(v);
+                            } catch (NumberFormatException e1) {
+                                try {
+                                    return Double.valueOf(v).longValue();
+                                } catch (NumberFormatException e2) {
+                                    return null;
+                                }
+                            }
+                        })
+                        .orElse(null));
             });
     }
 
@@ -475,20 +487,6 @@ public class CustomFunction implements Function<Traverser, Object> {
                 }
             }
         );
-    }
-
-    static Long convertToLong(Object arg) {
-        return Optional.ofNullable(arg)
-            .map(String::valueOf)
-            .map(v -> {
-                try {
-                    return Double.valueOf(v);
-                } catch (NumberFormatException e) {
-                    return null;
-                }
-            })
-            .map(Double::longValue)
-            .orElse(null);
     }
 
     private static Object flatten(Object element) {
