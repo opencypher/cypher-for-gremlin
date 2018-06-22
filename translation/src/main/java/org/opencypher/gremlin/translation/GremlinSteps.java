@@ -98,6 +98,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> emit();
 
+    GremlinSteps<T, P> flatMap(GremlinSteps<T, P> traversal);
+
     GremlinSteps<T, P> fold();
 
     GremlinSteps<T, P> from(String fromStepLabel);
@@ -137,8 +139,6 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> loops();
 
     GremlinSteps<T, P> map(CustomFunction function);
-
-    GremlinSteps<T, P> map(GremlinSteps<T, P> traversal);
 
     GremlinSteps<T, P> math(String expression);
 

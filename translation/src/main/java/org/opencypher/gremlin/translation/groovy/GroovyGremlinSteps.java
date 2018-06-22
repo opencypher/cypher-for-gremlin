@@ -193,6 +193,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> flatMap(GremlinSteps<String, GroovyPredicate> traversal) {
+        g.append(chain("flatMap", traversal(traversal)));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> fold() {
         g.append(chain("fold"));
         return this;
@@ -314,12 +320,6 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
                 apply(function.getName(), function.getArgs())
             )
         ));
-        return this;
-    }
-
-    @Override
-    public GremlinSteps<String, GroovyPredicate> map(GremlinSteps<String, GroovyPredicate> traversal) {
-        g.append(chain("map", traversal(traversal)));
         return this;
     }
 

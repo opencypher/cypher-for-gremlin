@@ -213,6 +213,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> flatMap(GremlinSteps<GraphTraversal, P> traversal) {
+        g.flatMap(traversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> fold() {
         g.fold();
         return this;
@@ -333,12 +339,6 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> map(CustomFunction function) {
         g.map(function);
-        return this;
-    }
-
-    @Override
-    public GremlinSteps<GraphTraversal, P> map(GremlinSteps<GraphTraversal, P> traversal) {
-        g.map(traversal.current());
         return this;
     }
 

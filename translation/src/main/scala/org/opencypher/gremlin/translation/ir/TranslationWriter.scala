@@ -107,6 +107,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.drop()
         case Emit =>
           g.emit()
+        case FlatMapT(traversal) =>
+          g.flatMap(writeLocalSteps(traversal))
         case Fold =>
           g.fold()
         case From(fromStepLabel) =>
@@ -147,8 +149,6 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.loops()
         case MapF(function) =>
           g.map(function)
-        case MapT(traversal) =>
-          g.map(writeLocalSteps(traversal))
         case Math(expression) =>
           g.math(expression)
         case Max =>

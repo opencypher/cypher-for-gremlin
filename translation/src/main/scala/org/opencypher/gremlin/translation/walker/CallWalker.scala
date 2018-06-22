@@ -51,7 +51,7 @@ private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, 
         }
         val resultsMapName = context.generateName()
 
-        g.map(asList(arguments, context))
+        g.flatMap(asList(arguments, context))
 
         val callG = g
           .start()
@@ -63,7 +63,7 @@ private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, 
         if (keyAliases.isEmpty) {
           g.optional(callG)
         } else {
-          g.map(callG)
+          g.flatMap(callG)
         }
         keyAliases.foreach {
           case (key, alias) =>
@@ -92,7 +92,7 @@ private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, 
           argumentNames.map(Parameter(_, AnyType.instance)(InputPosition.NONE))
         }
 
-        g.map(asList(arguments, context))
+        g.flatMap(asList(arguments, context))
           .map(procedures.procedureCall(qualifiedName))
           .unfold()
 

@@ -54,7 +54,7 @@ object ExpressionWalker {
 
 private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   def walk(node: Expression): Unit = {
-    g.map(walkLocal(node))
+    g.flatMap(walkLocal(node))
   }
 
   private def __ = g.start()
@@ -76,7 +76,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
         maybeExtractStep.map { extractStep =>
           walkLocal(expr)
-            .map(notNull(emptyToNull(extractStep(keyName), context), context))
+            .flatMap(notNull(emptyToNull(extractStep(keyName), context), context))
         }.getOrElse {
           val key = StringLiteral(keyName)(InputPosition.NONE)
           asList(expr, key).map(CustomFunction.containerIndex())
@@ -84,7 +84,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
       case HasLabels(expr, List(LabelName(label))) =>
         walkLocal(expr)
-          .map(notNull(anyMatch(__.hasLabel(label)), context))
+          .flatMap(notNull(anyMatch(__.hasLabel(label)), context))
 
       case Equals(lhs, rhs)             => comparison(lhs, rhs, p.isEq)
       case Not(Equals(lhs, rhs))        => comparison(lhs, rhs, p.neq)
@@ -100,10 +100,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         membership(lhs, rhs)
 
       case IsNull(expr) =>
-        walkLocal(expr).map(anyMatch(__.is(p.isEq(NULL))))
+        walkLocal(expr).flatMap(anyMatch(__.is(p.isEq(NULL))))
 
       case IsNotNull(expr) =>
-        walkLocal(expr).map(anyMatch(__.is(p.neq(NULL))))
+        walkLocal(expr).flatMap(anyMatch(__.is(p.neq(NULL))))
 
       case Not(rhs) =>
         val rhsT = walkLocal(rhs)
@@ -149,7 +149,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           __.or(copy(lhsT).is(p.isEq(NULL)), copy(rhsT).is(p.isEq(NULL))),
           __.constant(NULL),
           __.choose(
-            copy(rhsT).as(rhsName).map(lhsT).where(p.neq(rhsName)),
+            copy(rhsT).as(rhsName).flatMap(lhsT).where(p.neq(rhsName)),
             __.constant(true),
             __.constant(false)
           )
@@ -172,7 +172,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case ContainerIndex(expr, idx) =>
         (typeOf(expr), idx) match {
           case (_: ListType, l: IntegerLiteral) if l.value >= 0 =>
-            walkLocal(expr).map(
+            walkLocal(expr).flatMap(
               emptyToNull(
                 __.range(Scope.local, l.value, l.value + 1),
                 context
@@ -194,7 +194,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
               rangeT.fold()
             }
             walkLocal(expr)
-              .map(emptyToNull(rangeT, context))
+              .flatMap(emptyToNull(rangeT, context))
           case _ =>
             asList(expr, fromIdx, toIdx).map(CustomFunction.listSlice())
         }
@@ -204,18 +204,18 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         val traversal = fnName.toLowerCase match {
           case "abs"           => traversals.head.math("abs(_)")
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
-          case "exists"        => traversals.head.map(anyMatch(__.is(p.neq(NULL))))
-          case "id"            => traversals.head.map(notNull(__.id(), context))
+          case "exists"        => traversals.head.flatMap(anyMatch(__.is(p.neq(NULL))))
+          case "id"            => traversals.head.flatMap(notNull(__.id(), context))
           case "keys"          => traversals.head.properties().key().fold()
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "length"        => traversals.head.map(CustomFunction.length())
           case "nodes"         => traversals.head.map(CustomFunction.nodes())
-          case "properties"    => traversals.head.map(notNull(__.map(CustomFunction.properties()), context))
+          case "properties"    => traversals.head.flatMap(notNull(__.map(CustomFunction.properties()), context))
           case "range"         => range(args)
           case "relationships" => traversals.head.map(CustomFunction.relationships())
           case "size"          => traversals.head.map(CustomFunction.size())
           case "sqrt"          => traversals.head.math("sqrt(_)")
-          case "type"          => traversals.head.map(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
+          case "type"          => traversals.head.flatMap(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
           case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
           case "tointeger"     => traversals.head.map(CustomFunction.convertToInteger())
@@ -233,7 +233,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         val functionT = walkLocal(function)
 
         val Variable(dependencyName) = function.dependencies.head
-        targetT.unfold().as(dependencyName).map(functionT).fold()
+        targetT.unfold().as(dependencyName).flatMap(functionT).fold()
 
       case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybeExpression, projection, _) =>
         val varName = patternComprehensionPath(relationshipChain, maybeExpression, projection)
@@ -245,10 +245,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case expression: Expression =>
             val functionT = walkLocal(expression)
             if (expression.dependencies.isEmpty) {
-              traversal.unfold().map(functionT).fold()
+              traversal.unfold().flatMap(functionT).fold()
             } else if (expression.dependencies.size == 1) {
               val Variable(dependencyName) = expression.dependencies.head
-              traversal.unfold().as(dependencyName).map(functionT).fold()
+              traversal.unfold().as(dependencyName).flatMap(functionT).fold()
             } else {
               context.unsupported("pattern comprehension with multiple arguments", expression)
             }
@@ -278,7 +278,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     val p = context.dsl.predicates()
     val traversal = walkLocal(value)
     g.choose(
-      g.start().map(traversal).is(p.neq(NULL)).unfold(),
+      g.start().flatMap(traversal).is(p.neq(NULL)).unfold(),
       g.start().property(key, traversal),
       g.start().sideEffect(g.start().properties(key).drop())
     )
@@ -289,7 +289,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   }
 
   private def copy(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
-    __.map(traversal)
+    __.flatMap(traversal)
   }
 
   private def anyMatch(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
@@ -319,7 +319,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
     rhsT
       .as(rhsName)
-      .map(lhsT)
+      .flatMap(lhsT)
       .choose(
         __.or(__.is(p.isEq(NULL)), __.select(rhsName).is(p.isEq(NULL))),
         __.constant(NULL),
@@ -341,7 +341,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
     rhsT
       .as(rhsName)
-      .map(lhsT)
+      .flatMap(lhsT)
       .choose(
         __.select(rhsName).is(p.isEq(NULL)),
         __.constant(NULL),

@@ -21,10 +21,10 @@ import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 
-class InlineMapTraversalTest {
+class InlineFlatMapTraversalTest {
 
   @Test
-  def inlineProjectionMap(): Unit = {
+  def inlineProjectionFlatMap(): Unit = {
     val projection = __.project("n").by(__.constant(1))
 
     assertThat(parse("""
@@ -32,22 +32,22 @@ class InlineMapTraversalTest {
         |RETURN n
       """.stripMargin))
       .withFlavor(TranslatorFlavor.empty)
-      .rewritingWith(InlineMapTraversal)
-      .removes(__.map(projection))
+      .rewritingWith(InlineFlatMapTraversal)
+      .removes(__.flatMap(projection))
       .keeps(projection)
   }
 
   @Test
-  def adjacentMap(): Unit = {
+  def adjacentFlatMap(): Unit = {
     assertThat(parse("""
         |MATCH (n)
         |WHERE (n)-->(:L)
         |RETURN n
       """.stripMargin))
       .withFlavor(TranslatorFlavor.empty)
-      .rewritingWith(InlineMapTraversal)
-      .removes(__.map(__))
-      .removes(__.as("  cypher.path.start.GENERATED2").map(__.outE().inV()))
+      .rewritingWith(InlineFlatMapTraversal)
+      .removes(__.flatMap(__))
+      .removes(__.as("  cypher.path.start.GENERATED2").flatMap(__.outE().inV()))
       .adds(__.as("  cypher.path.start.GENERATED2").outE().inV())
   }
 }

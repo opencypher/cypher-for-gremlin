@@ -98,7 +98,7 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
           case _                         => None
         }
         maybeExtractStep.map { extractStep =>
-          walkExpression(expr).map(extractStep(keyName))
+          walkExpression(expr).flatMap(extractStep(keyName))
         }.getOrElse {
           val key = StringLiteral(keyName)(InputPosition.NONE)
           asList(expr, key).map(CustomFunction.containerIndex()).is(p.neq(NULL))
@@ -174,7 +174,7 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
         val rhsT = walkExpression(rhs)
         rhsT
           .as(rhsName)
-          .map(lhsT)
+          .flatMap(lhsT)
           .where(predicate(rhsName))
     }
   }

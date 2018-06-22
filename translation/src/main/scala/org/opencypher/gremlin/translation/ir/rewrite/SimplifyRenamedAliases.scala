@@ -27,9 +27,9 @@ object SimplifyRenamedAliases extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     splitAfter({
-      case MapT(Project(_*) :: _) => true
-      case Project(_*)            => true
-      case _                      => false
+      case FlatMapT(Project(_*) :: _) => true
+      case Project(_*)                => true
+      case _                          => false
     })(steps)
       .flatMap(rewriteSegment)
   }

@@ -125,6 +125,16 @@ case object Drop extends GremlinStep
 
 case object Emit extends GremlinStep
 
+case class FlatMapT(traversal: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    FlatMapT(f(traversal))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(z, traversal)
+  }
+}
+
 case object Fold extends GremlinStep
 
 case class From(fromStepLabel: String) extends GremlinStep
@@ -172,16 +182,6 @@ case class Local(traversal: Seq[GremlinStep]) extends GremlinStep {
 case object Loops extends GremlinStep
 
 case class MapF(function: CustomFunction) extends GremlinStep
-
-case class MapT(traversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
-    MapT(f(traversal))
-  }
-
-  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
-    op(z, traversal)
-  }
-}
 
 case class Math(expression: String) extends GremlinStep
 

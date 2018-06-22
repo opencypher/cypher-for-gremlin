@@ -77,6 +77,6 @@ private class SetWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P
 
   private def setProperty(variable: String, key: String, value: Expression): Unit = {
     val traversal = ExpressionWalker.walkProperty(context, g.start(), key, value)
-    g.select(variable).map(notNull(traversal, context))
+    g.select(variable).flatMap(notNull(traversal, context))
   }
 }

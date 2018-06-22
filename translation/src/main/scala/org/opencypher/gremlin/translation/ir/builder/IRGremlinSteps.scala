@@ -155,6 +155,12 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def flatMap(
+      traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += FlatMapT(traversal.current())
+    this
+  }
+
   override def fold(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Fold
     this
@@ -255,12 +261,6 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
 
   override def map(function: CustomFunction): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += MapF(function)
-    this
-  }
-
-  override def map(
-      traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
-    buf += MapT(traversal.current())
     this
   }
 
