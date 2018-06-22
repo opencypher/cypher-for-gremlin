@@ -83,4 +83,18 @@ class RemoveUnusedAliasesTest {
       .keeps(__.as("n"))
       .keeps(__.as("m"))
   }
+
+  @Test
+  def adjacentAs(): Unit = {
+    assertThat(parse("""
+         |MATCH ()-[r:R]->()
+         |RETURN r
+       """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveUnusedAliases)
+      .removes(__.as("  cypher.path.start.GENERATED1"))
+      .removes(__.as("  UNNAMED7"))
+      .removes(__.as("  UNNAMED17"))
+      .keeps(__.as("r"))
+  }
 }

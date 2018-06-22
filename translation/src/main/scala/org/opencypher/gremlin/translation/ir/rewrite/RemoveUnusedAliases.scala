@@ -46,12 +46,11 @@ object RemoveUnusedAliases extends GremlinRewriter {
       })(localSteps).flatten
     })(steps)
 
-    mapTraversals(
-      replace({
-        case before :: As(stepLabel) :: after if !selected.contains(stepLabel) =>
-          before :: after
-      })
-    )(steps)
+    mapTraversals(traversal =>
+      traversal.flatMap {
+        case As(stepLabel) if !selected.contains(stepLabel) => Nil
+        case s                                              => Seq(s)
+    })(steps)
   }
 
   def predicateAliases(predicate: GremlinPredicate): Seq[String] = {
