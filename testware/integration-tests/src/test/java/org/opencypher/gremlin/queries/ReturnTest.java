@@ -266,17 +266,6 @@ public class ReturnTest {
     }
 
     @Test
-    public void sumRelationshipProperty() throws Exception {
-        List<Map<String, Object>> results = submitAndGet(
-            "MATCH ()-[r:created]->() RETURN count(r) AS count"
-        );
-
-        assertThat(results)
-            .extracting("count")
-            .containsExactly(4L);
-    }
-
-    @Test
     public void labelPredicate() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) " +
