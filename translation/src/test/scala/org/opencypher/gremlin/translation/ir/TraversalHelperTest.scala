@@ -46,7 +46,7 @@ class TraversalHelperTest {
 
   @Test
   def extractNested(): Unit = {
-    val seq = Vertex :: As("a") :: MapT(As("b") :: Nil) :: Nil
+    val seq = Vertex :: As("a") :: FlatMapT(As("b") :: Nil) :: Nil
     val extracted = TraversalHelper.foldTraversals(Seq.empty[String])({ (acc, steps) =>
       acc ++ TraversalHelper.extract({
         case As(stepLabel) :: _ => stepLabel

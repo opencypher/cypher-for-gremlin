@@ -26,7 +26,7 @@ class SimplifySingleProjectionsTest {
 
   val flavor = new TranslatorFlavor(
     rewriters = Seq(
-      InlineMapTraversal
+      InlineFlatMapTraversal
     ),
     postConditions = Nil
   )

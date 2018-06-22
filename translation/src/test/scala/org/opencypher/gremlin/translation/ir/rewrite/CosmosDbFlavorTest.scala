@@ -26,7 +26,7 @@ class CosmosDbFlavorTest {
 
   val flavor = new TranslatorFlavor(
     rewriters = Seq(
-      InlineMapTraversal,
+      InlineFlatMapTraversal,
       RemoveUselessSteps
     ),
     postConditions = Nil

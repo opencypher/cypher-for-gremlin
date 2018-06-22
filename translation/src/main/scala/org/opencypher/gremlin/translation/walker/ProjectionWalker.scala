@@ -137,7 +137,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       val pivotTraversal = getPivotTraversal(pivots)
 
       val aggregationTraversal = __.fold().project(all.keySet.toSeq: _*)
-      for ((_, expression) <- all) aggregationTraversal.by(__.unfold().map(expression))
+      for ((_, expression) <- all) aggregationTraversal.by(__.unfold().flatMap(expression))
 
       selectMap()
         .group()
@@ -150,15 +150,15 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       for ((_, expression) <- pivots) pivotTraversal.by(expression)
 
       selectMap()
-        .map(pivotTraversal)
+        .flatMap(pivotTraversal)
 
     } else if (aggregations.nonEmpty) {
       val aggregationTraversal = __.project(aggregations.keySet.toSeq: _*)
-      for ((_, expression) <- aggregations) aggregationTraversal.by(__.unfold().map(expression))
+      for ((_, expression) <- aggregations) aggregationTraversal.by(__.unfold().flatMap(expression))
 
       selectMap()
         .fold()
-        .map(aggregationTraversal)
+        .flatMap(aggregationTraversal)
     } else {
       g
     }
@@ -276,7 +276,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case Some(typ) if typ.isInstanceOf[NodeType] =>
         nullIfNull(subTraversal, __.valueMap(true))
       case Some(typ) if typ.isInstanceOf[ListType] && hasInnerType(typ, NodeType.instance) =>
-        __.map(subTraversal).unfold().is(p.neq(NULL)).valueMap(true).fold()
+        __.flatMap(subTraversal).unfold().is(p.neq(NULL)).valueMap(true).fold()
       case Some(typ) if typ.isInstanceOf[RelationshipType] =>
         nullIfNull(
           subTraversal,

@@ -19,15 +19,15 @@ import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
 /**
-  * Generated `map` steps with traversal argument can be replaced
+  * Generated `flatMap` steps with traversal argument can be replaced
   * with just the traversal for the same effect.
   */
-object InlineMapTraversal extends GremlinRewriter {
+object InlineFlatMapTraversal extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     mapTraversals(traversal =>
       traversal.flatMap {
-        case MapT(t) => t
-        case s       => Seq(s)
+        case FlatMapT(t) => t
+        case s           => Seq(s)
     })(steps)
   }
 }

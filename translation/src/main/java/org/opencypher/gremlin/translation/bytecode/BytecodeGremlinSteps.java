@@ -186,6 +186,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> flatMap(GremlinSteps<Bytecode, P> traversal) {
+        bytecode.addStep(Symbols.flatMap, traversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> fold() {
         bytecode.addStep(Symbols.fold);
         return this;
@@ -307,12 +313,6 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
         String lambdaSource = apply(function.getName(), args) + ".apply(it)";
         Function lambda = Lambda.function(lambdaSource, "gremlin-groovy");
         bytecode.addStep(Symbols.map, lambda);
-        return this;
-    }
-
-    @Override
-    public GremlinSteps<Bytecode, P> map(GremlinSteps<Bytecode, P> traversal) {
-        bytecode.addStep(Symbols.map, traversal.current());
         return this;
     }
 

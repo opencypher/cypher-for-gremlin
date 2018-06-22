@@ -68,8 +68,8 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     val variable @ Variable(name) = variableOption
       .getOrElse(Variable(context.generateName())(NONE))
     asUniqueName(name, g, context)
-    g.map(hasLabels(labels))
-    properties.map(hasProperties(variable, _)).foreach(g.map)
+    g.flatMap(hasLabels(labels))
+    properties.map(hasProperties(variable, _)).foreach(g.flatMap)
   }
 
   val traversalStepsHardLimit: Int = gremlinPathLength(10)
@@ -87,7 +87,7 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     variableOption.foreach {
       case variable @ Variable(name) =>
         asUniqueName(name, directionT, context)
-        properties.map(hasProperties(variable, _)).foreach(directionT.map)
+        properties.map(hasProperties(variable, _)).foreach(directionT.flatMap)
     }
     pathName.foreach(name => directionT.aggregate(PATH_EDGE + name))
     direction match {
@@ -105,7 +105,7 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     length match {
       case None =>
         // -[]->
-        g.map(directionT)
+        g.flatMap(directionT)
       case Some(None | Some(Range(None, None))) =>
         // -[*]->
         // -[*..]->
