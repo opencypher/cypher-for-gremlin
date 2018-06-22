@@ -31,14 +31,6 @@ import scala.collection.SortedMap
   */
 object RemoveUnusedAliases extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    splitAfter({
-      case MapT(Project(_*) :: _) => true
-      case _                      => false
-    })(steps)
-      .flatMap(rewriteSegment)
-  }
-
-  private def rewriteSegment(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     val selected = foldTraversals(SortedMap.empty[String, Int])((acc, localSteps) => {
       def increment(keys: String*): SortedMap[String, Int] = {
         keys.foldLeft(acc)((acc, key) => acc.updated(key, acc.getOrElse(key, 0) + 1))
@@ -54,12 +46,11 @@ object RemoveUnusedAliases extends GremlinRewriter {
       })(localSteps).flatten
     })(steps)
 
-    mapTraversals(
-      replace({
-        case before :: As(stepLabel) :: after if !selected.contains(stepLabel) =>
-          before :: after
-      })
-    )(steps)
+    mapTraversals(traversal =>
+      traversal.flatMap {
+        case As(stepLabel) if !selected.contains(stepLabel) => None
+        case s                                              => Some(s)
+    })(steps)
   }
 
   def predicateAliases(predicate: GremlinPredicate): Seq[String] = {

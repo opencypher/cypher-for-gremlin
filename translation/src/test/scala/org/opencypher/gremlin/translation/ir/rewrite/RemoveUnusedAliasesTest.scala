@@ -19,9 +19,16 @@ import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor.empty
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 
 class RemoveUnusedAliasesTest {
+
+  val flavor = new TranslatorFlavor(
+    rewriters = Seq(
+      InlineMapTraversal
+    ),
+    postConditions = Nil
+  )
 
   @Test
   def generated(): Unit = {
@@ -29,8 +36,9 @@ class RemoveUnusedAliasesTest {
         |MATCH (n)-->()
         |RETURN n
       """.stripMargin))
-      .withFlavor(empty)
+      .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
+      .removes(__.as("  cypher.path.start.GENERATED1"))
       .removes(__.as("  UNNAMED10"))
       .removes(__.as("  UNNAMED13"))
       .keeps(__.as("n"))
@@ -42,8 +50,9 @@ class RemoveUnusedAliasesTest {
         |MATCH (n)-[r]->(m)
         |RETURN n
       """.stripMargin))
-      .withFlavor(empty)
+      .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
+      .removes(__.as("  cypher.path.start.GENERATED1"))
       .removes(__.as("r"))
       .removes(__.as("m"))
       .keeps(__.as("n"))
@@ -52,7 +61,7 @@ class RemoveUnusedAliasesTest {
   @Test
   def fromTo(): Unit = {
     assertThat(parse("CREATE (n)-[:R]->(m)"))
-      .withFlavor(empty)
+      .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
       .removes(__.as("  UNNAMED11"))
       .keeps(__.as("n"))
@@ -66,11 +75,26 @@ class RemoveUnusedAliasesTest {
         |MATCH (m)-->(k)
         |RETURN n
       """.stripMargin))
-      .withFlavor(empty)
+      .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
+      .removes(__.as("  cypher.path.start.GENERATED1"))
       .removes(__.as("  UNNAMED10"))
       .removes(__.as("  UNNAMED26"))
       .keeps(__.as("n"))
       .keeps(__.as("m"))
+  }
+
+  @Test
+  def adjacentAs(): Unit = {
+    assertThat(parse("""
+         |MATCH ()-[r:R]->()
+         |RETURN r
+       """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveUnusedAliases)
+      .removes(__.as("  cypher.path.start.GENERATED1"))
+      .removes(__.as("  UNNAMED7"))
+      .removes(__.as("  UNNAMED17"))
+      .keeps(__.as("r"))
   }
 }

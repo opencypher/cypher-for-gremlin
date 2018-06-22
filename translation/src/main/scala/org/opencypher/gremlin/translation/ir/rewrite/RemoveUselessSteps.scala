@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -32,7 +33,7 @@ object RemoveUselessSteps extends GremlinRewriter {
   }
 
   private val firstPass: Seq[GremlinStep] => Seq[GremlinStep] = replace({
-    // Remove `fold` and `unfold` pairs, since the former is an inverse of the latter.
+    // Remove `fold` and `unfold` pairs, since the former is an inverse of the latter
     case Fold :: Unfold :: rest =>
       rest
     case Unfold :: Fold :: rest =>
@@ -44,6 +45,10 @@ object RemoveUselessSteps extends GremlinRewriter {
   })
 
   private val secondPass: Seq[GremlinStep] => Seq[GremlinStep] = replace({
+    // Remove null check immediately after graph step
+    case Vertex :: Is(Neq(NULL)) :: rest =>
+      Vertex :: rest
+
     // Remove duplicate `as` steps
     case As(stepLabel1) :: As(stepLabel2) :: rest if stepLabel1 == stepLabel2 =>
       As(stepLabel1) :: rest
