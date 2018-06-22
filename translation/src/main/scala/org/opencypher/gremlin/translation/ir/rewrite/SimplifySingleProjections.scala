@@ -20,19 +20,29 @@ import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
 /**
-  * Remove select in case of single key and [[UNUSED]] workaround
+  * This rule removes workarounds from effectively-single projections
+  * and lifts projection traversals out of single aggregating projections.
   */
 object SimplifySingleProjections extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    mapTraversals(replace({
+    Seq(
+      removeUnused(_),
+      liftFoldProjection(_)
+    ).foldLeft(steps) { (steps, rewriter) =>
+      mapTraversals(rewriter)(steps)
+    }
+  }
+
+  private def removeUnused(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
       case As(stepLabel) :: SelectK(key1, key2) :: Group :: rest if eqUnused(stepLabel, key2) =>
         SelectK(key1) :: Group :: removeSelectFromBy(key1, rest)
       case As(stepLabel) :: SelectK(key1, key2) :: Project(keys @ _*) :: rest if eqUnused(stepLabel, key2) =>
         SelectK(key1) :: Project(keys: _*) :: removeSelectFromBy(key1, rest)
       case As(stepLabel) :: SelectK(key1, key2) :: Fold :: Project(keys @ _*) :: rest if eqUnused(stepLabel, key2) =>
         SelectK(key1) :: Fold :: Project(keys: _*) :: removeSelectFromBy(key1, rest)
-    }))(steps)
+    })(steps)
   }
 
   private def removeSelect(key: String, steps: Seq[GremlinStep]): Seq[GremlinStep] = {
@@ -66,5 +76,12 @@ object SimplifySingleProjections extends GremlinRewriter {
 
   private def eqUnused(stepLabel: String, key2: String) = {
     stepLabel == UNUSED && key2 == UNUSED
+  }
+
+  private def liftFoldProjection(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Project(key) :: By(traversal @ Unfold :: _, order) :: rest =>
+        traversal ++ (Project(key) :: By(Identity :: Nil, order) :: rest)
+    })(steps)
   }
 }

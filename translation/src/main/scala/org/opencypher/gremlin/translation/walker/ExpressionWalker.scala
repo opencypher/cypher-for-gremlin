@@ -76,13 +76,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
         maybeExtractStep.map { extractStep =>
           walkLocal(expr)
-            .map(
-              notNull(
-                __.coalesce(
-                  extractStep(keyName),
-                  __.constant(NULL)
-                ),
-                context))
+            .map(notNull(emptyToNull(extractStep(keyName), context), context))
         }.getOrElse {
           val key = StringLiteral(keyName)(InputPosition.NONE)
           asList(expr, key).map(CustomFunction.containerIndex())
@@ -178,10 +172,11 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case ContainerIndex(expr, idx) =>
         (typeOf(expr), idx) match {
           case (_: ListType, l: IntegerLiteral) if l.value >= 0 =>
-            walkLocal(expr).coalesce(
-              __.range(Scope.local, l.value, l.value + 1),
-              __.constant(NULL)
-            )
+            walkLocal(expr).map(
+              emptyToNull(
+                __.range(Scope.local, l.value, l.value + 1),
+                context
+              ))
           case _ =>
             asList(expr, idx).map(CustomFunction.containerIndex())
         }
@@ -198,7 +193,8 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             if (to.value - from.value == 1) {
               rangeT.fold()
             }
-            walkLocal(expr).coalesce(rangeT, __.constant(NULL))
+            walkLocal(expr)
+              .map(emptyToNull(rangeT, context))
           case _ =>
             asList(expr, fromIdx, toIdx).map(CustomFunction.listSlice())
         }
@@ -268,9 +264,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         traversal
 
       case _: Parameter =>
-        __.coalesce(
+        emptyToNull(
           __.constant(expressionValue(expression, context)),
-          __.constant(NULL)
+          context
         )
 
       case _ =>

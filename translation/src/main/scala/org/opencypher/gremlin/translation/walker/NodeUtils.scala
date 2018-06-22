@@ -126,6 +126,11 @@ object NodeUtils {
     g.start().choose(p.neq(NULL), traversal, g.start().constant(NULL))
   }
 
+  def emptyToNull[T, P](traversal: GremlinSteps[T, P], context: WalkerContext[T, P]): GremlinSteps[T, P] = {
+    val g = context.dsl.steps()
+    g.start().choose(traversal, traversal, g.start().constant(NULL))
+  }
+
   def asList[T, P](expressions: Seq[Expression], context: WalkerContext[T, P]): GremlinSteps[T, P] = {
     val g = context.dsl.steps()
     if (expressions.isEmpty) {
