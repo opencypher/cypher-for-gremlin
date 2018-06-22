@@ -48,8 +48,8 @@ object RemoveUnusedAliases extends GremlinRewriter {
 
     mapTraversals(traversal =>
       traversal.flatMap {
-        case As(stepLabel) if !selected.contains(stepLabel) => Nil
-        case s                                              => Seq(s)
+        case As(stepLabel) if !selected.contains(stepLabel) => None
+        case s                                              => Some(s)
     })(steps)
   }
 
