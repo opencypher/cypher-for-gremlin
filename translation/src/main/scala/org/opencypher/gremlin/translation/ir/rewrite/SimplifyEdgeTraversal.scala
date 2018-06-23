@@ -17,6 +17,10 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.opencypher.gremlin.translation.ir.model._
 
+/**
+  * Patterns that only match a directed relation and begin the traversal
+  * can be simplified to a single graph step.
+  */
 object SimplifyEdgeTraversal extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
