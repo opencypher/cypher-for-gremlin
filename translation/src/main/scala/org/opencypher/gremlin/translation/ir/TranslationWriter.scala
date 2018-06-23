@@ -151,6 +151,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.loops()
         case MapF(function) =>
           g.map(function)
+        case MapT(traversal) =>
+          g.map(writeLocalSteps(traversal))
         case Math(expression) =>
           g.math(expression)
         case Max =>

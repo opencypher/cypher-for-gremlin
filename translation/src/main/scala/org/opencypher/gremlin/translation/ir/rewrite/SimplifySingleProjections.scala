@@ -28,7 +28,8 @@ object SimplifySingleProjections extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     Seq(
       removeUnused(_),
-      liftFoldProjection(_)
+      liftFoldProjection(_),
+      mapSingleProjection(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -74,7 +75,7 @@ object SimplifySingleProjections extends GremlinRewriter {
     } ::: rest
   }
 
-  private def eqUnused(stepLabel: String, key2: String) = {
+  private def eqUnused(stepLabel: String, key2: String): Boolean = {
     stepLabel == UNUSED && key2 == UNUSED
   }
 
@@ -82,6 +83,16 @@ object SimplifySingleProjections extends GremlinRewriter {
     replace({
       case Project(key) :: By(traversal @ Unfold :: _, order) :: rest =>
         traversal ++ (Project(key) :: By(Identity :: Nil, order) :: rest)
+    })(steps)
+  }
+
+  def mapSingleProjection(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Project(projectKey) :: By(traversal, None) :: SelectK(selectKey) :: rest if projectKey == selectKey =>
+        traversal match {
+          case Identity :: Nil => rest
+          case _               => MapT(traversal) :: rest
+        }
     })(steps)
   }
 }

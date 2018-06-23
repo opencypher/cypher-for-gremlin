@@ -142,6 +142,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> map(CustomFunction function);
 
+    GremlinSteps<T, P> map(GremlinSteps<T, P> traversal);
+
     GremlinSteps<T, P> math(String expression);
 
     GremlinSteps<T, P> max();

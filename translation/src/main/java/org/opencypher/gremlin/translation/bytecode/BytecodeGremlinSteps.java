@@ -323,6 +323,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> map(GremlinSteps<Bytecode, P> traversal) {
+        bytecode.addStep(Symbols.map, traversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> math(String expression) {
         bytecode.addStep(Symbols.math, expression);
         return this;

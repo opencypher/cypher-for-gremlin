@@ -185,6 +185,16 @@ case object Loops extends GremlinStep
 
 case class MapF(function: CustomFunction) extends GremlinStep
 
+case class MapT(traversal: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    MapT(f(traversal))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(z, traversal)
+  }
+}
+
 case class Math(expression: String) extends GremlinStep
 
 case object Max extends GremlinStep

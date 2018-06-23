@@ -330,6 +330,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> map(GremlinSteps<String, GroovyPredicate> traversal) {
+        g.append(chain("map", traversal(traversal)));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> math(String expression) {
         g.append(chain("math", expression));
         return this;
