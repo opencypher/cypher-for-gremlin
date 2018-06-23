@@ -257,12 +257,13 @@ public class ReturnTest {
     @Test
     public void countRelationship() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
-            "MATCH ()-[r:created]->() RETURN count(r) AS count"
+            "MATCH ()-[r:created {weight: 0.4}]->() " +
+                "RETURN count(r) AS count"
         );
 
         assertThat(results)
             .extracting("count")
-            .containsExactly(4L);
+            .containsExactly(2L);
     }
 
     @Test

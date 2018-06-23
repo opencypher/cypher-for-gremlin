@@ -36,6 +36,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def E(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Edge
+    this
+  }
+
   override def addE(edgeLabel: String): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += AddE(edgeLabel)
     this

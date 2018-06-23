@@ -52,6 +52,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> V();
 
+    GremlinSteps<T, P> E();
+
     GremlinSteps<T, P> addE(String edgeLabel);
 
     GremlinSteps<T, P> addV();

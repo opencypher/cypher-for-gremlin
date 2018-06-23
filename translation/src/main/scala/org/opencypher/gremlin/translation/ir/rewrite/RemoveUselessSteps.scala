@@ -48,6 +48,8 @@ object RemoveUselessSteps extends GremlinRewriter {
     // Remove null check immediately after graph step
     case Vertex :: Is(Neq(NULL)) :: rest =>
       Vertex :: rest
+    case Edge :: Is(Neq(NULL)) :: rest =>
+      Edge :: rest
 
     // Remove duplicate `as` steps
     case As(stepLabel1) :: As(stepLabel2) :: rest if stepLabel1 == stepLabel2 =>

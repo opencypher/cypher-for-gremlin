@@ -46,6 +46,8 @@ object TranslatorFlavor {
       SimplifySingleProjections,
       RemoveImmediateReselect,
       RemoveUnusedAliases,
+      SimplifyEdgeTraversal,
+      RemoveUnusedAliases,
       RemoveUselessSteps
     ),
     postConditions = Seq(
