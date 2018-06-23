@@ -269,6 +269,12 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def map(
+      traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += MapT(traversal.current())
+    this
+  }
+
   override def math(expression: String): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Math(expression)
     this
