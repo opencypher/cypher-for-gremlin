@@ -111,7 +111,7 @@ public class FunctionTest {
     public void existsInReturn() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) " +
-                            "RETURN exists(n.age) as result"
+                "RETURN exists(n.age) as result"
         );
 
         assertThat(results)
@@ -131,6 +131,25 @@ public class FunctionTest {
             .containsExactly(1L, 2L, 3L);
     }
 
+    @Test
+    public void sizeOfList() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN size(['Alice', 'Bob']) as size"
+        );
 
+        assertThat(results)
+            .extracting("size")
+            .containsExactly(2L);
+    }
 
+    @Test
+    public void sizeOfString() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN size('Alice') as size"
+        );
+
+        assertThat(results)
+            .extracting("size")
+            .containsExactly(5L);
+    }
 }

@@ -213,7 +213,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "properties"    => traversals.head.flatMap(notNull(__.map(CustomFunction.properties()), context))
           case "range"         => range(args)
           case "relationships" => traversals.head.map(CustomFunction.relationships())
-          case "size"          => traversals.head.map(CustomFunction.size())
+          case "size"          => size(traversals, args)
           case "sqrt"          => traversals.head.math("sqrt(_)")
           case "type"          => traversals.head.flatMap(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
@@ -396,6 +396,14 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     } else {
       val numbers = range.asInstanceOf[Seq[Object]]
       __.constant(numbers.asJava)
+    }
+  }
+
+  private def size(traversals: Seq[GremlinSteps[T, P]], args: Seq[Expression]): GremlinSteps[T, P] = {
+    val typ = typeOf(args.head)
+    typ match {
+      case ListType(_) => traversals.head.count(Scope.local)
+      case _           => traversals.head.map(CustomFunction.size())
     }
   }
 
