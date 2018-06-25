@@ -400,7 +400,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   }
 
   private def size(traversals: Seq[GremlinSteps[T, P]], args: Seq[Expression]): GremlinSteps[T, P] = {
-    val typ = context.expressionTypes.getOrElse(args.head, AnyType.instance)
+    val typ = typeOf(args.head)
     typ match {
       case ListType(_) => traversals.head.count(Scope.local)
       case _           => traversals.head.map(CustomFunction.size())
