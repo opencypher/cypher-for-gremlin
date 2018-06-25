@@ -56,21 +56,9 @@ object TranslatorFlavor {
   )
 
   /**
-    * A translator flavor that is suitable
-    * for a fully-compliant Gremlin Server or a compatible graph database
-    * without Cypher for Gremlin plugin.
-    */
-  val gremlinServerVanilla: TranslatorFlavor = gremlinServer.extend(
-    rewriters = Nil,
-    postConditions = Seq(
-      NoCustomFunctions
-    )
-  )
-
-  /**
     * A translator flavor that is suitable for Cosmos DB.
     */
-  val cosmosDb: TranslatorFlavor = gremlinServerVanilla.extend(
+  val cosmosDb: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
       CosmosDbFlavor
     ),
@@ -80,7 +68,7 @@ object TranslatorFlavor {
   /**
     * A translator flavor that is suitable for AWS Neptune.
     */
-  val neptune: TranslatorFlavor = gremlinServerVanilla.extend(
+  val neptune: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
       NeptuneFlavor
     ),

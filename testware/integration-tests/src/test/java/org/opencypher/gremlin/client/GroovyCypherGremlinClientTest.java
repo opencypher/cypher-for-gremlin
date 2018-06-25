@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.translation.translator.Translator;
 
 public class GroovyCypherGremlinClientTest {
 
@@ -36,7 +36,12 @@ public class GroovyCypherGremlinClientTest {
 
     @Before
     public void setUp() {
-        client = new GroovyCypherGremlinClient(gremlinServer.gremlinClient(), TranslatorFlavor.gremlinServer());
+        client = new GroovyCypherGremlinClient(
+            gremlinServer.gremlinClient(),
+            () -> Translator.builder()
+                .gremlinGroovy()
+                .build()
+        );
     }
 
     @Test

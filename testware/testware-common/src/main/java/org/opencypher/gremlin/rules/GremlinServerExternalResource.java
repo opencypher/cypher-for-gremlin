@@ -29,6 +29,7 @@ import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
+import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,13 +75,25 @@ public class GremlinServerExternalResource extends ExternalResource {
             case "traversal":
                 return CypherGremlinClient.plugin(gremlinClient);
             case "gremlin":
-                return CypherGremlinClient.translating(gremlinClient);
+                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
+                    .gremlinGroovy()
+                    .allowCypherExtensions()
+                    .build());
             case "bytecode":
-                return CypherGremlinClient.bytecode(gremlinClient.alias("g"));
+                return CypherGremlinClient.bytecode(gremlinClient.alias("g"), () -> Translator.builder()
+                    .bytecode()
+                    .allowCypherExtensions()
+                    .build());
             case "cosmosdb":
-                return CypherGremlinClient.translating(gremlinClient, TranslatorFlavor.cosmosDb());
+                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
+                    .gremlinGroovy()
+                    .allowCypherExtensions()
+                    .build(TranslatorFlavor.cosmosDb()));
             case "neptune":
-                return CypherGremlinClient.translating(gremlinClient, TranslatorFlavor.neptune());
+                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
+                    .gremlinGroovy()
+                    .allowCypherExtensions()
+                    .build(TranslatorFlavor.neptune()));
             default:
                 throw new IllegalArgumentException("Unknown name: " + clientName);
         }

@@ -107,6 +107,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
             .gremlinGroovy()
             .inlineParameters()
+            .allowCypherExtensions()
             .build();
 
         String gremlin = TranslationWriter.write(ir, stringTranslator, parameters);
