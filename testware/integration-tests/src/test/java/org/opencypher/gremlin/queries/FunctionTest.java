@@ -22,11 +22,14 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.translation.TranslationFacade;
 
 public class FunctionTest {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+
+    private TranslationFacade cfog = new TranslationFacade();
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -111,7 +114,7 @@ public class FunctionTest {
     public void existsInReturn() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) " +
-                            "RETURN exists(n.age) as result"
+                "RETURN exists(n.age) as result"
         );
 
         assertThat(results)
@@ -131,6 +134,31 @@ public class FunctionTest {
             .containsExactly(1L, 2L, 3L);
     }
 
+    @Test
+    public void sizeOfList() {
+        String cypher = "RETURN size(['Alice', 'Bob']) as size";
+        List<Map<String, Object>> results = submitAndGet(cypher);
 
+        assertThat(results)
+            .extracting("size")
+            .containsExactly(2L);
 
+        assertThat(cfog.toGremlinGroovy(cypher))
+            .contains("count(local)")
+            .doesNotContain("size()");
+    }
+
+    @Test
+    public void sizeOfString() {
+        String cypher = "RETURN size('Alice') as size";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("size")
+            .containsExactly(5L);
+
+        assertThat(cfog.toGremlinGroovy(cypher))
+            .contains("size()")
+            .doesNotContain("count(local)");
+    }
 }
