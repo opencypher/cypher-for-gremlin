@@ -21,12 +21,11 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.tinkerpop.gremlin.driver.Client;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
+import org.opencypher.gremlin.translation.translator.Translator;
 
 public class BytecodeCypherGremlinClientTest {
 
@@ -37,8 +36,12 @@ public class BytecodeCypherGremlinClientTest {
 
     @Before
     public void setUp() {
-        Client aliasedClient = gremlinServer.gremlinClient().alias("g");
-        client = new BytecodeCypherGremlinClient(aliasedClient, TranslatorFlavor.gremlinServer());
+        client = new BytecodeCypherGremlinClient(
+            gremlinServer.gremlinClient().alias("g"),
+            () -> Translator.builder()
+                .bytecode()
+                .build()
+        );
     }
 
     @Test

@@ -43,15 +43,18 @@ public final class Translator<T, P> {
     private final GremlinSteps<T, P> steps;
     private final GremlinPredicates<P> predicates;
     private final GremlinBindings bindings;
+    private final boolean cypherExtensions;
     private final TranslatorFlavor flavor;
 
     private Translator(GremlinSteps<T, P> steps,
                        GremlinPredicates<P> predicates,
                        GremlinBindings bindings,
+                       boolean cypherExtensions,
                        TranslatorFlavor flavor) {
         this.steps = steps;
         this.predicates = predicates;
         this.bindings = bindings;
+        this.cypherExtensions = cypherExtensions;
         this.flavor = flavor;
     }
 
@@ -86,6 +89,15 @@ public final class Translator<T, P> {
      */
     public GremlinBindings bindings() {
         return bindings;
+    }
+
+    /**
+     * Returns true if this translation assumes the CfoG plugin is installed on target server.
+     *
+     * @return true, if CfoG plugin should be installed, false otherwise
+     */
+    public boolean requiresCypherExtensions() {
+        return cypherExtensions;
     }
 
     /**
@@ -205,6 +217,7 @@ public final class Translator<T, P> {
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
         protected GremlinBindings bindings;
+        protected boolean cypherExtensions = false;
 
         private FlavorBuilder(GremlinSteps<T, P> steps,
                               GremlinPredicates<P> predicates,
@@ -212,6 +225,17 @@ public final class Translator<T, P> {
             this.steps = steps;
             this.predicates = predicates;
             this.bindings = bindings;
+        }
+
+        /**
+         * Builds a {@link Translator} with support for custom functions and predicates
+         * provided by the CfoG Gremlin Server plugin.
+         *
+         * @return builder for translator
+         */
+        public FlavorBuilder<T, P> allowCypherExtensions() {
+            cypherExtensions = true;
+            return this;
         }
 
         /**
@@ -234,6 +258,7 @@ public final class Translator<T, P> {
                 steps,
                 predicates,
                 bindings,
+                cypherExtensions,
                 flavor != null ? flavor : TranslatorFlavor.gremlinServer()
             );
         }

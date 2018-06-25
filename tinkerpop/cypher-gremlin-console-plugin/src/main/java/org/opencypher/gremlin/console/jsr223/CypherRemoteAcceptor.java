@@ -32,6 +32,8 @@ import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteException;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 /**
@@ -68,29 +70,37 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
 
     private static CypherGremlinClient configureClient(Client gremlinClient, List<String> args) {
         if (args.contains(TOKEN_TRANSLATE)) {
-            TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
-            int flavorParamIndex = args.indexOf(TOKEN_TRANSLATE) + 1;
-            if (flavorParamIndex < args.size()) {
-                flavor = flavorByName(args.get(flavorParamIndex));
-            }
-            return CypherGremlinClient.translating(gremlinClient, flavor);
+            Translator<String, GroovyPredicate> translator = translatorByName(args);
+            return CypherGremlinClient.translating(gremlinClient, () -> translator);
         } else {
             return CypherGremlinClient.plugin(gremlinClient);
         }
     }
 
-    private static TranslatorFlavor flavorByName(String name) {
-        switch (name) {
+    private static Translator<String, GroovyPredicate> translatorByName(List<String> args) {
+        int translatorTypeIndex = args.indexOf(TOKEN_TRANSLATE) + 1;
+        Translator.FlavorBuilder<String, GroovyPredicate> builder = Translator.builder().gremlinGroovy();
+        if (translatorTypeIndex >= args.size()) {
+            return builder.build();
+        }
+        String translatorType = args.get(translatorTypeIndex);
+        switch (translatorType) {
             case "cosmosdb":
-                return TranslatorFlavor.cosmosDb();
+                return builder.build(TranslatorFlavor.cosmosDb());
+            case "cosmosdb+extensions":
+                return builder.allowCypherExtensions().build(TranslatorFlavor.cosmosDb());
             case "neptune":
-                return TranslatorFlavor.neptune();
+                return builder.build(TranslatorFlavor.neptune());
+            case "neptune+extensions":
+                return builder.allowCypherExtensions().build(TranslatorFlavor.neptune());
             case "gremlin":
-                return TranslatorFlavor.gremlinServer();
+                return builder.build(TranslatorFlavor.gremlinServer());
+            case "gremlin+extensions":
+                return builder.allowCypherExtensions().build(TranslatorFlavor.gremlinServer());
             case "":
-                return TranslatorFlavor.gremlinServer();
+                return builder.build(TranslatorFlavor.gremlinServer());
             default:
-                throw new IllegalArgumentException("Unknown translation flavor: " + name);
+                throw new IllegalArgumentException("Unknown translator type: " + translatorType);
         }
     }
 

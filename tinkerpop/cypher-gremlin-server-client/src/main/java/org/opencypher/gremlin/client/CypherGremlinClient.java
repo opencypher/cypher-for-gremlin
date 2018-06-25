@@ -20,9 +20,14 @@ import static java.util.Collections.emptyMap;
 import java.io.Closeable;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 /**
@@ -54,7 +59,7 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-enabled client
      */
     static CypherGremlinClient translating(Client client) {
-        return new GroovyCypherGremlinClient(client, TranslatorFlavor.gremlinServer());
+        return translating(client, TranslatorFlavor.gremlinServer());
     }
 
     /**
@@ -69,7 +74,22 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-enabled client
      */
     static CypherGremlinClient translating(Client client, TranslatorFlavor flavor) {
-        return new GroovyCypherGremlinClient(client, flavor);
+        return translating(client, () -> Translator.builder().gremlinGroovy().build(flavor));
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that can send Cypher queries
+     * to any Gremlin Server or a compatible graph database as Gremlin-Groovy.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread,
+     * before sending the query to Gremlin Server.
+     *
+     * @param client             Gremlin client
+     * @param translatorSupplier translator configuration supplier
+     * @return Cypher-enabled client
+     */
+    static CypherGremlinClient translating(Client client, Supplier<Translator<String, GroovyPredicate>> translatorSupplier) {
+        return new GroovyCypherGremlinClient(client, translatorSupplier);
     }
 
     /**
@@ -83,7 +103,7 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-enabled client
      */
     static CypherGremlinClient bytecode(Client client) {
-        return new BytecodeCypherGremlinClient(client, TranslatorFlavor.gremlinServer());
+        return bytecode(client, TranslatorFlavor.gremlinServer());
     }
 
     /**
@@ -98,7 +118,22 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-enabled client
      */
     static CypherGremlinClient bytecode(Client client, TranslatorFlavor flavor) {
-        return new BytecodeCypherGremlinClient(client, flavor);
+        return bytecode(client, () -> Translator.builder().bytecode().build(flavor));
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that can send Cypher queries
+     * to any Gremlin Server or a compatible graph database as Gremlin bytecode.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread,
+     * before sending the query to Gremlin Server.
+     *
+     * @param client             Gremlin client
+     * @param translatorSupplier translator configuration supplier
+     * @return Cypher-enabled client
+     */
+    static CypherGremlinClient bytecode(Client client, Supplier<Translator<Bytecode, P>> translatorSupplier) {
+        return new BytecodeCypherGremlinClient(client, translatorSupplier);
     }
 
     /**
