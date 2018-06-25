@@ -59,6 +59,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> E() {
+        g.append(chain("E"));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> addE(String edgeLabel) {
         g.append(chain("addE", edgeLabel));
         return this;

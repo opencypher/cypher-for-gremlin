@@ -61,6 +61,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
       step match {
         case Vertex =>
           g.V()
+        case Edge =>
+          g.E()
         case AddE(edgeLabel) =>
           g.addE(edgeLabel)
         case AddV =>

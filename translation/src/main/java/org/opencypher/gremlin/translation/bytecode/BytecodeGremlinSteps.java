@@ -56,6 +56,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> E() {
+        bytecode.addStep(Symbols.E);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> addE(String edgeLabel) {
         bytecode.addStep(Symbols.addE, edgeLabel);
         return this;

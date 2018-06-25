@@ -42,6 +42,8 @@ sealed trait GremlinStep {
 
 case object Vertex extends GremlinStep
 
+case object Edge extends GremlinStep
+
 case class AddE(edgeLabel: String) extends GremlinStep
 
 case object AddV extends GremlinStep

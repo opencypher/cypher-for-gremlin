@@ -25,6 +25,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.AddVertexStartStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
 import org.apache.tinkerpop.gremlin.structure.Column;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 import org.opencypher.gremlin.translation.GremlinSteps;
@@ -66,6 +67,18 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
             // Workaround for constructing `GraphStep` with `isStart == true`
             g.asAdmin().getBytecode().addStep(Symbols.V);
             g.asAdmin().addStep(new GraphStep<>(g.asAdmin(), Vertex.class, true));
+        }
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> E() {
+        if (isStartedOrSubTraversal()) {
+            throw new IllegalStateException("Edge graph step can only be at the start of traversal");
+        } else {
+            // Workaround for constructing `EdgeStep` with `isStart == true`
+            g.asAdmin().getBytecode().addStep(Symbols.E);
+            g.asAdmin().addStep(new GraphStep<>(g.asAdmin(), Edge.class, true));
         }
         return this;
     }

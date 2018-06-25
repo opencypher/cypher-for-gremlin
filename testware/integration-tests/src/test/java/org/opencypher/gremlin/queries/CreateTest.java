@@ -144,14 +144,14 @@ public class CreateTest {
             .containsExactly(1L);
 
         submitAndGet("MATCH (a:A)-[r]->(b)\n" +
-            //"DELETE r\n" + TODO fix GraphTraversal#drop traversal yields no outgoing objects.
+            "DELETE r\n" +
             "CREATE (b)-[:RECREATED]->(a) RETURN b");
 
         toBeDeleted = submitAndGet("MATCH ()-[r:TBDELETED]->() RETURN COUNT(r)");
 
         assertThat(toBeDeleted)
             .extracting("COUNT(r)")
-            .containsExactly(1L);
+            .containsExactly(0L);
 
         List<Map<String, Object>> recreated = submitAndGet("MATCH ()-[r:RECREATED]->() RETURN COUNT(r)");
 
