@@ -16,10 +16,13 @@
 package org.opencypher.gremlin.translation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.v9_0.util.symbols.AnyType;
 import org.opencypher.v9_0.util.symbols.CypherType;
 import org.opencypher.v9_0.util.symbols.IntegerType;
@@ -30,8 +33,8 @@ public class CypherAstTest {
     @Test
     public void duplicateNames() {
         String cypher = "MATCH (n:person)-[r:knows]->(friend:person)\n" +
-                        "WHERE n.name = 'marko'\n" +
-                        "RETURN n, friend.name AS friend";
+            "WHERE n.name = 'marko'\n" +
+            "RETURN n, friend.name AS friend";
         CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
@@ -70,5 +73,19 @@ public class CypherAstTest {
 
         assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);
         assertThat(variableTypes.get("count(a) + 3")).isInstanceOf(IntegerType.class);
+    }
+
+    @Test
+    public void noCypherExtensions() {
+        CypherAst ast = CypherAst.parse(
+            "MATCH (n:N) " +
+                "WITH n.p AS s " +
+                "WHERE s STARTS WITH 'x' AND s ENDS WITH 'x' AND s CONTAINS 'x' " +
+                "RETURN length(s), toString(s)"
+        );
+        Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
+
+        assertThatThrownBy(() -> ast.buildTranslation(translator))
+            .hasMessageContaining("contains, convertToString, endsWith, length, starsWith");
     }
 }
