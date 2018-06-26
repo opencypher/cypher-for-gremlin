@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.translator.Translator;
 
+@SuppressWarnings("Duplicates")
 public class BytecodeCypherGremlinClientTest {
 
     @ClassRule
@@ -82,5 +83,27 @@ public class BytecodeCypherGremlinClientTest {
 
         assertThat(throwable)
             .hasMessageContaining("Invalid input");
+    }
+
+    @Test
+    public void invalidParameter() {
+        String cypher = "RETURN $`🐼`";
+        Map<String, ?> parameters = singletonMap("🐼", 0);
+        CypherResultSet resultSet = client.submit(cypher, parameters);
+        Throwable throwable = catchThrowable(resultSet::all);
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid parameter name: 🐼");
+    }
+
+    @Test
+    public void groovyKeywordParameter() {
+        String cypher = "RETURN $goto";
+        Map<String, ?> parameters = singletonMap("goto", 0);
+        CypherResultSet resultSet = client.submit(cypher, parameters);
+        Throwable throwable = catchThrowable(resultSet::all);
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid parameter name: goto");
     }
 }

@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.bytecode;
 
+import static org.opencypher.gremlin.translation.GroovyIdentifiers.isValidIdentifier;
 import static org.opencypher.gremlin.translation.Tokens.NULL;
 
 import java.util.Optional;
@@ -24,6 +25,10 @@ import org.opencypher.gremlin.translation.GremlinBindings;
 public class BytecodeGremlinBindings implements GremlinBindings {
     @Override
     public Object bind(String name, Object value) {
-        return new Binding<>(name, Optional.ofNullable(value).orElse(NULL));
+        if (isValidIdentifier(name)) {
+            return new Binding<>(name, Optional.ofNullable(value).orElse(NULL));
+        } else {
+            throw new IllegalArgumentException("Invalid parameter name: " + name);
+        }
     }
 }
