@@ -15,22 +15,39 @@
  */
 package org.opencypher.gremlin.translation.groovy;
 
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
-import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.toLiteral;
+import static java.lang.Character.isJavaIdentifierPart;
 
-import java.util.regex.Pattern;
 import org.opencypher.gremlin.translation.GremlinBindings;
 
 public class GroovyGremlinBindings implements GremlinBindings {
 
-    private final Pattern simpleName = Pattern.compile("^[a-z]\\w+$", CASE_INSENSITIVE);
-
     @Override
     public Object bind(String name, Object value) {
-        if (simpleName.matcher(name).matches()) {
+        if (isValidIdentifier(name)) {
             return Verbatim.of(name);
         } else {
-            return Verbatim.of("binding.variables[" + toLiteral(name) + "]");
+            throw new IllegalArgumentException("Invalid parameter name: " + name);
         }
+    }
+
+    private static boolean isValidIdentifier(String value) {
+        char[] chars = value.toCharArray();
+        int length = chars.length;
+        if (length == 0) {
+            return false;
+        }
+        if (!isJavaIdentifierStart(chars[0])) {
+            return false;
+        }
+        for (int i = 1; i < length; i++) {
+            if (!isJavaIdentifierPart(chars[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isJavaIdentifierStart(char c) {
+        return Character.isJavaIdentifierStart(c) && Character.getType(c) != Character.CURRENCY_SYMBOL;
     }
 }

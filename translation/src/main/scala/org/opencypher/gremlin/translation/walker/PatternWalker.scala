@@ -16,10 +16,10 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.opencypher.gremlin.translation.Tokens.PATH_EDGE
+import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
-import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.v9_0.expressions.SemanticDirection._
 import org.opencypher.v9_0.expressions.{UnsignedDecimalIntegerLiteral => UDIL, _}
 import org.opencypher.v9_0.util.InputPosition.NONE
@@ -96,7 +96,7 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       case OUTGOING => directionT.inV()
     }
 
-    val pathStart = Tokens.PATH_START + pathName.getOrElse(context.generateName().trim())
+    val pathStart = PATH_START + pathName.getOrElse(context.generateName().trim())
 
     g.as(pathStart)
     def pathLengthT = g.start().path().from(pathStart).count(Scope.local)
