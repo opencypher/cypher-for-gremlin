@@ -69,10 +69,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case Property(expr, PropertyKeyName(keyName: String)) =>
         val typ = context.expressionTypes.get(expr)
         val maybeExtractStep: Option[String => GremlinSteps[T, P]] = typ match {
-          case Some(NodeType.instance)         => Some(__.values(_))
-          case Some(RelationshipType.instance) => Some(__.values(_))
-          case Some(MapType.instance)          => Some(__.select(_))
-          case _                               => None
+          case Some(_: NodeType)         => Some(__.values(_))
+          case Some(_: RelationshipType) => Some(__.values(_))
+          case Some(_: MapType)          => Some(__.select(_))
+          case _                         => None
         }
         maybeExtractStep.map { extractStep =>
           walkLocal(expr)
@@ -210,10 +210,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "length"        => traversals.head.map(CustomFunction.length())
           case "nodes"         => traversals.head.map(CustomFunction.nodes())
-          case "properties"    => traversals.head.flatMap(notNull(__.map(CustomFunction.properties()), context))
+          case "properties"    => traversals.head.flatMap(properties(args))
           case "range"         => range(args)
           case "relationships" => traversals.head.map(CustomFunction.relationships())
-          case "size"          => size(traversals, args)
+          case "size"          => traversals.head.flatMap(size(args))
           case "sqrt"          => traversals.head.math("sqrt(_)")
           case "type"          => traversals.head.flatMap(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
           case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
@@ -368,6 +368,24 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     bothNotNull(lhs, rhs, traversal, rhsName)
   }
 
+  private def properties(args: Seq[Expression]): GremlinSteps[T, P] = {
+    lazy val elementT = __.local(
+      __.properties()
+        .group()
+        .by(__.key())
+        .by(__.map(__.value()))
+    )
+
+    val typ = typeOf(args.head)
+    val traversal = typ match {
+      case _: NodeType         => elementT
+      case _: RelationshipType => elementT
+      case _: MapType          => __.identity()
+      case _                   => __.map(CustomFunction.properties())
+    }
+    notNull(traversal, context)
+  }
+
   private val injectHardLimit = 10000
 
   private def range(rangeArgs: Seq[Expression]): GremlinSteps[T, P] = {
@@ -399,11 +417,11 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
   }
 
-  private def size(traversals: Seq[GremlinSteps[T, P]], args: Seq[Expression]): GremlinSteps[T, P] = {
+  private def size(args: Seq[Expression]): GremlinSteps[T, P] = {
     val typ = typeOf(args.head)
     typ match {
-      case ListType(_) => traversals.head.count(Scope.local)
-      case _           => traversals.head.map(CustomFunction.size())
+      case _: ListType => __.count(Scope.local)
+      case _           => __.map(CustomFunction.size())
     }
   }
 
