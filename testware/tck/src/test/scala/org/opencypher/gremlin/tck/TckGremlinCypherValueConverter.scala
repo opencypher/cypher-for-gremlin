@@ -21,6 +21,7 @@ import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.CypherAst
 import org.opencypher.gremlin.translation.ReturnProperties._
+import org.opencypher.gremlin.translation.exception.{SyntaxException, TypeException}
 import org.opencypher.tools.tck.api.{CypherValueRecords, ExecutionFailed}
 import org.opencypher.tools.tck.constants.TCKErrorPhases.RUNTIME
 import org.opencypher.tools.tck.values._
@@ -38,24 +39,25 @@ object TckGremlinCypherValueConverter {
       .filter(c => {
         c == null |
           c.isInstanceOf[ResponseException] |
-          c.isInstanceOf[IllegalArgumentException]
+          c.isInstanceOf[RuntimeException]
       })
       .next()
 
     gremlinRemoteException match {
-      case e: ResponseException        => parseException(e)
-      case e: IllegalArgumentException => parseException(e)
+      case _: SyntaxException | _: TypeException | _: IllegalArgumentException | _: ResponseException =>
+        parseException(gremlinRemoteException)
+      case e: RuntimeException => parseException(e.getCause)
       case _ =>
         ExecutionFailed(
           UNKNOWN_ERROR,
           RUNTIME,
-          "Unable to find org.apache.tinkerpop.gremlin.driver.exception.ResponseException in stack ",
+          "Unable to find known exception in stack",
           Some(e)
         )
     }
   }
 
-  def parseException(e: Exception): ExecutionFailed = {
+  def parseException(e: Throwable): ExecutionFailed = {
     val errors = GremlinErrors.mappings.filterKeys(e.getMessage.split("\\r?\\n").head.matches(_))
 
     errors.size match {

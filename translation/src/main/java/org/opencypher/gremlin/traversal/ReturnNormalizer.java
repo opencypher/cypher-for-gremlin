@@ -122,8 +122,9 @@ public final class ReturnNormalizer {
         result.put(ID, getT(value, T.id));
         result.put(LABEL, getT(value, T.label));
 
+        boolean gremlinTokensCanBeMapKeys = value.containsKey(T.id);
         value.entrySet().stream()
-            .filter(this::isProperty)
+            .filter(e1 -> isProperty(e1, gremlinTokensCanBeMapKeys))
             .forEach(
                 e -> {
                     if (NODE_TYPE.equals(type) && isVertexValueList(e.getValue())) {
@@ -148,8 +149,9 @@ public final class ReturnNormalizer {
             result.put(ID, getT(element, T.id));
             result.put(LABEL, getT(element, T.label));
 
+            boolean gremlinTokensCanBeMapKeys = element.containsKey(T.id);
             element.entrySet().stream()
-                .filter(this::isProperty)
+                .filter(e -> isProperty(e, gremlinTokensCanBeMapKeys))
                 .forEach(e -> result.put(e.getKey(), normalizeValue(e.getValue())));
         }
 
@@ -230,7 +232,13 @@ public final class ReturnNormalizer {
         return (e instanceof Collection) && ((Collection) e).size() == 1;
     }
 
-    private boolean isProperty(Entry<?, ?> e) {
-        return !T.id.equals(e.getKey()) && !T.label.equals(e.getKey());
+    private boolean isProperty(Entry<?, ?> e, boolean gremlinTokensCanBeMapKeys) {
+        if (gremlinTokensCanBeMapKeys) {
+            return !T.id.equals(e.getKey()) &&
+                !T.label.equals(e.getKey());
+        } else {
+            return !("label".equals(e.getKey()) && !isVertexValueList(e.getValue())) &&
+                !("id".equals(e.getKey()) && !isVertexValueList(e.getValue()));
+        }
     }
 }
