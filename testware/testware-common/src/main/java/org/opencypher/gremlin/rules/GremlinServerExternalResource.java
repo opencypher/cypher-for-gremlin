@@ -79,6 +79,10 @@ public class GremlinServerExternalResource extends ExternalResource {
                     .gremlinGroovy()
                     .allowCypherExtensions()
                     .build());
+            case "vanilla":
+                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
+                    .gremlinGroovy()
+                    .build());
             case "bytecode":
                 return CypherGremlinClient.bytecode(gremlinClient.alias("g"), () -> Translator.builder()
                     .bytecode()
