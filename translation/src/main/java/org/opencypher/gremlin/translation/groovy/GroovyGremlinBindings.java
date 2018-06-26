@@ -15,12 +15,11 @@
  */
 package org.opencypher.gremlin.translation.groovy;
 
-import static java.lang.Character.isJavaIdentifierPart;
+import static org.opencypher.gremlin.translation.GroovyIdentifiers.isValidIdentifier;
 
 import org.opencypher.gremlin.translation.GremlinBindings;
 
 public class GroovyGremlinBindings implements GremlinBindings {
-
     @Override
     public Object bind(String name, Object value) {
         if (isValidIdentifier(name)) {
@@ -28,26 +27,5 @@ public class GroovyGremlinBindings implements GremlinBindings {
         } else {
             throw new IllegalArgumentException("Invalid parameter name: " + name);
         }
-    }
-
-    private static boolean isValidIdentifier(String value) {
-        char[] chars = value.toCharArray();
-        int length = chars.length;
-        if (length == 0) {
-            return false;
-        }
-        if (!isJavaIdentifierStart(chars[0])) {
-            return false;
-        }
-        for (int i = 1; i < length; i++) {
-            if (!isJavaIdentifierPart(chars[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isJavaIdentifierStart(char c) {
-        return Character.isJavaIdentifierStart(c) && Character.getType(c) != Character.CURRENCY_SYMBOL;
     }
 }

@@ -62,10 +62,15 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
         }
 
         Translator<Bytecode, P> translator = translatorSupplier.get();
-        Bytecode bytecode = ast.buildTranslation(translator);
+        Bytecode bytecode;
+        try {
+            bytecode = ast.buildTranslation(translator);
+        } catch (Exception e) {
+            return completedFuture(exceptional(e));
+        }
+
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(bytecode);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
-
         return resultSetFuture
             .thenApply(ResultSet::iterator)
             .thenApply(resultIterator -> new CypherResultSet(
