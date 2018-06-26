@@ -83,4 +83,15 @@ public class GroovyCypherGremlinClientTest {
         assertThat(throwable)
             .hasMessageContaining("Invalid input");
     }
+
+    @Test
+    public void invalidParameter() {
+        String cypher = "RETURN $`🐼`";
+        Map<String, ?> parameters = singletonMap("🐼", 0);
+        CypherResultSet resultSet = client.submit(cypher, parameters);
+        Throwable throwable = catchThrowable(resultSet::all);
+
+        assertThat(throwable)
+            .hasMessageContaining("Invalid parameter name: 🐼");
+    }
 }

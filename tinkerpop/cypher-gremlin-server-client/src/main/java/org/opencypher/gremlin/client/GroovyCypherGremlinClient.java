@@ -61,7 +61,13 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
         }
 
         Translator<String, GroovyPredicate> translator = translatorSupplier.get();
-        String gremlin = ast.buildTranslation(translator);
+        String gremlin;
+        try {
+            gremlin = ast.buildTranslation(translator);
+        } catch (Exception e) {
+            return completedFuture(exceptional(e));
+        }
+
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, normalizedParameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture
