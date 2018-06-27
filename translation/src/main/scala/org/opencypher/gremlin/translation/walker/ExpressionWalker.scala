@@ -157,6 +157,8 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
       case Add(lhs, rhs) =>
         (typeOf(lhs), typeOf(rhs)) match {
+          case (_: ListType, _) | (_, _: ListType) =>
+            listConcat(lhs, rhs)
           case (_: IntegerType, _: IntegerType) =>
             math(lhs, rhs, "+")
           case _ =>
@@ -365,6 +367,18 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   private def math(lhs: Expression, rhs: Expression, op: String): GremlinSteps[T, P] = {
     val rhsName = context.generateName().replace(" ", "_") // name limited by MathStep#VARIABLE_PATTERN
     val traversal = __.math(s"_ $op $rhsName")
+    bothNotNull(lhs, rhs, traversal, rhsName)
+  }
+
+  private def listConcat(lhs: Expression, rhs: Expression) = {
+    val rhsName = context.generateName()
+    val traversal = __.local(
+      __.union(
+          __.unfold(),
+          __.select(rhsName).unfold()
+        )
+        .fold()
+    )
     bothNotNull(lhs, rhs, traversal, rhsName)
   }
 
