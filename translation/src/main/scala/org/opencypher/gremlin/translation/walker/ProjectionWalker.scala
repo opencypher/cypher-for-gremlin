@@ -124,22 +124,29 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
   private def applyProjection(subTraversals: SubTraversals): GremlinSteps[T, P] = {
     val SubTraversals(select, all, pivots, aggregations) = subTraversals
-    val selectMap = () =>
+    lazy val selectMap = {
       if (select.isEmpty) {
         g
       } else if (select.lengthCompare(1) == 0) {
         g.as(UNUSED).select(select.head, UNUSED)
       } else {
         g.select(select: _*)
+      }
     }
 
     if (pivots.nonEmpty && aggregations.nonEmpty) {
-      val pivotTraversal = getPivotTraversal(pivots)
+      val pivotTraversal = if (pivots.size == 1) {
+        pivots.values.head
+      } else {
+        val traversal = __.project(pivots.keySet.toSeq: _*)
+        for ((_, expression) <- pivots) traversal.by(expression)
+        traversal
+      }
 
       val aggregationTraversal = __.fold().project(all.keySet.toSeq: _*)
       for ((_, expression) <- all) aggregationTraversal.by(__.unfold().flatMap(expression))
 
-      selectMap()
+      selectMap
         .group()
         .by(pivotTraversal)
         .by(aggregationTraversal)
@@ -149,14 +156,14 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       val pivotTraversal = __.project(pivots.keySet.toSeq: _*)
       for ((_, expression) <- pivots) pivotTraversal.by(expression)
 
-      selectMap()
+      selectMap
         .flatMap(pivotTraversal)
 
     } else if (aggregations.nonEmpty) {
       val aggregationTraversal = __.project(aggregations.keySet.toSeq: _*)
       for ((_, expression) <- aggregations) aggregationTraversal.by(__.unfold().flatMap(expression))
 
-      selectMap()
+      selectMap
         .fold()
         .flatMap(aggregationTraversal)
     } else {
@@ -227,16 +234,6 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
   }
 
-  private def getPivotTraversal(pivots: Map[String, GremlinSteps[T, P]]): GremlinSteps[T, P] = {
-    if (pivots.size == 1) {
-      pivots.values.head
-    } else {
-      val pivotTraversal = __.project(pivots.keySet.toSeq: _*)
-      for ((_, expression) <- pivots) pivotTraversal.by(expression)
-      pivotTraversal
-    }
-  }
-
   private def getVariableNames(items: Seq[ReturnItem]): Seq[String] = {
     val dependencyNames = for (AliasedReturnItem(expression, _) <- items;
                                Variable(n) <- expression.dependencies) yield n
@@ -253,7 +250,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       expression: Expression,
       finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
     Try(ExpressionWalker.walkLocal(context, g, expression)).map { localTraversal =>
-      if (finalize && expression.isInstanceOf[Variable]) {
+      if (finalize) {
         (Pivot, finalizeValue(localTraversal, alias))
       } else {
         (Pivot, localTraversal)
@@ -267,34 +264,48 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   }
 
   private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String): GremlinSteps[T, P] = {
-    def hasInnerType(typ: CypherType, expected: CypherType): Boolean =
-      typ.isInstanceOf[ListType] && typ.asInstanceOf[ListType].innerType == expected
-
     val p = context.dsl.predicates()
 
-    context.returnTypes.get(alias) match {
-      case Some(typ) if typ.isInstanceOf[NodeType] =>
-        nullIfNull(subTraversal, __.valueMap(true))
-      case Some(typ) if typ.isInstanceOf[ListType] && hasInnerType(typ, NodeType.instance) =>
-        __.flatMap(subTraversal).unfold().is(p.neq(NULL)).valueMap(true).fold()
-      case Some(typ) if typ.isInstanceOf[RelationshipType] =>
+    val qualifiedType = context.returnTypes.get(alias) match {
+      case Some(typ: ListType) => (typ, typ.innerType)
+      case Some(typ)           => (typ, AnyType.instance)
+      case _                   => (AnyType.instance, AnyType.instance)
+    }
+
+    lazy val finalizeNode =
+      __.valueMap(true)
+
+    lazy val finalizeRelationship =
+      __.project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
+        .by(__.valueMap(true))
+        .by(__.inV().id())
+        .by(__.outV().id())
+
+    qualifiedType match {
+      case (_: NodeType, _) =>
         nullIfNull(
           subTraversal,
-          __.project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
-            .by(__.valueMap(true))
-            .by(__.inV().id())
-            .by(__.outV().id())
+          finalizeNode
         )
-      case Some(typ) if typ.isInstanceOf[ListType] && hasInnerType(typ, RelationshipType.instance) =>
+      case (_: ListType, _: NodeType) =>
+        __.flatMap(subTraversal)
+          .unfold()
+          .is(p.neq(NULL))
+          .flatMap(finalizeNode)
+          .fold()
+      case (_: RelationshipType, _) =>
+        nullIfNull(
+          subTraversal,
+          finalizeRelationship
+        )
+      case (_: ListType, _: RelationshipType) =>
         nullIfNull(
           subTraversal,
           __.unfold()
-            .project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
-            .by(__.valueMap(true))
-            .by(__.inV().id())
-            .by(__.outV().id())
-            .fold())
-      case Some(typ) if typ.isInstanceOf[PathType] =>
+            .flatMap(finalizeRelationship)
+            .fold()
+        )
+      case (_: PathType, _) =>
         nullIfNull(
           subTraversal,
           __.project(PROJECTION_RELATIONSHIP, PROJECTION_ELEMENT)

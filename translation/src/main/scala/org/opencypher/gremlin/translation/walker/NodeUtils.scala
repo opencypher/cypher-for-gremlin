@@ -18,7 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import java.util
 
 import org.apache.tinkerpop.gremlin.structure.Column
-import org.opencypher.gremlin.translation.Tokens.NULL
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.v9_0.expressions._

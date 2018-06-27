@@ -69,7 +69,7 @@ private class MatchWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
         PatternWalker.walk(context, g, patternElement)
       case NamedPatternPart(Variable(pathName), EveryPath(patternElement)) =>
         PatternWalker.walk(context, g, patternElement, Some(pathName))
-        g.path().as(pathName)
+        g.as(MATCH_END + pathName).path().as(pathName)
       case n =>
         context.unsupported("match pattern", n)
     }

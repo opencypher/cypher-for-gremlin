@@ -41,7 +41,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.exception.TypeException;
 
@@ -196,25 +195,6 @@ public class CustomFunction implements Function<Traverser, Object> {
                 }
                 return propertyMap;
             });
-    }
-
-    public static CustomFunction nodes() {
-        return new CustomFunction(
-            "nodes",
-            traverser -> ((Path) traverser.get()).objects().stream()
-                .filter(element -> element instanceof Vertex)
-                .map(CustomFunction::finalizeElements)
-                .collect(toList()));
-    }
-
-    public static CustomFunction relationships() {
-        return new CustomFunction(
-            "relationships",
-            traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
-                .flatMap(CustomFunction::flatten)
-                .filter(element -> element instanceof Edge)
-                .map(CustomFunction::finalizeElements)
-                .collect(toList()));
     }
 
     public static CustomFunction containerIndex() {
@@ -482,10 +462,6 @@ public class CustomFunction implements Function<Traverser, Object> {
         );
     }
 
-    private static Object flatten(Object element) {
-        return element instanceof Collection ? ((Collection) element).stream() : Stream.of(element);
-    }
-
     private static Object tokenToNull(Object maybeNull) {
         return Tokens.NULL.equals(maybeNull) ? null : maybeNull;
     }
@@ -496,25 +472,5 @@ public class CustomFunction implements Function<Traverser, Object> {
 
     private static Object pathToList(Object value) {
         return value instanceof Path ? new ArrayList<>(((Path) value).objects()) : value;
-    }
-
-    private static Object finalizeElements(Object o) {
-
-        if (Tokens.NULL.equals(o)) {
-            return Tokens.NULL;
-        }
-
-        if (o instanceof Vertex) {
-            return TraversalUtil.apply(o, valueMap);
-        } else {
-            Edge edge = (Edge) o;
-
-            Map<Object, Object> wrapper = new HashMap<>();
-            wrapper.put(PROJECTION_INV, edge.inVertex().id());
-            wrapper.put(PROJECTION_OUTV, edge.outVertex().id());
-            wrapper.put(PROJECTION_ELEMENT, TraversalUtil.apply(o, valueMap));
-
-            return wrapper;
-        }
     }
 }

@@ -43,6 +43,8 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     context.markFirstStatement()
     g.V()
 
+    pathName.foreach(name => g.as(MATCH_START + name))
+
     val chain = flattenRelationshipChain(node)
     chain.foreach {
       case node: NodePattern =>
