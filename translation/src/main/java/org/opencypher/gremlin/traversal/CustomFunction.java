@@ -72,13 +72,6 @@ public class CustomFunction implements Function<Traverser, Object> {
         return implementation.apply(traverser);
     }
 
-    public static CustomFunction length() {
-        return new CustomFunction(
-            "length",
-            traverser -> (((Path) traverser.get()).size() - 1) / 2
-        );
-    }
-
     public static CustomFunction convertToString() {
         return new CustomFunction(
             "convertToString",

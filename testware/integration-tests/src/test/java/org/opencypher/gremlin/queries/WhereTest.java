@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.tuple;
 import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipWithBytecode;
@@ -133,7 +132,6 @@ public class WhereTest {
     }
 
     @Test
-    @Ignore("WhereWalker should consider the path 'calculus'")
     public void pathLength() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH p = (n)-[r:knows]->(m) " +
