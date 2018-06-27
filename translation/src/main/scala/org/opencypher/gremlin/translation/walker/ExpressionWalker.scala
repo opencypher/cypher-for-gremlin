@@ -208,7 +208,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "id"            => traversals.head.flatMap(notNull(__.id(), context))
           case "keys"          => traversals.head.properties().key().fold()
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
-          case "length"        => traversals.head.map(CustomFunction.length())
+          case "length"        => traversals.head.count(Scope.local).math("(_-1)/2")
           case "nodes"         => traversals.head.map(CustomFunction.nodes())
           case "properties"    => traversals.head.flatMap(properties(args))
           case "range"         => range(args)
