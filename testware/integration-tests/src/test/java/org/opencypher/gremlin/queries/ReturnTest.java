@@ -374,7 +374,8 @@ public class ReturnTest {
     public void nodesAndRelationshipsFunctions() throws Exception {
         String cypher = "MATCH p = (:person)-[:knows]->(:person)-[:created]->(:software)\n" +
             "RETURN nodes(p) AS nodes, relationships(p) AS rels";
-        Stream<Map<String, List<Object>>> results = submitAndGet(cypher).stream()
+        List<Map<String, Object>> results = submitAndGet(cypher);
+        Stream<Map<String, List<Object>>> mappedResults = results.stream()
             .map(result -> {
                 Map<String, List<Object>> map = new HashMap<>();
                 map.put("nodes", ((Collection<Map<String, Object>>) result.get("nodes")).stream()
@@ -386,7 +387,7 @@ public class ReturnTest {
                 return map;
             });
 
-        assertThat(results)
+        assertThat(mappedResults)
             .hasSize(2)
             .extracting("nodes", "rels")
             .containsExactlyInAnyOrder(

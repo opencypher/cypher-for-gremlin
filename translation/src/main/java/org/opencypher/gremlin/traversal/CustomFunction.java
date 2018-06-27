@@ -198,25 +198,6 @@ public class CustomFunction implements Function<Traverser, Object> {
             });
     }
 
-    public static CustomFunction nodes() {
-        return new CustomFunction(
-            "nodes",
-            traverser -> ((Path) traverser.get()).objects().stream()
-                .filter(element -> element instanceof Vertex)
-                .map(CustomFunction::finalizeElements)
-                .collect(toList()));
-    }
-
-    public static CustomFunction relationships() {
-        return new CustomFunction(
-            "relationships",
-            traverser -> ((Collection) ((Path) traverser.get()).objects()).stream()
-                .flatMap(CustomFunction::flatten)
-                .filter(element -> element instanceof Edge)
-                .map(CustomFunction::finalizeElements)
-                .collect(toList()));
-    }
-
     public static CustomFunction containerIndex() {
         return new CustomFunction(
             "containerIndex",

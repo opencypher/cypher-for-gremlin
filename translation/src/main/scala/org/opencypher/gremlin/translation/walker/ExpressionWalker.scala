@@ -209,10 +209,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "keys"          => traversals.head.properties().key().fold()
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "length"        => traversals.head.count(Scope.local).math("(_-1)/2")
-          case "nodes"         => traversals.head.map(CustomFunction.nodes())
+          case "nodes"         => traversals.head.flatMap(filterElements(args, includeNodes = true))
           case "properties"    => traversals.head.flatMap(properties(args))
           case "range"         => range(args)
-          case "relationships" => traversals.head.map(CustomFunction.relationships())
+          case "relationships" => traversals.head.flatMap(filterElements(args, includeRelationships = true))
           case "size"          => traversals.head.flatMap(size(args))
           case "sqrt"          => traversals.head.math("sqrt(_)")
           case "type"          => traversals.head.flatMap(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
@@ -366,6 +366,23 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     val rhsName = context.generateName().replace(" ", "_") // name limited by MathStep#VARIABLE_PATTERN
     val traversal = __.math(s"_ $op $rhsName")
     bothNotNull(lhs, rhs, traversal, rhsName)
+  }
+
+  private def filterElements(
+      args: Seq[Expression],
+      includeNodes: Boolean = false,
+      includeRelationships: Boolean = false): GremlinSteps[T, P] = {
+    val pathName = args.head match {
+      case Variable(name) => name
+      case n              => context.unsupported("nodes() or relationships() argument", n)
+    }
+    val p = context.dsl.predicates()
+    __.path()
+      .from(MATCH_START + pathName)
+      .to(MATCH_END + pathName)
+      .by(if (includeNodes) __.identity() else __.constant(UNUSED))
+      .by(if (includeRelationships) __.identity() else __.constant(UNUSED))
+      .local(__.unfold().is(p.neq(UNUSED)).fold())
   }
 
   private def properties(args: Seq[Expression]): GremlinSteps[T, P] = {
