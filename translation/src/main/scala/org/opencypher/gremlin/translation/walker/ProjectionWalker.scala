@@ -124,7 +124,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
   private def applyProjection(subTraversals: SubTraversals): GremlinSteps[T, P] = {
     val SubTraversals(select, all, pivots, aggregations) = subTraversals
-    def selectMap() = {
+    lazy val selectMap = {
       if (select.isEmpty) {
         g
       } else if (select.lengthCompare(1) == 0) {
@@ -146,7 +146,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       val aggregationTraversal = __.fold().project(all.keySet.toSeq: _*)
       for ((_, expression) <- all) aggregationTraversal.by(__.unfold().flatMap(expression))
 
-      selectMap()
+      selectMap
         .group()
         .by(pivotTraversal)
         .by(aggregationTraversal)
@@ -156,14 +156,14 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       val pivotTraversal = __.project(pivots.keySet.toSeq: _*)
       for ((_, expression) <- pivots) pivotTraversal.by(expression)
 
-      selectMap()
+      selectMap
         .flatMap(pivotTraversal)
 
     } else if (aggregations.nonEmpty) {
       val aggregationTraversal = __.project(aggregations.keySet.toSeq: _*)
       for ((_, expression) <- aggregations) aggregationTraversal.by(__.unfold().flatMap(expression))
 
-      selectMap()
+      selectMap
         .fold()
         .flatMap(aggregationTraversal)
     } else {
