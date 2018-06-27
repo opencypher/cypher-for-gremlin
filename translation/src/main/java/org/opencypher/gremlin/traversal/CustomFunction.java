@@ -41,7 +41,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.opencypher.gremlin.translation.Tokens;
 import org.opencypher.gremlin.translation.exception.TypeException;
 
@@ -463,10 +462,6 @@ public class CustomFunction implements Function<Traverser, Object> {
         );
     }
 
-    private static Object flatten(Object element) {
-        return element instanceof Collection ? ((Collection) element).stream() : Stream.of(element);
-    }
-
     private static Object tokenToNull(Object maybeNull) {
         return Tokens.NULL.equals(maybeNull) ? null : maybeNull;
     }
@@ -477,25 +472,5 @@ public class CustomFunction implements Function<Traverser, Object> {
 
     private static Object pathToList(Object value) {
         return value instanceof Path ? new ArrayList<>(((Path) value).objects()) : value;
-    }
-
-    private static Object finalizeElements(Object o) {
-
-        if (Tokens.NULL.equals(o)) {
-            return Tokens.NULL;
-        }
-
-        if (o instanceof Vertex) {
-            return TraversalUtil.apply(o, valueMap);
-        } else {
-            Edge edge = (Edge) o;
-
-            Map<Object, Object> wrapper = new HashMap<>();
-            wrapper.put(PROJECTION_INV, edge.inVertex().id());
-            wrapper.put(PROJECTION_OUTV, edge.outVertex().id());
-            wrapper.put(PROJECTION_ELEMENT, TraversalUtil.apply(o, valueMap));
-
-            return wrapper;
-        }
     }
 }
