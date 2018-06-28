@@ -152,4 +152,27 @@ public class FunctionTest {
             .extracting("size")
             .containsExactly(5L);
     }
+
+    @Test
+    public void sizeOfPatternExpressionInReturn() {
+        String cypher = "MATCH (a) " +
+            "WHERE a.name = 'marko' " +
+            "RETURN size((a)-->()-->()) AS fof";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("fof")
+            .containsExactly(2L);
+    }
+
+    @Test
+    public void sizeOfPatternExpressionInWhere() {
+        String cypher = "MATCH (n:person) WHERE size( (n)-->() ) > 1 RETURN n.name";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactly("marko", "josh");
+
+    }
 }
