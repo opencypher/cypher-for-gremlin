@@ -108,7 +108,8 @@ project(':translation') {
     sourceSets.test.java.srcDirs = []
 
     dependencies {
-        compile "org.apache.tinkerpop:gremlin-core:${tinkerpopVersion}"
+        compile project(':tinkerpop:cypher-gremlin-extensions')
+
         compile "org.scala-lang:scala-library:${scalaVersion}.${scalaPatchVersion}"
         compile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
         compile("org.opencypher:front-end-${cypherVersion}:${cypherFrontendVersion}") {
@@ -118,17 +119,17 @@ project(':translation') {
     }
 
     scaladoc {
-        title "${project.ext.title} ${->project.version} API"
+        title "${project.ext.title} ${-> project.version} API"
     }
 }
 
-project(':tinkerpop:tinkerpop-common') {
+project(':tinkerpop:cypher-gremlin-extensions') {
     ext.releaseToMavenCentral = true
-    ext.title = 'Cypher for Gremlin: TinkerPop Common'
-    description 'Cypher for Gremlin common classes'
+    ext.title = 'Cypher for Gremlin: Gremlin language extensions'
+    description 'Cypher for Gremlin custom functions and predicates for Gremlin'
 
     dependencies {
-        compile project(':translation')
+        compile "org.apache.tinkerpop:gremlin-core:${tinkerpopVersion}"
     }
 }
 
@@ -138,7 +139,7 @@ project(':tinkerpop:cypher-gremlin-server-client') {
     description 'Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server'
 
     dependencies {
-        compile project(':tinkerpop:tinkerpop-common')
+        compile project(':translation')
 
         compile "org.apache.tinkerpop:gremlin-driver:${tinkerpopVersion}"
     }
@@ -152,7 +153,7 @@ project(':tinkerpop:cypher-gremlin-server-plugin') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile (project(':tinkerpop:tinkerpop-common')) {
+        compile (project(':translation')) {
             exclude group: 'org.apache.tinkerpop'
         }
 
