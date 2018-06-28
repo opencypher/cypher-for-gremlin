@@ -16,29 +16,32 @@
 package org.opencypher.gremlin.server.jsr223;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.jsr223.Customizer;
 import org.apache.tinkerpop.gremlin.jsr223.DefaultImportCustomizer;
 import org.apache.tinkerpop.gremlin.jsr223.GremlinPlugin;
 import org.apache.tinkerpop.gremlin.jsr223.ImportCustomizer;
-import org.opencypher.gremlin.traversal.CustomFunction;
+import org.opencypher.gremlin.traversal.CustomFunctions;
 import org.opencypher.gremlin.traversal.CustomPredicate;
 
 public class CypherPlugin implements GremlinPlugin {
 
     private static final ImportCustomizer imports = DefaultImportCustomizer.build()
         .addClassImports(CustomPredicate.class)
-        .addMethodImports(CustomPredicate.class.getDeclaredMethods())
-        .addClassImports(CustomFunction.class)
-        .addMethodImports(CustomFunction.class.getDeclaredMethods())
+        .addMethodImports(getDeclaredPublicMethods(CustomPredicate.class))
+        .addClassImports(CustomFunctions.class)
+        .addMethodImports(getDeclaredPublicMethods(CustomFunctions.class))
         .create();
 
-    private static Method getDeclaredMethod(Class<?> klass, String name, Class<?>... parameterTypes) {
-        try {
-            return klass.getDeclaredMethod(name, parameterTypes);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException("Missing in classpath: " + klass + "#" + name);
-        }
+    private static List<Method> getDeclaredPublicMethods(Class<?> klass) {
+        Method[] declaredMethods = klass.getDeclaredMethods();
+        return Stream.of(declaredMethods)
+            .filter(method -> Modifier.isPublic(method.getModifiers()))
+            .collect(Collectors.toList());
     }
 
     @Override

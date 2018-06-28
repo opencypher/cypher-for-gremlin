@@ -79,7 +79,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             .flatMap(notNull(emptyToNull(extractStep(keyName), context), context))
         }.getOrElse {
           val key = StringLiteral(keyName)(InputPosition.NONE)
-          asList(expr, key).map(CustomFunction.containerIndex())
+          asList(expr, key).map(CustomFunction.cypherContainerIndex())
         }
 
       case HasLabels(expr, List(LabelName(label))) =>
@@ -162,7 +162,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case (_: IntegerType, _: IntegerType) =>
             math(lhs, rhs, "+")
           case _ =>
-            asList(lhs, rhs).map(CustomFunction.plus())
+            asList(lhs, rhs).map(CustomFunction.cypherPlus())
         }
 
       case Subtract(lhs, rhs) => math(lhs, rhs, "-")
@@ -180,7 +180,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
                 context
               ))
           case _ =>
-            asList(expr, idx).map(CustomFunction.containerIndex())
+            asList(expr, idx).map(CustomFunction.cypherContainerIndex())
         }
 
       case ListSlice(expr, maybeFrom, maybeTo) =>
@@ -198,7 +198,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             walkLocal(expr)
               .flatMap(emptyToNull(rangeT, context))
           case _ =>
-            asList(expr, fromIdx, toIdx).map(CustomFunction.listSlice())
+            asList(expr, fromIdx, toIdx).map(CustomFunction.cypherListSlice())
         }
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
@@ -218,10 +218,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "size"          => traversals.head.flatMap(size(args))
           case "sqrt"          => traversals.head.math("sqrt(_)")
           case "type"          => traversals.head.flatMap(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
-          case "toboolean"     => traversals.head.map(CustomFunction.convertToBoolean())
-          case "tofloat"       => traversals.head.map(CustomFunction.convertToFloat())
-          case "tointeger"     => traversals.head.map(CustomFunction.convertToInteger())
-          case "tostring"      => traversals.head.map(CustomFunction.convertToString())
+          case "toboolean"     => traversals.head.map(CustomFunction.cypherToBoolean())
+          case "tofloat"       => traversals.head.map(CustomFunction.cypherToFloat())
+          case "tointeger"     => traversals.head.map(CustomFunction.cypherToInteger())
+          case "tostring"      => traversals.head.map(CustomFunction.cypherToString())
           case _ =>
             throw new SyntaxException(s"Unknown function '$fnName'")
         }
@@ -243,7 +243,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
         projection match {
           case PathExpression(_) =>
-            traversal.map(CustomFunction.pathComprehension())
+            traversal.map(CustomFunction.cypherPathComprehension())
           case expression: Expression =>
             val functionT = walkLocal(expression)
             if (expression.dependencies.isEmpty) {
@@ -412,7 +412,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case _: NodeType         => elementT
       case _: RelationshipType => elementT
       case _: MapType          => __.identity()
-      case _                   => __.map(CustomFunction.properties())
+      case _                   => __.map(CustomFunction.cypherProperties())
     }
     notNull(traversal, context)
   }
@@ -452,7 +452,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     val typ = typeOf(args.head)
     typ match {
       case _: ListType => __.count(Scope.local)
-      case _           => __.map(CustomFunction.size())
+      case _           => __.map(CustomFunction.cypherSize())
     }
   }
 

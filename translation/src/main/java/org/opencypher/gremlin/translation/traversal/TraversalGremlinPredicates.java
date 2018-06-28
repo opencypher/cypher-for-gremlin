@@ -68,16 +68,16 @@ public class TraversalGremlinPredicates implements GremlinPredicates<P> {
 
     @Override
     public P startsWith(Object value) {
-        return CustomPredicate.startsWith(value);
+        return CustomPredicate.cypherStartsWith(value);
     }
 
     @Override
     public P endsWith(Object value) {
-        return CustomPredicate.endsWith(value);
+        return CustomPredicate.cypherEndsWith(value);
     }
 
     @Override
     public P contains(Object value) {
-        return CustomPredicate.contains(value);
+        return CustomPredicate.cypherContains(value);
     }
 }

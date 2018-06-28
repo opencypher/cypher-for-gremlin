@@ -362,10 +362,10 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             (Aggregation, traversal.min())
           case "percentilecont" =>
             val percentile = inlineExpressionValue(args(1), context, classOf[java.lang.Number]).doubleValue()
-            (Aggregation, traversal.fold().map(CustomFunction.percentileCont(percentile)))
+            (Aggregation, traversal.fold().map(CustomFunction.cypherPercentileCont(percentile)))
           case "percentiledisc" =>
             val percentile = inlineExpressionValue(args(1), context, classOf[java.lang.Number]).doubleValue()
-            (Aggregation, traversal.fold().map(CustomFunction.percentileDisc(percentile)))
+            (Aggregation, traversal.fold().map(CustomFunction.cypherPercentileDisc(percentile)))
           case "sum" =>
             (Aggregation, traversal.sum())
           case _ =>

@@ -70,17 +70,17 @@ public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
 
     @Override
     public P startsWith(Object value) {
-        return CustomPredicate.startsWith(inlineParameter(value));
+        return CustomPredicate.cypherStartsWith(inlineParameter(value));
     }
 
     @Override
     public P endsWith(Object value) {
-        return CustomPredicate.endsWith(inlineParameter(value));
+        return CustomPredicate.cypherEndsWith(inlineParameter(value));
     }
 
     @Override
     public P contains(Object value) {
-        return CustomPredicate.contains(inlineParameter(value));
+        return CustomPredicate.cypherContains(inlineParameter(value));
     }
 
     private static Object[] inlineParameters(Object... values) {

@@ -22,29 +22,29 @@ import org.junit.Test;
 public class CustomPredicateTest {
     @Test
     public void startsWith() throws Exception {
-        assertThat(CustomPredicate.startsWith("a").test("abcd")).isTrue();
-        assertThat(CustomPredicate.startsWith("x").test("abcd")).isFalse();
-        assertThat(CustomPredicate.startsWith("x").test(null)).isFalse();
-        assertThat(CustomPredicate.startsWith(null).test("abcd")).isFalse();
-        assertThat(CustomPredicate.startsWith(null).test(null)).isFalse();
+        assertThat(CustomPredicate.cypherStartsWith("a").test("abcd")).isTrue();
+        assertThat(CustomPredicate.cypherStartsWith("x").test("abcd")).isFalse();
+        assertThat(CustomPredicate.cypherStartsWith("x").test(null)).isFalse();
+        assertThat(CustomPredicate.cypherStartsWith(null).test("abcd")).isFalse();
+        assertThat(CustomPredicate.cypherStartsWith(null).test(null)).isFalse();
     }
 
     @Test
     public void endsWith() throws Exception {
-        assertThat(CustomPredicate.endsWith("d").test("abcd")).isTrue();
-        assertThat(CustomPredicate.endsWith("x").test("abcd")).isFalse();
-        assertThat(CustomPredicate.endsWith("x").test(null)).isFalse();
-        assertThat(CustomPredicate.endsWith(null).test("abcd")).isFalse();
-        assertThat(CustomPredicate.endsWith(null).test(null)).isFalse();
+        assertThat(CustomPredicate.cypherEndsWith("d").test("abcd")).isTrue();
+        assertThat(CustomPredicate.cypherEndsWith("x").test("abcd")).isFalse();
+        assertThat(CustomPredicate.cypherEndsWith("x").test(null)).isFalse();
+        assertThat(CustomPredicate.cypherEndsWith(null).test("abcd")).isFalse();
+        assertThat(CustomPredicate.cypherEndsWith(null).test(null)).isFalse();
     }
 
     @Test
     public void contains() throws Exception {
-        assertThat(CustomPredicate.contains("bc").test("abcd")).isTrue();
-        assertThat(CustomPredicate.contains("x").test("abcd")).isFalse();
-        assertThat(CustomPredicate.contains("x").test(null)).isFalse();
-        assertThat(CustomPredicate.contains(null).test("abcd")).isFalse();
-        assertThat(CustomPredicate.contains(null).test(null)).isFalse();
+        assertThat(CustomPredicate.cypherContains("bc").test("abcd")).isTrue();
+        assertThat(CustomPredicate.cypherContains("x").test("abcd")).isFalse();
+        assertThat(CustomPredicate.cypherContains("x").test(null)).isFalse();
+        assertThat(CustomPredicate.cypherContains(null).test("abcd")).isFalse();
+        assertThat(CustomPredicate.cypherContains(null).test(null)).isFalse();
     }
 
 }
