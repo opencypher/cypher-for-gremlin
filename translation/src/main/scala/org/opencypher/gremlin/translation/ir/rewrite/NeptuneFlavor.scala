@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model.{GremlinStep, _}
 
@@ -26,9 +27,33 @@ object NeptuneFlavor extends GremlinRewriter {
     Seq(
       injectWorkaround(_),
       deleteWorkaround(_),
-      limit0Workaround(_)
+      limit0Workaround(_),
+      traversalRewriters(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       rewriter(steps)
+    }
+  }
+
+  private def traversalRewriters(topLevelRewrites: Seq[GremlinStep]) = {
+    Seq(
+      expandListProperties(_)
+    ).foldLeft(topLevelRewrites) { (steps, rewriter) =>
+      mapTraversals(rewriter)(steps)
+    }
+  }
+
+  private def expandListProperties(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case PropertyT(key, Project(_*) :: bySteps) :: rest => {
+        expandSub(key, bySteps) ++ rest
+      }
+    })(steps)
+  }
+
+  private def expandSub(key: String, bySteps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    bySteps match {
+      case By(expr, None) :: rest        => PropertyT(key, expr) +: expandSub(key, rest)
+      case SelectC(Column.values) :: Nil => Nil
     }
   }
 
