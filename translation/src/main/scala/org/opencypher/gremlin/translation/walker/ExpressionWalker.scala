@@ -256,6 +256,11 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             }
         }
 
+      case PatternExpression(RelationshipsPattern(relationshipChain)) =>
+        val traversal = g.start()
+        PatternWalker.walk(context, traversal, relationshipChain)
+        traversal
+
       case ListLiteral(expressions @ _ :: _) =>
         asList(expressions: _*)
 
@@ -451,8 +456,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   private def size(args: Seq[Expression]): GremlinSteps[T, P] = {
     val typ = typeOf(args.head)
     typ match {
-      case _: ListType => __.count(Scope.local)
-      case _           => __.map(CustomFunction.cypherSize())
+      case ListType(_: PathType) => __.count()
+      case _: ListType           => __.count(Scope.local)
+      case _                     => __.map(CustomFunction.cypherSize())
     }
   }
 
