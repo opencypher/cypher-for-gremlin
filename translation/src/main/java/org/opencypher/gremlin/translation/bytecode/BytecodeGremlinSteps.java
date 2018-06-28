@@ -20,7 +20,6 @@ import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.a
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
-import org.apache.tinkerpop.gremlin.process.traversal.Bytecode.Binding;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
@@ -313,10 +312,7 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
 
     @Override
     public GremlinSteps<Bytecode, P> map(CustomFunction function) {
-        Object[] args = Stream.of(function.getArgs())
-            .map(arg -> (arg instanceof Binding) ? ((Binding) arg).value() : arg)
-            .toArray();
-        String lambdaSource = apply(function.getName(), args) + ".apply(it)";
+        String lambdaSource = apply(function.getName()) + ".apply(it)";
         Function lambda = Lambda.function(lambdaSource, "gremlin-groovy");
         bytecode.addStep(Symbols.map, lambda);
         return this;

@@ -249,7 +249,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       alias: String,
       expression: Expression,
       finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
-    Try(ExpressionWalker.walkLocal(context, g, expression)).map { localTraversal =>
+    Try(walkLocal(expression)).map { localTraversal =>
       if (finalize) {
         (Pivot, finalizeValue(localTraversal, alias))
       } else {
@@ -361,11 +361,9 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "min" =>
             (Aggregation, traversal.min())
           case "percentilecont" =>
-            val percentile = inlineExpressionValue(args(1), context, classOf[java.lang.Number]).doubleValue()
-            (Aggregation, traversal.fold().map(CustomFunction.percentileCont(percentile)))
+            (Aggregation, aggregateWithArguments(args).map(CustomFunction.cypherPercentileCont()))
           case "percentiledisc" =>
-            val percentile = inlineExpressionValue(args(1), context, classOf[java.lang.Number]).doubleValue()
-            (Aggregation, traversal.fold().map(CustomFunction.percentileDisc(percentile)))
+            (Aggregation, aggregateWithArguments(args).map(CustomFunction.cypherPercentileDisc()))
           case "sum" =>
             (Aggregation, traversal.sum())
           case _ =>
@@ -396,5 +394,16 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           context.unsupported("sort expression", sortItem.expression)
       }
     }
+  }
+
+  private def aggregateWithArguments(args: Seq[Expression]): GremlinSteps[T, P] = {
+    val keys = args.map(_ => context.generateName())
+    val traversal = walkLocal(args.head).fold().project(keys: _*).by(__.identity())
+    args.drop(1).map(walkLocal).foreach(traversal.by)
+    traversal.select(Column.values)
+  }
+
+  private def walkLocal(expression: Expression): GremlinSteps[T, P] = {
+    ExpressionWalker.walkLocal(context, g, expression)
   }
 }

@@ -84,8 +84,7 @@ public final class ProcedureContext {
             traverser -> {
                 Collection<?> arguments = (Collection<?>) traverser.get();
                 return call(name, arguments);
-            },
-            name
+            }
         );
     }
 

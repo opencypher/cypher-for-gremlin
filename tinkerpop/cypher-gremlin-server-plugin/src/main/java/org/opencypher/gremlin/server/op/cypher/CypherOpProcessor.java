@@ -18,7 +18,6 @@ package org.opencypher.gremlin.server.op.cypher;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode.SERVER_ERROR;
-import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -77,7 +76,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
     @Override
     public String getName() {
-        return CYPHER_OP_PROCESSOR_NAME;
+        return "cypher";
     }
 
     @Override

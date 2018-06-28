@@ -40,6 +40,6 @@ class NoCustomFunctionsTest {
     val translator = Translator.builder.gremlinGroovy.build(flavor)
 
     assertThatThrownBy(() => ast.buildTranslation(translator))
-      .hasMessageContaining("contains, convertToString, endsWith, size, starsWith")
+      .hasMessageContaining("cypherContains, cypherEndsWith, cypherSize, cypherStarsWith, cypherToString")
   }
 }

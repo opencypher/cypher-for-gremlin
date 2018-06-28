@@ -351,7 +351,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> map(CustomFunction function) {
-        g.map(function);
+        g.map(function.getImplementation());
         return this;
     }
 

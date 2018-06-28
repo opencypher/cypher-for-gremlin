@@ -322,9 +322,7 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     public GremlinSteps<String, GroovyPredicate> map(CustomFunction function) {
         g.append(chain(
             "map",
-            Verbatim.of(
-                apply(function.getName(), function.getArgs())
-            )
+            Verbatim.of(apply(function.getName()))
         ));
         return this;
     }

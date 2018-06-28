@@ -19,36 +19,36 @@ import java.util.function.BiPredicate;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 
 public enum CustomPredicate implements BiPredicate<Object, Object> {
-    startsWith {
+    cypherStartsWith {
         @Override
         public boolean test(Object a, Object b) {
             return a != null && b != null && a.toString().startsWith(b.toString());
         }
     },
 
-    endsWith {
+    cypherEndsWith {
         @Override
         public boolean test(Object a, Object b) {
             return a != null && b != null && a.toString().endsWith(b.toString());
         }
     },
 
-    contains {
+    cypherContains {
         @Override
         public boolean test(Object a, Object b) {
             return a != null && b != null && a.toString().contains(b.toString());
         }
     };
 
-    public static P<Object> startsWith(final Object prefix) {
-        return new P<>(CustomPredicate.startsWith, prefix);
+    public static P<Object> cypherStartsWith(final Object prefix) {
+        return new P<>(CustomPredicate.cypherStartsWith, prefix);
     }
 
-    public static P<Object> endsWith(final Object suffix) {
-        return new P<>(CustomPredicate.endsWith, suffix);
+    public static P<Object> cypherEndsWith(final Object suffix) {
+        return new P<>(CustomPredicate.cypherEndsWith, suffix);
     }
 
-    public static P<Object> contains(final Object sequence) {
-        return new P<>(CustomPredicate.contains, sequence);
+    public static P<Object> cypherContains(final Object sequence) {
+        return new P<>(CustomPredicate.cypherContains, sequence);
     }
 }

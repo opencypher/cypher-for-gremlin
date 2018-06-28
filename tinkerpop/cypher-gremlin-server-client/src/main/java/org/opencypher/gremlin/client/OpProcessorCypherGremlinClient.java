@@ -15,8 +15,6 @@
  */
 package org.opencypher.gremlin.client;
 
-import static org.opencypher.gremlin.ClientServerCommunication.CYPHER_OP_PROCESSOR_NAME;
-
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
@@ -25,6 +23,8 @@ import org.apache.tinkerpop.gremlin.driver.Tokens;
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 
 final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
+
+    private static final String CYPHER_OP_PROCESSOR_NAME = "cypher";
 
     private final Client client;
 

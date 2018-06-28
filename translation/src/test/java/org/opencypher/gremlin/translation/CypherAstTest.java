@@ -86,6 +86,6 @@ public class CypherAstTest {
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
 
         assertThatThrownBy(() -> ast.buildTranslation(translator))
-            .hasMessageContaining("contains, convertToString, endsWith, size, starsWith");
+            .hasMessageContaining("cypherContains, cypherEndsWith, cypherSize, cypherStarsWith, cypherToString");
     }
 }
