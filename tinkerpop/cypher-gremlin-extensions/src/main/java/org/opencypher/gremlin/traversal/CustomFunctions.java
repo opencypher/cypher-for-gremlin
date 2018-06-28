@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -296,10 +297,9 @@ public final class CustomFunctions {
             .collect(toList());
     }
 
-    public static Function<Traverser, Object> cypherPercentileCont(double percentile) {
+    public static Function<Traverser, Object> cypherPercentileCont() {
         return percentileFunction(
-            percentile,
-            data -> {
+            (data, percentile) -> {
                 int last = data.size() - 1;
                 double lowPercentile = Math.floor(percentile * last) / last;
                 double highPercentile = Math.ceil(percentile * last) / last;
@@ -315,21 +315,22 @@ public final class CustomFunctions {
         );
     }
 
-    public static Function<Traverser, Object> cypherPercentileDisc(double percentile) {
+    public static Function<Traverser, Object> cypherPercentileDisc() {
         return percentileFunction(
-            percentile,
-            data -> percentileNearest(data, percentile)
+            CustomFunctions::percentileNearest
         );
     }
 
-    private static Function<Traverser, Object> percentileFunction(double percentile,
-                                                                  Function<List<Number>, Number> percentileStrategy) {
+    private static Function<Traverser, Object> percentileFunction(BiFunction<List<Number>, Double, Number> percentileStrategy) {
         return traverser -> {
+            List<?> args = (List<?>) traverser.get();
+
+            double percentile = ((Number) args.get(1)).doubleValue();
             if (percentile < 0 || percentile > 1) {
                 throw new IllegalArgumentException("Number out of range: " + percentile);
             }
 
-            Collection<?> coll = (Collection<?>) traverser.get();
+            Collection<?> coll = (Collection<?>) args.get(0);
             boolean invalid = coll.stream()
                 .anyMatch(o -> !(o == null || o instanceof Number));
             if (invalid) {
@@ -348,7 +349,7 @@ public final class CustomFunctions {
                 return data.get(0);
             }
 
-            return percentileStrategy.apply(data);
+            return percentileStrategy.apply(data, percentile);
         };
     }
 

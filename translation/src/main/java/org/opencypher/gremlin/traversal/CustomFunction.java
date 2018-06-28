@@ -18,15 +18,12 @@ package org.opencypher.gremlin.traversal;
 import java.util.function.Function;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 
-@SuppressWarnings("unchecked")
-public class CustomFunction implements Function<Traverser, Object> {
+public class CustomFunction {
     private final String name;
-    private final Object[] args;
     private final Function<Traverser, Object> implementation;
 
-    CustomFunction(String name, Object[] args, Function<Traverser, Object> implementation) {
+    CustomFunction(String name, Function<Traverser, Object> implementation) {
         this.name = name;
-        this.args = args;
         this.implementation = implementation;
     }
 
@@ -34,19 +31,13 @@ public class CustomFunction implements Function<Traverser, Object> {
         return name;
     }
 
-    public Object[] getArgs() {
-        return args;
-    }
-
-    @Override
-    public Object apply(Traverser traverser) {
-        return implementation.apply(traverser);
+    public Function<Traverser, Object> getImplementation() {
+        return implementation;
     }
 
     public static CustomFunction cypherToString() {
         return new CustomFunction(
             "cypherToString",
-            new Object[]{},
             CustomFunctions.cypherToString()
         );
     }
@@ -54,7 +45,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherToBoolean() {
         return new CustomFunction(
             "cypherToBoolean",
-            new Object[]{},
             CustomFunctions.cypherToBoolean()
         );
     }
@@ -62,7 +52,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherToInteger() {
         return new CustomFunction(
             "cypherToInteger",
-            new Object[]{},
             CustomFunctions.cypherToInteger()
         );
     }
@@ -70,7 +59,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherToFloat() {
         return new CustomFunction(
             "cypherToFloat",
-            new Object[]{},
             CustomFunctions.cypherToFloat()
         );
     }
@@ -78,7 +66,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherProperties() {
         return new CustomFunction(
             "cypherProperties",
-            new Object[]{},
             CustomFunctions.cypherProperties()
         );
     }
@@ -86,7 +73,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherContainerIndex() {
         return new CustomFunction(
             "cypherContainerIndex",
-            new Object[]{},
             CustomFunctions.cypherContainerIndex()
         );
     }
@@ -94,7 +80,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherListSlice() {
         return new CustomFunction(
             "cypherListSlice",
-            new Object[]{},
             CustomFunctions.cypherListSlice()
         );
     }
@@ -102,31 +87,27 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherPathComprehension() {
         return new CustomFunction(
             "cypherPathComprehension",
-            new Object[]{},
             CustomFunctions.cypherPathComprehension()
         );
     }
 
-    public static CustomFunction cypherPercentileCont(double percentile) {
+    public static CustomFunction cypherPercentileCont() {
         return new CustomFunction(
             "cypherPercentileCont",
-            new Object[]{percentile},
-            CustomFunctions.cypherPercentileCont(percentile)
+            CustomFunctions.cypherPercentileCont()
         );
     }
 
-    public static CustomFunction cypherPercentileDisc(double percentile) {
+    public static CustomFunction cypherPercentileDisc() {
         return new CustomFunction(
             "cypherPercentileDisc",
-            new Object[]{percentile},
-            CustomFunctions.cypherPercentileDisc(percentile)
+            CustomFunctions.cypherPercentileDisc()
         );
     }
 
     public static CustomFunction cypherSize() {
         return new CustomFunction(
             "cypherSize",
-            new Object[]{},
             CustomFunctions.cypherSize()
         );
     }
@@ -134,7 +115,6 @@ public class CustomFunction implements Function<Traverser, Object> {
     public static CustomFunction cypherPlus() {
         return new CustomFunction(
             "cypherPlus",
-            new Object[]{},
             CustomFunctions.cypherPlus()
         );
     }

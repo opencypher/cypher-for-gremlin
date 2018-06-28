@@ -81,7 +81,6 @@ public final class ProcedureContext {
     public CustomFunction procedureCall(String name) {
         return new CustomFunction(
             "procedureCall",
-            new Object[]{name},
             traverser -> {
                 Collection<?> arguments = (Collection<?>) traverser.get();
                 return call(name, arguments);
