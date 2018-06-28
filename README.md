@@ -36,7 +36,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 * Some functionality is exclusive to Gremlin Servers with the [Cypher plugin](tinkerpop/cypher-gremlin-server-plugin) installed, including:
   - [List](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) access by non-constant index
   - [Map](https://neo4j.com/docs/developer-manual/current/cypher/syntax/maps/) access
-  - String and non-constant plus operator
+  - String concatenation and non-constant plus operator
   - [Pattern comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-pattern-comprehension)
   - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `percentileCont`, `percentileDisc`, `toBoolean`, `toFloat`, `toInteger`, `toString`
   - Some instances of `properties`, `size`
