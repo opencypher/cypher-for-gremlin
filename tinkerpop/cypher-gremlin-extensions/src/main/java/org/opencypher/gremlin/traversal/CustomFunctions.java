@@ -209,8 +209,7 @@ public final class CustomFunctions {
                 throw new IllegalArgumentException("Invalid property access of " + containerClass);
             }
             throw new IllegalArgumentException("Invalid element access of " + containerClass);
-        }
-            ;
+        };
     }
 
     public static Function<Traverser, Object> cypherListSlice() {
@@ -239,8 +238,7 @@ public final class CustomFunctions {
             throw new IllegalArgumentException(
                 "Invalid element access of " + containerClass + " by range"
             );
-        }
-            ;
+        };
     }
 
     private static int normalizeContainerIndex(Object index, int containerSize) {
