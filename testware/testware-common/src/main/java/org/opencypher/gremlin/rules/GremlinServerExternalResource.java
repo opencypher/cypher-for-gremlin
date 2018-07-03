@@ -96,6 +96,7 @@ public class GremlinServerExternalResource extends ExternalResource {
                 return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
                     .gremlinGroovy()
                     .inlineParameters()
+                    .enableMultipleLabels()
                     .build(TranslatorFlavor.neptune()));
             default:
                 throw new IllegalArgumentException("Unknown name: " + clientName);
