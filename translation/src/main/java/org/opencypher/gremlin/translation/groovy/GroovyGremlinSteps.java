@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
 
@@ -419,8 +420,20 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> property(Cardinality cardinality, String key, Object value) {
+        g.append(chain("property", cardinality, key, value));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> property(String key, GremlinSteps<String, GroovyPredicate> traversal) {
         g.append(chain("property", key, traversal(traversal)));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> property(Cardinality cardinality, String key, GremlinSteps<String, GroovyPredicate> traversal) {
+        g.append(chain("property", cardinality, key, traversal(traversal)));
         return this;
     }
 

@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.CustomFunction;
 
@@ -173,7 +174,11 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> property(String key, Object value);
 
+    GremlinSteps<T, P> property(Cardinality cardinality, String key, Object value);
+
     GremlinSteps<T, P> property(String key, GremlinSteps<T, P> traversal);
+
+    GremlinSteps<T, P> property(Cardinality cardinality, String key, GremlinSteps<T, P> traversal);
 
     GremlinSteps<T, P> project(String... keys);
 

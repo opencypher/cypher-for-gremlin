@@ -22,6 +22,7 @@ import org.opencypher.gremlin.translation.walker.NodeUtils.notNull
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.util.InputPosition
+import org.opencypher.v9_0.util.symbols.{AnyType, CypherType}
 
 /**
   * AST walker that handles translation
@@ -50,16 +51,16 @@ private class SetWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P
   private def walkSetClause(items: Seq[SetItem]): Unit = {
     val p = context.dsl.predicates()
     items.foreach {
-      case SetPropertyItem(Property(Variable(variable), PropertyKeyName(key)), expression: Expression) =>
-        setProperty(variable, key, expression)
-      case SetIncludingPropertiesFromMapItem(Variable(variable), MapExpression(pairs)) =>
+      case SetPropertyItem(Property(v @ Variable(variable), PropertyKeyName(key)), expression: Expression) =>
+        setProperty(typeOf(v), variable, key, expression)
+      case SetIncludingPropertiesFromMapItem(v @ Variable(variable), MapExpression(pairs)) =>
         pairs.foreach {
-          case (PropertyKeyName(key), expression) => setProperty(variable, key, expression)
+          case (PropertyKeyName(key), expression) => setProperty(typeOf(v), variable, key, expression)
         }
-      case SetExactPropertiesFromMapItem(Variable(variable), MapExpression(pairs)) =>
+      case SetExactPropertiesFromMapItem(v @ Variable(variable), MapExpression(pairs)) =>
         g.select(variable).sideEffect(g.start().is(p.neq(NULL)).properties().drop())
         pairs.foreach {
-          case (PropertyKeyName(key), expression) => setProperty(variable, key, expression)
+          case (PropertyKeyName(key), expression) => setProperty(typeOf(v), variable, key, expression)
         }
       case n =>
         context.unsupported("set clause", n)
@@ -68,15 +69,19 @@ private class SetWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P
 
   private def walkRemoveClause(items: Seq[RemoveItem]): Unit = {
     items.foreach {
-      case RemovePropertyItem(Property(Variable(variable), PropertyKeyName(key))) =>
-        setProperty(variable, key, Null()(InputPosition.NONE))
+      case RemovePropertyItem(Property(v @ Variable(variable), PropertyKeyName(key))) =>
+        setProperty(typeOf(v), variable, key, Null()(InputPosition.NONE))
       case n =>
         context.unsupported("set clause", n)
     }
   }
 
-  private def setProperty(variable: String, key: String, value: Expression): Unit = {
-    val traversal = ExpressionWalker.walkProperty(context, g.start(), key, value)
+  private def setProperty(cypherType: CypherType, variable: String, key: String, value: Expression): Unit = {
+    val traversal = ExpressionWalker.walkProperty(context, g.start(), cypherType, key, value)
     g.select(variable).flatMap(notNull(traversal, context))
+  }
+
+  private def typeOf(expr: Expression): CypherType = {
+    context.expressionTypes.getOrElse(expr, AnyType.instance)
   }
 }

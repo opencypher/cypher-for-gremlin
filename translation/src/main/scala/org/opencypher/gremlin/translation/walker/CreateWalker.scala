@@ -15,13 +15,17 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
+import org.opencypher.gremlin.translation.walker.NodeUtils.setProperty
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions.SemanticDirection.INCOMING
 import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.util.ASTNode
+import org.opencypher.v9_0.util.symbols.{CypherType, NodeType, RelationshipType}
 
 import scala.collection.mutable
 
@@ -84,7 +88,7 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
         }
 
         val properties = getPropertiesMap(propertiesOption)
-        walkProperties(properties)
+        walkProperties(NodeType.instance, properties)
       case _ =>
         context.unsupported("node pattern", nodePattern)
     }
@@ -111,21 +115,21 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
           }
           g.as(rName)
 
-          walkProperties(properties)
+          walkProperties(RelationshipType.instance, properties)
         }
       case _ =>
         context.unsupported("relationship pattern", relationshipPattern)
     }
   }
 
-  def walkProperties(properties: Seq[(String, Expression)]): Unit = {
+  def walkProperties(cypherType: CypherType, properties: Seq[(String, Expression)]): Unit = {
     properties.filter {
       case (_, Null()) => false
       case _           => true
     }.foreach {
       case (key, expression) =>
         val traversal = ExpressionWalker.walkLocal(context, g, expression)
-        g.property(key, traversal)
+        setProperty(g, cypherType, key, traversal)
     }
   }
 

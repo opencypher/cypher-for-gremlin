@@ -44,7 +44,7 @@ object NeptuneFlavor extends GremlinRewriter {
 
   private def expandListProperties(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
-      case PropertyT(key, Project(_*) :: bySteps) :: rest => {
+      case PropertyTC(_, key, Project(_*) :: bySteps) :: rest => {
         expandSub(key, bySteps) ++ rest
       }
     })(steps)
