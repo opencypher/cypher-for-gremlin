@@ -25,7 +25,8 @@ import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGreml
 import org.opencypher.gremlin.translation.ir.model.GremlinStep
 import org.opencypher.gremlin.translation.ir.verify.NoCustomFunctions
 import org.opencypher.gremlin.translation.preparser._
-import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
+import org.opencypher.gremlin.translation.translator.TranslatorFeature._
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFeature, TranslatorFlavor}
 import org.opencypher.gremlin.translation.walker.StatementWalker
 import org.opencypher.gremlin.traversal.ProcedureContext
 import org.opencypher.v9_0.ast._
@@ -71,7 +72,7 @@ class CypherAst private (
         new IRGremlinPredicates,
         new IRGremlinBindings
       )
-      .allowCypherExtensions()
+      .enableCypherExtensions()
       .build()
 
     val context = WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)

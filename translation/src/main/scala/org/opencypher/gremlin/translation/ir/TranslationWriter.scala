@@ -23,6 +23,7 @@ import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.ir.verify.NoCustomFunctions
 import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.gremlin.translation.translator.TranslatorFeature._
 
 import scala.collection.JavaConverters._
 
@@ -47,7 +48,7 @@ object TranslationWriter {
   }
 
   def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P], parameters: Map[String, Any]): T = {
-    if (!translator.requiresCypherExtensions) {
+    if (!translator.isEnabled(CYPHER_EXTENSIONS)) {
       NoCustomFunctions(ir).foreach(msg => throw new SyntaxException(msg))
     }
 

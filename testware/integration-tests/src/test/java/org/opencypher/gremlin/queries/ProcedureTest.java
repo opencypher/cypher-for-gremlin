@@ -63,7 +63,7 @@ public class ProcedureTest {
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts);
         Translator<GraphTraversal, P> translator = Translator.builder()
             .traversal(g)
-            .allowCypherExtensions()
+            .enableCypherExtensions()
             .build();
         CypherAst ast = CypherAst.parse(cypher, parameters);
         Seq<GremlinStep> ir = ast.translate(flavor, procedureContext);
