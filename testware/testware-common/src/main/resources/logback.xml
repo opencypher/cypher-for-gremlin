@@ -1,9 +1,11 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{24} - %replace(%msg){'Submitted RequestMessage.*gremlin=',''}%n</pattern>
         </encoder>
     </appender>
+
+    <logger name="org.apache.tinkerpop.gremlin.driver.Client" level="debug"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>
