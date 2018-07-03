@@ -31,6 +31,8 @@ object SimplifyPropertySetters extends GremlinRewriter {
     mapTraversals(replace({
       case PropertyT(key, Constant(value) :: Nil) :: rest =>
         PropertyV(key, value) :: rest
+      case PropertyTC(cardinality, key, Constant(value) :: Nil) :: rest =>
+        PropertyVC(cardinality, key, value) :: rest
       case ChooseT(_, PropertyV(key, value) :: Nil, drop) :: rest =>
         val empty = value match {
           case NULL                     => true

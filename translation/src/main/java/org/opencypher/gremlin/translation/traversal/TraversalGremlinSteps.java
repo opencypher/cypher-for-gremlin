@@ -27,6 +27,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.map.GraphStep;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality;
 import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 import org.opencypher.gremlin.translation.GremlinSteps;
 import org.opencypher.gremlin.traversal.CustomFunction;
@@ -446,8 +447,20 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> property(Cardinality cardinality, String key, Object value) {
+        g.property(cardinality, key, value);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> property(String key, GremlinSteps<GraphTraversal, P> traversal) {
         return property(key, traversal.current());
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> property(Cardinality cardinality, String key, GremlinSteps<GraphTraversal, P> traversal) {
+        g.property(cardinality, key, traversal.current());
+        return this;
     }
 
     @Override

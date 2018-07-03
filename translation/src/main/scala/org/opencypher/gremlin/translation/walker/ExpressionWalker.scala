@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
@@ -46,9 +47,10 @@ object ExpressionWalker {
   def walkProperty[T, P](
       context: WalkerContext[T, P],
       g: GremlinSteps[T, P],
+      cypherType: CypherType,
       key: String,
       value: Expression): GremlinSteps[T, P] = {
-    new ExpressionWalker(context, g).walkProperty(key, value)
+    new ExpressionWalker(context, g).walkProperty(cypherType, key, value)
   }
 }
 
@@ -281,12 +283,12 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
   }
 
-  def walkProperty(key: String, value: Expression): GremlinSteps[T, P] = {
+  def walkProperty(cypherType: CypherType, key: String, value: Expression): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
     val traversal = walkLocal(value)
     g.choose(
       g.start().flatMap(traversal).is(p.neq(NULL)).unfold(),
-      g.start().property(key, traversal),
+      setProperty(g.start(), cypherType, key, traversal),
       g.start().sideEffect(g.start().properties(key).drop())
     )
   }

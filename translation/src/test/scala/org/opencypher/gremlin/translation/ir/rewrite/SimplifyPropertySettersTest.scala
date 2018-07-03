@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.ir.rewrite
 import java.util.Collections.{emptyList, emptyMap}
 
 import org.apache.tinkerpop.gremlin.structure.Column
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens.NULL
@@ -39,8 +40,8 @@ class SimplifyPropertySettersTest {
     assertThat(parse("CREATE ({foo: 'bar', baz: null, quux: $x})"))
       .withFlavor(flavor)
       .rewritingWith(SimplifyPropertySetters)
-      .removes(__.property("foo", __.constant("bar")))
-      .adds(__.property("foo", "bar"))
+      .removes(__.property(single, "foo", __.constant("bar")))
+      .adds(__.property(single, "foo", "bar"))
   }
 
   @Test
@@ -58,7 +59,7 @@ class SimplifyPropertySettersTest {
       .removes(
         __.choose(
           __.constant(emptyList()).is(P.neq(NULL)).unfold,
-          __.property("p1", __.constant(emptyList())),
+          __.property(single, "p1", __.constant(emptyList())),
           __.sideEffect(__.properties("p1").drop())
         ))
       .keeps(
@@ -66,6 +67,7 @@ class SimplifyPropertySettersTest {
       )
       .keeps(
         __.property(
+          single,
           "p2",
           __.project("  GENERATED1")
             .by(__.constant(1))
@@ -73,10 +75,11 @@ class SimplifyPropertySettersTest {
         )
       )
       .adds(
-        __.property("p3", emptyMap())
+        __.property(single, "p3", emptyMap())
       )
       .keeps(
         __.property(
+          single,
           "p4",
           __.project("k").by(__.constant(1))
         )

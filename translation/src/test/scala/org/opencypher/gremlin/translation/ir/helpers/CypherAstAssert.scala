@@ -73,6 +73,16 @@ class CypherAstAssert(
     this
   }
 
+  final def contains(traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): CypherAstAssert = {
+    assertTraversal(traversal, traversalContains)
+    this
+  }
+
+  final def doesNotContain(traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): CypherAstAssert = {
+    assertTraversal(traversal, traversalNotContains)
+    this
+  }
+
   private def assertTraversal(
       actual: Seq[GremlinStep],
       expected: GremlinSteps[Seq[GremlinStep], GremlinPredicate],

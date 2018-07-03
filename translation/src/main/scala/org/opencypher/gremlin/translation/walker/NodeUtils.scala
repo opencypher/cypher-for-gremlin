@@ -18,11 +18,13 @@ package org.opencypher.gremlin.translation.walker
 import java.util
 
 import org.apache.tinkerpop.gremlin.structure.Column
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.util.ASTNode
+import org.opencypher.v9_0.util.symbols.{CypherType, NodeType, RelationshipType}
 
 import scala.collection.JavaConverters._
 
@@ -157,5 +159,17 @@ object NodeUtils {
       .filter(context.alias(_).isEmpty)
       .map(alias => g.select(mapName).select(alias).as(alias))
     g
+  }
+
+  def setProperty[T, P](
+      traversal: GremlinSteps[T, P],
+      cypherType: CypherType,
+      key: String,
+      value: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+    cypherType match {
+      case _: NodeType         => traversal.property(single, key, value)
+      case _: RelationshipType => traversal.property(key, value)
+      case _                   => throw new UnsupportedOperationException(s"Unsupported property type: $cypherType")
+    }
   }
 }
