@@ -251,6 +251,17 @@ public final class Translator<T, P> {
         }
 
         /**
+         * Enables multiple labels translation in the {@link Translator} that's being built.
+         *
+         * @return builder for translator
+         * @see TranslatorFeature#CYPHER_EXTENSIONS
+         */
+        public FlavorBuilder<T, P> enableMultipleLabels() {
+            features.add(TranslatorFeature.MULTIPLE_LABELS);
+            return this;
+        }
+
+        /**
          * Builds a {@link Translator}.
          *
          * @return translator

@@ -73,6 +73,7 @@ class CypherAst private (
         new IRGremlinBindings
       )
       .enableCypherExtensions()
+      .enableMultipleLabels()
       .build()
 
     val context = WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)

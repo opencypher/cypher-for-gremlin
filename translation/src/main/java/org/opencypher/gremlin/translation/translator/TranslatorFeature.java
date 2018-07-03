@@ -24,5 +24,11 @@ public enum TranslatorFeature {
      * Support for custom functions and predicates
      * provided by the CfoG Gremlin Server plugin.
      */
-    CYPHER_EXTENSIONS
+    CYPHER_EXTENSIONS,
+
+    /**
+     * Support for specifying multiple labels for a vertex
+     * and matching by multiple labels.
+     */
+    MULTIPLE_LABELS
 }
