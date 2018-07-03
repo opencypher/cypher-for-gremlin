@@ -53,7 +53,12 @@ object TraversalAssertions {
   }
 
   private def print(traversal: Seq[GremlinStep]): String = {
-    val translator = Translator.builder().gremlinGroovy().build()
+    val translator = Translator
+      .builder()
+      .gremlinGroovy()
+      .enableCypherExtensions()
+      .enableMultipleLabels()
+      .build()
     TranslationWriter.write(traversal, translator, Map.empty[String, Any])
   }
 }

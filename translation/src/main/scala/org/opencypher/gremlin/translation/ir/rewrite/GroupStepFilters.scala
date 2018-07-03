@@ -91,21 +91,24 @@ object GroupStepFilters extends GremlinRewriter {
   // Extracts "has" steps from a list of WHERE expressions
   private def whereExtractor(traversals: Seq[Seq[GremlinStep]]): Seq[(String, GremlinStep)] = {
     traversals.flatMap {
-      case SelectK(stepLabel) :: (hasLabel: HasLabel) :: Nil =>
-        Some((stepLabel, hasLabel))
       case SelectK(stepLabel) :: Values(propertyKey) :: Is(predicate) :: Nil =>
-        Some((stepLabel, HasP(propertyKey, predicate)))
+        (stepLabel, HasP(propertyKey, predicate)) :: Nil
+      case SelectK(stepLabel) :: rest if rest.forall(_.isInstanceOf[HasLabel]) =>
+        rest.map((stepLabel, _))
       case _ =>
-        None
+        Nil
     }
   }
 
   // Filters out relocated expressions from WHERE
   private def whereFilter(aliases: Set[String])(traversals: Seq[Seq[GremlinStep]]): Option[GremlinStep] = {
     val newTraversals = traversals.flatMap {
-      case SelectK(alias) :: (_: HasLabel) :: Nil if aliases.contains(alias)      => None
-      case SelectK(alias) :: Values(_) :: Is(_) :: Nil if aliases.contains(alias) => None
-      case other                                                                  => Some(other)
+      case SelectK(alias) :: Values(_) :: Is(_) :: Nil if aliases.contains(alias) =>
+        None
+      case SelectK(alias) :: rest if aliases.contains(alias) && rest.forall(_.isInstanceOf[HasLabel]) =>
+        None
+      case other =>
+        Some(other)
     }.toList
     newTraversals match {
       case Nil              => None

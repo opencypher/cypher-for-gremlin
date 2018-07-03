@@ -36,18 +36,4 @@ class InlineFlatMapTraversalTest {
       .removes(__.flatMap(projection))
       .keeps(projection)
   }
-
-  @Test
-  def adjacentFlatMap(): Unit = {
-    assertThat(parse("""
-        |MATCH (n)
-        |WHERE (n)-->(:L)
-        |RETURN n
-      """.stripMargin))
-      .withFlavor(TranslatorFlavor.empty)
-      .rewritingWith(InlineFlatMapTraversal)
-      .removes(__.flatMap(__))
-      .removes(__.as("  cypher.path.start.GENERATED2").flatMap(__.outE().inV()))
-      .adds(__.as("  cypher.path.start.GENERATED2").outE().inV())
-  }
 }
