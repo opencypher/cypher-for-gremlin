@@ -119,6 +119,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
             .traversal(g)
+            .allowCypherExtensions()
             .build();
 
         GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, traversalTranslator, parameters);

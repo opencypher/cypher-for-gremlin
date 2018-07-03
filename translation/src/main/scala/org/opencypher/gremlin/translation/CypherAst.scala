@@ -97,9 +97,6 @@ class CypherAst private (
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
     val ir = translate(dsl.flavor(), ProcedureContext.empty())
-    if (!dsl.requiresCypherExtensions) {
-      NoCustomFunctions(ir).foreach(msg => throw new SyntaxException(msg))
-    }
     TranslationWriter.write(ir, dsl, parameters)
   }
 
