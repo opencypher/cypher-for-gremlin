@@ -68,4 +68,19 @@ class NeptuneFlavorTest {
       .keeps(__.hasLabel("B"))
   }
 
+  @Test
+  def expandListPropertiesInMerge(): Unit = {
+    assertThat(parse("""CREATE (a)
+        |SET a.foo = a.foo + [4, 5]
+        |RETURN a.foo
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .keeps(
+        __.project("  GENERATED2", "  GENERATED3")
+          .by(__.constant(4))
+          .by(__.constant(5)))
+      .adds(__.property("foo", __.constant(4)))
+      .adds(__.property("foo", __.constant(5)))
+  }
 }
