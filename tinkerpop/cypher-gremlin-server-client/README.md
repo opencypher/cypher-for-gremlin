@@ -4,9 +4,8 @@
 
 This is a convenience Gremlin Server client for Java that can send queries via a [Gremlin `Client`](https://tinkerpop.apache.org/docs/current/reference/#connecting-via-java) instance:
 
-- to a remote Gremlin Server (with [Cypher plugin](../cypher-gremlin-server-plugin)),
-- to any Gremlin Server or a compatible graph database, with client-side translation.
-
+- to a remote Gremlin Server with [Cypher plugin](../cypher-gremlin-server-plugin),
+- with client-side translation: to a Gremlin Server-based database, Amazon Neptune, or Azure Cosmos DB.
 ## Getting Started
 
 To add a dependency using Maven:
@@ -72,6 +71,36 @@ If the target Gremlin Server does not have the [Cypher plugin](../cypher-gremlin
 ```java
 CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(gremlinClient);
 ```
+
+### Azure Cosmos DB
+
+A translating client for Azure Cosmos DB can be configured like so:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#cosmosdb) -->
+```java
+CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+    gremlinClient,
+    TranslatorFlavor.cosmosDb()
+);
+```
+
+### Amazon Neptune
+
+A translating client for Amazon Neptune can be configured like so:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#neptune) -->
+```java
+CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+    gremlinClient,
+    () -> Translator.builder()
+        .gremlinGroovy()
+        .inlineParameters()
+        .enableMultipleLabels()
+        .build(TranslatorFlavor.neptune())
+);
+```
+
+### In-memory Client
 
 You can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
 

@@ -86,8 +86,8 @@ You can also download a pre-configured Gremlin Console distribution from the [re
      ==>Configured localhost/127.0.0.1:8182
      ```
 
+     Where flavor is one of: `gremlin` (default), `neptune`, or `cosmosdb`.
      This enables Cypher to Gremlin translation in the Console plugin when submitting queries.
-     Supported values of optional `flavor` parameter are `gremlin` (default) and `cosmosdb`.
 
 1. Submit Cypher queries using the `:>` command:
    ```
@@ -97,6 +97,28 @@ You can also download a pre-configured Gremlin Console distribution from the [re
    ==>josh
    ==>peter
    ```
+
+### Amazon Neptune
+
+To connect to Amazon Neptune from Gremlin Console:
+
+```
+gremlin> :plugin use opencypher.gremlin
+==>opencypher.gremlin activated
+gremlin> :remote connect opencypher.gremlin conf/remote-objects.yaml translate neptune
+==>Configured <instance>.<region>.compute.amazonaws.com/<ip>:<port>
+ ```
+
+### Azure Cosmos DB
+
+To connect to Azure Cosmos DB from Gremlin Console:
+
+```
+gremlin> :plugin use opencypher.gremlin
+==>opencypher.gremlin activated
+gremlin> :remote connect opencypher.gremlin conf/remote-objects.yaml translate cosmosdb
+==>Configured <instance>.graphs.azure.com/<ip>:<port>
+ ```
 
 ## Troubleshooting
 

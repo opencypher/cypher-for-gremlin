@@ -79,24 +79,37 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
 
     private static Translator<String, GroovyPredicate> translatorByName(List<String> args) {
         int translatorTypeIndex = args.indexOf(TOKEN_TRANSLATE) + 1;
-        Translator.FlavorBuilder<String, GroovyPredicate> builder = Translator.builder().gremlinGroovy();
+        Translator.ParametrizedFlavorBuilder<String, GroovyPredicate> builder = Translator.builder().gremlinGroovy();
         if (translatorTypeIndex >= args.size()) {
             return builder.build();
         }
         String translatorType = args.get(translatorTypeIndex);
         switch (translatorType) {
             case "cosmosdb":
-                return builder.build(TranslatorFlavor.cosmosDb());
+                return builder
+                    .build(TranslatorFlavor.cosmosDb());
             case "cosmosdb+extensions":
-                return builder.enableCypherExtensions().build(TranslatorFlavor.cosmosDb());
+                return builder
+                    .enableCypherExtensions()
+                    .build(TranslatorFlavor.cosmosDb());
             case "neptune":
-                return builder.build(TranslatorFlavor.neptune());
+                return builder
+                    .inlineParameters()
+                    .enableMultipleLabels()
+                    .build(TranslatorFlavor.neptune());
             case "neptune+extensions":
-                return builder.enableCypherExtensions().build(TranslatorFlavor.neptune());
+                return builder
+                    .inlineParameters()
+                    .enableMultipleLabels()
+                    .enableCypherExtensions()
+                    .build(TranslatorFlavor.neptune());
             case "gremlin":
-                return builder.build(TranslatorFlavor.gremlinServer());
+                return builder
+                    .build(TranslatorFlavor.gremlinServer());
             case "gremlin+extensions":
-                return builder.enableCypherExtensions().build(TranslatorFlavor.gremlinServer());
+                return builder
+                    .enableCypherExtensions()
+                    .build(TranslatorFlavor.gremlinServer());
             case "":
                 return builder.build(TranslatorFlavor.gremlinServer());
             default:

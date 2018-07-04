@@ -15,10 +15,10 @@
  */
 package org.opencypher.gremlin.snippets;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.Lists;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +36,8 @@ import org.junit.Test;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class CypherGremlinServerClientSnippets {
 
@@ -46,7 +48,7 @@ public class CypherGremlinServerClientSnippets {
     public void gremlinStyle() throws Exception {
         BaseConfiguration configuration = new BaseConfiguration();
         configuration.setProperty("port", gremlinServer.getPort());
-        configuration.setProperty("hosts", Arrays.asList("localhost"));
+        configuration.setProperty("hosts", singletonList("localhost"));
 
         // freshReadmeSnippet: gremlinStyle
         Cluster cluster = Cluster.open(configuration);
@@ -99,15 +101,57 @@ public class CypherGremlinServerClientSnippets {
 
     @Test
     public void translating() {
-        BaseConfiguration configuration = new BaseConfiguration();
-        configuration.setProperty("port", gremlinServer.getPort());
-        configuration.setProperty("hosts", Arrays.asList("localhost"));
-        Cluster cluster = Cluster.open(configuration);
-        Client gremlinClient = cluster.connect();
+        Client gremlinClient = newGremlinClient();
 
         // freshReadmeSnippet: translating
         CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(gremlinClient);
         // freshReadmeSnippet: translating
+
+        List<Map<String, Object>> results = cypherGremlinClient.submit("MATCH (p:person) WHERE p.age > 25 RETURN p.name").all();
+        assertThat(results)
+            .extracting("p.name")
+            .containsExactly("marko", "vadas", "josh", "peter");
+    }
+
+    private Client newGremlinClient() {
+        BaseConfiguration configuration = new BaseConfiguration();
+        configuration.setProperty("port", gremlinServer.getPort());
+        configuration.setProperty("hosts", singletonList("localhost"));
+        Cluster cluster = Cluster.open(configuration);
+        return cluster.connect();
+    }
+
+    @Test
+    public void neptune() {
+        Client gremlinClient = newGremlinClient();
+
+        // freshReadmeSnippet: neptune
+        CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+            gremlinClient,
+            () -> Translator.builder()
+                .gremlinGroovy()
+                .inlineParameters()
+                .enableMultipleLabels()
+                .build(TranslatorFlavor.neptune())
+        );
+        // freshReadmeSnippet: neptune
+
+        List<Map<String, Object>> results = cypherGremlinClient.submit("MATCH (p:person) WHERE p.age > 25 RETURN p.name").all();
+        assertThat(results)
+            .extracting("p.name")
+            .containsExactly("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
+    public void cosmosDb() {
+        Client gremlinClient = newGremlinClient();
+
+        // freshReadmeSnippet: cosmosdb
+        CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+            gremlinClient,
+            TranslatorFlavor.cosmosDb()
+        );
+        // freshReadmeSnippet: cosmosdb
 
         List<Map<String, Object>> results = cypherGremlinClient.submit("MATCH (p:person) WHERE p.age > 25 RETURN p.name").all();
         assertThat(results)

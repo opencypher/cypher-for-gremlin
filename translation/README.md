@@ -5,7 +5,7 @@
 The translation module provides facilities to:
 - parse Cypher queries using the Cypher frontend,
 - produce a translation to Gremlin,
-- transform results to a format that is accepted by the target Gremlin Server implementation.
+- transform results to a format that is accepted by a Gremlin Server-based database, Amazon Neptune, or Azure Cosmos DB.
 
 ## Getting Started
 
@@ -61,7 +61,22 @@ Translator<Bytecode, P> translator = Translator.builder()
     .build();
 ```
 
-Some translation targets can be customized with a flavor, like Azure Cosmos DB:
+### Amazon Neptune
+
+A translator for Amazon Neptune can be configured like so:
+
+<!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/TranslationSnippets.java#neptune) -->
+```java
+Translator<String, GroovyPredicate> translator = Translator.builder()
+    .gremlinGroovy()
+    .inlineParameters()
+    .enableMultipleLabels()
+    .build(TranslatorFlavor.neptune());
+```
+
+### Azure Cosmos DB
+
+A translator for Azure Cosmos DB can be configured like so:
 
 <!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/TranslationSnippets.java#cosmosdb) -->
 ```java
@@ -69,6 +84,8 @@ Translator<String, GroovyPredicate> translator = Translator.builder()
     .gremlinGroovy()
     .build(TranslatorFlavor.cosmosDb());
 ```
+
+### Custom Translation
 
 Custom translation targets can be provided by implementing `GremlinSteps`, `GremlinPredicates`, and `GremlinParameters`:
 
