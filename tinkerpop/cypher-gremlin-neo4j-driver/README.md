@@ -70,6 +70,40 @@ String uri = "//localhost:" + port;
 Driver driver = GremlinDatabase.driver(uri, config);
 ```
 
+Note that if Gremlin vertex and edge ids are [non-numeric](https://tinkerpop.apache.org/docs/current/reference/#_configuration_3) (for example UUID), queries that return nodes and relationships will fail, because Neo4j driver expects ids to be numeric.
+
+You could write queries returning properties instead of entities or configure the driver to ignore ids (value will always be -1):
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#ignoreIds) -->
+```java
+Config config = Config.build()
+    .ignoreIds()
+    .toConfig();
+```
+
+You will still be able to get original ids by using the [id() function](https://neo4j.com/docs/developer-manual/current/cypher/functions/scalar/#functions-id) and query entities using original ids:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#originalIds) -->
+```java
+Config config = Config.build()
+    .withTranslation(TranslatorFlavor.gremlinServer())
+    .ignoreIds()
+    .toConfig();
+
+Driver driver = GremlinDatabase.driver(uri, config);
+
+try (Session session = driver.session()) {
+    StatementResult getOriginal = session.run("MATCH (n:VertexWithStringId) RETURN id(n) as id");
+    Object originalId = getOriginal.single().get("id").asObject();
+    assertThat(originalId).isEqualTo(uuid); // ef8b80c9-f8f9-40b6-bad2-ee4757d5bb33
+
+    StatementResult result = session.run("MATCH (n) WHERE id(n) = $originalId RETURN n", singletonMap("originalId", originalId));
+    Node n = result.single().get("n").asNode();
+
+    assertThat(n.id()).isEqualTo(-1); // -1
+}
+```  
+
 You can also execute Cypher directly against a [`GraphTraversalSource`](https://tinkerpop.apache.org/docs/current/reference/#the-graph-process):
 
 <!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#inMemory) -->
