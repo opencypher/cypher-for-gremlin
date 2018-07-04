@@ -30,10 +30,12 @@ import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
  * </pre>
  */
 public class Config {
-    private TranslatorFlavor flavor;
+    private final TranslatorFlavor flavor;
+    private final boolean ignoreIds;
 
     private Config(ConfigBuilder configBuilder) {
         flavor = configBuilder.flavor;
+        ignoreIds = configBuilder.ignoreIds;
     }
 
     /**
@@ -58,6 +60,13 @@ public class Config {
     }
 
     /**
+     * @return true if Nodes and Relationships will always have id -1
+     */
+    public boolean isIgnoreIds() {
+        return ignoreIds;
+    }
+
+    /**
      * Return a {@link ConfigBuilder} instance.
      *
      * @return a {@link ConfigBuilder} instance
@@ -71,6 +80,7 @@ public class Config {
      */
     public static class ConfigBuilder {
         private TranslatorFlavor flavor;
+        private boolean ignoreIds = false;
 
         private ConfigBuilder() {
         }
@@ -93,6 +103,17 @@ public class Config {
          */
         public ConfigBuilder withTranslation(TranslatorFlavor flavor) {
             this.flavor = flavor;
+            return this;
+        }
+
+        /**
+         * Nodes and Relationships will always have id -1
+         * Workaround for Gremlin Servers with non-numeric ids
+         *
+         * @return a {@link ConfigBuilder} instance
+         */
+        public ConfigBuilder ignoreIds() {
+            this.ignoreIds = true;
             return this;
         }
 

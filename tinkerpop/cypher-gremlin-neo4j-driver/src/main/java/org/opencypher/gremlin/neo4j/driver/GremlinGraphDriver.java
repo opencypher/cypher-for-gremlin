@@ -37,7 +37,7 @@ public class GremlinGraphDriver implements GremlinDriver {
     @Override
     public Session session() {
         CypherGremlinClient cypherGremlinClient = CypherGremlinClient.inMemory(graphTraversalSource);
-        return new GremlinServerSession(serverInfo, cypherGremlinClient);
+        return new GremlinServerSession(serverInfo, cypherGremlinClient, new GremlinCypherValueConverter(false));
     }
 
     @Override

@@ -16,7 +16,6 @@
 package org.opencypher.gremlin.neo4j.driver;
 
 import static java.util.stream.Collectors.toList;
-import static org.opencypher.gremlin.neo4j.driver.GremlinCypherValueConverter.toRecord;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,11 +33,16 @@ class GremlinServerStatementResult implements StatementResult {
     private final PeekingIterator<Map<String, Object>> iterator;
     private final ServerInfo serverInfo;
     private final Statement statement;
+    private final GremlinCypherValueConverter converter;
 
-    GremlinServerStatementResult(ServerInfo serverInfo, Statement statement, Iterator<Map<String, Object>> iterator) {
+    GremlinServerStatementResult(ServerInfo serverInfo,
+                                 Statement statement,
+                                 Iterator<Map<String, Object>> iterator,
+                                 GremlinCypherValueConverter converter) {
         this.iterator = new PeekingIterator<>(iterator);
         this.serverInfo = serverInfo;
         this.statement = statement;
+        this.converter = converter;
     }
 
 
@@ -54,7 +58,7 @@ class GremlinServerStatementResult implements StatementResult {
 
     @Override
     public Record next() {
-        return toRecord(iterator.next());
+        return converter.toRecord(iterator.next());
     }
 
     @Override
@@ -76,13 +80,13 @@ class GremlinServerStatementResult implements StatementResult {
 
     @Override
     public Record peek() {
-        return toRecord(iterator.peek());
+        return converter.toRecord(iterator.peek());
     }
 
     @Override
     public List<Record> list() {
         ArrayList<Record> list = new ArrayList<>();
-        iterator.forEachRemaining(e -> list.add(toRecord(e)));
+        iterator.forEachRemaining(e -> list.add(converter.toRecord(e)));
         return list;
     }
 

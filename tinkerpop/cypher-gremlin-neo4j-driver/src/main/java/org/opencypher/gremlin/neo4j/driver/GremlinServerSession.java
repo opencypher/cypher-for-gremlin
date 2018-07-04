@@ -30,13 +30,15 @@ import org.neo4j.driver.v1.types.TypeSystem;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 
 class GremlinServerSession implements Session {
-    private ServerInfo serverInfo;
+    private final ServerInfo serverInfo;
     private final CypherGremlinClient client;
+    private final GremlinCypherValueConverter converter;
     private boolean open = true;
 
-    GremlinServerSession(ServerInfo serverInfo, CypherGremlinClient client) {
+    GremlinServerSession(ServerInfo serverInfo, CypherGremlinClient client, GremlinCypherValueConverter converter) {
         this.serverInfo = serverInfo;
         this.client = client;
+        this.converter = converter;
     }
 
     @Override
@@ -106,7 +108,7 @@ class GremlinServerSession implements Session {
     public StatementResult run(Statement statement) {
         HashMap<String, Object> serializableMap = new HashMap<>(statement.parameters().asMap());
         Iterator<Map<String, Object>> iterator = client.submit(statement.text(), serializableMap).iterator();
-        return new GremlinServerStatementResult(serverInfo, statement, iterator);
+        return new GremlinServerStatementResult(serverInfo, statement, iterator, converter);
     }
 
     @Override

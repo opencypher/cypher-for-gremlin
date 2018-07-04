@@ -15,9 +15,12 @@
  */
 package org.opencypher.gremlin.snippets;
 
+import static java.lang.String.format;
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.neo4j.driver.v1.Values.parameters;
 
+import java.util.concurrent.ExecutionException;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory;
@@ -27,9 +30,11 @@ import org.junit.Test;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.types.Node;
 import org.opencypher.gremlin.neo4j.driver.Config;
 import org.opencypher.gremlin.neo4j.driver.GremlinDatabase;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class CypherGremlinNeo4jDriverSnippets {
 
@@ -94,5 +99,55 @@ public class CypherGremlinNeo4jDriverSnippets {
             String message = result.single().get(0).asString();
             assertThat(message).isEqualTo("Hello");
         }
+    }
+
+    @Test
+    public void ignoreIds() throws ExecutionException, InterruptedException {
+        gremlinServer.gremlinClient().submit("g.addV('stringId1').property(id, 'string1')").all().get();
+        gremlinServer.gremlinClient().submit("g.addV('stringId1').property(id, 'string2')").all().get();
+
+        // freshReadmeSnippet: ignoreIds
+        Config config = Config.build()
+            .ignoreIds()
+            .toConfig();
+        // freshReadmeSnippet: ignoreIds
+
+        Driver driver = GremlinDatabase.driver("//localhost:" + gremlinServer.getPort(), config);
+
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("MATCH (n:stringId1) RETURN n");
+            assertThat(result.list())
+                .extracting(r -> r.get("n").asNode().id())
+                .containsExactly(-1L, -1L);
+        }
+    }
+
+
+    @Test
+    public void originalIds() throws ExecutionException, InterruptedException {
+        String uri = "//localhost:" + gremlinServer.getPort();
+        String uuid = "ef8b80c9-f8f9-40b6-bad2-ee4757d5bb33";
+
+        gremlinServer.gremlinClient().submit(format("g.addV('VertexWithStringId').property(id, '%s')", uuid)).all().get();
+
+        // freshReadmeSnippet: originalIds
+        Config config = Config.build()
+            .withTranslation(TranslatorFlavor.gremlinServer())
+            .ignoreIds()
+            .toConfig();
+
+        Driver driver = GremlinDatabase.driver(uri, config);
+
+        try (Session session = driver.session()) {
+            StatementResult getOriginal = session.run("MATCH (n:VertexWithStringId) RETURN id(n) as id");
+            Object originalId = getOriginal.single().get("id").asObject();
+            assertThat(originalId).isEqualTo(uuid); // ef8b80c9-f8f9-40b6-bad2-ee4757d5bb33
+
+            StatementResult result = session.run("MATCH (n) WHERE id(n) = $originalId RETURN n", singletonMap("originalId", originalId));
+            Node n = result.single().get("n").asNode();
+
+            assertThat(n.id()).isEqualTo(-1); // -1
+        }
+        // freshReadmeSnippet: originalIds
     }
 }

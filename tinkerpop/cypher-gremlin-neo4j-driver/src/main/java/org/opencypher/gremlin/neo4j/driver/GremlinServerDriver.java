@@ -45,7 +45,9 @@ class GremlinServerDriver implements GremlinDriver {
             ? CypherGremlinClient.translating(gremlinClient, config.flavor())
             : CypherGremlinClient.plugin(gremlinClient);
 
-        return new GremlinServerSession(serverInfo, cypherGremlinClient);
+        GremlinCypherValueConverter converter = new GremlinCypherValueConverter(config.isIgnoreIds());
+
+        return new GremlinServerSession(serverInfo, cypherGremlinClient, converter);
     }
 
     @Override

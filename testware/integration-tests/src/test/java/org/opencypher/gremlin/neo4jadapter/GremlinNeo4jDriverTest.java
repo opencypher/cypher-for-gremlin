@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.neo4jadapter;
 
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.neo4j.driver.v1.Values.parameters;
@@ -22,6 +23,7 @@ import static org.neo4j.driver.v1.Values.parameters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -200,6 +202,25 @@ public class GremlinNeo4jDriverTest {
 
             assertThat(throwable)
                 .hasMessageContaining("Invalid input");
+        }
+    }
+
+    @Test
+    public void numericIdsOnly() throws ExecutionException, InterruptedException {
+        server.gremlinClient().submit("g.addV('stringId0').property(id, 'string0')").all().get();
+
+        Config config = Config.build()
+            .withTranslation(TranslatorFlavor.gremlinServer())
+            .toConfig();
+
+        Driver driver = GremlinDatabase.driver("//localhost:" + server.getPort(), config);
+
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("MATCH (n:stringId0) return n");
+            Throwable throwable = catchThrowable(result::single);
+
+            assertThat(throwable)
+                .hasMessageContaining("Entity id should be numeric");
         }
     }
 }

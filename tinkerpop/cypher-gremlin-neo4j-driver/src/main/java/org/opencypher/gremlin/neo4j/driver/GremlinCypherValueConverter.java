@@ -42,8 +42,13 @@ import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Entity;
 
 class GremlinCypherValueConverter {
+    private final boolean ignoreIds;
 
-    static Record toRecord(Map<String, Object> map) {
+    public GremlinCypherValueConverter(boolean ignoreIds) {
+        this.ignoreIds = ignoreIds;
+    }
+
+    Record toRecord(Map<String, Object> map) {
         List<String> keys = new ArrayList<>();
         List<Value> values = new ArrayList<>();
 
@@ -55,7 +60,7 @@ class GremlinCypherValueConverter {
         return new InternalRecord(keys, values.toArray(new Value[values.size()]));
     }
 
-    private static Value toCypherValue(Object value) {
+    private Value toCypherValue(Object value) {
         if (isNode(value)) {
             return toCypherNode((Map<?, ?>) value).asValue();
         } else if (isRelationship(value)) {
@@ -68,7 +73,7 @@ class GremlinCypherValueConverter {
     }
 
     @SuppressWarnings("unchecked")
-    private static Value toCypherPath(List p) {
+    private Value toCypherPath(List p) {
         boolean isNode = true;
 
         Entity[] objects = new Entity[p.size()];
@@ -85,7 +90,7 @@ class GremlinCypherValueConverter {
         return new InternalPath(objects).asValue();
     }
 
-    private static InternalRelationship toCypherRelationship(Map<?, ?> e) {
+    private InternalRelationship toCypherRelationship(Map<?, ?> e) {
         Long start = toCypherId(e.get(OUTV));
         Long end = toCypherId(e.get(INV));
 
@@ -97,7 +102,7 @@ class GremlinCypherValueConverter {
         return new InternalRelationship(toCypherId(id), start, end, String.valueOf(label), properties);
     }
 
-    private static InternalNode toCypherNode(Map<?, ?> v) {
+    private InternalNode toCypherNode(Map<?, ?> v) {
         Set<String> labels = new HashSet<>();
         String label = String.valueOf(v.get(LABEL));
         if (!Vertex.DEFAULT_LABEL.equals(label)) {
@@ -109,7 +114,7 @@ class GremlinCypherValueConverter {
         return new InternalNode(toCypherId(v.get(ID)), labels, properties);
     }
 
-    private static Map<String, Value> toCypherPropertyMap(Map<?, ?> e) {
+    private Map<String, Value> toCypherPropertyMap(Map<?, ?> e) {
         Map<String, Value> properties = new HashMap<>();
         e.entrySet().stream()
             .filter((n) -> !ALL_PROPERTIES.contains(String.valueOf(n.getKey())))
@@ -120,11 +125,16 @@ class GremlinCypherValueConverter {
         return properties;
     }
 
-    private static Long toCypherId(Object id) {
-        try {
-            return Long.valueOf(String.valueOf(id));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(format("Entity id should be numeric, got `%s` (%s):", id.getClass(), id));
+    private Long toCypherId(Object id) {
+        if (ignoreIds) {
+            return -1L;
+        } else {
+            try {
+                return Long.valueOf(String.valueOf(id));
+            } catch (Exception e) {
+                throw new IllegalArgumentException(format("Entity id should be numeric, got `%s` (%s). " +
+                    "Consider querying properties instead of entities, or use org.opencypher.gremlin.neo4j.driver.Config.ConfigBuilder#ignoreIds", id.getClass(), id));
+            }
         }
     }
 }
