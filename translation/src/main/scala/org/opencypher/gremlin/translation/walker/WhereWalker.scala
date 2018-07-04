@@ -113,8 +113,10 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
             asList(expr, idx).map(CustomFunction.cypherContainerIndex()).is(p.neq(NULL))
         }
 
-      case HasLabels(expr, List(LabelName(label))) =>
-        walkExpression(expr).hasLabel(label)
+      case HasLabels(expr, labels) =>
+        val traversal = walkExpression(expr)
+        labels.foreach(label => traversal.hasLabel(label.name))
+        traversal
 
       case IsNull(expr) =>
         expr match {

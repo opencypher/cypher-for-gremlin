@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.apache.tinkerpop.gremlin.structure.Column
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model.{GremlinStep, _}
 
@@ -28,6 +29,7 @@ object NeptuneFlavor extends GremlinRewriter {
       injectWorkaround(_),
       deleteWorkaround(_),
       limit0Workaround(_),
+      multipleLabelsWorkaround(_),
       traversalRewriters(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       rewriter(steps)
@@ -76,7 +78,16 @@ object NeptuneFlavor extends GremlinRewriter {
   private def limit0Workaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
       case Barrier :: Limit(0) :: rest =>
-        SelectK("  cypher.empty.result") :: rest
+        SelectK(NONEXISTENT) :: rest
     })(steps)
+  }
+
+  private def multipleLabelsWorkaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    steps match {
+      case Vertex :: (_: HasLabel) :: (_: HasLabel) :: _ =>
+        Vertex +: Is(Neq(NONEXISTENT)) +: steps.drop(1)
+      case _ =>
+        steps
+    }
   }
 }

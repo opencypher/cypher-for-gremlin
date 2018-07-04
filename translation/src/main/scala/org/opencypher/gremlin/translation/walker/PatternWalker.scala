@@ -70,7 +70,7 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     val variable @ Variable(name) = variableOption
       .getOrElse(Variable(context.generateName())(NONE))
     asUniqueName(name, g, context)
-    g.flatMap(hasLabels(labels))
+    labels.foreach(label => g.hasLabel(label.name))
     properties.map(hasProperties(variable, _)).foreach(g.flatMap)
   }
 
@@ -153,17 +153,6 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
         }
       case _ =>
         context.unsupported("path pattern length", length)
-    }
-  }
-
-  private def hasLabels(labels: Seq[LabelName]): GremlinSteps[T, P] = {
-    labels match {
-      case LabelName(name) :: Nil =>
-        g.start().hasLabel(name)
-      case Nil =>
-        g.start()
-      case _ =>
-        context.unsupported("label sequence", labels)
     }
   }
 

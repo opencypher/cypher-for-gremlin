@@ -16,6 +16,8 @@
 package org.opencypher.gremlin.translation.translator;
 
 
+import java.util.EnumSet;
+import java.util.Set;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -43,18 +45,18 @@ public final class Translator<T, P> {
     private final GremlinSteps<T, P> steps;
     private final GremlinPredicates<P> predicates;
     private final GremlinBindings bindings;
-    private final boolean cypherExtensions;
+    private final Set<TranslatorFeature> features;
     private final TranslatorFlavor flavor;
 
     private Translator(GremlinSteps<T, P> steps,
                        GremlinPredicates<P> predicates,
                        GremlinBindings bindings,
-                       boolean cypherExtensions,
+                       Set<TranslatorFeature> features,
                        TranslatorFlavor flavor) {
         this.steps = steps;
         this.predicates = predicates;
         this.bindings = bindings;
-        this.cypherExtensions = cypherExtensions;
+        this.features = features;
         this.flavor = flavor;
     }
 
@@ -92,12 +94,12 @@ public final class Translator<T, P> {
     }
 
     /**
-     * Returns true if this translation assumes the CfoG plugin is installed on target server.
+     * Returns true if a given feature is enabled in this translator.
      *
-     * @return true, if CfoG plugin should be installed, false otherwise
+     * @return true, if the feature is enabled, false otherwise
      */
-    public boolean requiresCypherExtensions() {
-        return cypherExtensions;
+    public boolean isEnabled(TranslatorFeature feature) {
+        return features.contains(feature);
     }
 
     /**
@@ -217,7 +219,7 @@ public final class Translator<T, P> {
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
         protected GremlinBindings bindings;
-        protected boolean cypherExtensions = false;
+        private final Set<TranslatorFeature> features = EnumSet.noneOf(TranslatorFeature.class);
 
         private FlavorBuilder(GremlinSteps<T, P> steps,
                               GremlinPredicates<P> predicates,
@@ -228,13 +230,34 @@ public final class Translator<T, P> {
         }
 
         /**
-         * Builds a {@link Translator} with support for custom functions and predicates
-         * provided by the CfoG Gremlin Server plugin.
+         * Enables a feature in the {@link Translator} that's being built.
          *
          * @return builder for translator
          */
-        public FlavorBuilder<T, P> allowCypherExtensions() {
-            cypherExtensions = true;
+        public FlavorBuilder<T, P> enable(TranslatorFeature feature) {
+            features.add(feature);
+            return this;
+        }
+
+        /**
+         * Enables Cypher extensions in the {@link Translator} that's being built.
+         *
+         * @return builder for translator
+         * @see TranslatorFeature#CYPHER_EXTENSIONS
+         */
+        public FlavorBuilder<T, P> enableCypherExtensions() {
+            features.add(TranslatorFeature.CYPHER_EXTENSIONS);
+            return this;
+        }
+
+        /**
+         * Enables multiple labels translation in the {@link Translator} that's being built.
+         *
+         * @return builder for translator
+         * @see TranslatorFeature#CYPHER_EXTENSIONS
+         */
+        public FlavorBuilder<T, P> enableMultipleLabels() {
+            features.add(TranslatorFeature.MULTIPLE_LABELS);
             return this;
         }
 
@@ -258,7 +281,7 @@ public final class Translator<T, P> {
                 steps,
                 predicates,
                 bindings,
-                cypherExtensions,
+                features,
                 flavor != null ? flavor : TranslatorFlavor.gremlinServer()
             );
         }

@@ -19,8 +19,11 @@ import java.util
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.model._
-import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.gremlin.translation.ir.verify._
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFeature}
+import org.opencypher.gremlin.translation.translator.TranslatorFeature._
 
 import scala.collection.JavaConverters._
 
@@ -44,7 +47,15 @@ object TranslationWriter {
     write(ir, translator, parameters.asScala.toMap)
   }
 
+  private val postConditions: Map[TranslatorFeature, GremlinPostCondition] = Map(
+    CYPHER_EXTENSIONS -> NoCustomFunctions,
+    MULTIPLE_LABELS -> NoMultipleLabels
+  )
+
   def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P], parameters: Map[String, Any]): T = {
+    for ((feature, postCondition) <- postConditions if !translator.isEnabled(feature);
+         msg <- postCondition(ir)) throw new SyntaxException(msg)
+
     val generator = new TranslationWriter(translator, parameters)
     generator.writeSteps(ir, translator.steps())
     translator.translate()

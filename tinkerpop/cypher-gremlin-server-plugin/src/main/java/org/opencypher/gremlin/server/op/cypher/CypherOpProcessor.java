@@ -106,7 +106,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
             .gremlinGroovy()
             .inlineParameters()
-            .allowCypherExtensions()
+            .enableCypherExtensions()
             .build();
 
         String gremlin = TranslationWriter.write(ir, stringTranslator, parameters);
@@ -119,6 +119,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
             .traversal(g)
+            .enableCypherExtensions()
             .build();
 
         GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, traversalTranslator, parameters);

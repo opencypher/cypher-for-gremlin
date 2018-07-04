@@ -17,13 +17,14 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
+import org.opencypher.gremlin.translation.Tokens._
+import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 
 class NeptuneFlavorTest {
 
-  val flavor = TranslatorFlavor.gremlinServer
+  private val flavor = TranslatorFlavor.gremlinServer
 
   @Test
   def injectWorkaroundTest(): Unit = {
@@ -39,7 +40,7 @@ class NeptuneFlavorTest {
       .withFlavor(flavor)
       .rewritingWith(NeptuneFlavor)
       .removes(__.limit(0))
-      .adds(__.select("  cypher.empty.result"))
+      .adds(__.select(NONEXISTENT))
   }
 
   @Test
@@ -55,6 +56,16 @@ class NeptuneFlavorTest {
       .adds(__.property("foo", __.constant(1)))
       .adds(__.property("foo", __.constant(2)))
       .adds(__.property("foo", __.constant(3)))
+  }
+
+  @Test
+  def multipleLabelsWorkaround(): Unit = {
+    assertThat(parse("MATCH (:A:B) RETURN 1"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .adds(__.V().is(P.neq(NONEXISTENT)))
+      .keeps(__.hasLabel("A"))
+      .keeps(__.hasLabel("B"))
   }
 
 }

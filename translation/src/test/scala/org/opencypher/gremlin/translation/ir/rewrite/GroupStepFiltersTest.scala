@@ -43,6 +43,19 @@ class GroupStepFiltersTest {
   }
 
   @Test
+  def multipleLabels(): Unit = {
+    assertThat(parse("""
+        |MATCH (n:A:B)
+        |RETURN 1
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .removes(__.where(__.select("n").hasLabel("A").hasLabel("B")))
+      .keeps(__.hasLabel("A"))
+      .keeps(__.hasLabel("B"))
+  }
+
+  @Test
   def singleWhere(): Unit = {
     assertThat(parse("""
         |MATCH (n)

@@ -88,15 +88,15 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
             case "cosmosdb":
                 return builder.build(TranslatorFlavor.cosmosDb());
             case "cosmosdb+extensions":
-                return builder.allowCypherExtensions().build(TranslatorFlavor.cosmosDb());
+                return builder.enableCypherExtensions().build(TranslatorFlavor.cosmosDb());
             case "neptune":
                 return builder.build(TranslatorFlavor.neptune());
             case "neptune+extensions":
-                return builder.allowCypherExtensions().build(TranslatorFlavor.neptune());
+                return builder.enableCypherExtensions().build(TranslatorFlavor.neptune());
             case "gremlin":
                 return builder.build(TranslatorFlavor.gremlinServer());
             case "gremlin+extensions":
-                return builder.allowCypherExtensions().build(TranslatorFlavor.gremlinServer());
+                return builder.enableCypherExtensions().build(TranslatorFlavor.gremlinServer());
             case "":
                 return builder.build(TranslatorFlavor.gremlinServer());
             default:

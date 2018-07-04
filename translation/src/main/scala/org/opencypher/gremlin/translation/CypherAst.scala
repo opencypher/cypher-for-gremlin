@@ -25,7 +25,8 @@ import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGreml
 import org.opencypher.gremlin.translation.ir.model.GremlinStep
 import org.opencypher.gremlin.translation.ir.verify.NoCustomFunctions
 import org.opencypher.gremlin.translation.preparser._
-import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
+import org.opencypher.gremlin.translation.translator.TranslatorFeature._
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFeature, TranslatorFlavor}
 import org.opencypher.gremlin.translation.walker.StatementWalker
 import org.opencypher.gremlin.traversal.ProcedureContext
 import org.opencypher.v9_0.ast._
@@ -71,7 +72,8 @@ class CypherAst private (
         new IRGremlinPredicates,
         new IRGremlinBindings
       )
-      .allowCypherExtensions()
+      .enableCypherExtensions()
+      .enableMultipleLabels()
       .build()
 
     val context = WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)
@@ -97,9 +99,6 @@ class CypherAst private (
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
     val ir = translate(dsl.flavor(), ProcedureContext.empty())
-    if (!dsl.requiresCypherExtensions) {
-      NoCustomFunctions(ir).foreach(msg => throw new SyntaxException(msg))
-    }
     TranslationWriter.write(ir, dsl, parameters)
   }
 

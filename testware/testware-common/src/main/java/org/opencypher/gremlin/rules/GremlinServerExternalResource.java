@@ -77,7 +77,7 @@ public class GremlinServerExternalResource extends ExternalResource {
             case "gremlin":
                 return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
                     .gremlinGroovy()
-                    .allowCypherExtensions()
+                    .enableCypherExtensions()
                     .build());
             case "vanilla":
                 return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
@@ -86,7 +86,7 @@ public class GremlinServerExternalResource extends ExternalResource {
             case "bytecode":
                 return CypherGremlinClient.bytecode(gremlinClient.alias("g"), () -> Translator.builder()
                     .bytecode()
-                    .allowCypherExtensions()
+                    .enableCypherExtensions()
                     .build());
             case "cosmosdb":
                 return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
@@ -96,6 +96,7 @@ public class GremlinServerExternalResource extends ExternalResource {
                 return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
                     .gremlinGroovy()
                     .inlineParameters()
+                    .enableMultipleLabels()
                     .build(TranslatorFlavor.neptune()));
             default:
                 throw new IllegalArgumentException("Unknown name: " + clientName);

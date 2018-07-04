@@ -84,7 +84,8 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
         if (labels.isEmpty) {
           g.addV().as(name)
         } else {
-          g.addV(labels.head.name).as(name)
+          val labelString = labels.map(_.name).mkString("::")
+          g.addV(labelString).as(name)
         }
 
         val properties = getPropertiesMap(propertiesOption)
