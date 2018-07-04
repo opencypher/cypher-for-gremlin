@@ -193,7 +193,6 @@ public interface CypherGremlinClient extends Closeable {
      * @param cypher     query text
      * @param parameters query parameters
      * @return Cypher-style results
-     * @see org.opencypher.gremlin.ClientServerCommunication
      */
     CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters);
 }
