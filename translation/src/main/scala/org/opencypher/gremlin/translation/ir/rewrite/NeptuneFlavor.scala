@@ -38,10 +38,20 @@ object NeptuneFlavor extends GremlinRewriter {
 
   private def traversalRewriters(topLevelRewrites: Seq[GremlinStep]) = {
     Seq(
+      barrierAfterCountWorkaround(_),
       expandListProperties(_)
     ).foldLeft(topLevelRewrites) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
+  }
+
+  private def barrierAfterCountWorkaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Count :: rest =>
+        Count :: Barrier :: rest
+      case CountS(scope) :: rest =>
+        CountS(scope) :: Barrier :: rest
+    })(steps)
   }
 
   private def expandListProperties(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
