@@ -83,4 +83,14 @@ class NeptuneFlavorTest {
       .adds(__.property("foo", __.constant(4)))
       .adds(__.property("foo", __.constant(5)))
   }
+
+  @Test
+  def barrierAfterCount(): Unit = {
+    assertThat(parse("MATCH (a) RETURN count(a) > 0"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .keeps(__.count())
+      .adds(__.count().barrier())
+
+  }
 }
