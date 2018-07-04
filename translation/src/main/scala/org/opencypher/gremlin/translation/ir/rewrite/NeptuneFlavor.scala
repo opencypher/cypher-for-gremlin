@@ -53,10 +53,10 @@ object NeptuneFlavor extends GremlinRewriter {
   }
 
   private def expandSub(key: String, bySteps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    bySteps match {
-      case By(expr, None) :: rest        => PropertyT(key, expr) +: expandSub(key, rest)
-      case SelectC(Column.values) :: Nil => Nil
-    }
+    replace({
+      case By(expr, None) :: rest         => PropertyT(key, expr) +: expandSub(key, rest)
+      case SelectC(Column.values) :: rest => rest
+    })(bySteps)
   }
 
   private def injectWorkaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
