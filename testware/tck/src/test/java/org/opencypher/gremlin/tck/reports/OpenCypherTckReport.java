@@ -15,11 +15,20 @@
  */
 package org.opencypher.gremlin.tck.reports;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Node;
 
 /**
  * Creates a better Cucumber report from generated json file
@@ -29,11 +38,11 @@ public class OpenCypherTckReport {
     private static final String CUCUMBER_BASE = "build/reports/tests/cucumber/";
     private static final String JSON_REPORT = CUCUMBER_BASE + "cucumber.json";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         generate(JSON_REPORT, CUCUMBER_BASE);
     }
 
-    private static void generate(String jsonFilePath, String outputDirectory) {
+    private static void generate(String jsonFilePath, String outputDirectory) throws IOException {
         File reportOutputDirectory = new File(outputDirectory);
         List<String> jsonFiles = new ArrayList<>();
         jsonFiles.add(jsonFilePath);
@@ -52,7 +61,16 @@ public class OpenCypherTckReport {
 
         new ReportBuilder(jsonFiles, configuration).generateReports();
 
-        File result = new File(CUCUMBER_BASE + "/cucumber-html-reports/overview-features.html");
-        System.out.println("\nCucumber HTML report saved to: " + result.toURI());
+        Path path = Paths.get(CUCUMBER_BASE + "/cucumber-html-reports/overview-features.html");
+
+        String content = new String(Files.readAllBytes(path), UTF_8);
+        Document document = Jsoup.parse(content);
+        document.select("#charts").remove();
+        document.select("#report-lead").remove();
+        document.select("script[src*=Chart]").remove();
+        document.select("script").stream().filter(n -> n.data().contains("new Chart")).forEach(Node::remove);
+        Files.write(path, document.html().getBytes(UTF_8));
+
+        System.out.println("\nCucumber HTML report saved to: " + path.toUri());
     }
 }
