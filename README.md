@@ -8,7 +8,8 @@ Cypher for Gremlin is a toolkit for users of [Apache TinkerPop™](https://tinke
 The toolkit is composed of:
 
 - [translation](translation): Cypher to Gremlin translation library for Java
-- [tinkerpop/cypher-gremlin-server-plugin](tinkerpop/cypher-gremlin-server-plugin): Gremlin Server plugin that enables Cypher query processing
+- [tinkerpop/cypher-gremlin-extensions](tinkerpop/cypher-gremlin-extensions): Cypher-specific custom functions and predicates for Gremlin
+- [tinkerpop/cypher-gremlin-server-plugin](tinkerpop/cypher-gremlin-server-plugin): Gremlin Server plugin that enables Cypher query processing (also includes Cypher extensions above)
 - [tinkerpop/cypher-gremlin-console-plugin](tinkerpop/cypher-gremlin-console-plugin): Gremlin Console plugin that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server
 - [tinkerpop/cypher-gremlin-server-client](tinkerpop/cypher-gremlin-server-client): Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
 - [tinkerpop/cypher-gremlin-neo4j-driver](tinkerpop/cypher-gremlin-neo4j-driver): Neo4j Java API wrapper for users familiar with Neo4j
@@ -27,7 +28,7 @@ With Cypher for Gremlin you can use the following Cypher language features:
 - `CREATE`, `MERGE`, `SET`, `REMOVE`, and `DETACH DELETE`
 - `UNION` operations
 
-It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers over 70% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck).
+It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers around 70% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) and an additional 15% on Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions).
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
 
@@ -35,7 +36,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 
 ### Major Limitations
 
-* Some functionality is exclusive to Gremlin Servers with the [Cypher plugin](tinkerpop/cypher-gremlin-server-plugin) installed, including:
+* Some functionality is exclusive to Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions), commonly provided by the [Cypher Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin), including:
   - [List](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) access by non-constant index
   - [Map](https://neo4j.com/docs/developer-manual/current/cypher/syntax/maps/) access
   - String concatenation and non-constant plus operator
