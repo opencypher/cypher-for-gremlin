@@ -29,6 +29,8 @@ With Cypher for Gremlin you can use the following Cypher language features:
 
 It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers over 70% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck).
 
+<img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
+
 You are very welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
 
 ### Major Limitations
