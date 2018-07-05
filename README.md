@@ -36,13 +36,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 
 ### Major Limitations
 
-* Some functionality is exclusive to Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions), commonly provided by the [Cypher Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin), including:
-  - [List](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) access by non-constant index
-  - [Map](https://neo4j.com/docs/developer-manual/current/cypher/syntax/maps/) access
-  - String concatenation and non-constant plus operator
-  - [Pattern comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-pattern-comprehension)
-  - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `percentileCont`, `percentileDisc`, `toBoolean`, `toFloat`, `toInteger`, `toString`
-  - Some instances of `properties`, `size`
+* Some functionality is exclusive to Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions), commonly provided by the [Cypher Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin).
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 
 See the current [TCK report](testware/tck) for a detailed overview of language coverage.
