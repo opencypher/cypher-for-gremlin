@@ -112,24 +112,39 @@ object TraversalHelper {
     * @param splitter matching function
     * @return IR sequence segments
     */
-  def splitAfter(splitter: GremlinStep => Boolean)(steps: Seq[GremlinStep]): Seq[Seq[GremlinStep]] = {
-    @tailrec def splitAfterAcc(
+  def split(splitMode: SplitMode, splitter: GremlinStep => Boolean)(steps: Seq[GremlinStep]): Seq[Seq[GremlinStep]] = {
+    @tailrec def splitAcc(
         acc: Seq[Seq[GremlinStep]],
         current: Seq[GremlinStep],
         rest: Seq[GremlinStep]): Seq[Seq[GremlinStep]] = {
       rest match {
         case step :: _ =>
-          val next = current :+ step
           if (splitter(step)) {
-            splitAfterAcc(acc :+ next, Nil, rest.tail)
+            val segment = splitMode match {
+              case BeforeStep => current
+              case AfterStep  => current :+ step
+            }
+            val nextAcc = segment match {
+              case Nil => acc
+              case _   => acc :+ segment
+            }
+            val next = splitMode match {
+              case BeforeStep => step :: Nil
+              case AfterStep  => Nil
+            }
+            splitAcc(nextAcc, next, rest.tail)
           } else {
-            splitAfterAcc(acc, next, rest.tail)
+            splitAcc(acc, current :+ step, rest.tail)
           }
         case Nil =>
           if (current.nonEmpty) acc :+ current else acc
       }
     }
 
-    splitAfterAcc(Nil, Nil, steps)
+    splitAcc(Nil, Nil, steps)
   }
+
+  sealed trait SplitMode
+  case object BeforeStep extends SplitMode
+  case object AfterStep extends SplitMode
 }
