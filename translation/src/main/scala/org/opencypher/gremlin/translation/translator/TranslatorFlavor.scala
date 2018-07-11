@@ -44,6 +44,7 @@ object TranslatorFlavor {
       SimplifyRenamedAliases,
       GroupStepFilters,
       SimplifySingleProjections,
+      RemoveUselessNullChecks,
       RemoveImmediateReselect,
       RemoveUnusedAliases,
       SimplifyEdgeTraversal,
