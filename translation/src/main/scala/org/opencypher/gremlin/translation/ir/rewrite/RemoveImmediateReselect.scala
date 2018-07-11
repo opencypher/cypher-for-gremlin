@@ -26,8 +26,24 @@ import org.opencypher.gremlin.translation.ir.model._
 object RemoveImmediateReselect extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     mapTraversals(replace({
-      case As(stepLabel) :: SelectK(selectKey) :: rest if stepLabel == selectKey =>
-        As(stepLabel) :: rest
+      case As(stepLabel) :: rest =>
+        As(stepLabel) +: removeImmediateReselect(rest, stepLabel)
     }))(steps)
+  }
+
+  private def removeImmediateReselect(steps: Seq[GremlinStep], stepLabel: String): Seq[GremlinStep] = {
+    val (prefix, suffix) = steps.span {
+      case SelectK(selectKey) if stepLabel == selectKey => false
+      case _                                            => true
+    }
+    val filtersPrefix = prefix.forall {
+      case _: HasP | _: HasLabel => true
+      case _                     => false
+    }
+    if (filtersPrefix && suffix.nonEmpty) {
+      prefix ++ suffix.tail
+    } else {
+      steps
+    }
   }
 }
