@@ -26,7 +26,7 @@ import org.opencypher.gremlin.translation.ir.model._
 object SimplifyRenamedAliases extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    splitAfter({
+    split(AfterStep, {
       case FlatMapT(Project(_*) :: _) => true
       case Project(_*)                => true
       case _                          => false

@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.opencypher.gremlin.translation.ir.TraversalHelper.{AfterStep, BeforeStep}
 import org.opencypher.gremlin.translation.ir.model._
 
 class TraversalHelperTest {
@@ -99,7 +100,7 @@ class TraversalHelperTest {
   @Test
   def splitAfter(): Unit = {
     val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
-    val segments = TraversalHelper.splitAfter({
+    val segments = TraversalHelper.split(AfterStep, {
       case As(_) => true
       case _     => false
     })(seq)
@@ -109,6 +110,72 @@ class TraversalHelperTest {
         Vertex :: As("n") :: Nil,
         OutE("rel") :: As("r") :: Nil,
         InV :: As("m") :: Nil
+      ))
+  }
+
+  @Test
+  def splitAfterEach(): Unit = {
+    val seq = As("n") :: As("r") :: As("m") :: Nil
+    val segments = TraversalHelper.split(AfterStep, {
+      case As(_) => true
+      case _     => false
+    })(seq)
+
+    assertThat(segments).isEqualTo(
+      Seq(
+        As("n") :: Nil,
+        As("r") :: Nil,
+        As("m") :: Nil
+      ))
+  }
+
+  @Test
+  def splitBefore(): Unit = {
+    val seq = Vertex :: As("n") :: OutE("rel") :: As("r") :: InV :: As("m") :: Nil
+    val segments = TraversalHelper.split(BeforeStep, {
+      case As(_) => true
+      case _     => false
+    })(seq)
+
+    assertThat(segments).isEqualTo(
+      Seq(
+        Vertex :: Nil,
+        As("n") :: OutE("rel") :: Nil,
+        As("r") :: InV :: Nil,
+        As("m") :: Nil
+      ))
+  }
+
+  @Test
+  def splitBeforeEach(): Unit = {
+    val seq = As("n") :: As("r") :: As("m") :: Nil
+    val segments = TraversalHelper.split(BeforeStep, {
+      case As(_) => true
+      case _     => false
+    })(seq)
+
+    assertThat(segments).isEqualTo(
+      Seq(
+        As("n") :: Nil,
+        As("r") :: Nil,
+        As("m") :: Nil
+      ))
+  }
+
+  @Test
+  def splitBeforeOnFirstElement(): Unit = {
+    val seq = Vertex :: As("a") :: Edge :: As("b") :: PropertyV("k", "v") :: Vertex :: As("c") :: Nil
+    val segments = TraversalHelper.split(BeforeStep, {
+      case Vertex => true
+      case Edge   => true
+      case _      => false
+    })(seq)
+
+    assertThat(segments).isEqualTo(
+      Seq(
+        Vertex :: As("a") :: Nil,
+        Edge :: As("b") :: PropertyV("k", "v") :: Nil,
+        Vertex :: As("c") :: Nil
       ))
   }
 
