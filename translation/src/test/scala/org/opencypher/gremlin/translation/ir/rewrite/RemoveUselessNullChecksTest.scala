@@ -17,30 +17,44 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
+import org.opencypher.gremlin.translation.Tokens._
+import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert._
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 
-class RemoveImmediateReselectTest {
+class RemoveUselessNullChecksTest {
 
   val flavor = new TranslatorFlavor(
     rewriters = Seq(
-      InlineFlatMapTraversal
+      InlineFlatMapTraversal,
+      SimplifySingleProjections
     ),
     postConditions = Nil
   )
 
   @Test
-  def aliasProjection(): Unit = {
+  def singleProjection(): Unit = {
     assertThat(parse("""
         |MATCH (n)
-        |UNWIND labels(n) as l
-        |RETURN l
+        |RETURN n
       """.stripMargin))
       .withFlavor(flavor)
-      .rewritingWith(RemoveImmediateReselect)
-      .removes(__.as("n").select("n"))
-      .keeps(__.as("n"))
+      .rewritingWith(RemoveUselessNullChecks)
+      .removes(__.by(__.choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
+      .adds(__.by(__.valueMap(true)))
   }
 
+  @Test
+  def multipleProjections(): Unit = {
+    assertThat(parse("""
+        |MATCH (n)-->(m)
+        |RETURN n, m
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveUselessNullChecks)
+      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
+      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
+      .adds(__.by(__.select("n").valueMap(true)))
+      .adds(__.by(__.select("m").valueMap(true)))
+  }
 }

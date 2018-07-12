@@ -21,8 +21,11 @@ import org.opencypher.gremlin.translation.ir.model._
 
 import scala.annotation.tailrec
 
+/**
+  * This rule finds instances of if-not-null pattern and removes them
+  * if there are no prior steps in the traversal that may produce nulls.
+  */
 object RemoveUselessNullChecks extends GremlinRewriter {
-
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     @tailrec def splitterAcc(acc: Seq[GremlinStep], steps: Seq[GremlinStep]): Seq[GremlinStep] = {
       val (segment, rest) = splitSegment(steps)
@@ -55,19 +58,19 @@ object RemoveUselessNullChecks extends GremlinRewriter {
     })(steps.init)
 
     if (mapsToNull) {
-      steps
-    } else {
-      val last = steps.last match {
-        case By(SelectK(key) :: ChooseP(Neq(NULL), t, Constant(NULL) :: Nil) :: Nil, None) =>
-          By(SelectK(key) +: t, None) :: Nil
-        case By(ChooseP(Neq(NULL), t, Constant(NULL) :: Nil) :: Nil, None) =>
-          By(t, None) :: Nil
-        case ChooseP(Neq(NULL), traversal, Constant(NULL) :: Nil) =>
-          traversal
-        case step =>
-          step :: Nil
-      }
-      steps.init ++ last
+      return steps
     }
+
+    val last = steps.last match {
+      case By(SelectK(key) :: ChooseP(Neq(NULL), t, Constant(NULL) :: Nil) :: Nil, None) =>
+        By(SelectK(key) +: t, None) :: Nil
+      case By(ChooseP(Neq(NULL), t, Constant(NULL) :: Nil) :: Nil, None) =>
+        By(t, None) :: Nil
+      case ChooseP(Neq(NULL), traversal, Constant(NULL) :: Nil) =>
+        traversal
+      case step =>
+        step :: Nil
+    }
+    steps.init ++ last
   }
 }
