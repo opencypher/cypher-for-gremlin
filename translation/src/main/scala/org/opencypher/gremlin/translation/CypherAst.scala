@@ -44,6 +44,7 @@ import scala.collection.mutable
   *
   * @param statement       AST root node
   * @param parameters      Cypher query parameters
+  * @param procedures      registered procedure context
   * @param expressionTypes expression Cypher types
   * @param returnTypes     return types by alias
   * @param options         pre-parser options provided by Cypher parser
@@ -51,6 +52,7 @@ import scala.collection.mutable
 class CypherAst private (
     val statement: Statement,
     parameters: Map[String, Any],
+    procedures: ProcedureContext,
     expressionTypes: Map[Expression, CypherType],
     returnTypes: Map[String, CypherType],
     options: Seq[PreParserOption]) {
@@ -58,11 +60,10 @@ class CypherAst private (
   /**
     * Creates an intermediate representation of the translation.
     *
-    * @param flavor     translation flavor
-    * @param procedures registered procedure context
+    * @param flavor translation flavor
     * @return to-Gremlin translation
     */
-  def translate(flavor: TranslatorFlavor, procedures: ProcedureContext): Seq[GremlinStep] = {
+  def translate(flavor: TranslatorFlavor): Seq[GremlinStep] = {
     val dsl = Translator
       .builder()
       .custom(
@@ -96,7 +97,7 @@ class CypherAst private (
     * @return to-Gremlin translation
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
-    val ir = translate(dsl.flavor(), ProcedureContext.empty())
+    val ir = translate(dsl.flavor())
     TranslationWriter.write(ir, dsl, parameters)
   }
 
@@ -168,7 +169,7 @@ object CypherAst {
     */
   @throws[CypherException]
   def parse(queryText: String): CypherAst = {
-    parse(queryText, Collections.emptyMap[String, Any]())
+    parse(queryText, Collections.emptyMap[String, Any](), ProcedureContext.empty())
   }
 
   /**
@@ -180,14 +181,27 @@ object CypherAst {
     */
   @throws[CypherException]
   def parse(queryText: String, parameters: util.Map[String, _]): CypherAst = {
+    parse(queryText, parameters, ProcedureContext.empty())
+  }
+
+  /**
+    * Constructs a new Cypher AST from the provided query.
+    *
+    * @param queryText  Cypher query
+    * @param parameters Cypher query parameters
+    * @param procedures registered procedure context
+    * @return Cypher AST wrapper
+    */
+  @throws[CypherException]
+  def parse(queryText: String, parameters: util.Map[String, _], procedures: ProcedureContext): CypherAst = {
     val scalaParameters = Option(parameters)
       .map(_.asScala.toMap)
       .getOrElse(Map())
-    parse(queryText, scalaParameters)
+    parse(queryText, scalaParameters, procedures)
   }
 
   @throws[CypherException]
-  private def parse(queryText: String, parameters: Map[String, Any]): CypherAst = {
+  private def parse(queryText: String, parameters: Map[String, Any], procedures: ProcedureContext): CypherAst = {
     val PreParsedStatement(preParsedQueryText, options, offset) = CypherPreParser(queryText)
     val startState = InitialState(preParsedQueryText, Some(offset), EmptyPlannerName)
     val state = CompilationPhases
@@ -198,9 +212,9 @@ object CypherAst {
 
     val statement = state.statement()
     val expressionTypes = getExpressionTypes(state)
-    val returnTypes = getReturnTypes(expressionTypes, statement)
+    val returnTypes = getReturnTypes(expressionTypes, statement, procedures)
 
-    new CypherAst(statement, parameters, expressionTypes, returnTypes, options)
+    new CypherAst(statement, parameters, procedures, expressionTypes, returnTypes, options)
   }
 
   private def getExpressionTypes(state: BaseState): Map[Expression, CypherType] = {
@@ -217,7 +231,8 @@ object CypherAst {
 
   private def getReturnTypes(
       expressionTypes: Map[Expression, CypherType],
-      statement: Statement): Map[String, CypherType] = {
+      statement: Statement,
+      procedures: ProcedureContext): Map[String, CypherType] = {
     val clauses = statement match {
       case Query(_, part) =>
         part match {

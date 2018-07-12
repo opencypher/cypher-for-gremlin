@@ -65,8 +65,8 @@ public class ProcedureTest {
             .traversal(g)
             .enableCypherExtensions()
             .build();
-        CypherAst ast = CypherAst.parse(cypher, parameters);
-        Seq<GremlinStep> ir = ast.translate(flavor, procedureContext);
+        CypherAst ast = CypherAst.parse(cypher, parameters, procedureContext);
+        Seq<GremlinStep> ir = ast.translate(flavor);
         GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, translator, parameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return traversal.toStream()
