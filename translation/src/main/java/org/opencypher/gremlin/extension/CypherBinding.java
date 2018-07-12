@@ -17,14 +17,14 @@ package org.opencypher.gremlin.extension;
 
 public final class CypherBinding {
     private final String name;
-    private final Class<?> type;
+    private final CypherBindingType type;
 
-    public CypherBinding(String name, Class<?> type) {
+    public CypherBinding(String name, CypherBindingType type) {
         this.name = name;
         this.type = type;
     }
 
-    public static CypherBinding binding(String name, Class<?> type) {
+    public static CypherBinding binding(String name, CypherBindingType type) {
         return new CypherBinding(name, type);
     }
 
@@ -32,7 +32,7 @@ public final class CypherBinding {
         return name;
     }
 
-    public Class<?> getType() {
+    public CypherBindingType getType() {
         return type;
     }
 }

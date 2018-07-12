@@ -18,6 +18,19 @@ package org.opencypher.gremlin.translation
 import java.util
 import java.util.Collections
 
+import org.opencypher.gremlin.extension.CypherBindingType.{
+  ANY,
+  BOOLEAN,
+  FLOAT,
+  INTEGER,
+  LIST,
+  MAP,
+  NODE,
+  NUMBER,
+  RELATIONSHIP,
+  STRING
+}
+import org.opencypher.gremlin.extension._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.TranslationWriter
@@ -32,7 +45,7 @@ import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.frontend.phases._
 import org.opencypher.v9_0.rewriting.RewriterStepSequencer
 import org.opencypher.v9_0.rewriting.rewriters.Never
-import org.opencypher.v9_0.util.symbols.{AnyType, CypherType}
+import org.opencypher.v9_0.util.symbols._
 import org.opencypher.v9_0.util.{ASTNode, CypherException}
 
 import scala.collection.JavaConverters._
@@ -243,6 +256,22 @@ object CypherAst {
         }
     }
 
+    val standaloneCall = clauses.forall {
+      case UnresolvedCall(_, _, _, None) => true
+      case _                             => false
+    }
+
+    if (standaloneCall) {
+      val UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), _, _) = clauses.head
+      val qualifiedName = namespaceParts.mkString(".") + "." + name
+      return procedures
+        .findOrThrow(qualifiedName)
+        .results()
+        .asScala
+        .map(b => (b.getName, bindingType(b.getType)))
+        .toMap
+    }
+
     clauses.flatMap {
       case Return(_, returnItems, _, _, _, _) => returnItems.items
       case _                                  => Nil
@@ -256,5 +285,20 @@ object CypherAst {
       case _ =>
         None
     }.toMap
+  }
+
+  private def bindingType(typ: CypherBindingType): CypherType = {
+    typ match {
+      case ANY          => CTAny
+      case BOOLEAN      => CTBoolean
+      case STRING       => CTString
+      case NUMBER       => CTNumber
+      case FLOAT        => CTFloat
+      case INTEGER      => CTInteger
+      case MAP          => CTMap
+      case LIST         => CTList(CTAny)
+      case NODE         => CTNode
+      case RELATIONSHIP => CTRelationship
+    }
   }
 }
