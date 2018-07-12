@@ -19,15 +19,29 @@ import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
 /**
-  * This rule removes `select` steps that immediately follow an `as` step with the same label.
+  * This rule removes `select` steps that immediately follow an `as` step with the same label,
+  * or are separated from the `as` step by one or more `has` steps.
   * Since the expected value is already in the traverser, this is a useless operation.
   * This rewrite also enables some cases of [[RemoveUnusedAliases]] rewrites.
   */
-object RemoveImmediateReselect extends GremlinRewriter {
+object RemoveIdentityReselect extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     mapTraversals(replace({
-      case As(stepLabel) :: SelectK(selectKey) :: rest if stepLabel == selectKey =>
-        As(stepLabel) :: rest
+      case As(stepLabel) :: rest =>
+        As(stepLabel) +: removeReselect(rest, stepLabel)
     }))(steps)
+  }
+
+  private def removeReselect(steps: Seq[GremlinStep], stepLabel: String): Seq[GremlinStep] = {
+    val (filters, suffix) = steps.span {
+      case _: HasP | _: HasLabel => true
+      case _                     => false
+    }
+    suffix match {
+      case SelectK(selectKey) :: rest if stepLabel == selectKey =>
+        filters ++ rest
+      case _ =>
+        steps
+    }
   }
 }
