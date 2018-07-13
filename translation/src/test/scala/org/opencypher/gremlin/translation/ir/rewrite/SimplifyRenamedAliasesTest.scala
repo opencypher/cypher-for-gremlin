@@ -15,18 +15,22 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
+import org.opencypher.gremlin.translation.ir.model.Vertex
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
+import org.opencypher.gremlin.traversal.ProcedureContext
 
 class SimplifyRenamedAliasesTest {
 
   val flavor = new TranslatorFlavor(
     rewriters = Seq(
-      InlineFlatMapTraversal
+      InlineFlatMapTraversal,
+      RemoveMultipleAliases
     ),
     postConditions = Nil
   )
@@ -74,4 +78,23 @@ class SimplifyRenamedAliasesTest {
       )
   }
 
+  @Test
+  def matchPath(): Unit = {
+    val ast = parse("""MATCH (o:Officer)
+        |WHERE o.name = 'PELAGOS YACHTS LIMITED'
+        |MATCH path = (o)-[r]->(:Entity)
+        |RETURN path LIMIT 100""".stripMargin)
+
+    val steps = ast.translate(
+      flavor.extend(
+        rewriters = Seq(
+          SimplifyRenamedAliases
+        ),
+        postConditions = Nil
+      ),
+      ProcedureContext.empty)
+    val newTraversalCount = steps.count(_ == Vertex)
+
+    Assertions.assertThat(newTraversalCount).isEqualTo(1)
+  }
 }

@@ -59,6 +59,8 @@ object TraversalAssertions {
       .enableCypherExtensions()
       .enableMultipleLabels()
       .build()
-    TranslationWriter.write(traversal, translator, Map.empty[String, Any])
+    TranslationWriter
+      .write(traversal, translator, Map.empty[String, Any])
+      .replace("'", "\"")
   }
 }
