@@ -42,6 +42,8 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.opencypher.gremlin.translation.Tokens;
+import org.opencypher.gremlin.translation.exception.Exceptions;
+import org.opencypher.gremlin.translation.exception.SemanticException;
 import org.opencypher.gremlin.translation.exception.TypeException;
 
 @SuppressWarnings({"unchecked", "WeakerAccess", "ArraysAsListWithZeroOrOneArgument"})
@@ -406,6 +408,13 @@ public final class CustomFunctions {
             } else {
                 return String.valueOf(a) + String.valueOf(b);
             }
+        };
+    }
+
+    public static Function<Traverser, Object> cypherException() {
+        return traverser -> {
+            String message = Exceptions.messageByName(traverser.get());
+            throw new SemanticException(message);
         };
     }
 

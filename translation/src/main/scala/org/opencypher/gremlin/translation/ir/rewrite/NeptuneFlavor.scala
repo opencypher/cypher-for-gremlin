@@ -27,7 +27,6 @@ object NeptuneFlavor extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     Seq(
       injectWorkaround(_),
-      deleteWorkaround(_),
       limit0Workaround(_),
       multipleLabelsWorkaround(_),
       traversalRewriters(_)
@@ -76,13 +75,6 @@ object NeptuneFlavor extends GremlinRewriter {
       case _ =>
         steps
     }
-  }
-
-  private def deleteWorkaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    replace({
-      case SideEffect(drop) :: Barrier :: Limit(0) :: rest =>
-        drop ++ rest
-    })(steps)
   }
 
   private def limit0Workaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {

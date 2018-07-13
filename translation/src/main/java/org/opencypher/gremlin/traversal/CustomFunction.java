@@ -118,4 +118,11 @@ public class CustomFunction {
             CustomFunctions.cypherPlus()
         );
     }
+
+    public static CustomFunction cypherException() {
+        return new CustomFunction(
+            "cypherException",
+            CustomFunctions.cypherException()
+        );
+    }
 }

@@ -62,6 +62,7 @@ object TranslatorFlavor {
     */
   val cosmosDb: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
+      CustomFunctionFallback,
       CosmosDbFlavor
     ),
     postConditions = Nil
@@ -72,6 +73,7 @@ object TranslatorFlavor {
     */
   val neptune: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
+      CustomFunctionFallback,
       NeptuneFlavor
     ),
     postConditions = Nil

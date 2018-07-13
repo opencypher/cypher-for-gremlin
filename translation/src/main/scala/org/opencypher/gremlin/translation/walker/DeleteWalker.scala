@@ -15,10 +15,13 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.context.WalkerContext
+import org.opencypher.gremlin.translation.exception.Exceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
+import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions.Expression
+import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType, RelationshipType}
 
 object DeleteWalker {
   def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Delete): Unit = {
@@ -29,19 +32,43 @@ object DeleteWalker {
 class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Delete): Unit = {
-    val Delete(expressions, _) = node
+    val Delete(expressions, detach) = node
 
+    val sideEffect = g.start()
+    expressions.foreach(safeDelete(sideEffect, _, detach))
+
+    g.barrier().sideEffect(sideEffect)
+  }
+
+  private def safeDelete(subTraversal: GremlinSteps[T, P], expr: Expression, checkBeforeDelete: Boolean) = {
     val p = context.dsl.predicates()
-    val sideEffect = g.start().project(expressions.map(_ => context.generateName()): _*)
-    expressions.foreach(expr => sideEffect.by(ExpressionWalker.walkLocal(context, g, expr)))
-    sideEffect
-      .select(Column.values)
-      .unfold()
-      .unfold() // Unwraps paths
-      .is(p.neq(Tokens.NULL))
-      .drop()
+    val expressionTraversal = ExpressionWalker.walkLocal(context, g, expr)
+    val typ = context.expressionTypes.get(expr)
 
-    g.barrier()
-      .sideEffect(sideEffect)
+    if (!checkBeforeDelete) {
+      typ match {
+        case Some(_: NodeType) =>
+          expressionTraversal.sideEffect(
+            g.start()
+              .is(p.neq(Tokens.NULL))
+              .bothE()
+              .constant(DELETE_CONNECTED_NODE.toString)
+              .map(CustomFunction.cypherException())
+          )
+        case Some(_: RelationshipType) =>
+        case _                         =>
+      }
+    }
+
+    typ match {
+      case Some(_: PathType) =>
+        expressionTraversal
+          .unfold()
+          .unfold()
+      case Some(_: AnyType) => expressionTraversal.unfold()
+      case _                =>
+    }
+
+    subTraversal.sideEffect(expressionTraversal.is(p.neq(Tokens.NULL)).drop())
   }
 }

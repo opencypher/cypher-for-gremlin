@@ -21,7 +21,7 @@ import org.apache.tinkerpop.gremlin.driver.exception.ResponseException
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.CypherAst
 import org.opencypher.gremlin.translation.ReturnProperties._
-import org.opencypher.gremlin.translation.exception.{SyntaxException, TypeException}
+import org.opencypher.gremlin.translation.exception.{SemanticException, SyntaxException, TypeException}
 import org.opencypher.tools.tck.api.{CypherValueRecords, ExecutionFailed}
 import org.opencypher.tools.tck.constants.TCKErrorPhases.RUNTIME
 import org.opencypher.tools.tck.values._
@@ -44,7 +44,8 @@ object TckGremlinCypherValueConverter {
       .next()
 
     gremlinRemoteException match {
-      case _: SyntaxException | _: TypeException | _: IllegalArgumentException | _: ResponseException =>
+      case _: SyntaxException | _: SemanticException | _: TypeException | _: IllegalArgumentException |
+          _: ResponseException =>
         parseException(gremlinRemoteException)
       case e: RuntimeException => parseException(e.getCause)
       case _ =>
