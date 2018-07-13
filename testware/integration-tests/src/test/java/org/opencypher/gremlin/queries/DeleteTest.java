@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.queries;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Map;
@@ -33,10 +34,14 @@ public class DeleteTest {
     }
 
     @Test
-    public void detachDelete() throws Exception {
+    public void delete() throws Exception {
         List<Map<String, Object>> beforeDelete = submitAndGet(
             "MATCH (s:software) RETURN count(s)"
         );
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (s:software) DELETE s"))
+            .hasMessageContaining("Cannot delete node, because it still has relationships.");
+
         List<Map<String, Object>> onDelete = submitAndGet(
             "MATCH (s:software) DETACH DELETE s"
         );
@@ -55,10 +60,14 @@ public class DeleteTest {
     }
 
     @Test
-    public void detachDeleteMultiple() throws Exception {
+    public void deleteMultiple() throws Exception {
         List<Map<String, Object>> beforeDelete = submitAndGet(
             "MATCH (n) RETURN count(*)"
         );
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (s:software), (p:person) DELETE s, p"))
+            .hasMessageContaining("Cannot delete node, because it still has relationships.");
+
         List<Map<String, Object>> onDelete = submitAndGet(
             "MATCH (s:software), (p:person) DETACH DELETE s, p"
         );
@@ -103,6 +112,12 @@ public class DeleteTest {
         List<Map<String, Object>> beforeDelete = submitAndGet(
             "MATCH (n) RETURN count(*)"
         );
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n) " +
+                        "WITH [n] AS nodes " +
+                        "DELETE nodes[0]"))
+            .hasMessageContaining("Cannot delete node, because it still has relationships.");
+
         List<Map<String, Object>> onDelete = submitAndGet(
             "MATCH (n) " +
                 "WITH [n] AS nodes " +
@@ -169,5 +184,18 @@ public class DeleteTest {
         assertThat(afterDelete)
             .extracting("count(*)")
             .containsExactly(0L);
+    }
+
+    @Test
+    public void deleteOnNullNode() throws Exception {
+        submitAndGet(
+            "MATCH (n) DETACH DELETE n"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "OPTIONAL MATCH (n) DELETE n"
+        );
+
+        assertThat(onDelete)
+            .isEmpty();
     }
 }
