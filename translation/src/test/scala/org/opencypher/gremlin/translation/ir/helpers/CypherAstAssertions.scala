@@ -16,7 +16,10 @@
 package org.opencypher.gremlin.translation.ir.helpers
 
 import org.opencypher.gremlin.translation.CypherAst
+import org.assertj.core.api.Assertions
 
 object CypherAstAssertions {
   def assertThat(actual: CypherAst) = new CypherAstAssert(actual)
+
+  def assertThat[T](actual: T): org.assertj.core.api.AbstractObjectAssert[_, T] = Assertions.assertThat(actual)
 }
