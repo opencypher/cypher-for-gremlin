@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens._
@@ -119,8 +118,7 @@ class RemoveMultipleAliasesTest {
 
     val rewritten = RemoveMultipleAliases.apply(steps.current())
 
-    Assertions
-      .assertThat(rewritten)
+    assertThat(rewritten)
       .isEqualTo(expected.current())
   }
 
@@ -150,8 +148,7 @@ class RemoveMultipleAliasesTest {
 
     val rewritten = RemoveMultipleAliases.apply(steps.current())
 
-    Assertions
-      .assertThat(rewritten)
+    assertThat(rewritten)
       .isEqualTo(expected.current())
   }
 
@@ -168,8 +165,7 @@ class RemoveMultipleAliasesTest {
 
     val rewritten = RemoveMultipleAliases.apply(steps.current())
 
-    Assertions
-      .assertThat(rewritten)
+    assertThat(rewritten)
       .isEqualTo(expected.current())
   }
 
@@ -190,8 +186,7 @@ class RemoveMultipleAliasesTest {
 
     val rewritten = RemoveMultipleAliases.apply(steps.current())
 
-    Assertions
-      .assertThat(rewritten)
+    assertThat(rewritten)
       .isEqualTo(expected.current())
   }
 }

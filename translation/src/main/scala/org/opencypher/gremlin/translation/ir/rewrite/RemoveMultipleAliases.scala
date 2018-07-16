@@ -21,7 +21,6 @@ import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
 
 /**
   * This rule replaces multiple sequential step aliases with single one, and updates traversal accordingly
@@ -29,14 +28,17 @@ import scala.collection.mutable
 object RemoveMultipleAliases extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    val allAliases = foldTraversals(Seq.empty[String])({ (acc, sub) =>
-      acc ++ extract({
+    val aliasCount = foldTraversals(Map.empty[String, Int])({ (acc, sub) =>
+      val labels = extract({
         case As(label) :: _ => label
       })(sub)
+      labels.foldLeft(acc) { (acc, label) =>
+        acc + ((label, acc.getOrElse(label, 0) + 1))
+      }
     })(steps)
 
     val replaceAliases = foldTraversals(Map.empty[String, String])({ (acc, sub) =>
-      acc ++ getAliasReplacements(sub, allAliases)
+      acc ++ getAliasReplacements(sub, aliasCount)
     })(steps)
 
     def alias(alias: String) = {
@@ -46,41 +48,49 @@ object RemoveMultipleAliases extends GremlinRewriter {
     mapTraversals(traversal =>
       traversal.flatMap {
         case As(label) if replaceAliases.contains(label) =>
-          Nil
+          None
         case From(fromStepLabel) =>
-          Seq(From(alias(fromStepLabel)))
+          Some(From(alias(fromStepLabel)))
         case To(toStepLabel) =>
-          Seq(To(alias(toStepLabel)))
+          Some(To(alias(toStepLabel)))
         case SelectK(selectKeys @ _*) =>
-          Seq(SelectK(selectKeys.map(alias): _*))
+          Some(SelectK(selectKeys.map(alias): _*))
         case Dedup(dedupLabels @ _*) =>
-          Seq(Dedup(dedupLabels.map(alias): _*))
+          Some(Dedup(dedupLabels.map(alias): _*))
         case WhereP(predicate) =>
-          Seq(WhereP(replacePredicate(predicate, alias)))
+          Some(WhereP(replacePredicate(predicate, alias)))
         case Math(expression) =>
-          Seq(Math(replaceMath(expression, alias)))
+          Some(Math(replaceMath(expression, alias)))
         case s =>
-          Seq(s)
+          Some(s)
     })(steps)
   }
 
-  private def getAliasReplacements(steps: Seq[GremlinStep], allAliases: Seq[String]) = {
-    val replacements = mutable.Map.empty[String, String]
-    var stepBuf = mutable.ArrayBuffer.empty[String]
-
-    def add = if (stepBuf.size > 1) {
-      stepBuf.tail.foreach(replacements(_) = stepBuf.head)
-    }
-
-    steps.foreach {
-      case As(label) if label != UNUSED && allAliases.count(_ == label) == 1 =>
-        stepBuf += label
+  private def getAliasReplacements(steps: Seq[GremlinStep], aliasCount: Map[String, Int]): Map[String, String] = {
+    def isAs: PartialFunction[GremlinStep, Boolean] = {
+      case As(label) if label != UNUSED && aliasCount(label) == 1 =>
+        true
       case _ =>
-        add
-        stepBuf.clear()
+        false
     }
-    add
-    replacements
+
+    def extractAsStepSpans(acc: Seq[Seq[String]], steps: Seq[GremlinStep]): Seq[Seq[String]] = {
+      val (_, asStepsPrefix) = steps.span(!isAs(_))
+      if (asStepsPrefix.isEmpty) {
+        return acc
+      }
+      val (current, rest) = asStepsPrefix.span(isAs)
+      val labels = current.map(_.asInstanceOf[As].stepLabel)
+      extractAsStepSpans(acc :+ labels, rest)
+    }
+
+    extractAsStepSpans(Nil, steps)
+      .filter(_.length > 1)
+      .foldLeft(Map.empty[String, String]) { (acc, steps) =>
+        val replacement = steps.head
+        val pairs = steps.tail.map((_, replacement))
+        acc ++ pairs
+      }
   }
 
   private def replacePredicate(predicate: GremlinPredicate, alias: String => String): GremlinPredicate =
