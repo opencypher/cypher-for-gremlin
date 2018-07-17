@@ -30,7 +30,7 @@ object GremlinErrors {
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_ARGUMENT_TYPE),
     "DELETE doesn't support (.+)\\. Try (.+)\\. .+" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_DELETE),
-    "Type mismatch: (.+) already defined with conflicting type (.+) \\(expected (.+)\\) .+" ->
+    "Type mismatch: (.+) defined with conflicting type (.+) \\(expected (.+)\\) .+" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, VARIABLE_TYPE_CONFLICT),
     "Variable length (.+) cannot be used in (.+)" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, CREATING_VAR_LENGTH),
