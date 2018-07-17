@@ -23,10 +23,8 @@ import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.TranslationWriter
 import org.opencypher.gremlin.translation.ir.builder.{IRGremlinBindings, IRGremlinPredicates, IRGremlinSteps}
 import org.opencypher.gremlin.translation.ir.model.GremlinStep
-import org.opencypher.gremlin.translation.ir.verify.NoCustomFunctions
 import org.opencypher.gremlin.translation.preparser._
-import org.opencypher.gremlin.translation.translator.TranslatorFeature._
-import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFeature, TranslatorFlavor}
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
 import org.opencypher.gremlin.translation.walker.StatementWalker
 import org.opencypher.gremlin.traversal.ProcedureContext
 import org.opencypher.v9_0.ast._
@@ -231,8 +229,8 @@ object CypherAst {
     }
 
     clauses.flatMap {
-      case Return(_, returnItems, _, _, _, _, _) => returnItems.items
-      case _                                     => Nil
+      case Return(_, returnItems, _, _, _, _) => returnItems.items
+      case _                                  => Nil
     }.flatMap {
       case AliasedReturnItem(expression, variable @ Variable(name)) =>
         val pair = expressionTypes

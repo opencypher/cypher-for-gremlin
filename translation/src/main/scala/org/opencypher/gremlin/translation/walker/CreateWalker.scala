@@ -71,7 +71,7 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
 
   private def walkNodePattern(nodePattern: NodePattern): Unit = {
     nodePattern match {
-      case NodePattern(Some(Variable(name)), labels, propertiesOption) =>
+      case NodePattern(Some(Variable(name)), labels, propertiesOption, _) =>
         nodeHistory.push(name)
 
         context.alias(name) match {
@@ -97,8 +97,8 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
 
   private def walkRelationshipPattern(relationshipPattern: RelationshipPattern): Unit = {
     relationshipPattern match {
-      case RelationshipPattern(_, Nil, _, _, _, _) => // Ignored
-      case RelationshipPattern(Some(Variable(rName)), types, _, propertiesOption, direction, _) =>
+      case RelationshipPattern(_, Nil, _, _, _, _, _) => // Ignored
+      case RelationshipPattern(Some(Variable(rName)), types, _, propertiesOption, direction, _, _) =>
         val n2Name = nodeHistory.pop
         val n1Name = nodeHistory.pop
         nodeHistory.push(n2Name)
