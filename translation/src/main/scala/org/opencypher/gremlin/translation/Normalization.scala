@@ -21,11 +21,10 @@ import org.opencypher.v9_0.util.{Rewriter, inSequence}
 
 object Normalization extends StatementRewriter {
   override def instance(context: BaseContext): Rewriter = inSequence(
-    collapseMultipleInPredicates,
     flattenBooleanOperators,
     simplifyPredicates,
-    nameUpdatingClauses,
-    projectFreshSortExpressions
+    collapseMultipleInPredicates,
+    nameUpdatingClauses
   )
 
   override def description: String = "normalize the AST"
