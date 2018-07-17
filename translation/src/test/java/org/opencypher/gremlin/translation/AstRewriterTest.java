@@ -98,9 +98,7 @@ public class AstRewriterTest {
         )).normalizedTo(
             "MATCH (a:artist) " +
                 "WITH a AS a " +
-                "WITH a AS a, a.age > 18 AS `  FRESHID36`" +
-                "WHERE `  FRESHID36`" +
-                "WITH a AS a " +
+                "WHERE a.age > 18 " +
                 "RETURN a.name AS `a.name`"
         );
     }
@@ -115,9 +113,7 @@ public class AstRewriterTest {
         )).normalizedTo(
             "MATCH (a:artist) " +
                 "WITH a AS a " +
-                "WITH a AS a, a.age > 18 AS `  FRESHID36`" +
-                "WHERE `  FRESHID36`" +
-                "WITH a AS a " +
+                "WHERE a.age > 18 " +
                 "WITH a.name AS `  FRESHID50` " +
                 "ORDER BY `  FRESHID50` " +
                 "RETURN `  FRESHID50` AS `a.name`"
