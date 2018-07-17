@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.MathStepAccessor
 import org.opencypher.gremlin.translation.Tokens._
+import org.opencypher.gremlin.translation.context.NameGenerator.PREFIX
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -86,12 +87,17 @@ object RemoveMultipleAliases extends GremlinRewriter {
 
     extractAsStepSpans(Nil, steps)
       .filter(_.length > 1)
-      .foldLeft(Map.empty[String, String]) { (acc, steps) =>
-        val replacement = steps.head
-        val pairs = steps.tail.map((_, replacement))
+      .foldLeft(Map.empty[String, String]) { (acc, labels) =>
+        val userDefinedFirst = labels
+          .sortWith((_, k) => isGenerated(k))
+        val replacement = userDefinedFirst.head
+        val pairs = userDefinedFirst.tail.map((_, replacement))
         acc ++ pairs
       }
   }
+
+  private def isGenerated(k: String): Boolean =
+    Seq("  UNNAMED", "  FRESHID", PATH_START, MATCH_START, MATCH_END, PREFIX).exists(k.startsWith)
 
   private def replacePredicate(predicate: GremlinPredicate, alias: String => String): GremlinPredicate =
     predicate match {

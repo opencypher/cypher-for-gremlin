@@ -15,11 +15,17 @@
  */
 package org.opencypher.gremlin.translation.context
 
+import org.opencypher.gremlin.translation.context.NameGenerator.PREFIX
+
 class NameGenerator() {
   private var counter: Int = 0
 
   def next(): String = {
     counter += 1
-    s"  GENERATED$counter"
+    PREFIX + counter
   }
+}
+
+object NameGenerator {
+  final val PREFIX: String = "  GENERATED"
 }

@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
@@ -60,8 +61,8 @@ class RemoveMultipleAliasesTest {
       .rewritingWith(RemoveMultipleAliases)
       .removes(__.as("  cypher.match.start.path").as("  GENERATED1"))
       .removes(__.as("  UNNAMED81").as("  cypher.match.end.path"))
-      .keeps(__.as("  cypher.match.start.path"))
-      .keeps(__.as("  UNNAMED81"))
+      .keeps(__.as("o"))
+      .keeps(__.as("  cypher.match.end.path"))
   }
 
   @Test
@@ -74,9 +75,9 @@ class RemoveMultipleAliasesTest {
         __.as("  cypher.match.start.p")
           .as("n")
           .as("  cypher.path.start.p"))
-      .keeps(__.as("  cypher.match.start.p"))
+      .keeps(__.as("n"))
       .removes(__.from("  cypher.path.start.p"))
-      .adds(__.from("  cypher.match.start.p"))
+      .adds(__.from("n"))
       .removes(__.as("x").as("  cypher.match.end.p"))
       .keeps(__.as("x"))
   }
@@ -183,6 +184,36 @@ class RemoveMultipleAliasesTest {
       .V()
       .as("l1")
       .where(P.within("l1"))
+
+    val rewritten = RemoveMultipleAliases.apply(steps.current())
+
+    assertThat(rewritten)
+      .isEqualTo(expected.current())
+  }
+
+  @Test
+  def pickUserDefined(): Unit = {
+    val steps = __
+      .V()
+      .as(Tokens.PATH_START)
+      .as(Tokens.MATCH_START)
+      .as("  GENERATED1")
+      .as("n")
+      .as("  GENERATED2")
+      .select(Tokens.PATH_START)
+      .select(Tokens.MATCH_START)
+      .select("n")
+      .select("  GENERATED1")
+      .select("  GENERATED2")
+
+    val expected = __
+      .V()
+      .as("n")
+      .select("n")
+      .select("n")
+      .select("n")
+      .select("n")
+      .select("n")
 
     val rewritten = RemoveMultipleAliases.apply(steps.current())
 
