@@ -18,18 +18,8 @@ package org.opencypher.gremlin.translation
 import java.util
 import java.util.Collections
 
-import org.opencypher.gremlin.extension.CypherBindingType.{
-  ANY,
-  BOOLEAN,
-  FLOAT,
-  INTEGER,
-  LIST,
-  MAP,
-  NODE,
-  NUMBER,
-  RELATIONSHIP,
-  STRING
-}
+import org.opencypher.gremlin.extension.CypherBindingType._
+import org.opencypher.gremlin.extension.CypherProcedures.procedureName
 import org.opencypher.gremlin.extension._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
@@ -263,7 +253,7 @@ object CypherAst {
 
     if (standaloneCall) {
       val UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), _, _) = clauses.head
-      val qualifiedName = namespaceParts.mkString(".") + "." + name
+      val qualifiedName = procedureName(namespaceParts, name)
       return procedures
         .findOrThrow(qualifiedName)
         .results()
