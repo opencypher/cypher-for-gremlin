@@ -86,9 +86,9 @@ object NodeUtils {
   def getPathTraversalAliases(patternElement: PatternElement): Vector[String] = {
     flattenRelationshipChain(patternElement).foldLeft(Vector.empty[String]) { (acc, element) =>
       element match {
-        case NodePattern(Some(Variable(name)), _, _) =>
+        case NodePattern(Some(Variable(name)), _, _, _) =>
           acc :+ name
-        case RelationshipPattern(Some(Variable(name)), _, _, _, _, _) =>
+        case RelationshipPattern(Some(Variable(name)), _, _, _, _, _, _) =>
           acc :+ name
         case _ =>
           acc

@@ -38,9 +38,9 @@ import scala.util.Try
 object ProjectionWalker {
   def walk[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: ProjectionClause): Unit = {
     node match {
-      case Return(distinct, ReturnItems(_, items), _, orderBy, skip, limit, _) =>
+      case Return(distinct, ReturnItems(_, items), orderBy, skip, limit, _) =>
         new ProjectionWalker(context, g).walk(distinct, items, orderBy, skip, limit, finalize = true)
-      case With(distinct, ReturnItems(_, items), _, orderBy, skip, limit, _) =>
+      case With(distinct, ReturnItems(_, items), orderBy, skip, limit, _) =>
         new ProjectionWalker(context, g).walkIntermediate(distinct, items, orderBy, skip, limit)
       case _ => context.unsupported("projection", node)
     }

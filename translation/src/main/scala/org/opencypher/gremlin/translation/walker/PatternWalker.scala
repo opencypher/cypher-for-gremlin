@@ -56,8 +56,8 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     }
 
     val undirected = chain.exists {
-      case RelationshipPattern(_, _, _, _, BOTH, _) => true
-      case _                                        => false
+      case RelationshipPattern(_, _, _, _, BOTH, _, _) => true
+      case _                                           => false
     }
     if (undirected) {
       val aliases = getPathTraversalAliases(node)
@@ -66,7 +66,7 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   }
 
   private def walkNode(node: NodePattern): Unit = {
-    val NodePattern(variableOption, labels, properties) = node
+    val NodePattern(variableOption, labels, properties, _) = node
     val variable @ Variable(name) = variableOption
       .getOrElse(Variable(context.generateName())(NONE))
     asUniqueName(name, g, context)
@@ -77,7 +77,7 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   val traversalStepsHardLimit: Int = gremlinPathLength(10)
 
   private def walkRelationship(pathName: Option[String], relationship: RelationshipPattern): Unit = {
-    val RelationshipPattern(variableOption, types, length, properties, direction, _) = relationship
+    val RelationshipPattern(variableOption, types, length, properties, direction, _, _) = relationship
     val typeNames = types.map { case RelTypeName(relName) => relName }.distinct
 
     val directionT = g.start()
