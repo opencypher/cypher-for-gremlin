@@ -15,18 +15,41 @@
  */
 package org.opencypher.gremlin.translation;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.opencypher.gremlin.extension.CypherBinding.binding;
+import static org.opencypher.gremlin.extension.CypherBindingType.ANY;
+import static org.opencypher.gremlin.extension.CypherBindingType.BOOLEAN;
+import static org.opencypher.gremlin.extension.CypherBindingType.FLOAT;
+import static org.opencypher.gremlin.extension.CypherBindingType.INTEGER;
+import static org.opencypher.gremlin.extension.CypherBindingType.LIST;
+import static org.opencypher.gremlin.extension.CypherBindingType.MAP;
+import static org.opencypher.gremlin.extension.CypherBindingType.NODE;
+import static org.opencypher.gremlin.extension.CypherBindingType.NUMBER;
+import static org.opencypher.gremlin.extension.CypherBindingType.RELATIONSHIP;
+import static org.opencypher.gremlin.extension.CypherBindingType.STRING;
+import static org.opencypher.gremlin.extension.CypherProcedure.cypherProcedure;
 
-import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.traversal.ProcedureContext;
 import org.opencypher.v9_0.util.symbols.AnyType;
+import org.opencypher.v9_0.util.symbols.BooleanType;
 import org.opencypher.v9_0.util.symbols.CypherType;
+import org.opencypher.v9_0.util.symbols.FloatType;
 import org.opencypher.v9_0.util.symbols.IntegerType;
+import org.opencypher.v9_0.util.symbols.ListType;
+import org.opencypher.v9_0.util.symbols.MapType;
 import org.opencypher.v9_0.util.symbols.NodeType;
+import org.opencypher.v9_0.util.symbols.NumberType;
+import org.opencypher.v9_0.util.symbols.RelationshipType;
+import org.opencypher.v9_0.util.symbols.StringType;
 
 public class CypherAstTest {
 
@@ -35,7 +58,7 @@ public class CypherAstTest {
         String cypher = "MATCH (n:person)-[r:knows]->(friend:person)\n" +
             "WHERE n.name = 'marko'\n" +
             "RETURN n, friend.name AS friend";
-        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher);
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("n")).isInstanceOf(NodeType.class);
@@ -45,7 +68,7 @@ public class CypherAstTest {
     @Test
     public void duplicateNameInAggregation() {
         String cypher = "MATCH (n) RETURN n.prop AS n, count(n) AS count";
-        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher);
         Map<String, CypherType> extractedParameters = ast.getReturnTypes();
 
         assertThat(extractedParameters.get("n")).isInstanceOf(AnyType.class);
@@ -58,7 +81,7 @@ public class CypherAstTest {
             "UNION\n" +
             "MATCH (b:B)\n" +
             "RETURN b AS a";
-        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher);
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);
@@ -68,11 +91,79 @@ public class CypherAstTest {
     public void variableInTypeTable() {
         String cypher = "MATCH (a)\n" +
             "RETURN a, count(a) + 3";
-        CypherAst ast = CypherAst.parse(cypher, new HashMap<>());
+        CypherAst ast = CypherAst.parse(cypher);
         Map<String, CypherType> variableTypes = ast.getReturnTypes();
 
         assertThat(variableTypes.get("a")).isInstanceOf(NodeType.class);
         assertThat(variableTypes.get("count(a) + 3")).isInstanceOf(IntegerType.class);
+    }
+
+    @Test
+    public void standaloneCallTypes() {
+        ProcedureContext procedureContext = new ProcedureContext(singleton(
+            cypherProcedure(
+                "proc",
+                emptyList(),
+                asList(
+                    binding("any", ANY),
+                    binding("boolean", BOOLEAN),
+                    binding("string", STRING),
+                    binding("number", NUMBER),
+                    binding("float", FLOAT),
+                    binding("integer", INTEGER),
+                    binding("map", MAP),
+                    binding("list", LIST),
+                    binding("node", NODE),
+                    binding("relationship", RELATIONSHIP)
+                ),
+                arguments -> {
+                    throw new UnsupportedOperationException();
+                }
+            )
+        ));
+        CypherAst ast = CypherAst.parse("CALL proc()", emptyMap(), procedureContext);
+        Map<String, CypherType> returnTypes = ast.getReturnTypes();
+
+        assertThat(returnTypes).hasSize(10);
+        assertThat(returnTypes.get("any")).isInstanceOf(AnyType.class);
+        assertThat(returnTypes.get("boolean")).isInstanceOf(BooleanType.class);
+        assertThat(returnTypes.get("string")).isInstanceOf(StringType.class);
+        assertThat(returnTypes.get("number")).isInstanceOf(NumberType.class);
+        assertThat(returnTypes.get("float")).isInstanceOf(FloatType.class);
+        assertThat(returnTypes.get("integer")).isInstanceOf(IntegerType.class);
+        assertThat(returnTypes.get("map")).isInstanceOf(MapType.class);
+        assertThat(returnTypes.get("list")).isInstanceOf(ListType.class);
+        assertThat(returnTypes.get("node")).isInstanceOf(NodeType.class);
+        assertThat(returnTypes.get("relationship")).isInstanceOf(RelationshipType.class);
+    }
+
+    @Test
+    public void callYieldTypes() {
+        ProcedureContext procedureContext = new ProcedureContext(singleton(
+            cypherProcedure(
+                "proc",
+                emptyList(),
+                asList(
+                    binding("a", STRING),
+                    binding("b", INTEGER),
+                    binding("c", FLOAT)
+                ),
+                arguments -> {
+                    throw new UnsupportedOperationException();
+                }
+            )
+        ));
+        CypherAst ast = CypherAst.parse(
+            "CALL proc() " +
+                "YIELD b, c " +
+                "RETURN b, c",
+            emptyMap(),
+            procedureContext);
+        Map<String, CypherType> returnTypes = ast.getReturnTypes();
+
+        assertThat(returnTypes).hasSize(2);
+        assertThat(returnTypes.get("b")).isInstanceOf(AnyType.class);
+        assertThat(returnTypes.get("c")).isInstanceOf(AnyType.class);
     }
 
     @Test

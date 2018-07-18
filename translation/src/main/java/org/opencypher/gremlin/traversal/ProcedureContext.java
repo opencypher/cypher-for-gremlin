@@ -18,6 +18,9 @@ package org.opencypher.gremlin.traversal;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
+import static org.opencypher.gremlin.extension.CypherBindingType.FLOAT;
+import static org.opencypher.gremlin.extension.CypherBindingType.INTEGER;
+import static org.opencypher.gremlin.extension.CypherBindingType.NUMBER;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +34,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.opencypher.gremlin.extension.CypherBinding;
+import org.opencypher.gremlin.extension.CypherBindingType;
 import org.opencypher.gremlin.extension.CypherProcedure;
 
 public final class ProcedureContext {
@@ -97,7 +101,8 @@ public final class ProcedureContext {
         // Defined argument types
         List<Class<?>> defArgTypes = defArgs.stream()
             .map(CypherBinding::getType)
-            .map(type -> Number.class.isAssignableFrom(type) ? Number.class : type)
+            .map(type -> NUMBER.isAssignableFrom(type) ? NUMBER : type)
+            .map(CypherBindingType::getJavaClass)
             .collect(toList());
 
         // Argument types in call
@@ -125,7 +130,7 @@ public final class ProcedureContext {
         Map<String, Object> implArgs = new HashMap<>();
         for (int i = 0; i < defArgsSize; i++) {
             String argName = defArgs.get(i).getName();
-            Class<?> argType = defArgs.get(i).getType();
+            CypherBindingType argType = defArgs.get(i).getType();
             Object argValue = numericCast(callArgs.get(i), argType);
             implArgs.put(argName, argValue);
         }
@@ -138,7 +143,7 @@ public final class ProcedureContext {
             Map<String, Object> orderedRow = new LinkedHashMap<>();
             for (CypherBinding res : defResults) {
                 String resName = res.getName();
-                Class<?> resType = res.getType();
+                CypherBindingType resType = res.getType();
                 Object resValue = numericCast(row.get(resName), resType);
                 orderedRow.put(resName, resValue);
             }
@@ -147,13 +152,13 @@ public final class ProcedureContext {
         return results;
     }
 
-    private static Object numericCast(Object value, Class<?> type) {
+    private static Object numericCast(Object value, CypherBindingType type) {
         if (value instanceof Number) {
             Number number = (Number) value;
-            if (type.equals(Long.class)) {
+            if (type.equals(INTEGER)) {
                 return number.longValue();
             }
-            if (type.equals(Double.class)) {
+            if (type.equals(FLOAT)) {
                 return number.doubleValue();
             }
         }

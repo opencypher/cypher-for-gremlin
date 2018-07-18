@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.opencypher.gremlin.extension.CypherBinding;
+import org.opencypher.gremlin.extension.CypherBindingType;
 
 public final class PredefinedProcedureRegistry {
     private PredefinedProcedureRegistry() {
@@ -72,25 +73,10 @@ public final class PredefinedProcedureRegistry {
         Matcher matcher = ARGUMENT_PATTERN.matcher(input);
         while (matcher.find()) {
             String name = matcher.group("name");
-            Class<?> type = typeFromSignature(matcher.group("type"));
+            CypherBindingType type = CypherBindingType.fromSignature(matcher.group("type"));
             arguments.add(binding(name, type));
         }
         return arguments;
-    }
-
-    private static Class<?> typeFromSignature(String type) {
-        switch (type) {
-            case "FLOAT?":
-                return Double.class;
-            case "INTEGER?":
-                return Long.class;
-            case "NUMBER?":
-                return Number.class;
-            case "STRING?":
-                return String.class;
-            default:
-                throw new IllegalArgumentException("Unparsable procedure type: " + type);
-        }
     }
 
     private static Map<String, Object> extractKeys(List<String> keys, Map<String, Object> src) {

@@ -99,11 +99,11 @@ class CypherAstAssert(
   }
 
   private def actualTraversal = {
-    actual.translate(flavor, ProcedureContext.empty)
+    actual.translate(flavor)
   }
 
   private def rewriteTraversal = {
     Preconditions.checkNotNull(rewriter, "Rewriter not set! Use `CypherAstAssert.rewritingWith`")
-    actual.translate(flavor.extend(Seq(rewriter), Seq()), ProcedureContext.empty)
+    actual.translate(flavor.extend(Seq(rewriter), Seq()))
   }
 }

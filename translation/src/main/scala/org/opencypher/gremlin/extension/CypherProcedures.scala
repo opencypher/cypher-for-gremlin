@@ -13,26 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.extension;
+package org.opencypher.gremlin.extension
 
-public final class CypherBinding {
-    private final String name;
-    private final CypherBindingType type;
-
-    public CypherBinding(String name, CypherBindingType type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    public static CypherBinding binding(String name, CypherBindingType type) {
-        return new CypherBinding(name, type);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public CypherBindingType getType() {
-        return type;
-    }
+object CypherProcedures {
+  def procedureName(namespaceParts: Seq[String], name: String): String = {
+    namespaceParts.map(_ + ".").mkString + name
+  }
 }

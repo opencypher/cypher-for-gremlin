@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.opencypher.gremlin.extension.CypherProcedures
+import org.opencypher.gremlin.extension.CypherProcedures.procedureName
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
@@ -43,7 +45,7 @@ private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, 
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
         val procedures = context.procedures
-        val qualifiedName = namespaceParts.mkString(".") + "." + name
+        val qualifiedName = procedureName(namespaceParts, name)
         procedures.findOrThrow(qualifiedName)
 
         val arguments = argumentOption.getOrElse {
@@ -79,7 +81,7 @@ private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, 
     val procedures = context.procedures
     node match {
       case UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), argumentOption, results) =>
-        val qualifiedName = namespaceParts.mkString(".") + "." + name
+        val qualifiedName = procedureName(namespaceParts, name)
         val procedure = procedures.findOrThrow(qualifiedName)
 
         val arguments = argumentOption.getOrElse {
