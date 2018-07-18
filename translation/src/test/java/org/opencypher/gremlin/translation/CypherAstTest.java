@@ -138,6 +138,35 @@ public class CypherAstTest {
     }
 
     @Test
+    public void callYieldTypes() {
+        ProcedureContext procedureContext = new ProcedureContext(singleton(
+            cypherProcedure(
+                "proc",
+                emptyList(),
+                asList(
+                    binding("a", STRING),
+                    binding("b", INTEGER),
+                    binding("c", FLOAT)
+                ),
+                arguments -> {
+                    throw new UnsupportedOperationException();
+                }
+            )
+        ));
+        CypherAst ast = CypherAst.parse(
+            "CALL proc() " +
+                "YIELD b, c " +
+                "RETURN b, c",
+            emptyMap(),
+            procedureContext);
+        Map<String, CypherType> returnTypes = ast.getReturnTypes();
+
+        assertThat(returnTypes).hasSize(2);
+        assertThat(returnTypes.get("b")).isInstanceOf(AnyType.class);
+        assertThat(returnTypes.get("c")).isInstanceOf(AnyType.class);
+    }
+
+    @Test
     public void noCypherExtensions() {
         CypherAst ast = CypherAst.parse(
             "MATCH (n:N) " +
