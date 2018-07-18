@@ -60,7 +60,7 @@ class RemoveMultipleAliasesTest {
       .withFlavor(flavor)
       .rewritingWith(RemoveMultipleAliases)
       .removes(__.as("  cypher.match.start.path").as("  GENERATED1"))
-      .removes(__.as("  UNNAMED81").as("  cypher.match.end.path"))
+      .removes(__.as(UNNAMED + 81).as("  cypher.match.end.path"))
       .keeps(__.as("o"))
       .keeps(__.as("  cypher.match.end.path"))
   }

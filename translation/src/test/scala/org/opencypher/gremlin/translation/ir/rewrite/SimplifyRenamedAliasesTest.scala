@@ -95,6 +95,6 @@ class SimplifyRenamedAliasesTest {
       ProcedureContext.empty)
     val newTraversalCount = steps.count(_ == Vertex)
 
-    Assertions.assertThat(newTraversalCount).isEqualTo(1)
+    assertThat(newTraversalCount).isEqualTo(1)
   }
 }

@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens.UNNAMED
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
@@ -39,8 +40,8 @@ class RemoveUnusedAliasesTest {
       .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
       .removes(__.as("  cypher.path.start.GENERATED1"))
-      .removes(__.as("  UNNAMED10"))
-      .removes(__.as("  UNNAMED13"))
+      .removes(__.as(UNNAMED + 10))
+      .removes(__.as(UNNAMED + 13))
       .keeps(__.as("n"))
   }
 
@@ -63,7 +64,7 @@ class RemoveUnusedAliasesTest {
     assertThat(parse("CREATE (n)-[:R]->(m)"))
       .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
-      .removes(__.as("  UNNAMED11"))
+      .removes(__.as(UNNAMED + 11))
       .keeps(__.as("n"))
       .keeps(__.as("m"))
   }
@@ -78,8 +79,8 @@ class RemoveUnusedAliasesTest {
       .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
       .removes(__.as("  cypher.path.start.GENERATED1"))
-      .removes(__.as("  UNNAMED10"))
-      .removes(__.as("  UNNAMED26"))
+      .removes(__.as(UNNAMED + 10))
+      .removes(__.as(UNNAMED + 26))
       .keeps(__.as("n"))
       .keeps(__.as("m"))
   }
@@ -93,8 +94,8 @@ class RemoveUnusedAliasesTest {
       .withFlavor(flavor)
       .rewritingWith(RemoveUnusedAliases)
       .removes(__.as("  cypher.path.start.GENERATED1"))
-      .removes(__.as("  UNNAMED7"))
-      .removes(__.as("  UNNAMED17"))
+      .removes(__.as(UNNAMED + 7))
+      .removes(__.as(UNNAMED + 17))
       .keeps(__.as("r"))
   }
 }

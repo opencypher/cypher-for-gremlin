@@ -33,4 +33,8 @@ public final class Tokens {
     public static final String PROJECTION_ID = "  cypher.id";
     public static final String PROJECTION_INV = "  cypher.inv";
     public static final String PROJECTION_OUTV = "  cypher.outv";
+
+    public static final String GENERATED = "  GENERATED";
+    public static final String UNNAMED = "  UNNAMED";
+    public static final String FRESHID = "  FRESHID";
 }
