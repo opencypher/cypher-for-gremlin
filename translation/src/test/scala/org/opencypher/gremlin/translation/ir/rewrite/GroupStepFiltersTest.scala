@@ -17,6 +17,8 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens
+import org.opencypher.gremlin.translation.Tokens.UNNAMED
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
@@ -161,7 +163,7 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .adds(__.V().as("  UNNAMED7").hasLabel("person").has("name", P.isEq("marko")))
-      .adds(__.inV().as("  UNNAMED44").hasLabel("person").has("name", P.isEq("josh")))
+      .adds(__.V().as(UNNAMED + 7).hasLabel("person").has("name", P.isEq("marko")))
+      .adds(__.inV().as(UNNAMED + 44).hasLabel("person").has("name", P.isEq("josh")))
   }
 }

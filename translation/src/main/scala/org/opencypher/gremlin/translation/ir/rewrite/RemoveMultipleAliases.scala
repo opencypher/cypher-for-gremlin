@@ -17,7 +17,6 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.MathStepAccessor
 import org.opencypher.gremlin.translation.Tokens._
-import org.opencypher.gremlin.translation.context.NameGenerator.PREFIX
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -97,7 +96,7 @@ object RemoveMultipleAliases extends GremlinRewriter {
   }
 
   private def isGenerated(k: String): Boolean =
-    Seq("  UNNAMED", "  FRESHID", PATH_START, MATCH_START, MATCH_END, PREFIX).exists(k.startsWith)
+    Set(FRESHID, UNNAMED, PATH_START, MATCH_START, MATCH_END, GENERATED).exists(k.startsWith)
 
   private def replacePredicate(predicate: GremlinPredicate, alias: String => String): GremlinPredicate =
     predicate match {
@@ -116,10 +115,10 @@ object RemoveMultipleAliases extends GremlinRewriter {
       case _                                      => throw new IllegalArgumentException("Unknown predicate " + predicate)
     }
 
-  private def aliasCollection(alias: String => String, values: Seq[Any]) = {
-    values.headOption match {
-      case Some(_: String) => values.asInstanceOf[Seq[String]].map(alias)
-      case _               => values
+  private def aliasCollection(alias: String => String, values: Seq[Any]): Seq[Any] = {
+    values.map {
+      case v: String => alias(v)
+      case v         => v
     }
   }
 
