@@ -15,20 +15,11 @@
  */
 package org.opencypher.gremlin.translation.exception;
 
-public enum Exceptions {
-    DELETE_CONNECTED_NODE("Cannot delete node, because it still has relationships. To delete this node, you must first delete its relationships.");
-
-    private String message;
-
-    Exceptions(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public static String messageByName(Object name) {
-        return valueOf(String.valueOf(name)).getMessage();
+/**
+ * Thrown on Cypher constraint violation
+ */
+public class ConstraintException extends RuntimeException {
+    public ConstraintException(String message) {
+        super(message);
     }
 }

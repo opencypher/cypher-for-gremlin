@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.context.WalkerContext
-import org.opencypher.gremlin.translation.exception.Exceptions.DELETE_CONNECTED_NODE
+import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
@@ -40,7 +40,10 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     g.barrier().sideEffect(sideEffect)
   }
 
-  private def safeDelete(subTraversal: GremlinSteps[T, P], expr: Expression, checkBeforeDelete: Boolean) = {
+  private def safeDelete(
+      subTraversal: GremlinSteps[T, P],
+      expr: Expression,
+      checkBeforeDelete: Boolean): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
     val expressionTraversal = ExpressionWalker.walkLocal(context, g, expr)
     val typ = context.expressionTypes.get(expr)
