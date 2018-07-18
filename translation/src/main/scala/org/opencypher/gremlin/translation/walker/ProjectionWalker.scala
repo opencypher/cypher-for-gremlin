@@ -40,8 +40,8 @@ object ProjectionWalker {
     node match {
       case Return(distinct, ReturnItems(_, items), orderBy, skip, limit, _) =>
         new ProjectionWalker(context, g).walk(distinct, items, orderBy, skip, limit, finalize = true)
-      case With(distinct, ReturnItems(_, items), orderBy, skip, limit, _) =>
-        new ProjectionWalker(context, g).walkIntermediate(distinct, items, orderBy, skip, limit)
+      case With(distinct, ReturnItems(_, items), orderBy, skip, limit, where) =>
+        new ProjectionWalker(context, g).walkIntermediate(distinct, items, orderBy, skip, limit, where)
       case _ => context.unsupported("projection", node)
     }
   }
@@ -56,11 +56,8 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       aggregations: Map[String, GremlinSteps[T, P]])
 
   sealed trait ReturnFunctionType
-
   case object Aggregation extends ReturnFunctionType
-
   case object Expression extends ReturnFunctionType
-
   case object Pivot extends ReturnFunctionType
 
   def walk(
@@ -83,10 +80,11 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       items: Seq[ReturnItem],
       orderBy: Option[OrderBy],
       skip: Option[Skip],
-      limit: Option[Limit]): Unit = {
-
-    applyWherePreconditions(items)
+      limit: Option[Limit],
+      where: Option[Where]): Unit = {
+    applyWhereFromReturnItems(items)
     walk(distinct, items, orderBy, skip, limit, finalize = false)
+    applyWhere(where)
     reselectProjection(items)
   }
 
@@ -211,12 +209,16 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
   }
 
-  private def applyWherePreconditions(items: Seq[ReturnItem]): Unit = {
+  private def applyWhereFromReturnItems(items: Seq[ReturnItem]): Unit = {
     items.map {
       case AliasedReturnItem(expression, _)   => expression
       case UnaliasedReturnItem(expression, _) => expression
     }.filter(isWherePrecondition)
       .foreach(WhereWalker.walk(context, g, _))
+  }
+
+  private def applyWhere(where: Option[Where]): Unit = {
+    where.foreach(WhereWalker.walk(context, g, _))
   }
 
   private def reselectProjection(items: Seq[ReturnItem]): Unit = {
@@ -387,12 +389,8 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         case _: DescSortItem =>
           Order.decr
       }
-      sortItem.expression match {
-        case Variable(varName) =>
-          g.by(__.select(varName), order)
-        case _ =>
-          context.unsupported("sort expression", sortItem.expression)
-      }
+      val sortExpression = walkLocal(sortItem.expression)
+      g.by(sortExpression, order)
     }
   }
 

@@ -44,6 +44,9 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            url 'https://jitpack.io'
+        }
     }
 
     sourceCompatibility = 1.8
@@ -332,10 +335,6 @@ project(':testware:tck') {
         from 'build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml'
         into 'build/test-results/tck/'
         rename { fileName -> "TckTest-before.xml" }
-    }
-
-    repositories {
-        maven { url "https://jitpack.io" }
     }
 
     dependencies {

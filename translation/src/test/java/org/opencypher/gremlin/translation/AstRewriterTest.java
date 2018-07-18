@@ -99,7 +99,6 @@ public class AstRewriterTest {
             "MATCH (a:artist) " +
                 "WITH a AS a " +
                 "WITH a AS a, a.age > 18 AS `  FRESHID36`" +
-                "WITH a AS a, `  FRESHID36`AS `  FRESHID36`" +
                 "WHERE `  FRESHID36`" +
                 "WITH a AS a " +
                 "RETURN a.name AS `a.name`"
@@ -117,11 +116,9 @@ public class AstRewriterTest {
             "MATCH (a:artist) " +
                 "WITH a AS a " +
                 "WITH a AS a, a.age > 18 AS `  FRESHID36`" +
-                "WITH a AS a, `  FRESHID36`AS `  FRESHID36`" +
                 "WHERE `  FRESHID36`" +
                 "WITH a AS a " +
                 "WITH a.name AS `  FRESHID50` " +
-                "WITH `  FRESHID50` AS `  FRESHID50` " +
                 "ORDER BY `  FRESHID50` " +
                 "RETURN `  FRESHID50` AS `a.name`"
         );
@@ -136,7 +133,6 @@ public class AstRewriterTest {
         )).normalizedTo(
             "MATCH (a:artist) " +
                 "WITH a.name AS `  FRESHID26` " +
-                "WITH `  FRESHID26` AS `  FRESHID26` " +
                 "ORDER BY `  FRESHID26` " +
                 "RETURN `  FRESHID26` AS `a.name`"
         );
@@ -151,7 +147,6 @@ public class AstRewriterTest {
         )).normalizedTo(
             "MATCH (a:artist)<-[:writtenBy]-(s:song) " +
                 "WITH a.name AS `  FRESHID49`, s.name AS `  FRESHID57` " +
-                "WITH `  FRESHID49` AS `  FRESHID49`, `  FRESHID57` AS `  FRESHID57` " +
                 "ORDER BY `  FRESHID49`, `  FRESHID57` " +
                 "RETURN `  FRESHID49` AS `a.name`, `  FRESHID57` AS `s.name`"
         );
@@ -167,7 +162,6 @@ public class AstRewriterTest {
         )).normalizedTo(
             "MATCH (a:artist) " +
                 "WITH a.name AS `  FRESHID26` " +
-                "WITH `  FRESHID26` AS `  FRESHID26` " +
                 "ORDER BY `  FRESHID26` SKIP 1 LIMIT 2 " +
                 "RETURN `  FRESHID26` AS `a.name`"
         );

@@ -192,8 +192,8 @@ object CypherAst {
     val startState = InitialState(preParsedQueryText, Some(offset), EmptyPlannerName)
     val state = CompilationPhases
       .parsing(RewriterStepSequencer.newPlain, literalExtraction = Never)
-      .andThen(Normalization)
       .andThen(SemanticAnalysis(warn = false))
+      .andThen(Normalization)
       .transform(startState, EmptyParserContext(preParsedQueryText, Some(offset)))
 
     val statement = state.statement()
