@@ -22,6 +22,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.CypherAst
 import org.opencypher.gremlin.translation.ReturnProperties._
 import org.opencypher.gremlin.translation.exception.{ConstraintException, SyntaxException, TypeException}
+import org.opencypher.gremlin.traversal.ProcedureContext
 import org.opencypher.tools.tck.api.{CypherValueRecords, ExecutionFailed}
 import org.opencypher.tools.tck.constants.TCKErrorPhases.RUNTIME
 import org.opencypher.tools.tck.values._
@@ -98,7 +99,9 @@ object TckGremlinCypherValueConverter {
 
   private def emptyHeaderWorkaround(query: String, header: List[String], rows: List[Map[String, CypherValue]]) = {
     if (rows.isEmpty) {
-      val columns = CypherAst.parse(query, new util.HashMap[String, Any]).statement.returnColumns
+      val procedureContext = ProcedureContext.global()
+      val ast = CypherAst.parse(query, new util.HashMap[String, Any], procedureContext)
+      val columns = ast.statement.returnColumns
       CypherValueRecords.emptyWithHeader(columns)
     } else {
       CypherValueRecords(header, rows)
