@@ -15,11 +15,20 @@
  */
 package org.opencypher.gremlin.translation.exception;
 
-/**
- * Thrown on Cypher semantic violation
- */
-public class SemanticException extends RuntimeException {
-    public SemanticException(String message) {
-        super(message);
+public enum CypherExceptions {
+    DELETE_CONNECTED_NODE("Cannot delete node, because it still has relationships. To delete this node, you must first delete its relationships.");
+
+    private String message;
+
+    CypherExceptions(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public static String messageByName(Object name) {
+        return valueOf(String.valueOf(name)).getMessage();
     }
 }

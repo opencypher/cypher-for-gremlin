@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.opencypher.gremlin.translation.exception.Exceptions
+import org.opencypher.gremlin.translation.exception.CypherExceptions
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -27,7 +27,7 @@ object CustomFunctionFallback extends GremlinRewriter {
 
     mapTraversals(replace({
       case Constant(typ) :: MapF(function) :: rest if function.getName == "cypherException" => {
-        val text = Exceptions.messageByName(typ)
+        val text = CypherExceptions.messageByName(typ)
         Path :: From(text) :: rest
       }
     }))(steps)
