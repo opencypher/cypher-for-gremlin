@@ -18,7 +18,6 @@ package org.opencypher.gremlin.translation;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.opencypher.gremlin.extension.CypherBinding.binding;
@@ -32,13 +31,12 @@ import static org.opencypher.gremlin.extension.CypherBindingType.NODE;
 import static org.opencypher.gremlin.extension.CypherBindingType.NUMBER;
 import static org.opencypher.gremlin.extension.CypherBindingType.RELATIONSHIP;
 import static org.opencypher.gremlin.extension.CypherBindingType.STRING;
-import static org.opencypher.gremlin.extension.CypherProcedure.cypherProcedure;
 
 import java.util.Map;
 import org.junit.Test;
+import org.opencypher.gremlin.extension.CypherProcedureDefinition;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
-import org.opencypher.gremlin.traversal.ProcedureContext;
 import org.opencypher.v9_0.util.symbols.AnyType;
 import org.opencypher.v9_0.util.symbols.BooleanType;
 import org.opencypher.v9_0.util.symbols.CypherType;
@@ -100,28 +98,27 @@ public class CypherAstTest {
 
     @Test
     public void standaloneCallTypes() {
-        ProcedureContext procedureContext = new ProcedureContext(singleton(
-            cypherProcedure(
-                "proc",
-                emptyList(),
-                asList(
-                    binding("any", ANY),
-                    binding("boolean", BOOLEAN),
-                    binding("string", STRING),
-                    binding("number", NUMBER),
-                    binding("float", FLOAT),
-                    binding("integer", INTEGER),
-                    binding("map", MAP),
-                    binding("list", LIST),
-                    binding("node", NODE),
-                    binding("relationship", RELATIONSHIP)
-                ),
-                arguments -> {
-                    throw new UnsupportedOperationException();
-                }
-            )
-        ));
-        CypherAst ast = CypherAst.parse("CALL proc()", emptyMap(), procedureContext);
+        CypherProcedureDefinition procedures = new CypherProcedureDefinition();
+        procedures.define(
+            "proc",
+            emptyList(),
+            asList(
+                binding("any", ANY),
+                binding("boolean", BOOLEAN),
+                binding("string", STRING),
+                binding("number", NUMBER),
+                binding("float", FLOAT),
+                binding("integer", INTEGER),
+                binding("map", MAP),
+                binding("list", LIST),
+                binding("node", NODE),
+                binding("relationship", RELATIONSHIP)
+            ),
+            arguments -> {
+                throw new UnsupportedOperationException();
+            }
+        );
+        CypherAst ast = CypherAst.parse("CALL proc()", emptyMap(), procedures.getSignatures());
         Map<String, CypherType> returnTypes = ast.getReturnTypes();
 
         assertThat(returnTypes).hasSize(10);
@@ -139,26 +136,25 @@ public class CypherAstTest {
 
     @Test
     public void callYieldTypes() {
-        ProcedureContext procedureContext = new ProcedureContext(singleton(
-            cypherProcedure(
-                "proc",
-                emptyList(),
-                asList(
-                    binding("a", STRING),
-                    binding("b", INTEGER),
-                    binding("c", FLOAT)
-                ),
-                arguments -> {
-                    throw new UnsupportedOperationException();
-                }
-            )
-        ));
+        CypherProcedureDefinition procedures = new CypherProcedureDefinition();
+        procedures.define(
+            "proc",
+            emptyList(),
+            asList(
+                binding("a", STRING),
+                binding("b", INTEGER),
+                binding("c", FLOAT)
+            ),
+            arguments -> {
+                throw new UnsupportedOperationException();
+            }
+        );
         CypherAst ast = CypherAst.parse(
             "CALL proc() " +
                 "YIELD b, c " +
                 "RETURN b, c",
             emptyMap(),
-            procedureContext);
+            procedures.getSignatures());
         Map<String, CypherType> returnTypes = ast.getReturnTypes();
 
         assertThat(returnTypes).hasSize(2);

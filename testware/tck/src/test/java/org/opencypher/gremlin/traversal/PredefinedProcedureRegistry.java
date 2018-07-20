@@ -17,7 +17,6 @@ package org.opencypher.gremlin.traversal;
 
 import static java.util.stream.Collectors.toList;
 import static org.opencypher.gremlin.extension.CypherBinding.binding;
-import static org.opencypher.gremlin.extension.CypherProcedure.cypherProcedure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public final class PredefinedProcedureRegistry {
         List<CypherBinding> arguments = matchArguments(signatureMatcher.group("arguments"));
         List<CypherBinding> results = matchArguments(signatureMatcher.group("results"));
 
-        ProcedureContext.global().unsafeRegister(cypherProcedure(
+        ProcedureContext.global().unsafeRegister(
             name,
             arguments,
             results,
@@ -58,7 +57,7 @@ public final class PredefinedProcedureRegistry {
                     .map(row -> extractKeys(out, row))
                     .collect(toList());
             }
-        ));
+        );
     }
 
     public static void clear() {

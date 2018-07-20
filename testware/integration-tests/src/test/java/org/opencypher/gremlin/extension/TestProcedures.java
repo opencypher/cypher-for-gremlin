@@ -23,20 +23,17 @@ import static org.opencypher.gremlin.extension.CypherBinding.binding;
 import static org.opencypher.gremlin.extension.CypherBindingType.FLOAT;
 import static org.opencypher.gremlin.extension.CypherBindingType.INTEGER;
 import static org.opencypher.gremlin.extension.CypherBindingType.STRING;
-import static org.opencypher.gremlin.extension.CypherProcedure.cypherProcedure;
 
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
-public final class TestProcedures implements Supplier<Set<CypherProcedure>> {
+public final class TestProcedures implements Supplier<CypherProcedureDefinition> {
 
-    private final Set<CypherProcedure> procedures = new HashSet<>();
+    private final CypherProcedureDefinition procedures = new CypherProcedureDefinition();
 
     public TestProcedures() {
-        procedures.add(cypherProcedure(
+        procedures.define(
             "test.getName",
             emptyList(),
             singletonList(binding("name", STRING)),
@@ -44,9 +41,9 @@ public final class TestProcedures implements Supplier<Set<CypherProcedure>> {
                 singletonMap("name", "marko"),
                 singletonMap("name", "vadas")
             )
-        ));
+        );
 
-        procedures.add(cypherProcedure(
+        procedures.define(
             "test.inc",
             singletonList(binding("a", INTEGER)),
             singletonList(binding("r", INTEGER)),
@@ -54,9 +51,9 @@ public final class TestProcedures implements Supplier<Set<CypherProcedure>> {
                 long a = (long) arguments.get("a");
                 return singletonList(singletonMap("r", a + 1));
             }
-        ));
+        );
 
-        procedures.add(cypherProcedure(
+        procedures.define(
             "test.incF",
             singletonList(binding("a", FLOAT)),
             singletonList(binding("r", FLOAT)),
@@ -64,9 +61,9 @@ public final class TestProcedures implements Supplier<Set<CypherProcedure>> {
                 double a = (double) arguments.get("a");
                 return singletonList(singletonMap("r", a + 1));
             }
-        ));
+        );
 
-        procedures.add(cypherProcedure(
+        procedures.define(
             "test.multi",
             emptyList(),
             asList(binding("foo", STRING), binding("bar", STRING)),
@@ -76,18 +73,18 @@ public final class TestProcedures implements Supplier<Set<CypherProcedure>> {
                 row.put("foo", "foo");
                 return singletonList(row);
             }
-        ));
+        );
 
-        procedures.add(cypherProcedure(
+        procedures.define(
             "test.void",
             emptyList(),
             emptyList(),
             arguments -> emptyList()
-        ));
+        );
     }
 
     @Override
-    public Set<CypherProcedure> get() {
-        return new HashSet<>(procedures);
+    public CypherProcedureDefinition get() {
+        return procedures;
     }
 }

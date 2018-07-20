@@ -99,8 +99,8 @@ object TckGremlinCypherValueConverter {
 
   private def emptyHeaderWorkaround(query: String, header: List[String], rows: List[Map[String, CypherValue]]) = {
     if (rows.isEmpty) {
-      val procedureContext = ProcedureContext.global()
-      val ast = CypherAst.parse(query, new util.HashMap[String, Any], procedureContext)
+      val procedures = ProcedureContext.global().getSignatures
+      val ast = CypherAst.parse(query, new util.HashMap[String, Any], procedures)
       val columns = ast.statement.returnColumns
       CypherValueRecords.emptyWithHeader(columns)
     } else {

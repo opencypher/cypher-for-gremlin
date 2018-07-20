@@ -47,7 +47,6 @@ import scala.collection.mutable
   *
   * @param statement       AST root node
   * @param parameters      Cypher query parameters
-  * @param procedures      registered procedure context
   * @param expressionTypes expression Cypher types
   * @param returnTypes     return types by alias
   * @param options         pre-parser options provided by Cypher parser
@@ -55,7 +54,6 @@ import scala.collection.mutable
 class CypherAst private (
     val statement: Statement,
     parameters: Map[String, Any],
-    procedures: ProcedureContext,
     expressionTypes: Map[Expression, CypherType],
     returnTypes: Map[String, CypherType],
     options: Seq[PreParserOption]) {
@@ -63,10 +61,11 @@ class CypherAst private (
   /**
     * Creates an intermediate representation of the translation.
     *
-    * @param flavor translation flavor
+    * @param flavor     translation flavor
+    * @param procedures registered procedure context
     * @return to-Gremlin translation
     */
-  def translate(flavor: TranslatorFlavor): Seq[GremlinStep] = {
+  def translate(flavor: TranslatorFlavor, procedures: ProcedureContext = ProcedureContext.empty()): Seq[GremlinStep] = {
     val dsl = Translator
       .builder()
       .custom(
@@ -100,7 +99,7 @@ class CypherAst private (
     * @return to-Gremlin translation
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
-    val ir = translate(dsl.flavor())
+    val ir = translate(dsl.flavor(), ProcedureContext.empty())
     TranslationWriter.write(ir, dsl, parameters)
   }
 
@@ -172,7 +171,7 @@ object CypherAst {
     */
   @throws[CypherException]
   def parse(queryText: String): CypherAst = {
-    parse(queryText, Collections.emptyMap[String, Any](), ProcedureContext.empty())
+    parse(queryText, Collections.emptyMap[String, Any](), Collections.emptyMap[String, CypherProcedureSignature]())
   }
 
   /**
@@ -184,7 +183,7 @@ object CypherAst {
     */
   @throws[CypherException]
   def parse(queryText: String, parameters: util.Map[String, _]): CypherAst = {
-    parse(queryText, parameters, ProcedureContext.empty())
+    parse(queryText, parameters, Collections.emptyMap[String, CypherProcedureSignature]())
   }
 
   /**
@@ -196,15 +195,20 @@ object CypherAst {
     * @return Cypher AST wrapper
     */
   @throws[CypherException]
-  def parse(queryText: String, parameters: util.Map[String, _], procedures: ProcedureContext): CypherAst = {
-    val scalaParameters = Option(parameters)
-      .map(_.asScala.toMap)
-      .getOrElse(Map())
-    parse(queryText, scalaParameters, procedures)
+  def parse(
+      queryText: String,
+      parameters: util.Map[String, _],
+      procedures: util.Map[String, CypherProcedureSignature]): CypherAst = {
+    val scalaParameters = parameters.asScala.toMap
+    val scalaProcedures = procedures.asScala.toMap
+    parse(queryText, scalaParameters, scalaProcedures)
   }
 
   @throws[CypherException]
-  private def parse(queryText: String, parameters: Map[String, Any], procedures: ProcedureContext): CypherAst = {
+  private def parse(
+      queryText: String,
+      parameters: Map[String, Any],
+      procedures: Map[String, CypherProcedureSignature]): CypherAst = {
     val PreParsedStatement(preParsedQueryText, options, offset) = CypherPreParser(queryText)
     val startState = InitialState(preParsedQueryText, Some(offset), EmptyPlannerName)
     val state = CompilationPhases
@@ -217,7 +221,7 @@ object CypherAst {
     val expressionTypes = getExpressionTypes(state)
     val returnTypes = getReturnTypes(expressionTypes, statement, procedures)
 
-    new CypherAst(statement, parameters, procedures, expressionTypes, returnTypes, options)
+    new CypherAst(statement, parameters, expressionTypes, returnTypes, options)
   }
 
   private def getExpressionTypes(state: BaseState): Map[Expression, CypherType] = {
@@ -235,7 +239,7 @@ object CypherAst {
   private def getReturnTypes(
       expressionTypes: Map[Expression, CypherType],
       statement: Statement,
-      procedures: ProcedureContext): Map[String, CypherType] = {
+      procedures: Map[String, CypherProcedureSignature]): Map[String, CypherType] = {
     val clauses = statement match {
       case Query(_, part) =>
         part match {
@@ -254,10 +258,11 @@ object CypherAst {
     if (standaloneCall) {
       val UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), _, _) = clauses.head
       val qualifiedName = procedureName(namespaceParts, name)
-      return procedures
-        .findOrThrow(qualifiedName)
-        .results()
-        .asScala
+      val signature = procedures.get(qualifiedName) match {
+        case Some(sig) => sig
+        case None      => throw new IllegalArgumentException(s"Procedure not found: $qualifiedName")
+      }
+      return signature.getResults.asScala
         .map(b => (b.getName, bindingType(b.getType)))
         .toMap
     }

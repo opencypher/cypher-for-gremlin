@@ -66,7 +66,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
 
   override def close(): Unit = {
     tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
-    PredefinedProcedureRegistry.clear();
+    PredefinedProcedureRegistry.clear()
   }
 }
 
