@@ -260,7 +260,7 @@ object CypherAst {
       val qualifiedName = procedureName(namespaceParts, name)
       val signature = procedures.get(qualifiedName) match {
         case Some(sig) => sig
-        case None      => throw new IllegalArgumentException(s"Undefined standalone call: $qualifiedName")
+        case None      => throw new IllegalArgumentException(s"Procedure not found: $qualifiedName")
       }
       return signature.getResults.asScala
         .map(b => (b.getName, bindingType(b.getType)))
