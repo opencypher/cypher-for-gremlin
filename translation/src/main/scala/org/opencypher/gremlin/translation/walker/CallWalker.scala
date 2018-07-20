@@ -85,7 +85,7 @@ private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, 
         val procedure = procedures.findOrThrow(qualifiedName)
 
         val arguments = argumentOption.getOrElse {
-          val argumentNames = procedure.arguments().asScala.map(_.getName)
+          val argumentNames = procedure.getArguments.asScala.map(_.getName)
           argumentNames.foreach { argumentName =>
             if (!context.parameterDefined(argumentName)) {
               throw new IllegalArgumentException(s"Parameter $argumentName missing for procedure $qualifiedName")

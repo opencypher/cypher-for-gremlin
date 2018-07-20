@@ -16,7 +16,6 @@
 package org.opencypher.gremlin.traversal;
 
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.opencypher.gremlin.extension.CypherBindingType.FLOAT;
 import static org.opencypher.gremlin.extension.CypherBindingType.INTEGER;
@@ -26,24 +25,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.opencypher.gremlin.extension.CypherBinding;
 import org.opencypher.gremlin.extension.CypherBindingType;
 import org.opencypher.gremlin.extension.CypherProcedure;
+import org.opencypher.gremlin.extension.CypherProcedureDefinition;
+import org.opencypher.gremlin.extension.CypherProcedureSignature;
 
 public final class ProcedureContext {
 
-    private final Map<String, CypherProcedure> procedures;
+    private final Map<String, CypherProcedureSignature> signatures = new HashMap<>();
+    private final Map<String, CypherProcedure> implementations = new HashMap<>();
     private final ReturnNormalizer returnNormalizer = ReturnNormalizer.create(emptyMap());
 
     private static final class LazyHolder {
-        private static final ProcedureContext GLOBAL = new ProcedureContext(emptySet());
+        private static final ProcedureContext GLOBAL = empty();
     }
 
     public static ProcedureContext global() {
@@ -51,35 +49,50 @@ public final class ProcedureContext {
     }
 
     public static ProcedureContext empty() {
-        return new ProcedureContext(emptySet());
+        return new ProcedureContext();
     }
 
-    public ProcedureContext(Set<CypherProcedure> procedures) {
-        this.procedures = procedures.stream()
-            .collect(Collectors.toMap(
-                CypherProcedure::name,
-                Function.identity()
-            ));
+    public ProcedureContext() {
     }
 
-    public CypherProcedure findOrThrow(String name) {
-        CypherProcedure procedure = procedures.get(name);
-        if (procedure == null) {
+    public ProcedureContext(CypherProcedureDefinition definition) {
+        this.signatures.putAll(definition.getSignatures());
+        this.implementations.putAll(definition.getImplementations());
+    }
+
+    public Map<String, CypherProcedureSignature> getSignatures() {
+        return signatures;
+    }
+
+    public CypherProcedureSignature findOrThrow(String name) {
+        CypherProcedureSignature signature = signatures.get(name);
+        if (signature == null) {
             throw new IllegalArgumentException("Procedure not found: " + name);
         }
-        return procedure;
+        return signature;
     }
 
-    public Set<CypherProcedure> all() {
-        return new HashSet<>(procedures.values());
+    private CypherProcedure findImplementationOrThrow(String name) {
+        CypherProcedure implementation = implementations.get(name);
+        if (implementation == null) {
+            throw new IllegalArgumentException("Procedure implementation not found: " + name);
+        }
+        return implementation;
     }
 
     void unsafeClear() {
-        procedures.clear();
+        signatures.clear();
+        implementations.clear();
     }
 
-    void unsafeRegister(CypherProcedure procedure) {
-        procedures.put(procedure.name(), procedure);
+    void unsafeRegister(
+        String name,
+        List<CypherBinding> arguments,
+        List<CypherBinding> results,
+        CypherProcedure implementation
+    ) {
+        signatures.put(name, new CypherProcedureSignature(arguments, results));
+        implementations.put(name, implementation);
     }
 
     public CustomFunction procedureCall(String name) {
@@ -93,9 +106,9 @@ public final class ProcedureContext {
     }
 
     private Object call(String name, Collection<?> arguments) {
-        CypherProcedure procedure = findOrThrow(name);
+        CypherProcedureSignature signature = findOrThrow(name);
         Object[] args = returnNormalizer.normalizeCollection(arguments).toArray();
-        List<CypherBinding> defArgs = procedure.arguments();
+        List<CypherBinding> defArgs = signature.getArguments();
         List<Object> callArgs = Arrays.asList(args);
 
         // Defined argument types
@@ -127,6 +140,7 @@ public final class ProcedureContext {
         }
 
         // Call implementation
+        CypherProcedure procedure = findImplementationOrThrow(name);
         Map<String, Object> implArgs = new HashMap<>();
         for (int i = 0; i < defArgsSize; i++) {
             String argName = defArgs.get(i).getName();
@@ -137,7 +151,7 @@ public final class ProcedureContext {
         List<Map<String, Object>> rows = procedure.call(implArgs);
 
         // Reorder and normalize
-        List<CypherBinding> defResults = procedure.results();
+        List<CypherBinding> defResults = signature.getResults();
         List<Map<String, Object>> results = new ArrayList<>();
         for (Map<String, Object> row : rows) {
             Map<String, Object> orderedRow = new LinkedHashMap<>();

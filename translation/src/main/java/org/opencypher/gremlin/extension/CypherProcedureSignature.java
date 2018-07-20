@@ -15,10 +15,24 @@
  */
 package org.opencypher.gremlin.extension;
 
-import java.util.List;
-import java.util.Map;
+import static java.util.Collections.unmodifiableList;
 
-@FunctionalInterface
-public interface CypherProcedure {
-    List<Map<String, Object>> call(Map<String, Object> arguments);
+import java.util.List;
+
+public class CypherProcedureSignature {
+    private final List<CypherBinding> arguments;
+    private final List<CypherBinding> results;
+
+    public CypherProcedureSignature(List<CypherBinding> arguments, List<CypherBinding> results) {
+        this.arguments = arguments;
+        this.results = results;
+    }
+
+    public List<CypherBinding> getArguments() {
+        return unmodifiableList(arguments);
+    }
+
+    public List<CypherBinding> getResults() {
+        return unmodifiableList(results);
+    }
 }

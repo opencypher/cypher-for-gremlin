@@ -98,10 +98,10 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         DefaultGraphTraversal g = new DefaultGraphTraversal(gts.clone());
         Map<String, Object> parameters = ParameterNormalizer.normalize(getParameters(args));
         ProcedureContext procedureContext = ProcedureContext.global();
-        CypherAst ast = CypherAst.parse(cypher, parameters, procedureContext);
+        CypherAst ast = CypherAst.parse(cypher, parameters, procedureContext.getSignatures());
 
         TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
-        Seq<GremlinStep> ir = ast.translate(flavor);
+        Seq<GremlinStep> ir = ast.translate(flavor, procedureContext);
 
         Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
             .gremlinGroovy()
