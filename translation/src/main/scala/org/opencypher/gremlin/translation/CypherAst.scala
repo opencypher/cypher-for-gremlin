@@ -39,6 +39,7 @@ import org.opencypher.v9_0.util.symbols._
 import org.opencypher.v9_0.util.{ASTNode, CypherException}
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable.ListMap
 import scala.collection.mutable
 
 /**
@@ -113,14 +114,18 @@ class CypherAst private (
     *
     * @return set of statement options
     */
-  def getOptions = new util.HashSet(javaOptions)
+  def getOptions: util.Set[StatementOption] = {
+    new util.HashSet(javaOptions)
+  }
 
   /**
     * Gets types or return items
     *
     * @return map of aliases to types
     */
-  def getReturnTypes = new util.HashMap[String, CypherType](returnTypes.asJava)
+  def getReturnTypes: util.Map[String, CypherType] = {
+    new util.LinkedHashMap[String, CypherType](returnTypes.asJava)
+  }
 
   /**
     * Pretty-prints the Cypher AST.
@@ -231,7 +236,7 @@ object CypherAst {
         val typ = typeSpec.ranges.head.lower
         typ
       } else {
-        AnyType.instance
+        CTAny
       }
     }
   }
@@ -255,31 +260,32 @@ object CypherAst {
       case _                             => false
     }
 
-    if (standaloneCall) {
+    val items = if (standaloneCall) {
       val UnresolvedCall(Namespace(namespaceParts), ProcedureName(name), _, _) = clauses.head
       val qualifiedName = procedureName(namespaceParts, name)
       val signature = procedures.get(qualifiedName) match {
         case Some(sig) => sig
         case None      => throw new IllegalArgumentException(s"Procedure not found: $qualifiedName")
       }
-      return signature.getResults.asScala
+      signature.getResults.asScala
         .map(b => (b.getName, bindingType(b.getType)))
-        .toMap
+    } else {
+      clauses.flatMap {
+        case Return(_, returnItems, _, _, _, _) => Some(returnItems.items)
+        case _                                  => None
+      }.headOption.getOrElse(Nil).map {
+        case AliasedReturnItem(expression, variable @ Variable(name)) =>
+          val typ = expressionTypes
+            .get(expression)
+            .orElse(expressionTypes.get(variable))
+            .getOrElse(CTAny)
+          (name, typ)
+        case item =>
+          throw new IllegalStateException(s"Unaliased return item: $item")
+      }
     }
 
-    clauses.flatMap {
-      case Return(_, returnItems, _, _, _, _) => returnItems.items
-      case _                                  => Nil
-    }.flatMap {
-      case AliasedReturnItem(expression, variable @ Variable(name)) =>
-        val pair = expressionTypes
-          .get(expression)
-          .orElse(expressionTypes.get(variable))
-          .map(typ => (name, typ))
-        pair
-      case _ =>
-        None
-    }.toMap
+    ListMap(items: _*)
   }
 
   private def bindingType(typ: CypherBindingType): CypherType = {
