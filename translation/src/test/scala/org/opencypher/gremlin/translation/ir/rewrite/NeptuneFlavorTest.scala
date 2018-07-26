@@ -91,6 +91,5 @@ class NeptuneFlavorTest {
       .rewritingWith(NeptuneFlavor)
       .keeps(__.count())
       .adds(__.count().barrier())
-
   }
 }
