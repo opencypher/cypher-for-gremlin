@@ -18,6 +18,8 @@ The toolkit is composed of:
 
 The fastest way to start experimenting with Cypher for Gremlin is with the [Gremlin Console Cypher plugin](tinkerpop/cypher-gremlin-console-plugin). Follow the link for installation and usage instructions.
 
+You can also take a look at the [Cypher for Gremlin Demo](https://github.com/neueda/cypher-for-gremlin-demo) project.
+
 ## Language Support
 
 With Cypher for Gremlin you can use the following Cypher language features:
