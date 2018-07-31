@@ -209,6 +209,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "abs"           => traversals.head.math("abs(_)")
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
           case "exists"        => traversals.head.flatMap(anyMatch(__.is(p.neq(NULL))))
+          case "head"          => traversals.head.flatMap(notNull(__.limit(Scope.local, 1), context))
           case "id"            => traversals.head.flatMap(notNull(__.id(), context))
           case "keys"          => traversals.head.properties().key().fold()
           case "labels"        => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()

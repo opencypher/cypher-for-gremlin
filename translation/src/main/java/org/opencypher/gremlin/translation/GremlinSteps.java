@@ -137,6 +137,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> limit(long limit);
 
+    GremlinSteps<T, P> limit(Scope scope, long limit);
+
     GremlinSteps<T, P> local(GremlinSteps<T, P> localTraversal);
 
     GremlinSteps<T, P> loops();

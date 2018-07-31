@@ -254,6 +254,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def limit(scope: Scope, limit: Long): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += LimitS(scope, limit)
+    this
+  }
+
   override def local(
       traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Local(traversal.current())

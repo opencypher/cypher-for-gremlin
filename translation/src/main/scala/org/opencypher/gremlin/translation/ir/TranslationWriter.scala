@@ -156,6 +156,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.label()
         case Limit(limit) =>
           g.limit(limit)
+        case LimitS(scope, limit) =>
+          g.limit(scope, limit)
         case Local(traversal) =>
           g.local(writeLocalSteps(traversal))
         case Loops =>

@@ -308,6 +308,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> limit(Scope scope, long limit) {
+        g.append(chain("limit", scope, limit));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> local(GremlinSteps<String, GroovyPredicate> localTraversal) {
         g.append(chain("local", traversal(localTraversal)));
         return this;

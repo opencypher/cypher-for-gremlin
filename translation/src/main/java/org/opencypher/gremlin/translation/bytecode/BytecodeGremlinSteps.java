@@ -300,6 +300,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> limit(Scope scope, long limit) {
+        bytecode.addStep(Symbols.limit, scope, limit);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> local(GremlinSteps<Bytecode, P> localTraversal) {
         bytecode.addStep(Symbols.local, localTraversal.current());
         return this;
