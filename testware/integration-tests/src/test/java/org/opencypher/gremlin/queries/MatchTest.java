@@ -222,4 +222,15 @@ public class MatchTest {
 
         assertThat(results).isEmpty();
     }
+
+    @Test
+    public void undirectedUnnamedRelationship() {
+        String cypher = "MATCH (i) WHERE size( (i)--() ) > 2 RETURN i.name";
+
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("i.name")
+            .containsExactlyInAnyOrder("marko", "lop", "josh");
+    }
 }
