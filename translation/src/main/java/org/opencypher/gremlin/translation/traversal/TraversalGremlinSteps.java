@@ -339,6 +339,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> limit(Scope scope, long limit) {
+        g.limit(scope, limit);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> local(GremlinSteps<GraphTraversal, P> localTraversal) {
         g.local(localTraversal.current());
         return this;

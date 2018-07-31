@@ -166,6 +166,17 @@ public class FunctionTest {
     }
 
     @Test
+    public void head() {
+        String cypher = "MATCH (n:person) WITH n.name AS name " +
+            "ORDER BY name RETURN head(collect(name)) AS head";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("head")
+            .containsExactly("josh");
+    }
+
+    @Test
     public void sizeOfPatternExpressionInWhere() {
         String cypher = "MATCH (n:person) WHERE size( (n)-->() ) > 1 RETURN n.name";
         List<Map<String, Object>> results = submitAndGet(cypher);

@@ -172,6 +172,8 @@ case object Label extends GremlinStep
 
 case class Limit(limit: Long) extends GremlinStep
 
+case class LimitS(scope: Scope, limit: Long) extends GremlinStep
+
 case class Local(traversal: Seq[GremlinStep]) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
     Local(f(traversal))
