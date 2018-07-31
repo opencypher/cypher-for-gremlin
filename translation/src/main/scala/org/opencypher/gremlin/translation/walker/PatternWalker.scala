@@ -22,6 +22,7 @@ import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.expressions.SemanticDirection._
 import org.opencypher.v9_0.expressions.{UnsignedDecimalIntegerLiteral => UDIL, _}
+import org.opencypher.v9_0.util.ASTNode
 import org.opencypher.v9_0.util.InputPosition.NONE
 
 /**
@@ -46,7 +47,9 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     pathName.foreach(name => g.as(MATCH_START + name))
 
     val chain = flattenRelationshipChain(node)
-    chain.foreach {
+    val (namedChain, aliases) = ensurePatternsHasNames(chain)
+
+    namedChain.foreach {
       case node: NodePattern =>
         walkNode(node)
       case relationship: RelationshipPattern =>
@@ -55,12 +58,11 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
         context.unsupported("pattern element", n)
     }
 
-    val undirected = chain.exists {
+    val undirected = namedChain.exists {
       case RelationshipPattern(_, _, _, _, BOTH, _, _) => true
       case _                                           => false
     }
     if (undirected) {
-      val aliases = getPathTraversalAliases(node)
       g.dedup(aliases: _*)
     }
   }
@@ -154,6 +156,28 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       case _ =>
         context.unsupported("path pattern length", length)
     }
+  }
+
+  private def ensurePatternsHasNames(chain: Vector[ASTNode]): (Vector[ASTNode], Vector[String]) = {
+    val namedChain = chain.map {
+      case n @ NodePattern(variable, labels, properties, baseNode) if variable.isEmpty =>
+        val newVar = Variable(context.generateName())(n.position)
+        NodePattern(Some(newVar), labels, properties, baseNode)(n.position)
+      case r @ RelationshipPattern(variable, types, length, properties, direction, legacyTypeSeparator, baseRel)
+          if variable.isEmpty =>
+        val newVar = Variable(context.generateName())(r.position)
+        RelationshipPattern(Some(newVar), types, length, properties, direction, legacyTypeSeparator, baseRel)(
+          r.position)
+      case t => t
+    }
+
+    val names = namedChain.flatMap {
+      case NodePattern(Some(Variable(name)), _, _, _)                  => Some(name)
+      case RelationshipPattern(Some(Variable(name)), _, _, _, _, _, _) => Some(name)
+      case _                                                           => None
+    }
+
+    (namedChain, names)
   }
 
   private def hasProperties(variable: Variable, propertyMap: Expression): GremlinSteps[T, P] = {

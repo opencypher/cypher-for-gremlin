@@ -46,13 +46,13 @@ class SimplifyRenamedAliasesTest {
       .rewritingWith(SimplifyRenamedAliases)
       .removes(
         __.V()
-          .as("  GENERATED1")
-          .where(__.select("  GENERATED1").where(P.isEq("n")))
-          .as("  cypher.path.start.GENERATED2")
+          .as("  GENERATED3")
+          .where(__.select("  GENERATED3").where(P.isEq("n")))
+          .as("  cypher.path.start.GENERATED4")
       )
       .adds(
         __.select("n")
-          .as("  cypher.path.start.GENERATED2")
+          .as("  cypher.path.start.GENERATED4")
       )
   }
 
@@ -67,14 +67,14 @@ class SimplifyRenamedAliasesTest {
       .rewritingWith(SimplifyRenamedAliases)
       .removes(
         __.V()
-          .as("  GENERATED2")
-          .where(__.select("  GENERATED2").where(P.isEq("m")))
-          .as("  cypher.path.start.GENERATED3")
+          .as("  GENERATED4")
+          .where(__.select("  GENERATED4").where(P.isEq("m")))
+          .as("  cypher.path.start.GENERATED5")
       )
       .adds(
         __.select("m")
           .is(P.neq(NULL))
-          .as("  cypher.path.start.GENERATED3")
+          .as("  cypher.path.start.GENERATED5")
       )
   }
 
