@@ -18,6 +18,8 @@ package org.opencypher.gremlin.translation.walker
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
+import org.opencypher.gremlin.traversal.CustomFunction
+import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.v9_0.ast._
 
 /**
@@ -82,6 +84,10 @@ class StatementWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P])
         val returnClauses = clauses.count(_.isInstanceOf[Return])
         if (returnClauses == 0) {
           g.barrier().limit(0)
+        }
+
+        if (context.isDeleteQuery || context.isDetachDeleteQuery) {
+          DeleteWalker.doDelete(context, g)
         }
     }
   }

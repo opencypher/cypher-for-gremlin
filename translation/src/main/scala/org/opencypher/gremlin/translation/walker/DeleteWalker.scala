@@ -15,17 +15,22 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.opencypher.gremlin.translation.Tokens.{DELETE, DETACH_DELETE}
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions.Expression
-import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType, RelationshipType}
+import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType}
 
 object DeleteWalker {
   def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Delete): Unit = {
     new DeleteWalker(context, g).walkClause(node)
+  }
+
+  def doDelete[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]): Unit = {
+    new DeleteWalker(context, g).makeLastStatement()
   }
 }
 
@@ -33,38 +38,16 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Delete): Unit = {
     val Delete(expressions, detach) = node
-    val edgesFirst = expressions.sortBy(e =>
-      context.expressionTypes.get(e) match {
-        case Some(_: RelationshipType) => false
-        case _                         => true
-    })
-
     g.barrier()
-    edgesFirst.foreach(safeDelete(g, _, detach))
+    expressions.foreach(safeDelete(g, _, detach))
   }
 
-  private def safeDelete(
-      subTraversal: GremlinSteps[T, P],
-      expr: Expression,
-      checkBeforeDelete: Boolean): GremlinSteps[T, P] = {
+  private def safeDelete(subTraversal: GremlinSteps[T, P], expr: Expression, detach: Boolean): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
     val expressionTraversal = ExpressionWalker.walkLocal(context, g, expr)
     val typ = context.expressionTypes.get(expr)
 
     expressionTraversal.is(p.neq(Tokens.NULL))
-
-    if (!checkBeforeDelete) {
-      typ match {
-        case Some(_: NodeType) =>
-          expressionTraversal.sideEffect(
-            g.start()
-              .bothE()
-              .constant(DELETE_CONNECTED_NODE.toString)
-              .map(CustomFunction.cypherException())
-          )
-        case _ =>
-      }
-    }
 
     typ match {
       case Some(_: PathType) =>
@@ -75,6 +58,42 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       case _                =>
     }
 
-    subTraversal.sideEffect(expressionTraversal.drop())
+    typ match {
+      case Some(_: NodeType) if !detach =>
+        context.markDeleteQuery()
+        subTraversal.sideEffect(expressionTraversal.aggregate(DELETE))
+      case _ =>
+        context.markDetachDeleteQuery()
+        subTraversal.sideEffect(expressionTraversal.aggregate(DETACH_DELETE))
+
+      // todo error if unknown type if not detach
+    }
+  }
+
+  def makeLastStatement(): Unit = {
+    g.aggregate("save")
+
+    if (context.isDetachDeleteQuery) {
+      g.cap(DETACH_DELETE)
+        .unfold()
+        .dedup()
+        .drop()
+    }
+
+    if (context.isDeleteQuery) {
+      g.cap(DELETE)
+        .unfold()
+        .dedup()
+        .sideEffect(
+          g.start()
+            .bothE()
+            .constant(DELETE_CONNECTED_NODE.toString)
+            .map(CustomFunction.cypherException())
+        )
+        .drop()
+    }
+
+    g.cap("save")
+      .unfold()
   }
 }

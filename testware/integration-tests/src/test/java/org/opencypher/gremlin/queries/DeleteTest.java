@@ -17,6 +17,7 @@ package org.opencypher.gremlin.queries;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,58 @@ public class DeleteTest {
 
     @Test
     public void deleteWithReturn() throws Exception {
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:software) DETACH DELETE a RETURN a"
+        );
+
+        assertThat(onDelete)
+            .extracting("a")
+            .extracting("name")
+            .containsExactly("lop", "ripple");
+    }
+
+    @Test
+    public void deleteWithReturnOther() throws Exception {
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:software)<-[:created]-(p:person) DETACH DELETE a RETURN p"
+        );
+
+        assertThat(onDelete)
+            .extracting("p")
+            .extracting("name")
+            .containsExactlyInAnyOrder("marko", "josh", "josh", "peter");
+    }
+
+    @Test
+    public void deleteWithAggregationOnField() throws Exception {
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:software)<-[:created]-(p:person) DETACH DELETE a RETURN p.name, count(*)"
+        );
+
+        assertThat(onDelete)
+            .extracting("p.name", "count(*)")
+            .containsExactlyInAnyOrder(tuple("marko", 1L), tuple("josh", 2L), tuple("peter", 1L));
+    }
+
+    @Test
+    public void deleteWithTypeLost() throws Exception {
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (n) WITH collect(n) as losetype " +
+                "UNWIND losetype AS typelost " +
+                "DELETE typelost"
+        );
+
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+    }
+
+    @Test
+    public void deleteWithReturnAggregation() throws Exception {
         submitAndGet("MATCH (n) DETACH DELETE n");
         submitAndGet("CREATE ()-[:R]->()");
         List<Map<String, Object>> beforeDelete = submitAndGet(
