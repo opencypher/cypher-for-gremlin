@@ -424,6 +424,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def tail(scope: Scope, limit: Long): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Tail(scope, limit)
+    this
+  }
+
   override def times(maxLoops: Int): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Times(maxLoops)
     this

@@ -534,6 +534,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> tail(Scope scope, long limit) {
+        g.tail(scope, limit);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> times(int maxLoops) {
         g.times(maxLoops);
         return this;

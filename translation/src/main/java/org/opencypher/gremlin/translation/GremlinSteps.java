@@ -200,6 +200,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> sum();
 
+    GremlinSteps<T, P> tail(Scope scope, long limit);
+
     GremlinSteps<T, P> times(int maxLoops);
 
     GremlinSteps<T, P> to(String toStepLabel);

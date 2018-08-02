@@ -218,6 +218,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.skip(skip)
         case Sum =>
           g.sum()
+        case Tail(scope, limit) =>
+          g.tail(scope, limit)
         case Times(maxLoops) =>
           g.times(maxLoops)
         case To(toStepLabel) =>
