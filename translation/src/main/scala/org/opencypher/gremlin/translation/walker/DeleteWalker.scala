@@ -33,11 +33,14 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
   def walkClause(node: Delete): Unit = {
     val Delete(expressions, detach) = node
+    val edgesFirst = expressions.sortBy(e =>
+      context.expressionTypes.get(e) match {
+        case Some(_: RelationshipType) => false
+        case _                         => true
+    })
 
-    val sideEffect = g.start()
-    expressions.foreach(safeDelete(sideEffect, _, detach))
-
-    g.barrier().sideEffect(sideEffect)
+    g.barrier()
+    edgesFirst.foreach(safeDelete(g, _, detach))
   }
 
   private def safeDelete(
@@ -48,18 +51,18 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     val expressionTraversal = ExpressionWalker.walkLocal(context, g, expr)
     val typ = context.expressionTypes.get(expr)
 
+    expressionTraversal.is(p.neq(Tokens.NULL))
+
     if (!checkBeforeDelete) {
       typ match {
         case Some(_: NodeType) =>
           expressionTraversal.sideEffect(
             g.start()
-              .is(p.neq(Tokens.NULL))
               .bothE()
               .constant(DELETE_CONNECTED_NODE.toString)
               .map(CustomFunction.cypherException())
           )
-        case Some(_: RelationshipType) =>
-        case _                         =>
+        case _ =>
       }
     }
 
@@ -72,6 +75,6 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       case _                =>
     }
 
-    subTraversal.sideEffect(expressionTraversal.is(p.neq(Tokens.NULL)).drop())
+    subTraversal.sideEffect(expressionTraversal.drop())
   }
 }

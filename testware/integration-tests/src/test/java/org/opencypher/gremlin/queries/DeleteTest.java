@@ -198,4 +198,26 @@ public class DeleteTest {
         assertThat(onDelete)
             .isEmpty();
     }
+
+    @Test
+    public void deleteConnectedNodeAndRelationship() {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (s:software {name: 'ripple'})<-[r:created]-(p:person) DELETE s, r"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .isEmpty();
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(5L);
+    }
 }
