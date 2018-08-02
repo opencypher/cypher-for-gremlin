@@ -488,6 +488,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> tail(Scope scope, long limit) {
+        bytecode.addStep(Symbols.tail, scope, limit);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> times(int maxLoops) {
         bytecode.addStep(Symbols.times, maxLoops);
         return this;

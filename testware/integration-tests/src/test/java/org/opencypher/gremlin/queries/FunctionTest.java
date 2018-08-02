@@ -15,8 +15,10 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
@@ -174,6 +176,118 @@ public class FunctionTest {
         assertThat(results)
             .extracting("head")
             .containsExactly("josh");
+    }
+
+    @Test
+    public void headNotExistingProperties() {
+        String cypher = "MATCH (n:person {name: 'marko'}) RETURN head(n.notExisting) as head";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("head")
+            .containsNull();
+    }
+
+    @Test
+    public void headNull() {
+        String cypher = "RETURN head(null)";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("head")
+            .containsNull();
+    }
+
+    @Test
+    public void headEmpty() {
+        String cypher = "MATCH (n:notExising) WITH n AS n RETURN head(collect(n)) AS head";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("head")
+            .containsNull();
+    }
+
+    @Test
+    public void tail() {
+        String cypher = "MATCH (n:person) WITH n.name AS name " +
+            "ORDER BY name RETURN tail(collect(name)) AS tail";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("tail")
+            .containsExactly(asList("marko", "peter", "vadas"));
+    }
+
+    @Test
+    public void tailNotExistingProperties() {
+        String cypher = "MATCH (n:person {name: 'marko'}) RETURN tail(n.notExisting) as tail";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("tail")
+            .containsNull();
+    }
+
+    @Test
+    public void tailNull() {
+        String cypher = "RETURN tail(null)";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("head")
+            .containsNull();
+    }
+
+    @Test
+    public void tailEmpty() {
+        String cypher = "MATCH (n:notExisting) WITH n AS n RETURN tail(collect(n)) AS tail";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("tail")
+            .containsExactly(new ArrayList<>());
+    }
+
+    @Test
+    public void last() {
+        String cypher = "MATCH (n:person) WITH n.name AS name " +
+            "ORDER BY name RETURN last(collect(name)) AS last";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("last")
+            .containsExactly("vadas");
+    }
+
+    @Test
+    public void lastNotExistingProperties() {
+        String cypher = "MATCH (n:person {name: 'marko'}) RETURN last(n.notExisting) as last";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("last")
+            .containsNull();
+    }
+
+    @Test
+    public void lastNull() {
+        String cypher = "RETURN last(null)";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("last")
+            .containsNull();
+    }
+
+    @Test
+    public void lastEmpty() {
+        String cypher = "MATCH (n:notExising) WITH n AS n RETURN last(collect(n)) AS last";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("last")
+            .containsNull();
     }
 
     @Test

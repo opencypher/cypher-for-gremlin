@@ -498,6 +498,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> tail(Scope scope, long limit) {
+        g.append(chain("tail", scope, limit));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> times(int maxLoops) {
         g.append(chain("times", maxLoops));
         return this;
