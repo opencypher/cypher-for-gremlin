@@ -42,4 +42,6 @@ class IRGremlinPredicates extends GremlinPredicates[GremlinPredicate] {
   override def endsWith(value: scala.Any): GremlinPredicate = EndsWith(value)
 
   override def contains(value: scala.Any): GremlinPredicate = Contains(value)
+
+  override def isNode: GremlinPredicate = IsNode()
 }

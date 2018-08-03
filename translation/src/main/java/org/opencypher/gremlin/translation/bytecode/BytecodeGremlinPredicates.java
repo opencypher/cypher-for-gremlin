@@ -83,6 +83,11 @@ public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
         return CustomPredicate.cypherContains(inlineParameter(value));
     }
 
+    @Override
+    public P isNode() {
+        return CustomPredicate.cypherNode();
+    }
+
     private static Object[] inlineParameters(Object... values) {
         return Stream.of(values)
             .map(BytecodeGremlinPredicates::inlineParameter)

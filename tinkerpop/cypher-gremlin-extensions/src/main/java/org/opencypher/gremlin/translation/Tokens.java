@@ -28,6 +28,7 @@ public final class Tokens {
     public static final String MATCH_START = "  cypher.match.start.";
     public static final String MATCH_END = "  cypher.match.end.";
 
+    public static final String PROJECTION = "  cypher.projection";
     public static final String PROJECTION_RELATIONSHIP = "  cypher.relationship";
     public static final String PROJECTION_ELEMENT = "  cypher.element";
     public static final String PROJECTION_ID = "  cypher.id";

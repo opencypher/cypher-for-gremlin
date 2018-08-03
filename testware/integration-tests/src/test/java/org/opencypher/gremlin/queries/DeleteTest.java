@@ -19,10 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class DeleteTest {
@@ -32,6 +35,10 @@ public class DeleteTest {
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
+    }
+
+    private List<Map<String, Object>> submitAndGet(String cypher, Object... parameters) {
+        return gremlinServer.cypherGremlinClient().submit(cypher, parameterMap(parameters)).all();
     }
 
     @Test
@@ -147,7 +154,7 @@ public class DeleteTest {
         assertThat(onDelete)
             .extracting("a")
             .extracting("name")
-            .containsExactly("lop", "ripple");
+            .containsExactlyInAnyOrder("lop", "ripple");
     }
 
     @Test
@@ -170,24 +177,25 @@ public class DeleteTest {
 
         assertThat(onDelete)
             .extracting("p.name", "count(*)")
-            .containsExactlyInAnyOrder(tuple("marko", 1L), tuple("josh", 2L), tuple("peter", 1L));
+            .containsExactlyInAnyOrder(
+                tuple("marko", 1L),
+                tuple("josh", 2L),
+                tuple("peter", 1L));
     }
 
+    /**
+     * Custom predicate deserialization is not implemented
+     */
     @Test
+    @Category(SkipWithBytecode.class)
     public void deleteWithTypeLost() throws Exception {
-        List<Map<String, Object>> onDelete = submitAndGet(
-            "MATCH (n) WITH collect(n) as losetype " +
-                "UNWIND losetype AS typelost " +
-                "DELETE typelost"
-        );
+        assertThatThrownBy(() -> submitAndGet(
+            "MATCH (n) WITH collect(n) as typelost\n" +
+                "DELETE typelost[$i]",
+            "i",
+            0
 
-        List<Map<String, Object>> afterDelete = submitAndGet(
-            "MATCH (n) RETURN count(*)"
-        );
-
-        assertThat(afterDelete)
-            .extracting("count(*)")
-            .containsExactly(6L);
+        )).hasMessageContaining("Cannot delete node, because it still has relationships.");
     }
 
     @Test
@@ -272,5 +280,13 @@ public class DeleteTest {
         assertThat(afterDelete)
             .extracting("count(*)")
             .containsExactly(5L);
+    }
+
+    private HashMap<String, Object> parameterMap(Object[] parameters) {
+        HashMap<String, Object> result = new HashMap<>();
+        for (int i = 0; i < parameters.length; i+=2) {
+            result.put(String.valueOf(parameters[i]), parameters[i+1]);
+        }
+        return result;
     }
 }

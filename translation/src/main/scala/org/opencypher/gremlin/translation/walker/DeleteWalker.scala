@@ -15,85 +15,84 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.opencypher.gremlin.translation.Tokens.{DELETE, DETACH_DELETE}
+import org.opencypher.gremlin.translation.Tokens.{DELETE, DETACH_DELETE, PROJECTION}
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions.Expression
-import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType}
+import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType, RelationshipType}
 
 object DeleteWalker {
   def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Delete): Unit = {
     new DeleteWalker(context, g).walkClause(node)
   }
 
-  def doDelete[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]): Unit = {
-    new DeleteWalker(context, g).makeLastStatement()
+  def deleteAggregated[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]): Unit = {
+    new DeleteWalker(context, g).dropAggregated()
   }
 }
 
 class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
+  private def __ = g.start()
 
   def walkClause(node: Delete): Unit = {
     val Delete(expressions, detach) = node
     g.barrier()
-    expressions.foreach(safeDelete(g, _, detach))
+      .sideEffect(__.constant(Tokens.NULL).aggregate(DELETE))
+      .sideEffect(__.constant(Tokens.NULL).aggregate(DETACH_DELETE))
+    expressions.foreach(aggregateForDrop(g, _, detach))
   }
 
-  private def safeDelete(subTraversal: GremlinSteps[T, P], expr: Expression, detach: Boolean): GremlinSteps[T, P] = {
+  private def aggregateForDrop(
+      subTraversal: GremlinSteps[T, P],
+      expr: Expression,
+      detach: Boolean): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
     val expressionTraversal = ExpressionWalker.walkLocal(context, g, expr)
     val typ = context.expressionTypes.get(expr)
 
-    expressionTraversal.is(p.neq(Tokens.NULL))
-
-    typ match {
-      case Some(_: PathType) =>
-        expressionTraversal
-          .unfold()
-          .unfold()
-      case Some(_: AnyType) => expressionTraversal.unfold()
-      case _                =>
-    }
-
     typ match {
       case Some(_: NodeType) if !detach =>
-        context.markDeleteQuery()
         subTraversal.sideEffect(expressionTraversal.aggregate(DELETE))
-      case _ =>
-        context.markDetachDeleteQuery()
+      case Some(_: PathType) if detach =>
+        subTraversal.sideEffect(expressionTraversal.unfold().unfold().aggregate(DETACH_DELETE))
+      case Some(_: PathType) if !detach =>
+        subTraversal.sideEffect(
+          expressionTraversal.unfold().unfold().choose(p.isNode, __.aggregate(DELETE), __.aggregate(DETACH_DELETE)))
+      case Some(_: RelationshipType) | Some(_: NodeType) =>
         subTraversal.sideEffect(expressionTraversal.aggregate(DETACH_DELETE))
-
-      // todo error if unknown type if not detach
+      case Some(_: AnyType) if detach =>
+        subTraversal.sideEffect(expressionTraversal.unfold().aggregate(DETACH_DELETE))
+      case _ =>
+        subTraversal.sideEffect(
+          expressionTraversal.unfold().choose(p.isNode, __.aggregate(DELETE), __.aggregate(DETACH_DELETE)))
     }
   }
 
-  def makeLastStatement(): Unit = {
-    g.aggregate("save")
+  def dropAggregated(): Unit = {
+    val p = context.dsl.predicates()
 
-    if (context.isDetachDeleteQuery) {
-      g.cap(DETACH_DELETE)
-        .unfold()
-        .dedup()
-        .drop()
-    }
+    g.aggregate(PROJECTION)
 
-    if (context.isDeleteQuery) {
-      g.cap(DELETE)
-        .unfold()
-        .dedup()
-        .sideEffect(
-          g.start()
-            .bothE()
-            .constant(DELETE_CONNECTED_NODE.toString)
-            .map(CustomFunction.cypherException())
-        )
-        .drop()
-    }
-
-    g.cap("save")
+    g.cap(DETACH_DELETE)
       .unfold()
+      .dedup()
+      .is(p.neq(Tokens.NULL))
+      .drop()
+
+    g.cap(DELETE)
+      .unfold()
+      .dedup()
+      .is(p.neq(Tokens.NULL))
+      .sideEffect(
+        __.bothE()
+          .constant(DELETE_CONNECTED_NODE.toString)
+          .map(CustomFunction.cypherException())
+      )
+      .drop()
+
+    g.cap(PROJECTION).unfold()
   }
 }

@@ -18,8 +18,6 @@ package org.opencypher.gremlin.translation.walker
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
-import org.opencypher.gremlin.traversal.CustomFunction
-import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.v9_0.ast._
 
 /**
@@ -80,14 +78,17 @@ class StatementWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P])
       case Seq(callClause: UnresolvedCall) =>
         CallWalker.walkStandalone(context, g, callClause)
       case _ =>
+        val hasReturnClauses = clauses.exists(_.isInstanceOf[Return])
+        val hasDeleteClauses = clauses.exists(_.isInstanceOf[Delete])
+
         clauses.foreach(walkClause)
-        val returnClauses = clauses.count(_.isInstanceOf[Return])
-        if (returnClauses == 0) {
+
+        if (!hasReturnClauses) {
           g.barrier().limit(0)
         }
 
-        if (context.isDeleteQuery || context.isDetachDeleteQuery) {
-          DeleteWalker.doDelete(context, g)
+        if (hasDeleteClauses) {
+          DeleteWalker.deleteAggregated(context, g)
         }
     }
   }

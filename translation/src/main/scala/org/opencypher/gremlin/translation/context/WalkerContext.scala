@@ -88,26 +88,6 @@ sealed class WalkerContext[T, P](
     firstStatement = false
   }
 
-  private var deleteDetachQuery = false
-
-  def isDetachDeleteQuery: Boolean = {
-    deleteDetachQuery
-  }
-
-  def markDetachDeleteQuery(): Unit = {
-    deleteDetachQuery = true
-  }
-
-  private var deleteQuery = false
-
-  def isDeleteQuery: Boolean = {
-    deleteQuery
-  }
-
-  def markDeleteQuery(): Unit = {
-    deleteQuery = true
-  }
-
   private val referencedAliases = mutable.HashSet.empty[String]
 
   /**
