@@ -183,6 +183,28 @@ public class DeleteTest {
                 tuple("peter", 1L));
     }
 
+    @Test
+    public void deleteNothing() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:notExisting) DELETE a RETURN a"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .hasSize(0);
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+    }
+
     /**
      * Custom predicate deserialization is not implemented
      */

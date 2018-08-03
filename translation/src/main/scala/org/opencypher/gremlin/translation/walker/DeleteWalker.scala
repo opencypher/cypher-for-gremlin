@@ -15,13 +15,13 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.opencypher.gremlin.translation.Tokens.{DELETE, DETACH_DELETE, PROJECTION}
+import org.opencypher.gremlin.translation.Tokens.{DELETE, DETACH_DELETE, PATH_EDGE, PROJECTION}
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
-import org.opencypher.v9_0.expressions.Expression
+import org.opencypher.v9_0.expressions.{Expression, Variable}
 import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType, RelationshipType}
 
 object DeleteWalker {
@@ -40,8 +40,7 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   def walkClause(node: Delete): Unit = {
     val Delete(expressions, detach) = node
     g.barrier()
-      .sideEffect(__.constant(Tokens.NULL).aggregate(DELETE))
-      .sideEffect(__.constant(Tokens.NULL).aggregate(DETACH_DELETE))
+    initEmptyCollections(g)
     expressions.foreach(aggregateForDrop(g, _, detach))
   }
 
@@ -56,11 +55,14 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
     typ match {
       case Some(_: NodeType) if !detach =>
         subTraversal.sideEffect(expressionTraversal.aggregate(DELETE))
-      case Some(_: PathType) if detach =>
-        subTraversal.sideEffect(expressionTraversal.unfold().unfold().aggregate(DETACH_DELETE))
-      case Some(_: PathType) if !detach =>
+      case Some(_: PathType) if expr.isInstanceOf[Variable] =>
+        val Variable(n) = expr
         subTraversal.sideEffect(
-          expressionTraversal.unfold().unfold().choose(p.isNode, __.aggregate(DELETE), __.aggregate(DETACH_DELETE)))
+          expressionTraversal
+            .unfold()
+            .unfold()
+            .where(p.without(PATH_EDGE + n))
+            .aggregate(DETACH_DELETE))
       case Some(_: RelationshipType) | Some(_: NodeType) =>
         subTraversal.sideEffect(expressionTraversal.aggregate(DETACH_DELETE))
       case Some(_: AnyType) if detach =>
@@ -94,5 +96,10 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       .drop()
 
     g.cap(PROJECTION).unfold()
+  }
+
+  def initEmptyCollections(g: GremlinSteps[T, P]): Unit = {
+    g.sideEffect(__.constant(Tokens.NULL).aggregate(DELETE))
+      .sideEffect(__.constant(Tokens.NULL).aggregate(DETACH_DELETE))
   }
 }

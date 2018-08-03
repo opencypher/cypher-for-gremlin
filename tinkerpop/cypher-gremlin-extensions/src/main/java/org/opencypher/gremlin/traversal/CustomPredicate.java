@@ -42,7 +42,7 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
         }
     },
 
-    cypherNode {
+    cypherIsNode {
         @Override
         public boolean test(Object a, Object b) {
             return a instanceof Vertex;
@@ -61,7 +61,7 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
         return new P<>(CustomPredicate.cypherContains, sequence);
     }
 
-    public static P<Object> cypherNode() {
-        return new P<>(CustomPredicate.cypherNode, null);
+    public static P<Object> cypherIsNode() {
+        return new P<>(CustomPredicate.cypherIsNode, null);
     }
 }

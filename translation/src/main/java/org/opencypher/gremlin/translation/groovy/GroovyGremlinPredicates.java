@@ -85,6 +85,6 @@ public class GroovyGremlinPredicates implements GremlinPredicates<GroovyPredicat
 
     @Override
     public GroovyPredicate isNode() {
-        return new GroovyPredicate("cypherNode");
+        return new GroovyPredicate("cypherIsNode");
     }
 }

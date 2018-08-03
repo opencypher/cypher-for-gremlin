@@ -85,7 +85,7 @@ public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
 
     @Override
     public P isNode() {
-        return CustomPredicate.cypherNode();
+        return CustomPredicate.cypherIsNode();
     }
 
     private static Object[] inlineParameters(Object... values) {
