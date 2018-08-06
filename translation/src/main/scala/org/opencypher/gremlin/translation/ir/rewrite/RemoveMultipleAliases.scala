@@ -28,13 +28,8 @@ import scala.collection.JavaConverters._
 object RemoveMultipleAliases extends GremlinRewriter {
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    val aliasCount = foldTraversals(Map.empty[String, Int])({ (acc, sub) =>
-      val labels = extract({
-        case As(label) :: _ => label
-      })(sub)
-      labels.foldLeft(acc) { (acc, label) =>
-        acc + ((label, acc.getOrElse(label, 0) + 1))
-      }
+    val aliasCount = countInTraversals({
+      case As(label) :: _ => label
     })(steps)
 
     val replaceAliases = foldTraversals(Map.empty[String, String])({ (acc, sub) =>

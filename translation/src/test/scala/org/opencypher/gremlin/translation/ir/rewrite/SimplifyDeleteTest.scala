@@ -39,8 +39,8 @@ class SimplifyDeleteTest {
       .withFlavor(flavor)
       .rewritingWith(SimplifyDelete)
       .removes(
-        __.sideEffect(__.constant(Tokens.NULL).aggregate(DELETE))
-          .sideEffect(__.constant(Tokens.NULL).aggregate(DETACH_DELETE))
+        __.sideEffect(__.limit(0).aggregate(DELETE))
+          .sideEffect(__.limit(0).aggregate(DETACH_DELETE))
       )
       .removes(
         __.cap(DETACH_DELETE)
@@ -63,8 +63,8 @@ class SimplifyDeleteTest {
       .withFlavor(flavor)
       .rewritingWith(SimplifyDelete)
       .removes(
-        __.sideEffect(__.constant(Tokens.NULL).aggregate(DELETE))
-          .sideEffect(__.constant(Tokens.NULL).aggregate(DETACH_DELETE))
+        __.sideEffect(__.limit(0).aggregate(DELETE))
+          .sideEffect(__.limit(0).aggregate(DETACH_DELETE))
       )
       .removes(
         __.cap(DELETE)
@@ -89,8 +89,8 @@ class SimplifyDeleteTest {
       .withFlavor(flavor)
       .rewritingWith(SimplifyDelete)
       .keeps(
-        __.sideEffect(__.constant(Tokens.NULL).aggregate(DELETE))
-          .sideEffect(__.constant(Tokens.NULL).aggregate(DETACH_DELETE))
+        __.sideEffect(__.limit(0).aggregate(DELETE))
+          .sideEffect(__.limit(0).aggregate(DETACH_DELETE))
       )
       .keeps(
         __.cap(DELETE)

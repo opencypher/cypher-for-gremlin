@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
@@ -91,5 +92,27 @@ class NeptuneFlavorTest {
       .rewritingWith(NeptuneFlavor)
       .keeps(__.count())
       .adds(__.count().barrier())
+  }
+
+  @Test
+  def aggregateWithSameNameWorkaround(): Unit = {
+    assertThat(parse("MATCH p = (:X)-->()-->()-->() RETURN p"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .adds(__.sideEffect(__.aggregate(Tokens.PATH_EDGE + "p")))
+  }
+
+  @Test
+  def doNotApplyAggregateWithSameNameWorkaround(): Unit = {
+    val neptuneFlavor = flavor.extend(
+      rewriters = Seq(
+        NeptuneFlavor
+      ),
+      postConditions = Nil)
+
+    assertThat(parse("MATCH p = (:X)-->() RETURN p"))
+      .withFlavor(neptuneFlavor)
+      .contains(__.aggregate(Tokens.PATH_EDGE + "p"))
+      .doesNotContain(__.sideEffect(__.aggregate(Tokens.PATH_EDGE + "p")))
   }
 }

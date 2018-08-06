@@ -77,6 +77,15 @@ object TraversalHelper {
     findAcc(Nil, steps)
   }
 
+  def countInTraversals[R](extractor: PartialFunction[Seq[GremlinStep], R])(steps: Seq[GremlinStep]): Map[R, Int] = {
+    foldTraversals(Map.empty[R, Int])({ (acc, sub) =>
+      val labels = extract(extractor)(sub)
+      labels.foldLeft(acc) { (acc, label) =>
+        acc + ((label, acc.getOrElse(label, 0) + 1))
+      }
+    })(steps)
+  }
+
   /**
     * Finds matching parts of an IR sequence and replaces them.
     *

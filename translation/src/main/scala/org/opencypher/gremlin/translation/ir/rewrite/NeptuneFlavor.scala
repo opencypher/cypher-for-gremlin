@@ -29,6 +29,7 @@ object NeptuneFlavor extends GremlinRewriter {
       injectWorkaround(_),
       limit0Workaround(_),
       multipleLabelsWorkaround(_),
+      aggregateWithSameNameWorkaround(_),
       traversalRewriters(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       rewriter(steps)
@@ -59,6 +60,18 @@ object NeptuneFlavor extends GremlinRewriter {
         expandSub(key, bySteps) ++ rest
       }
     })(steps)
+  }
+
+  private def aggregateWithSameNameWorkaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    val aggregations = countInTraversals({
+      case Aggregate(sideEffectKey) :: _ => sideEffectKey
+    })(steps)
+
+    mapTraversals(replace({
+      case Aggregate(sideEffectKey) :: rest if aggregations(sideEffectKey) > 1 => {
+        SideEffect(Aggregate(sideEffectKey) :: Nil) :: rest
+      }
+    }))(steps)
   }
 
   private def expandSub(key: String, bySteps: Seq[GremlinStep]): Seq[GremlinStep] = {

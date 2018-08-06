@@ -99,7 +99,7 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   }
 
   def initEmptyCollections(g: GremlinSteps[T, P]): Unit = {
-    g.sideEffect(__.constant(Tokens.NULL).aggregate(DELETE))
-      .sideEffect(__.constant(Tokens.NULL).aggregate(DETACH_DELETE))
+    g.sideEffect(__.limit(0).aggregate(DELETE))
+      .sideEffect(__.limit(0).aggregate(DETACH_DELETE))
   }
 }

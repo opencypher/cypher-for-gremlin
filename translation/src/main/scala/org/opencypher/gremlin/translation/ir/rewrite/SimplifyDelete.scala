@@ -34,19 +34,17 @@ object SimplifyDelete extends GremlinRewriter {
       return steps
     }
 
-    val aggregations = foldTraversals(Seq.empty[String])((acc, localSteps) => {
-      acc ++ extract({
-        case Aggregate(sideEffectKey) :: _ => sideEffectKey
-      })(localSteps)
+    val aggregations = countInTraversals({
+      case Aggregate(sideEffectKey) :: _ => sideEffectKey
     })(steps)
 
-    val delete = aggregations.count(_ == DELETE) > 1
-    val detachDelete = aggregations.count(_ == DETACH_DELETE) > 1
+    val delete = aggregations.getOrElse(DELETE, 0) > 1
+    val detachDelete = aggregations.getOrElse(DETACH_DELETE, 0) > 1
 
     replace({
-      case SideEffect(Constant(NULL) :: Aggregate(DELETE) :: Nil) :: rest =>
+      case SideEffect(Limit(0) :: Aggregate(DELETE) :: Nil) :: rest =>
         rest
-      case SideEffect(Constant(NULL) :: Aggregate(DETACH_DELETE) :: Nil) :: rest =>
+      case SideEffect(Limit(0) :: Aggregate(DETACH_DELETE) :: Nil) :: rest =>
         rest
       case Cap(DELETE) :: Unfold :: Dedup() :: Is(Neq(NULL)) :: SideEffect(_) :: Drop :: rest if !delete =>
         rest
