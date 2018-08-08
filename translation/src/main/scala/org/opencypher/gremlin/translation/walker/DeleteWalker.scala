@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.opencypher.gremlin.translation.Tokens.{DELETE, DETACH_DELETE, PATH_EDGE, PROJECTION}
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
@@ -40,7 +40,8 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   def walkClause(node: Delete): Unit = {
     val Delete(expressions, detach) = node
     g.barrier()
-    initEmptyCollections(g)
+    initEmptyCollection(g, DELETE)
+    initEmptyCollection(g, DETACH_DELETE)
     expressions.foreach(aggregateForDrop(g, _, detach))
   }
 
@@ -76,9 +77,7 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   def dropAggregated(): Unit = {
     val p = context.dsl.predicates()
 
-    val delete = __.constant(true).aggregate("deleteOnce")
-
-    delete
+    val delete = __
       .cap(DETACH_DELETE)
       .unfold()
       .dedup()
@@ -97,18 +96,24 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       )
       .drop()
 
-    val side = __.coalesce(
-      __.cap("deleteOnce").unfold(),
-      delete
-    )
-
-    g.sideEffect(__.limit(0).aggregate("deleteOnce"))
-
-    g.barrier().sideEffect(side)
+    sideEffectOnceForAllTraversers(g, delete)
   }
 
-  def initEmptyCollections(g: GremlinSteps[T, P]): Unit = {
-    g.sideEffect(__.limit(0).aggregate(DELETE))
-      .sideEffect(__.limit(0).aggregate(DETACH_DELETE))
+  def sideEffectOnceForAllTraversers(g: GremlinSteps[T, P], run: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+    val runAndPut = __.constant(true).aggregate(DELETE_ONCE).flatMap(run)
+
+    initEmptyCollection(g, DELETE_ONCE)
+
+    g.barrier()
+      .sideEffect(
+        __.coalesce(
+          __.cap(DELETE_ONCE).unfold(),
+          runAndPut
+        )
+      )
+  }
+
+  def initEmptyCollection(g: GremlinSteps[T, P], name: String): Unit = {
+    g.sideEffect(__.limit(0).aggregate(name))
   }
 }

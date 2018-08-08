@@ -131,12 +131,19 @@ class StatementWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P])
   }
 
   def returnDependsOnDelete(clauses: Seq[Clause]): Boolean = {
-    val returnDependencies = clauses.filter(_.isInstanceOf[Return]).flatMap {
+    val returnClauses = clauses.filter(_.isInstanceOf[Return])
+    val deleteClauses = clauses.filter(_.isInstanceOf[Delete])
+
+    if (deleteClauses.size > 1) {
+      context.unsupported("query. Multiple delete clauses", deleteClauses)
+    }
+
+    val returnDependencies = returnClauses.flatMap {
       case Return(_, returnItems, _, _, _, _) => returnItems.items.map(_.expression.dependencies)
       case _                                  => None
     }
 
-    val deleteDependencies = clauses.filter(_.isInstanceOf[Delete]).flatMap {
+    val deleteDependencies = deleteClauses.flatMap {
       case Delete(expressions, _) => expressions.map(_.dependencies)
       case _                      => None
     }
