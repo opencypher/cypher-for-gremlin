@@ -17,11 +17,15 @@ package org.opencypher.gremlin.queries;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class DeleteTest {
@@ -31,6 +35,10 @@ public class DeleteTest {
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
+    }
+
+    private List<Map<String, Object>> submitAndGet(String cypher, Object... parameters) {
+        return gremlinServer.cypherGremlinClient().submit(cypher, parameterMap(parameters)).all();
     }
 
     @Test
@@ -139,6 +147,81 @@ public class DeleteTest {
 
     @Test
     public void deleteWithReturn() throws Exception {
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:software) DETACH DELETE a RETURN a"
+        );
+
+        assertThat(onDelete)
+            .extracting("a")
+            .extracting("name")
+            .containsExactlyInAnyOrder("lop", "ripple");
+    }
+
+    @Test
+    public void deleteWithReturnOther() throws Exception {
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:software)<-[:created]-(p:person) DETACH DELETE a RETURN p"
+        );
+
+        assertThat(onDelete)
+            .extracting("p")
+            .extracting("name")
+            .containsExactlyInAnyOrder("marko", "josh", "josh", "peter");
+    }
+
+    @Test
+    public void deleteWithAggregationOnField() throws Exception {
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:software)<-[:created]-(p:person) DETACH DELETE a RETURN p.name, count(*)"
+        );
+
+        assertThat(onDelete)
+            .extracting("p.name", "count(*)")
+            .containsExactlyInAnyOrder(
+                tuple("marko", 1L),
+                tuple("josh", 2L),
+                tuple("peter", 1L));
+    }
+
+    @Test
+    public void deleteNothing() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH (a:notExisting) DELETE a RETURN a"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .hasSize(0);
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+    }
+
+    /**
+     * Custom predicate deserialization is not implemented
+     */
+    @Test
+    @Category(SkipWithBytecode.class)
+    public void deleteWithTypeLost() throws Exception {
+        assertThatThrownBy(() -> submitAndGet(
+            "MATCH (n) WITH collect(n) as typelost\n" +
+                "DELETE typelost[$i]",
+            "i",
+            0
+
+        )).hasMessageContaining("Cannot delete node, because it still has relationships.");
+    }
+
+    @Test
+    public void deleteWithReturnAggregation() throws Exception {
         submitAndGet("MATCH (n) DETACH DELETE n");
         submitAndGet("CREATE ()-[:R]->()");
         List<Map<String, Object>> beforeDelete = submitAndGet(
@@ -219,5 +302,13 @@ public class DeleteTest {
         assertThat(afterDelete)
             .extracting("count(*)")
             .containsExactly(5L);
+    }
+
+    private HashMap<String, Object> parameterMap(Object[] parameters) {
+        HashMap<String, Object> result = new HashMap<>();
+        for (int i = 0; i < parameters.length; i+=2) {
+            result.put(String.valueOf(parameters[i]), parameters[i+1]);
+        }
+        return result;
     }
 }

@@ -37,4 +37,8 @@ public final class Tokens {
     public static final String GENERATED = "  GENERATED";
     public static final String UNNAMED = "  UNNAMED";
     public static final String FRESHID = "  FRESHID";
+
+    public static final String DELETE = "  cypher.delete";
+    public static final String DETACH_DELETE = "  cypher.delete.detach";
+    public static final String DELETE_ONCE = "  cypher.delete.once";
 }

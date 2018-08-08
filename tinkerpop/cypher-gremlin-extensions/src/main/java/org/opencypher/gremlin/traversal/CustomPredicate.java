@@ -17,6 +17,8 @@ package org.opencypher.gremlin.traversal;
 
 import java.util.function.BiPredicate;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+
 
 public enum CustomPredicate implements BiPredicate<Object, Object> {
     cypherStartsWith {
@@ -38,6 +40,13 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
         public boolean test(Object a, Object b) {
             return a != null && b != null && a.toString().contains(b.toString());
         }
+    },
+
+    cypherIsNode {
+        @Override
+        public boolean test(Object a, Object b) {
+            return a instanceof Vertex;
+        }
     };
 
     public static P<Object> cypherStartsWith(final Object prefix) {
@@ -50,5 +59,9 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
 
     public static P<Object> cypherContains(final Object sequence) {
         return new P<>(CustomPredicate.cypherContains, sequence);
+    }
+
+    public static P<Object> cypherIsNode() {
+        return new P<>(CustomPredicate.cypherIsNode, null);
     }
 }

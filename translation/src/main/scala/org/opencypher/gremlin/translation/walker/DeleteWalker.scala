@@ -15,66 +15,105 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
-import org.opencypher.v9_0.expressions.Expression
+import org.opencypher.v9_0.expressions.{Expression, Variable}
 import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType, RelationshipType}
 
 object DeleteWalker {
   def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Delete): Unit = {
     new DeleteWalker(context, g).walkClause(node)
   }
+
+  def deleteAggregated[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]): Unit = {
+    new DeleteWalker(context, g).dropAggregated()
+  }
 }
 
 class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
+  private def __ = g.start()
 
   def walkClause(node: Delete): Unit = {
     val Delete(expressions, detach) = node
-    val edgesFirst = expressions.sortBy(e =>
-      context.expressionTypes.get(e) match {
-        case Some(_: RelationshipType) => false
-        case _                         => true
-    })
-
     g.barrier()
-    edgesFirst.foreach(safeDelete(g, _, detach))
+    initEmptyCollection(g, DELETE)
+    initEmptyCollection(g, DETACH_DELETE)
+    expressions.foreach(aggregateForDrop(g, _, detach))
   }
 
-  private def safeDelete(
+  private def aggregateForDrop(
       subTraversal: GremlinSteps[T, P],
       expr: Expression,
-      checkBeforeDelete: Boolean): GremlinSteps[T, P] = {
+      detach: Boolean): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
     val expressionTraversal = ExpressionWalker.walkLocal(context, g, expr)
     val typ = context.expressionTypes.get(expr)
 
-    expressionTraversal.is(p.neq(Tokens.NULL))
-
-    if (!checkBeforeDelete) {
-      typ match {
-        case Some(_: NodeType) =>
-          expressionTraversal.sideEffect(
-            g.start()
-              .bothE()
-              .constant(DELETE_CONNECTED_NODE.toString)
-              .map(CustomFunction.cypherException())
-          )
-        case _ =>
-      }
-    }
-
     typ match {
-      case Some(_: PathType) =>
-        expressionTraversal
-          .unfold()
-          .unfold()
-      case Some(_: AnyType) => expressionTraversal.unfold()
-      case _                =>
+      case Some(_: NodeType) if !detach =>
+        subTraversal.sideEffect(expressionTraversal.aggregate(DELETE))
+      case Some(_: PathType) if expr.isInstanceOf[Variable] =>
+        val Variable(n) = expr
+        subTraversal.sideEffect(
+          expressionTraversal
+            .unfold()
+            .unfold()
+            .where(p.without(PATH_EDGE + n))
+            .aggregate(DETACH_DELETE))
+      case Some(_: RelationshipType) | Some(_: NodeType) =>
+        subTraversal.sideEffect(expressionTraversal.aggregate(DETACH_DELETE))
+      case Some(_: AnyType) if detach =>
+        subTraversal.sideEffect(expressionTraversal.unfold().aggregate(DETACH_DELETE))
+      case _ =>
+        subTraversal.sideEffect(
+          expressionTraversal.unfold().choose(p.isNode, __.aggregate(DELETE), __.aggregate(DETACH_DELETE)))
     }
+  }
 
-    subTraversal.sideEffect(expressionTraversal.drop())
+  def dropAggregated(): Unit = {
+    val p = context.dsl.predicates()
+
+    val delete = __
+      .cap(DETACH_DELETE)
+      .unfold()
+      .dedup()
+      .is(p.neq(Tokens.NULL))
+      .drop()
+
+    delete
+      .cap(DELETE)
+      .unfold()
+      .dedup()
+      .is(p.neq(Tokens.NULL))
+      .sideEffect(
+        __.bothE()
+          .constant(DELETE_CONNECTED_NODE.toString)
+          .map(CustomFunction.cypherException())
+      )
+      .drop()
+
+    sideEffectOnceForAllTraversers(g, delete)
+  }
+
+  def sideEffectOnceForAllTraversers(g: GremlinSteps[T, P], run: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+    val runAndPut = __.constant(true).aggregate(DELETE_ONCE).flatMap(run)
+
+    initEmptyCollection(g, DELETE_ONCE)
+
+    g.barrier()
+      .sideEffect(
+        __.coalesce(
+          __.cap(DELETE_ONCE).unfold(),
+          runAndPut
+        )
+      )
+  }
+
+  def initEmptyCollection(g: GremlinSteps[T, P], name: String): Unit = {
+    g.sideEffect(__.limit(0).aggregate(name))
   }
 }

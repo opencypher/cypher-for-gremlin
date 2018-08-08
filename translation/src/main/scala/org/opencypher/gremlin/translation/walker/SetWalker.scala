@@ -21,7 +21,7 @@ import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils.notNull
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
-import org.opencypher.v9_0.util.InputPosition
+import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 import org.opencypher.v9_0.util.symbols.{AnyType, CypherType}
 
 /**
@@ -29,14 +29,14 @@ import org.opencypher.v9_0.util.symbols.{AnyType, CypherType}
   * of the `SET` clause nodes in the Cypher AST.
   */
 object SetWalker {
-  def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Clause): Unit = {
+  def walkClause[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: ASTNode): Unit = {
     new SetWalker(context, g).walkClause(node)
   }
 }
 
 private class SetWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
-  def walkClause(node: Clause): Unit = {
+  def walkClause(node: ASTNode): Unit = {
     node match {
       case SetClause(items) =>
         walkSetClause(items)

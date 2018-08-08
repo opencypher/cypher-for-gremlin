@@ -19,6 +19,7 @@ import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 
 /**
   * AST walker that starts translation of the Cypher AST.
@@ -78,15 +79,31 @@ class StatementWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P])
       case Seq(callClause: UnresolvedCall) =>
         CallWalker.walkStandalone(context, g, callClause)
       case _ =>
-        clauses.foreach(walkClause)
-        val returnClauses = clauses.count(_.isInstanceOf[Return])
-        if (returnClauses == 0) {
-          g.barrier().limit(0)
-        }
+        rewriteClauses(clauses).foreach(walkClause)
     }
   }
 
-  private def walkClause(node: Clause): Unit = {
+  def rewriteClauses(clauses: Seq[Clause]): Seq[ASTNode] = {
+    val isReturnDependsOnDelete = returnDependsOnDelete(clauses)
+    val maybeEmptyReturn = if (!clauses.exists(_.isInstanceOf[Return])) Seq(EmptyReturn()) else Nil
+
+    clauses.flatMap {
+      case deleteClause: Delete if isReturnDependsOnDelete => Seq(deleteClause)
+      case deleteClause: Delete                            => Seq(deleteClause, DeleteAggregated())
+      case returnClause: Return if isReturnDependsOnDelete => Seq(returnClause, DeleteAggregated())
+      case n                                               => Seq(n)
+    } ++ maybeEmptyReturn
+  }
+
+  case class EmptyReturn() extends ASTNode {
+    override def position: InputPosition = InputPosition.NONE
+  }
+
+  case class DeleteAggregated() extends ASTNode {
+    override def position: InputPosition = InputPosition.NONE
+  }
+
+  private def walkClause(node: ASTNode): Unit = {
     node match {
       case matchClause: Match =>
         MatchWalker.walkClause(context, g, matchClause)
@@ -98,14 +115,39 @@ class StatementWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P])
         MergeWalker.walkClause(context, g, mergeClause)
       case deleteClause: Delete =>
         DeleteWalker.walkClause(context, g, deleteClause)
+      case _: DeleteAggregated =>
+        DeleteWalker.deleteAggregated(context, g)
       case SetClause(_) | Remove(_) =>
         SetWalker.walkClause(context, g, node)
       case projectionClause: ProjectionClause =>
         ProjectionWalker.walk(context, g, projectionClause)
       case callClause: UnresolvedCall =>
         CallWalker.walk(context, g, callClause)
+      case _: EmptyReturn =>
+        g.barrier().limit(0)
       case _ =>
         context.unsupported("clause", node)
     }
+  }
+
+  def returnDependsOnDelete(clauses: Seq[Clause]): Boolean = {
+    val returnClauses = clauses.filter(_.isInstanceOf[Return])
+    val deleteClauses = clauses.filter(_.isInstanceOf[Delete])
+
+    if (deleteClauses.size > 1) {
+      context.unsupported("query. Multiple delete clauses", deleteClauses)
+    }
+
+    val returnDependencies = returnClauses.flatMap {
+      case Return(_, returnItems, _, _, _, _) => returnItems.items.map(_.expression.dependencies)
+      case _                                  => None
+    }
+
+    val deleteDependencies = deleteClauses.flatMap {
+      case Delete(expressions, _) => expressions.map(_.dependencies)
+      case _                      => None
+    }
+
+    returnDependencies.intersect(deleteDependencies).nonEmpty
   }
 }
