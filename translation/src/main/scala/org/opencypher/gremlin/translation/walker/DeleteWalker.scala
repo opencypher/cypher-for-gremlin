@@ -76,15 +76,17 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
   def dropAggregated(): Unit = {
     val p = context.dsl.predicates()
 
-    g.aggregate(PROJECTION)
+    val delete = __.constant(true).aggregate("deleteOnce")
 
-    g.cap(DETACH_DELETE)
+    delete
+      .cap(DETACH_DELETE)
       .unfold()
       .dedup()
       .is(p.neq(Tokens.NULL))
       .drop()
 
-    g.cap(DELETE)
+    delete
+      .cap(DELETE)
       .unfold()
       .dedup()
       .is(p.neq(Tokens.NULL))
@@ -95,7 +97,14 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       )
       .drop()
 
-    g.cap(PROJECTION).unfold()
+    val side = __.coalesce(
+      __.cap("deleteOnce").unfold(),
+      delete
+    )
+
+    g.sideEffect(__.limit(0).aggregate("deleteOnce"))
+
+    g.barrier().sideEffect(side)
   }
 
   def initEmptyCollections(g: GremlinSteps[T, P]): Unit = {
