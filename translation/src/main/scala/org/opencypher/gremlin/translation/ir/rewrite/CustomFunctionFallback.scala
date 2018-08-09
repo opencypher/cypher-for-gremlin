@@ -23,6 +23,8 @@ import org.opencypher.gremlin.translation.ir.model._
   * Replaces Custom Functions with "The Best We Could Do" Gremlin native alternatives
   */
 object CustomFunctionFallback extends GremlinRewriter {
+  val asSeq: Seq[GremlinRewriter] = Seq(CustomFunctionFallback)
+
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
 
     mapTraversals(replace({

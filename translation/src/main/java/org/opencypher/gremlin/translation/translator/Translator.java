@@ -31,6 +31,7 @@ import org.opencypher.gremlin.translation.groovy.GroovyGremlinBindings;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.ir.rewrite.CustomFunctionFallback;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinBindings;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinPredicates;
 import org.opencypher.gremlin.translation.traversal.TraversalGremlinSteps;
@@ -282,8 +283,17 @@ public final class Translator<T, P> {
                 predicates,
                 bindings,
                 features,
-                flavor != null ? flavor : TranslatorFlavor.gremlinServer()
+                getFlavor(flavor, features)
             );
+        }
+
+        private TranslatorFlavor getFlavor(TranslatorFlavor flavor, Set<TranslatorFeature> features) {
+            TranslatorFlavor result = flavor != null ? flavor : TranslatorFlavor.gremlinServer();
+            if (features.contains(TranslatorFeature.CYPHER_EXTENSIONS)) {
+                return result;
+            } else {
+                return result.extend(CustomFunctionFallback.asSeq());
+            }
         }
     }
 

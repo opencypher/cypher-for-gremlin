@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import java.util.Objects;
 import java.util.function.Function;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 
@@ -124,5 +125,18 @@ public class CustomFunction {
             "cypherException",
             CustomFunctions.cypherException()
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CustomFunction)) return false;
+        CustomFunction that = (CustomFunction) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
