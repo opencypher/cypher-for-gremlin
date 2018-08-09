@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/Chart.min.js"></script>
+<script type="text/javascript" src="js/moment.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
+<link rel="stylesheet" href="css/cucumber.css" type="text/css"/>
+<link rel="stylesheet" href="css/font-awesome.min.css"/>
+<link rel="shortcut icon" href="images/favicon.png"/>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // this will tell tablesorter to try looking for the data-value attribute
+    // if present, it'll sort by that instead
+    // otherwise, it'll sort by the text content of the table cell
+    $("#tablesorter").tablesorter({
+        textAttribute: 'data-value',
+        // ignores the first row of the header, the 'scenario', 'steps', since
+        // sorting those doesn't make sense
+        selectorHeaders: '> thead tr:not(.dont-sort) th',
+        // use a stable sort
+        sortStable: true
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  
+<title>Cucumber Reports (no 0.9.11) - Feature: SkipLimitAcceptanceTest</title>
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navigation">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse">
+      <p class="navbar-text navbar-left">Cucumber Report</p>
+      <ul class="nav navbar-nav navbar-right">
+                <li role="presentation" ><a href="overview-features.html">Features</a></li>
+        <li role="presentation" ><a href="overview-tags.html">Tags</a></li>
+        <li role="presentation" ><a href="overview-steps.html">Steps</a></li>
+                <li role="presentation" ><a href="overview-failures.html">Failures</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container-fluid">
+  <div class="col-md-5 col-md-offset-1">
+    
+<table class="table table-bordered" id="build-info">
+  <thead>
+    <tr>
+      <th>Project</th>
+              <th>Number</th>
+            <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="info">
+      <td>cypher-for-gremlin</td>
+              <td>0.9.11</td>
+            <td>09 Aug 2018, 10:56</td>
+    </tr>
+  </tbody>
+</table>
+
+  </div>
+  <div class="col-md-3 col-md-offset-2">
+      </div>
+</div>
+
+
+<div id="report-lead" class="container-fluid">
+  <div class="col-md-10 col-md-offset-1">
+    <h2>Feature Report</h2>
+      </div>
+</div>
+
+
+<div class="container-fluid" id="report">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <table class="stats-table">
+
+        
+<thead>
+  <tr class="header dont-sort">
+        <th></th>
+    <th colspan="6">Steps</th>
+    <th colspan="3">Scenarios</th>
+    <th colspan="2">Features</th>
+  </tr>
+  <tr>
+    <th>Feature</th>
+        <th class="passed">Passed</th>
+    <th class="failed">Failed</th>
+    <th class="skipped">Skipped</th>
+    <th class="pending">Pending</th>
+    <th class="undefined">Undefined</th>
+    <th class="total">Total</th>
+
+    <th class="passed">Passed</th>
+    <th class="failed">Failed</th>
+    <th class="total">Total</th>
+
+    <th>Duration</th>
+    <th>Status</th>
+  </tr>
+</thead>
+
+
+        <tbody>
+        <tr>
+          <td class="tagname">SkipLimitAcceptanceTest</td>
+                    <td      class="passed"    >14</td>
+          <td      class="failed"    >2</td>
+          <td >0</td>
+          <td >0</td>
+          <td >0</td>
+          <td class="total">16</td>
+
+          <td  class="passed"    >2</td>
+          <td  class="failed"    >2</td>
+          <td class="total">4</td>
+
+          <td class="duration" data-value="188685028">0.188</td>
+          <td class="failed">Failed</td>
+        </tr>
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-10">
+      <i class="fa fa-chevron-circle-down fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('show')"></i>
+      <i class="fa fa-chevron-circle-up fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('hide')"></i>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid" id="report">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="feature">
+        
+<div class="tags indention">
+  </div>
+
+        
+<div class="brief failed">
+  <span class="keyword indention">Feature</span>
+  <span class="name">SkipLimitAcceptanceTest</span>
+  
+
+  </div>
+
+        <div class="description indention"></div>
+
+        <div class="elements inner-level">
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.026</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
+    
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-1" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.026</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-3">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-3" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.392 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.395 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.395 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:27.410 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.015</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">SKIP with an expression that depends on variables should fail</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-4" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-5">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-5" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.002</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-6" class="collapse collapsable-details">
+        <pre>MATCH (n) RETURN n SKIP n.count</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-7">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-7" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.437 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN n SKIP n.count}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.437 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN n SKIP n.count
+10:55:27.439 [gremlin-server-worker-1] WARN  o.a.t.g.s.h.OpExecutorHandler - It is not allowed to refer to variables in SKIP (line 1, column 25 (offset: 24))
+org.opencypher.v9_0.util.SyntaxException: It is not allowed to refer to variables in SKIP (line 1, column 25 (offset: 24))
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$1.apply(EmptyParserContext.scala:30)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$1.apply(EmptyParserContext.scala:28)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1$$anonfun$apply$1.apply(EmptyParserContext.scala:36)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1$$anonfun$apply$1.apply(EmptyParserContext.scala:36)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:891)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1334)
+	at scala.collection.IterableLike$class.foreach(IterableLike.scala:72)
+	at scala.collection.AbstractIterable.foreach(Iterable.scala:54)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1.apply(EmptyParserContext.scala:36)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1.apply(EmptyParserContext.scala:36)
+	at org.opencypher.v9_0.frontend.phases.SemanticAnalysis.process(SemanticAnalysis.scala:38)
+	at org.opencypher.v9_0.frontend.phases.SemanticAnalysis.process(SemanticAnalysis.scala:24)
+	at org.opencypher.v9_0.frontend.phases.Phase$$anonfun$transform$1.apply(Phase.scala:35)
+	at org.opencypher.v9_0.frontend.helpers.package$$anonfun$closing$1.apply(package.scala:23)
+	at org.opencypher.v9_0.frontend.helpers.package$$anonfun$closing$1.apply(package.scala:23)
+	at org.opencypher.v9_0.frontend.helpers.package$.using(package.scala:31)
+	at org.opencypher.v9_0.frontend.helpers.package$.closing(package.scala:23)
+	at org.opencypher.v9_0.frontend.phases.Phase$class.transform(Phase.scala:34)
+	at org.opencypher.v9_0.frontend.phases.SemanticAnalysis.transform(SemanticAnalysis.scala:24)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:63)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.gremlin.translation.CypherAst$.parse(CypherAst.scala:224)
+	at org.opencypher.gremlin.translation.CypherAst$.parse(CypherAst.scala:209)
+	at org.opencypher.gremlin.translation.CypherAst.parse(CypherAst.scala)
+	at org.opencypher.gremlin.server.op.cypher.CypherOpProcessor.evalCypher(CypherOpProcessor.java:101)
+	at org.apache.tinkerpop.gremlin.server.handler.OpExecutorHandler.channelRead0(OpExecutorHandler.java:68)
+	at org.apache.tinkerpop.gremlin.server.handler.OpExecutorHandler.channelRead0(OpExecutorHandler.java:43)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:105)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler$1.channelRead(WebSocketServerProtocolHandler.java:159)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:312)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1304)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:921)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:135)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:646)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:581)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:460)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$2.run(SingleThreadEventExecutor.java:131)
+	at java.lang.Thread.run(Thread.java:748)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">a SyntaxError should be raised at compile time: NonConstantExpression</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">a SyntaxError should be raised at compile time: NonConstantExpression</span>
+  
+  <span class="lead-duration duration">0.013</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-8">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-8" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.440 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.440 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:27.442 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:27.442 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.443 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:27.445 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:27.446 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.446 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:27.448 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:27.448 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.449 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.030</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-9">
+    
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-9" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-10">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-10" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.030</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-11">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-11" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.453 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.454 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.454 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:27.469 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.016</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-12">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">LIMIT with an expression that depends on variables should fail</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-12" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-13">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-13" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.003</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details">
+        <pre>MATCH (n) RETURN n LIMIT n.count</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-15">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-15" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.502 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN n LIMIT n.count}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.502 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN n LIMIT n.count
+10:55:27.504 [gremlin-server-worker-1] WARN  o.a.t.g.s.h.OpExecutorHandler - It is not allowed to refer to variables in LIMIT (line 1, column 26 (offset: 25))
+org.opencypher.v9_0.util.SyntaxException: It is not allowed to refer to variables in LIMIT (line 1, column 26 (offset: 25))
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$1.apply(EmptyParserContext.scala:30)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$1.apply(EmptyParserContext.scala:28)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1$$anonfun$apply$1.apply(EmptyParserContext.scala:36)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1$$anonfun$apply$1.apply(EmptyParserContext.scala:36)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:891)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1334)
+	at scala.collection.IterableLike$class.foreach(IterableLike.scala:72)
+	at scala.collection.AbstractIterable.foreach(Iterable.scala:54)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1.apply(EmptyParserContext.scala:36)
+	at org.opencypher.gremlin.translation.EmptyParserContext$$anonfun$errorHandler$1.apply(EmptyParserContext.scala:36)
+	at org.opencypher.v9_0.frontend.phases.SemanticAnalysis.process(SemanticAnalysis.scala:38)
+	at org.opencypher.v9_0.frontend.phases.SemanticAnalysis.process(SemanticAnalysis.scala:24)
+	at org.opencypher.v9_0.frontend.phases.Phase$$anonfun$transform$1.apply(Phase.scala:35)
+	at org.opencypher.v9_0.frontend.helpers.package$$anonfun$closing$1.apply(package.scala:23)
+	at org.opencypher.v9_0.frontend.helpers.package$$anonfun$closing$1.apply(package.scala:23)
+	at org.opencypher.v9_0.frontend.helpers.package$.using(package.scala:31)
+	at org.opencypher.v9_0.frontend.helpers.package$.closing(package.scala:23)
+	at org.opencypher.v9_0.frontend.phases.Phase$class.transform(Phase.scala:34)
+	at org.opencypher.v9_0.frontend.phases.SemanticAnalysis.transform(SemanticAnalysis.scala:24)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:63)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.v9_0.frontend.phases.PipeLine.transform(Transformer.scala:59)
+	at org.opencypher.gremlin.translation.CypherAst$.parse(CypherAst.scala:224)
+	at org.opencypher.gremlin.translation.CypherAst$.parse(CypherAst.scala:209)
+	at org.opencypher.gremlin.translation.CypherAst.parse(CypherAst.scala)
+	at org.opencypher.gremlin.server.op.cypher.CypherOpProcessor.evalCypher(CypherOpProcessor.java:101)
+	at org.apache.tinkerpop.gremlin.server.handler.OpExecutorHandler.channelRead0(OpExecutorHandler.java:68)
+	at org.apache.tinkerpop.gremlin.server.handler.OpExecutorHandler.channelRead0(OpExecutorHandler.java:43)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:105)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler$1.channelRead(WebSocketServerProtocolHandler.java:159)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:312)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1304)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:921)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:135)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:646)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:581)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:460)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$2.run(SingleThreadEventExecutor.java:131)
+	at java.lang.Thread.run(Thread.java:748)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">a SyntaxError should be raised at compile time: NonConstantExpression</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">a SyntaxError should be raised at compile time: NonConstantExpression</span>
+  
+  <span class="lead-duration duration">0.012</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-16">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-16" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.506 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.506 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:27.508 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:27.508 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.508 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:27.511 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:27.511 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.511 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:27.513 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:27.514 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.515 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.028</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-17">
+    
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-17" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-18">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-18" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.028</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-19">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-19" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.518 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.520 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.520 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:27.537 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.020</span>
+
+
+    <span data-toggle="collapse" class=" collapsable-control" data-target="#element-20">
+    
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">SKIP with an expression that does not depend on variables</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-20" class="collapse collapsable-details  in ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-21">
+    
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-21" class="inner-level collapse collapsable-details  in ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.006</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-22" class="collapse collapsable-details">
+        <pre>UNWIND range(1, 10) AS i
+CREATE ({nr: i})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-23">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-23" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.548 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND range(1, 10) AS i
+CREATE ({nr: i})}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.548 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND range(1, 10) AS i CREATE ({nr: i})
+10:55:27.550 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').repeat(__.loops().aggregate('  GENERATED1')).times(11).cap('  GENERATED1').unfold().skip(1).limit(10).as('i').addV().property(single, 'nr', __.select('i')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.014</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-24" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WITH n SKIP toInteger(rand()*9)
+WITH count(*) AS count
+RETURN count &gt; 0 AS nonEmpty</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-25">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-25" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.569 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+WITH n SKIP toInteger(rand()*9)
+WITH count(*) AS count
+RETURN count &gt; 0 AS nonEmpty}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.569 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) WITH n SKIP toInteger(rand()*9) WITH count(*) AS count RETURN count &gt; 0 AS nonEmpty
+10:55:27.575 [gremlin-server-worker-1] WARN  o.a.t.g.s.h.OpExecutorHandler - Unsupported value expression: Multiply(FunctionInvocation(Namespace(List()),FunctionName(rand),false,Vector()),SignedDecimalIntegerLiteral(9))
+java.lang.UnsupportedOperationException: Unsupported value expression: Multiply(FunctionInvocation(Namespace(List()),FunctionName(rand),false,Vector()),SignedDecimalIntegerLiteral(9))
+	at org.opencypher.gremlin.translation.context.WalkerContext.unsupported(WalkerContext.scala:72)
+	at org.opencypher.gremlin.translation.walker.NodeUtils$.traversalValueToJava(NodeUtils.scala:73)
+	at org.opencypher.gremlin.translation.walker.NodeUtils$.expressionValue(NodeUtils.scala:33)
+	at org.opencypher.gremlin.translation.walker.NodeUtils$.traversalValueToJava(NodeUtils.scala:65)
+	at org.opencypher.gremlin.translation.walker.NodeUtils$.inlineExpressionValue(NodeUtils.scala:42)
+	at org.opencypher.gremlin.translation.walker.ProjectionWalker$$anonfun$applyLimits$1.apply(ProjectionWalker.scala:188)
+	at org.opencypher.gremlin.translation.walker.ProjectionWalker$$anonfun$applyLimits$1.apply(ProjectionWalker.scala:186)
+	at scala.Option.foreach(Option.scala:257)
+	at org.opencypher.gremlin.translation.walker.ProjectionWalker.applyLimits(ProjectionWalker.scala:186)
+	at org.opencypher.gremlin.translation.walker.ProjectionWalker.walk(ProjectionWalker.scala:75)
+	at org.opencypher.gremlin.translation.walker.ProjectionWalker.walkIntermediate(ProjectionWalker.scala:86)
+	at org.opencypher.gremlin.translation.walker.ProjectionWalker$.walk(ProjectionWalker.scala:44)
+	at org.opencypher.gremlin.translation.walker.StatementWalker.org$opencypher$gremlin$translation$walker$StatementWalker$$walkClause(StatementWalker.scala:123)
+	at org.opencypher.gremlin.translation.walker.StatementWalker$$anonfun$walkSingle$1.apply(StatementWalker.scala:82)
+	at org.opencypher.gremlin.translation.walker.StatementWalker$$anonfun$walkSingle$1.apply(StatementWalker.scala:82)
+	at scala.collection.immutable.List.foreach(List.scala:392)
+	at org.opencypher.gremlin.translation.walker.StatementWalker.walkSingle(StatementWalker.scala:82)
+	at org.opencypher.gremlin.translation.walker.StatementWalker.walk(StatementWalker.scala:43)
+	at org.opencypher.gremlin.translation.walker.StatementWalker$.walk(StatementWalker.scala:30)
+	at org.opencypher.gremlin.translation.CypherAst.translate(CypherAst.scala:82)
+	at org.opencypher.gremlin.server.op.cypher.CypherOpProcessor.evalCypher(CypherOpProcessor.java:104)
+	at org.apache.tinkerpop.gremlin.server.handler.OpExecutorHandler.channelRead0(OpExecutorHandler.java:68)
+	at org.apache.tinkerpop.gremlin.server.handler.OpExecutorHandler.channelRead0(OpExecutorHandler.java:43)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:105)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler$1.channelRead(WebSocketServerProtocolHandler.java:159)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:312)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1304)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:921)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:135)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:646)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:581)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:460)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$2.run(SingleThreadEventExecutor.java:131)
+	at java.lang.Thread.run(Thread.java:748)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-26">
+          <a>org.opencypher.tools.tck.api.Scenario$ScenarioFailedException: Feature &quot;SkipLimitAcceptanceTest&quot;: Scenario &quot;SKIP with an expression that does not depend on variables&quot; failed with message: Expected: | nonEmpty |</a>
+      </div>
+      <div id="msg-26" class="collapse collapsable-details  in ">
+        <pre>org.opencypher.tools.tck.api.Scenario$ScenarioFailedException: Feature &quot;SkipLimitAcceptanceTest&quot;: Scenario &quot;SKIP with an expression that does not depend on variables&quot; failed with message: Expected: | nonEmpty |
+| true |, got error ExecutionFailed(UnknownError,runtime,Unsupported value expression: Multiply(FunctionInvocation(Namespace(List()),FunctionName(rand),false,Vector()),SignedDecimalIntegerLiteral(9)),Some(org.apache.tinkerpop.gremlin.driver.exception.ResponseException: Unsupported value expression: Multiply(FunctionInvocation(Namespace(List()),FunctionName(rand),false,Vector()),SignedDecimalIntegerLiteral(9))))
+	at org.opencypher.tools.tck.api.Scenario$$anonfun$executeOnGraph$1.apply(Scenario.scala:95)
+	at org.opencypher.tools.tck.api.Scenario$$anonfun$executeOnGraph$1.apply(Scenario.scala:60)
+	at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:124)
+	at scala.collection.immutable.List.foldLeft(List.scala:84)
+	at org.opencypher.tools.tck.api.Scenario.executeOnGraph(Scenario.scala:60)
+	at org.opencypher.tools.tck.api.Scenario$$anon$1.execute(Scenario.scala:54)
+	at org.junit.jupiter.engine.descriptor.JupiterTestDescriptor.executeAndMaskThrowable(JupiterTestDescriptor.java:145)
+	at org.junit.jupiter.engine.descriptor.DynamicTestTestDescriptor.execute(DynamicTestTestDescriptor.java:46)
+	at org.junit.jupiter.engine.descriptor.DynamicTestTestDescriptor.execute(DynamicTestTestDescriptor.java:24)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:83)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$null$0(HierarchicalTestExecutor.java:85)
+	at org.junit.jupiter.engine.descriptor.TestFactoryTestDescriptor.lambda$invokeTestMethod$1(TestFactoryTestDescriptor.java:80)
+	at org.junit.jupiter.engine.execution.ThrowableCollector.execute(ThrowableCollector.java:40)
+	at org.junit.jupiter.engine.descriptor.TestFactoryTestDescriptor.invokeTestMethod(TestFactoryTestDescriptor.java:68)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:110)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:83)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$null$2(HierarchicalTestExecutor.java:92)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:92)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$null$2(HierarchicalTestExecutor.java:92)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:92)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:51)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:43)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:170)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:154)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:90)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:92)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$100(JUnitPlatformTestClassProcessor.java:77)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:73)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:61)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy1.stop(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.stop(TestWorker.java:123)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:155)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:137)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:404)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:63)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:46)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:55)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: Unsupported value expression: Multiply(FunctionInvocation(Namespace(List()),FunctionName(rand),false,Vector()),SignedDecimalIntegerLiteral(9))
+	at org.apache.tinkerpop.gremlin.driver.Handler$GremlinResponseHandler.channelRead0(Handler.java:246)
+	at org.apache.tinkerpop.gremlin.driver.Handler$GremlinResponseHandler.channelRead0(Handler.java:197)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:105)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at org.apache.tinkerpop.gremlin.driver.Handler$GremlinSaslAuthenticationHandler.channelRead0(Handler.java:123)
+	at org.apache.tinkerpop.gremlin.driver.Handler$GremlinSaslAuthenticationHandler.channelRead0(Handler.java:67)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:105)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at org.apache.tinkerpop.gremlin.driver.handler.WebSocketClientHandler.channelRead0(WebSocketClientHandler.java:94)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:105)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:312)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:286)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:335)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1304)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:356)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:342)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:921)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:135)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:646)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:581)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:460)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$2.run(SingleThreadEventExecutor.java:131)
+	... 1 more
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>nonEmpty</td>
+                              </tr>
+                          <tr>
+                                  <td>true</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.039</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-27">
+    
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-27" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-28">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-28" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.039</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-29">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-29" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.584 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.586 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.587 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:27.608 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.011</span>
+
+
+    <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
+    
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">LIMIT with an expression that does not depend on variables</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-30" class="collapse collapsable-details  in ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
+    
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.006</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-32" class="collapse collapsable-details">
+        <pre>UNWIND range(1, 3) AS i
+CREATE ({nr: i})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-33">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-33" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.625 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND range(1, 3) AS i
+CREATE ({nr: i})}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.625 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND range(1, 3) AS i CREATE ({nr: i})
+10:55:27.628 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').repeat(__.loops().aggregate('  GENERATED1')).times(4).cap('  GENERATED1').unfold().skip(1).limit(3).as('i').addV().property(single, 'nr', __.select('i')).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.004</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-34">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-34" class="collapse collapsable-details">
+        <pre>MATCH (n)
+WITH n LIMIT toInteger(ceil(1.7))
+RETURN count(*) AS count</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-35">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-35" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:27.656 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+WITH n LIMIT toInteger(ceil(1.7))
+RETURN count(*) AS count}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:27.656 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) WITH n LIMIT toInteger(ceil(1.7)) RETURN count(*) AS count
+10:55:27.659 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').project('n').by(__.identity()).limit(1).select('n').as('n').count().project('count').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-36">
+          <a>org.opencypher.tools.tck.api.Scenario$ScenarioFailedException: Feature &quot;SkipLimitAcceptanceTest&quot;: Scenario &quot;LIMIT with an expression that does not depend on variables&quot; failed with message: </a>
+      </div>
+      <div id="msg-36" class="collapse collapsable-details  in ">
+        <pre>org.opencypher.tools.tck.api.Scenario$ScenarioFailedException: Feature &quot;SkipLimitAcceptanceTest&quot;: Scenario &quot;LIMIT with an expression that does not depend on variables&quot; failed with message: 
+Expected (in any order of rows):
+| count |
+| 2 |
+Actual:
+| count |
+| 1 |
+	at org.opencypher.tools.tck.api.Scenario$$anonfun$executeOnGraph$1.apply(Scenario.scala:90)
+	at org.opencypher.tools.tck.api.Scenario$$anonfun$executeOnGraph$1.apply(Scenario.scala:60)
+	at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:124)
+	at scala.collection.immutable.List.foldLeft(List.scala:84)
+	at org.opencypher.tools.tck.api.Scenario.executeOnGraph(Scenario.scala:60)
+	at org.opencypher.tools.tck.api.Scenario$$anon$1.execute(Scenario.scala:54)
+	at org.junit.jupiter.engine.descriptor.JupiterTestDescriptor.executeAndMaskThrowable(JupiterTestDescriptor.java:145)
+	at org.junit.jupiter.engine.descriptor.DynamicTestTestDescriptor.execute(DynamicTestTestDescriptor.java:46)
+	at org.junit.jupiter.engine.descriptor.DynamicTestTestDescriptor.execute(DynamicTestTestDescriptor.java:24)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:83)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$null$0(HierarchicalTestExecutor.java:85)
+	at org.junit.jupiter.engine.descriptor.TestFactoryTestDescriptor.lambda$invokeTestMethod$1(TestFactoryTestDescriptor.java:80)
+	at org.junit.jupiter.engine.execution.ThrowableCollector.execute(ThrowableCollector.java:40)
+	at org.junit.jupiter.engine.descriptor.TestFactoryTestDescriptor.invokeTestMethod(TestFactoryTestDescriptor.java:68)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:110)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:83)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$null$2(HierarchicalTestExecutor.java:92)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:92)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$null$2(HierarchicalTestExecutor.java:92)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.lambda$execute$3(HierarchicalTestExecutor.java:92)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:77)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:51)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:43)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:170)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:154)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:90)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:92)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$100(JUnitPlatformTestClassProcessor.java:77)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:73)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:61)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy1.stop(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.stop(TestWorker.java:123)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:155)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:137)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:404)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:63)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:46)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:55)
+	at java.lang.Thread.run(Thread.java:748)
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>count</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                  </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-10">
+      <i class="fa fa-chevron-circle-down fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('show')"></i>
+      <i class="fa fa-chevron-circle-up fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('hide')"></i>
+    </div>
+  </div>
+</div>
+
+<br>
+
+<nav class="navbar navbar-default" id="footer">
+  <div class="container-fluid">
+    <p class="navbar-text navbar-right">
+        <small>generate Cucumber HTML reports via:&nbsp;</small>
+        <a class="navbar-link" href="https://github.com/jenkinsci/cucumber-reports-plugin">Jenkins Plugin</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-reporting">Standalone</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-sandwich">Sandwich</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/maven-cucumber-reporting">Maven</a>
+        &nbsp;&nbsp;
+    </p>
+  </div>
+</nav>
+
+</body>
+</html>

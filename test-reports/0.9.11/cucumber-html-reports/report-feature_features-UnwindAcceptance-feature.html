@@ -1,0 +1,4020 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/Chart.min.js"></script>
+<script type="text/javascript" src="js/moment.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
+<link rel="stylesheet" href="css/cucumber.css" type="text/css"/>
+<link rel="stylesheet" href="css/font-awesome.min.css"/>
+<link rel="shortcut icon" href="images/favicon.png"/>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // this will tell tablesorter to try looking for the data-value attribute
+    // if present, it'll sort by that instead
+    // otherwise, it'll sort by the text content of the table cell
+    $("#tablesorter").tablesorter({
+        textAttribute: 'data-value',
+        // ignores the first row of the header, the 'scenario', 'steps', since
+        // sorting those doesn't make sense
+        selectorHeaders: '> thead tr:not(.dont-sort) th',
+        // use a stable sort
+        sortStable: true
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+  
+<title>Cucumber Reports (no 0.9.11) - Feature: UnwindAcceptance</title>
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navigation">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse">
+      <p class="navbar-text navbar-left">Cucumber Report</p>
+      <ul class="nav navbar-nav navbar-right">
+                <li role="presentation" ><a href="overview-features.html">Features</a></li>
+        <li role="presentation" ><a href="overview-tags.html">Tags</a></li>
+        <li role="presentation" ><a href="overview-steps.html">Steps</a></li>
+                <li role="presentation" ><a href="overview-failures.html">Failures</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container-fluid">
+  <div class="col-md-5 col-md-offset-1">
+    
+<table class="table table-bordered" id="build-info">
+  <thead>
+    <tr>
+      <th>Project</th>
+              <th>Number</th>
+            <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="info">
+      <td>cypher-for-gremlin</td>
+              <td>0.9.11</td>
+            <td>09 Aug 2018, 10:56</td>
+    </tr>
+  </tbody>
+</table>
+
+  </div>
+  <div class="col-md-3 col-md-offset-2">
+      </div>
+</div>
+
+
+<div id="report-lead" class="container-fluid">
+  <div class="col-md-10 col-md-offset-1">
+    <h2>Feature Report</h2>
+      </div>
+</div>
+
+
+<div class="container-fluid" id="report">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <table class="stats-table">
+
+        
+<thead>
+  <tr class="header dont-sort">
+        <th></th>
+    <th colspan="6">Steps</th>
+    <th colspan="3">Scenarios</th>
+    <th colspan="2">Features</th>
+  </tr>
+  <tr>
+    <th>Feature</th>
+        <th class="passed">Passed</th>
+    <th class="failed">Failed</th>
+    <th class="skipped">Skipped</th>
+    <th class="pending">Pending</th>
+    <th class="undefined">Undefined</th>
+    <th class="total">Total</th>
+
+    <th class="passed">Passed</th>
+    <th class="failed">Failed</th>
+    <th class="total">Total</th>
+
+    <th>Duration</th>
+    <th>Status</th>
+  </tr>
+</thead>
+
+
+        <tbody>
+        <tr>
+          <td class="tagname">UnwindAcceptance</td>
+                    <td      class="passed"    >61</td>
+          <td >0</td>
+          <td >0</td>
+          <td >0</td>
+          <td >0</td>
+          <td class="total">61</td>
+
+          <td  class="passed"    >14</td>
+          <td >0</td>
+          <td class="total">14</td>
+
+          <td class="duration" data-value="695703316">0.695</td>
+          <td class="passed">Passed</td>
+        </tr>
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-10">
+      <i class="fa fa-chevron-circle-down fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('show')"></i>
+      <i class="fa fa-chevron-circle-up fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('hide')"></i>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid" id="report">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="feature">
+        
+<div class="tags indention">
+  </div>
+
+        
+<div class="brief passed">
+  <span class="keyword indention">Feature</span>
+  <span class="name">UnwindAcceptance</span>
+  
+
+  </div>
+
+        <div class="description indention"></div>
+
+        <div class="elements inner-level">
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.063</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding a list</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-1" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.039</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-3">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-3" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:47.993 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:47.995 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:47.995 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.017 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.005</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details">
+        <pre>UNWIND [1, 2, 3] AS x
+RETURN x</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-5">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-5" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.052 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND [1, 2, 3] AS x RETURN x
+10:55:48.054 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND [1, 2, 3] AS x
+RETURN x}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.056 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values).unfold().project('x').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>x</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.018</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-6">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-6" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.057 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.057 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.060 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.061 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.061 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.065 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.065 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.065 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.068 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.069 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.070 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.059</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding a range</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-7" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-8" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.035</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-9">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-9" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.076 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.076 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.076 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.096 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.006</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-10" class="collapse collapsable-details">
+        <pre>UNWIND range(1, 3) AS x
+RETURN x</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-11">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-11" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.129 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND range(1, 3) AS x
+RETURN x}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.129 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND range(1, 3) AS x RETURN x
+10:55:48.132 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').repeat(__.loops().aggregate('  GENERATED1')).times(4).cap('  GENERATED1').unfold().skip(1).limit(3).project('x').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>x</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.017</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-12">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-12" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.135 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.136 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.138 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.139 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.139 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.143 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.143 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.143 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.146 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.147 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.148 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.069</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding a concatenation of lists</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-13" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-14">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-14" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.035</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-15">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-15" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.153 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.154 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.155 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.174 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.007</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-16" class="collapse collapsable-details">
+        <pre>WITH [1, 2, 3] AS first, [4, 5, 6] AS second
+UNWIND (first + second) AS x
+RETURN x</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-17">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-17" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.209 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: WITH [1, 2, 3] AS first, [4, 5, 6] AS second UNWIND (first + second) AS x RETURN x
+10:55:48.213 [Test worker] DEBUG o.a.t.g.driver.Client - WITH [1, 2, 3] AS first, [4, 5, 6] AS second
+UNWIND (first + second) AS x
+RETURN x}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.216 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('first', 'second').by(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values)).by(__.project('  GENERATED4', '  GENERATED5', '  GENERATED6').by(__.constant(4)).by(__.constant(5)).by(__.constant(6)).select(values)).as('  GENERATED7').select('first').as('first').select('  GENERATED7').select('second').as('second').as('  GENERATED8').select('first').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED8').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.local(__.union(__.unfold(), __.select('  GENERATED8').unfold()).fold())).unfold().project('x').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>x</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                          <tr>
+                                  <td>4</td>
+                              </tr>
+                          <tr>
+                                  <td>5</td>
+                              </tr>
+                          <tr>
+                                  <td>6</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.026</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-18">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-18" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.217 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.217 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.220 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.220 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.220 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.223 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.223 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.224 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.226 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.236 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.237 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.070</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding a collected unwound expression</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-19" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-20">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-20" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.033</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-21">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-21" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.244 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.245 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.245 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.263 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.004</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-22" class="collapse collapsable-details">
+        <pre>UNWIND RANGE(1, 2) AS row
+WITH collect(row) AS rows
+UNWIND rows AS x
+RETURN x</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-23">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-23" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.295 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND RANGE(1, 2) AS row
+WITH collect(row) AS rows
+UNWIND rows AS x
+RETURN x}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.295 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND RANGE(1, 2) AS row WITH collect(row) AS rows UNWIND rows AS x RETURN x
+10:55:48.299 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').repeat(__.loops().aggregate('  GENERATED1')).times(3).cap('  GENERATED1').unfold().skip(1).limit(2).fold().unfold().is(neq('  cypher.null')).project('x').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>x</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.031</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-24">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-24" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.300 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.300 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.303 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.319 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.320 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.322 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.323 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.323 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.326 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.326 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.328 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.031</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding a collected expression</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-25" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-26">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-26" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-27">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-27" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.332 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.004</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-28" class="collapse collapsable-details">
+        <pre>CREATE ({id: 1}), ({id: 2})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-29">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-29" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.333 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ({id: 1}), ({id: 2})}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.333 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ({id: 1}), ({id: 2})
+10:55:48.335 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().property(single, 'id', 1).addV().property(single, 'id', 2).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.004</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-30" class="collapse collapsable-details">
+        <pre>MATCH (row)
+WITH collect(row) AS rows
+UNWIND rows AS node
+RETURN node.id</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-31">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-31" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.366 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (row) WITH collect(row) AS rows UNWIND rows AS node RETURN node.id
+10:55:48.366 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (row)
+WITH collect(row) AS rows
+UNWIND rows AS node
+RETURN node.id}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.369 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('node.id').by(__.choose(__.values('id'), __.values('id'), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>node.id</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.021</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-32">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-32" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.370 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.370 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.373 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.373 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.373 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.376 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.379 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.379 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.382 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.385 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.386 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.033</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-33">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Creating nodes from an unwound parameter list</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-33" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-34">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-34" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-35">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-35" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.392 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.004</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-36" class="collapse collapsable-details">
+        <pre>CREATE (:Year {year: 2016})</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-37">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-37" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.393 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (:Year {year: 2016})}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.393 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (:Year {year: 2016})
+10:55:48.395 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('Year').property(single, 'year', 2016).barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">parameters are:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>events</td>
+                                  <td>[{year: 2016, id: 1}, {year: 2016, id: 2}]</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.012</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-38">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-38" class="collapse collapsable-details">
+        <pre>UNWIND $events AS event
+MATCH (y:Year {year: event.year})
+MERGE (e:Event {id: event.id})
+MERGE (y)&lt;-[:IN]-(e)
+RETURN e.id AS x
+ORDER BY x</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-39">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-39" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.415 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND $events AS event
+MATCH (y:Year {year: event.year})
+MERGE (e:Event {id: event.id})
+MERGE (y)&lt;-[:IN]-(e)
+RETURN e.id AS x
+ORDER BY x, bindings={events=[{year=2016, id=1}, {year=2016, id=2}]}}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.416 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND $events AS event MATCH (y:Year {year: event.year}) MERGE (e:Event {id: event.id}) MERGE (y)&lt;-[:IN]-(e) RETURN e.id AS x ORDER BY x
+10:55:48.426 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').choose(__.constant([[year: 2016, id: 1], [year: 2016, id: 2]]), __.constant([[year: 2016, id: 1], [year: 2016, id: 2]]), __.constant('  cypher.null')).unfold().as('event').V().as('y').hasLabel('Year').where(__.project('  GENERATED2', '  GENERATED3').by(__.select('event')).by(__.constant('year')).select(values).map(cypherContainerIndex()).is(neq('  cypher.null')).as('  GENERATED1').select('y').values('year').where(eq('  GENERATED1'))).choose(__.V().as('e').hasLabel('Event').where(__.project('  GENERATED7', '  GENERATED8').by(__.select('event')).by(__.constant('id')).select(values).map(cypherContainerIndex()).is(neq('  cypher.null')).as('  GENERATED6').select('e').values('id').where(eq('  GENERATED6'))), __.V().as('e').hasLabel('Event').where(__.project('  GENERATED7', '  GENERATED8').by(__.select('event')).by(__.constant('id')).select(values).map(cypherContainerIndex()).is(neq('  cypher.null')).as('  GENERATED6').select('e').values('id').where(eq('  GENERATED6'))), __.identity().addV('Event').as('e').property(single, 'id', __.project('  GENERATED4', '  GENERATED5').by(__.select('event')).by(__.constant('id')).select(values).map(cypherContainerIndex()))).choose(__.select('y').inE('IN').outV().as('  GENERATED13').where(__.select('  GENERATED13').where(eq('e'))), __.select('y').inE('IN').outV().as('  GENERATED13').where(__.select('  GENERATED13').where(eq('e'))), __.identity().addE('IN').from('e').to('y')).select('e').project('  FRESHID119').by(__.choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null')), __.constant('  cypher.null'))).order().by(__.select('  FRESHID119'), incr).select('  FRESHID119').as('  FRESHID119').project('x').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be, in order:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>x</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">the side effects should be:</span>
+  
+  <span class="lead-duration duration">0.016</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>+nodes</td>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>+relationships</td>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>+labels</td>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>+properties</td>
+                                  <td>2</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-40">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-40" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.428 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.428 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.431 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.431 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.431 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.434 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.435 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.435 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.438 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.438 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.439 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        1
++nodes:         2
+-nodes:         0
+-properties:    0
++properties:    2
+-relationships: 0
++relationships: 2
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.055</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-41">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Double unwinding a list of lists</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-41" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-42">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-42" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.034</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-43">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-43" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.445 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.446 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.446 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.465 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.005</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-44">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-44" class="collapse collapsable-details">
+        <pre>WITH [[1, 2, 3], [4, 5, 6]] AS lol
+UNWIND lol AS x
+UNWIND x AS y
+RETURN y</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-45">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-45" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.497 [Test worker] DEBUG o.a.t.g.driver.Client - WITH [[1, 2, 3], [4, 5, 6]] AS lol
+UNWIND lol AS x
+UNWIND x AS y
+RETURN y}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.498 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: WITH [[1, 2, 3], [4, 5, 6]] AS lol UNWIND lol AS x UNWIND x AS y RETURN y
+10:55:48.502 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').map(__.project('  GENERATED1', '  GENERATED2').by(__.project('  GENERATED3', '  GENERATED4', '  GENERATED5').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values)).by(__.project('  GENERATED6', '  GENERATED7', '  GENERATED8').by(__.constant(4)).by(__.constant(5)).by(__.constant(6)).select(values)).select(values)).unfold().unfold().project('y').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>y</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                          <tr>
+                                  <td>4</td>
+                              </tr>
+                          <tr>
+                                  <td>5</td>
+                              </tr>
+                          <tr>
+                                  <td>6</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.016</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-46">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-46" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.503 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.503 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.505 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.506 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.506 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.509 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.509 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.509 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.512 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.512 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.513 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.057</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-47">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding the empty list</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-47" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-48">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-48" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.035</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-49">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-49" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.519 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.520 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.520 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.540 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.004</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-50">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-50" class="collapse collapsable-details">
+        <pre>UNWIND [] AS empty
+RETURN empty</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-51">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-51" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.571 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND [] AS empty
+RETURN empty}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.572 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND [] AS empty RETURN empty
+10:55:48.574 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').constant([]).unfold().project('empty').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>empty</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.016</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-52">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-52" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.576 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.576 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.579 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.579 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.579 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.582 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.583 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.583 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.585 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.586 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.587 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.058</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-53">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding null</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-53" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-54">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-54" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.037</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-55">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-55" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.593 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.594 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.594 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.615 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.004</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-56">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-56" class="collapse collapsable-details">
+        <pre>UNWIND null AS nil
+RETURN nil</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-57">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-57" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.648 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND null AS nil
+RETURN nil}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.648 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND null AS nil RETURN nil
+10:55:48.650 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject([]).unfold().as('nil').inject('  cypher.start').select('nil').project('nil').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>nil</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.016</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-58">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-58" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.652 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.653 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.655 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.656 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.656 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.659 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.659 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.659 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.662 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.663 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.663 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.050</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-59">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwinding list with duplicates</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-59" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-60">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-60" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.035</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-61">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-61" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.669 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.670 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.670 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.690 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.002</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-62">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-62" class="collapse collapsable-details">
+        <pre>UNWIND [1, 1, 2, 2, 3, 3, 4, 4, 5, 5] AS duplicate
+RETURN duplicate</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-63">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-63" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.718 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND [1, 1, 2, 2, 3, 3, 4, 4, 5, 5] AS duplicate
+RETURN duplicate}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.718 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND [1, 1, 2, 2, 3, 3, 4, 4, 5, 5] AS duplicate RETURN duplicate
+10:55:48.720 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.constant(1)).by(__.constant(1)).by(__.constant(2)).by(__.constant(2)).by(__.constant(3)).by(__.constant(3)).by(__.constant(4)).by(__.constant(4)).by(__.constant(5)).by(__.constant(5)).select(values).unfold().project('duplicate').by(__.identity())
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>duplicate</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                          <tr>
+                                  <td>3</td>
+                              </tr>
+                          <tr>
+                                  <td>4</td>
+                              </tr>
+                          <tr>
+                                  <td>4</td>
+                              </tr>
+                          <tr>
+                                  <td>5</td>
+                              </tr>
+                          <tr>
+                                  <td>5</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.011</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-64">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-64" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.721 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.721 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.723 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.723 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.723 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.725 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.726 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.726 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.728 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.728 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.729 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.042</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-65">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwind does not prune context</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-65" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-66">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-66" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.026</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-67">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-67" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.733 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.733 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.734 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.746 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.003</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-68">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-68" class="collapse collapsable-details">
+        <pre>WITH [1, 2, 3] AS list
+UNWIND list AS x
+RETURN *</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-69">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-69" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.773 [Test worker] DEBUG o.a.t.g.driver.Client - WITH [1, 2, 3] AS list
+UNWIND list AS x
+RETURN *}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.774 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: WITH [1, 2, 3] AS list UNWIND list AS x RETURN *
+10:55:48.776 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3').by(__.constant(1)).by(__.constant(2)).by(__.constant(3)).select(values)).as('list').unfold().as('x').select('list', 'x').project('list', 'x').by(__.select('list')).by(__.select('x'))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>list</td>
+                                  <td>x</td>
+                              </tr>
+                          <tr>
+                                  <td>[1, 2, 3]</td>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>[1, 2, 3]</td>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>[1, 2, 3]</td>
+                                  <td>3</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.013</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-70">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-70" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.776 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.777 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.778 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.779 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.779 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.781 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.781 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.781 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.783 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.784 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.784 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.026</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-71">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwind does not remove variables from scope</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-71" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-72">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-72" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-73">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-73" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.790 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">having executed:</span>
+  
+  <span class="lead-duration duration">0.005</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-74">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-74" class="collapse collapsable-details">
+        <pre>CREATE (s:S),
+  (n),
+  (e:E),
+  (s)-[:X]-&gt;(e),
+  (s)-[:Y]-&gt;(e),
+  (n)-[:Y]-&gt;(e)</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-75">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-75" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.790 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (s:S),
+  (n),
+  (e:E),
+  (s)-[:X]-&gt;(e),
+  (s)-[:Y]-&gt;(e),
+  (n)-[:Y]-&gt;(e)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.790 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (s:S),   (n),   (e:E),   (s)-[:X]-&gt;(e),   (s)-[:Y]-&gt;(e),   (n)-[:Y]-&gt;(e)
+10:55:48.793 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('S').as('s').addV().as('n').addV('E').as('e').addE('X').from('s').to('e').addE('Y').from('s').to('e').addE('Y').from('n').to('e').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.005</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-76">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-76" class="collapse collapsable-details">
+        <pre>MATCH (a:S)-[:X]-&gt;(b1)
+WITH a, collect(b1) AS bees
+UNWIND bees AS b2
+MATCH (a)-[:Y]-&gt;(b2)
+RETURN a, b2</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-77">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-77" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.811 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:S)-[:X]-&gt;(b1)
+WITH a, collect(b1) AS bees
+UNWIND bees AS b2
+MATCH (a)-[:Y]-&gt;(b2)
+RETURN a, b2}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.812 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:S)-[:X]-&gt;(b1) WITH a, collect(b1) AS bees UNWIND bees AS b2 MATCH (a)-[:Y]-&gt;(b2) RETURN a, b2
+10:55:48.816 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('S').outE('X').inV().as('b1').select('a', 'b1').group().by(__.select('a')).by(__.fold().project('a', 'bees').by(__.unfold().select('a')).by(__.unfold().select('b1').is(neq('  cypher.null')).fold())).unfold().select(values).as('  GENERATED2').select('a').as('a').hasLabel('S').select('  GENERATED2').select('bees').as('bees').unfold().as('b2').select('a').outE('Y').inV().as('b2').select('a', 'b2').project('a', 'b2').by(__.select('a').valueMap(true)).by(__.select('b2').valueMap(true))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>a</td>
+                                  <td>b2</td>
+                              </tr>
+                          <tr>
+                                  <td>(:S)</td>
+                                  <td>(:E)</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.014</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-78">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-78" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.817 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.817 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.819 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.820 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.820 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.822 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.822 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.822 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.824 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.825 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.828 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.049</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-79">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Multiple unwinds after each other</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-79" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-80">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-80" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">any graph</span>
+  
+  <span class="lead-duration duration">0.027</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-81">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-81" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.832 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.833 [Test worker] DEBUG o.a.t.g.driver.Client - 
+CREATE (a:A {name: 'a'}),
+       (b1:X {name: 'b1'}),
+       (b2:X {name: 'b2'}),
+       (b3:X {name: 'b3'}),
+       (b4:X {name: 'b4'}),
+       (c11:X {name: 'c11'}),
+       (c12:X {name: 'c12'}),
+       (c21:X {name: 'c21'}),
+       (c22:X {name: 'c22'}),
+       (c31:X {name: 'c31'}),
+       (c32:X {name: 'c32'}),
+       (c41:X {name: 'c41'}),
+       (c42:X {name: 'c42'})
+CREATE (a)-[:KNOWS]-&gt;(b1),
+       (a)-[:KNOWS]-&gt;(b2),
+       (a)-[:FOLLOWS]-&gt;(b3),
+       (a)-[:FOLLOWS]-&gt;(b4)
+CREATE (b1)-[:FRIEND]-&gt;(c11),
+       (b1)-[:FRIEND]-&gt;(c12),
+       (b2)-[:FRIEND]-&gt;(c21),
+       (b2)-[:FRIEND]-&gt;(c22),
+       (b3)-[:FRIEND]-&gt;(c31),
+       (b3)-[:FRIEND]-&gt;(c32),
+       (b4)-[:FRIEND]-&gt;(c41),
+       (b4)-[:FRIEND]-&gt;(c42)
+CREATE (b1)-[:FRIEND]-&gt;(b2),
+       (b2)-[:FRIEND]-&gt;(b3),
+       (b3)-[:FRIEND]-&gt;(b4),
+       (b4)-[:FRIEND]-&gt;(b1);
+    }} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.833 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher:  CREATE (a:A {name: 'a'}),        (b1:X {name: 'b1'}),        (b2:X {name: 'b2'}),        (b3:X {name: 'b3'}),        (b4:X {name: 'b4'}),        (c11:X {name: 'c11'}),        (c12:X {name: 'c12'}),        (c21:X {name: 'c21'}),        (c22:X {name: 'c22'}),        (c31:X {name: 'c31'}),        (c32:X {name: 'c32'}),        (c41:X {name: 'c41'}),        (c42:X {name: 'c42'}) CREATE (a)-[:KNOWS]-&gt;(b1),        (a)-[:KNOWS]-&gt;(b2),        (a)-[:FOLLOWS]-&gt;(b3),        (a)-[:FOLLOWS]-&gt;(b4) CREATE (b1)-[:FRIEND]-&gt;(c11),        (b1)-[:FRIEND]-&gt;(c12),        (b2)-[:FRIEND]-&gt;(c21),        (b2)-[:FRIEND]-&gt;(c22),        (b3)-[:FRIEND]-&gt;(c31),        (b3)-[:FRIEND]-&gt;(c32),        (b4)-[:FRIEND]-&gt;(c41),        (b4)-[:FRIEND]-&gt;(c42) CREATE (b1)-[:FRIEND]-&gt;(b2),        (b2)-[:FRIEND]-&gt;(b3),        (b3)-[:FRIEND]-&gt;(b4),        (b4)-[:FRIEND]-&gt;(b1);     
+10:55:48.849 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').property(single, 'name', 'a').addV('X').as('b1').property(single, 'name', 'b1').addV('X').as('b2').property(single, 'name', 'b2').addV('X').as('b3').property(single, 'name', 'b3').addV('X').as('b4').property(single, 'name', 'b4').addV('X').as('c11').property(single, 'name', 'c11').addV('X').as('c12').property(single, 'name', 'c12').addV('X').as('c21').property(single, 'name', 'c21').addV('X').as('c22').property(single, 'name', 'c22').addV('X').as('c31').property(single, 'name', 'c31').addV('X').as('c32').property(single, 'name', 'c32').addV('X').as('c41').property(single, 'name', 'c41').addV('X').as('c42').property(single, 'name', 'c42').addE('KNOWS').from('a').to('b1').addE('KNOWS').from('a').to('b2').addE('FOLLOWS').from('a').to('b3').addE('FOLLOWS').from('a').to('b4').addE('FRIEND').from('b1').to('c11').addE('FRIEND').from('b1').to('c12').addE('FRIEND').from('b2').to('c21').addE('FRIEND').from('b2').to('c22').addE('FRIEND').from('b3').to('c31').addE('FRIEND').from('b3').to('c32').addE('FRIEND').from('b4').to('c41').addE('FRIEND').from('b4').to('c42').addE('FRIEND').from('b1').to('b2').addE('FRIEND').from('b2').to('b3').addE('FRIEND').from('b3').to('b4').addE('FRIEND').from('b4').to('b1').barrier().limit(0)
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.006</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-82">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-82" class="collapse collapsable-details">
+        <pre>WITH [1, 2] AS xs, [3, 4] AS ys, [5, 6] AS zs
+UNWIND xs AS x
+UNWIND ys AS y
+UNWIND zs AS z
+RETURN *</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-83">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-83" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.873 [Test worker] DEBUG o.a.t.g.driver.Client - WITH [1, 2] AS xs, [3, 4] AS ys, [5, 6] AS zs
+UNWIND xs AS x
+UNWIND ys AS y
+UNWIND zs AS z
+RETURN *}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.873 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: WITH [1, 2] AS xs, [3, 4] AS ys, [5, 6] AS zs UNWIND xs AS x UNWIND ys AS y UNWIND zs AS z RETURN *
+10:55:48.878 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').project('xs', 'ys', 'zs').by(__.project('  GENERATED1', '  GENERATED2').by(__.constant(1)).by(__.constant(2)).select(values)).by(__.project('  GENERATED3', '  GENERATED4').by(__.constant(3)).by(__.constant(4)).select(values)).by(__.project('  GENERATED5', '  GENERATED6').by(__.constant(5)).by(__.constant(6)).select(values)).as('  GENERATED7').select('xs').as('xs').select('  GENERATED7').select('ys').as('ys').select('  GENERATED7').select('zs').as('zs').select('xs').unfold().as('x').select('ys').unfold().as('y').select('zs').unfold().as('z').select('x', 'xs', 'y', 'ys', 'z', 'zs').project('x', 'xs', 'y', 'ys', 'z', 'zs').by(__.select('x')).by(__.select('xs')).by(__.select('y')).by(__.select('ys')).by(__.select('z')).by(__.select('zs'))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>x</td>
+                                  <td>xs</td>
+                                  <td>y</td>
+                                  <td>ys</td>
+                                  <td>z</td>
+                                  <td>zs</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                                  <td>[1, 2]</td>
+                                  <td>3</td>
+                                  <td>[3, 4]</td>
+                                  <td>5</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                                  <td>[1, 2]</td>
+                                  <td>3</td>
+                                  <td>[3, 4]</td>
+                                  <td>6</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                                  <td>[1, 2]</td>
+                                  <td>4</td>
+                                  <td>[3, 4]</td>
+                                  <td>5</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                          <tr>
+                                  <td>1</td>
+                                  <td>[1, 2]</td>
+                                  <td>4</td>
+                                  <td>[3, 4]</td>
+                                  <td>6</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                                  <td>[1, 2]</td>
+                                  <td>3</td>
+                                  <td>[3, 4]</td>
+                                  <td>5</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                                  <td>[1, 2]</td>
+                                  <td>3</td>
+                                  <td>[3, 4]</td>
+                                  <td>6</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                                  <td>[1, 2]</td>
+                                  <td>4</td>
+                                  <td>[3, 4]</td>
+                                  <td>5</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                          <tr>
+                                  <td>2</td>
+                                  <td>[1, 2]</td>
+                                  <td>4</td>
+                                  <td>[3, 4]</td>
+                                  <td>6</td>
+                                  <td>[5, 6]</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">no side effects</span>
+  
+  <span class="lead-duration duration">0.016</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-84">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-84" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.879 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.879 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.882 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.882 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.883 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.885 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.886 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.886 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.889 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.889 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.890 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        0
++nodes:         0
+-nodes:         0
+-properties:    0
++properties:    0
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                      
+<div class="element">
+  
+  
+<div class="tags indention">
+  </div>
+
+  
+  <span class="lead-duration duration">0.026</span>
+
+
+    <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-85">
+    
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Unwind with merge</span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-85" class="collapse collapsable-details ">
+    
+
+
+    
+<div class="steps inner-level">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-86">
+    
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+  
+
+       <i class="chevron fa fa-fw"></i>
+  </div>
+
+  </div>
+
+  <div id="steps-86" class="inner-level collapse collapsable-details ">
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">an empty graph</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-87">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-87" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.896 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">parameters are:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>props</td>
+                                  <td>[{login: 'login1', name: 'name1'}, {login: 'login2', name: 'name2'}]</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">When</span>
+  <span class="name">executing query:</span>
+  
+  <span class="lead-duration duration">0.007</span>
+
+  </div>
+
+        
+
+
+        
+        
+  <div class="inner-level">
+    <div class="docstring indention">
+            <div data-toggle="collapse" class="collapsable-control" data-target="#msg-88">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-88" class="collapse collapsable-details">
+        <pre>UNWIND $props AS prop
+MERGE (p:Person {login: prop.login})
+SET p.name = prop.name
+RETURN p.name, p.login</pre>
+      </div>
+    </div>
+  </div>
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-89">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-89" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.925 [Test worker] DEBUG o.a.t.g.driver.Client - UNWIND $props AS prop
+MERGE (p:Person {login: prop.login})
+SET p.name = prop.name
+RETURN p.name, p.login, bindings={props=[{login=login1, name=name1}, {login=login2, name=name2}]}}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.925 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: UNWIND $props AS prop MERGE (p:Person {login: prop.login}) SET p.name = prop.name RETURN p.name, p.login
+10:55:48.930 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.inject('  cypher.start').choose(__.constant([[name: 'name1', login: 'login1'], [name: 'name2', login: 'login2']]), __.constant([[name: 'name1', login: 'login1'], [name: 'name2', login: 'login2']]), __.constant('  cypher.null')).unfold().as('prop').choose(__.V().as('p').hasLabel('Person').where(__.project('  GENERATED4', '  GENERATED5').by(__.select('prop')).by(__.constant('login')).select(values).map(cypherContainerIndex()).is(neq('  cypher.null')).as('  GENERATED3').select('p').values('login').where(eq('  GENERATED3'))), __.V().as('p').hasLabel('Person').where(__.project('  GENERATED4', '  GENERATED5').by(__.select('prop')).by(__.constant('login')).select(values).map(cypherContainerIndex()).is(neq('  cypher.null')).as('  GENERATED3').select('p').values('login').where(eq('  GENERATED3'))), __.identity().addV('Person').as('p').property(single, 'login', __.project('  GENERATED1', '  GENERATED2').by(__.select('prop')).by(__.constant('login')).select(values).map(cypherContainerIndex()))).select('p').choose(neq('  cypher.null'), __.choose(__.project('  GENERATED6', '  GENERATED7').by(__.select('prop')).by(__.constant('name')).select(values).map(cypherContainerIndex()).is(neq('  cypher.null')).unfold(), __.property(single, 'name', __.project('  GENERATED6', '  GENERATED7').by(__.select('prop')).by(__.constant('name')).select(values).map(cypherContainerIndex())), __.sideEffect(__.properties('name').drop())), __.constant('  cypher.null')).select('p').project('p.name', 'p.login').by(__.choose(neq('  cypher.null'), __.choose(__.values('name'), __.values('name'), __.constant('  cypher.null')), __.constant('  cypher.null'))).by(__.choose(neq('  cypher.null'), __.choose(__.values('login'), __.values('login'), __.constant('  cypher.null')), __.constant('  cypher.null')))
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the result should be:</span>
+  
+  <span class="lead-duration duration">0.000</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>p.name</td>
+                                  <td>p.login</td>
+                              </tr>
+                          <tr>
+                                  <td>'name1'</td>
+                                  <td>'login1'</td>
+                              </tr>
+                          <tr>
+                                  <td>'name2'</td>
+                                  <td>'login2'</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+
+        
+  
+      </div>
+          <div class="step">
+        
+<div class="brief passed">
+  <span class="keyword indention">And</span>
+  <span class="name">the side effects should be:</span>
+  
+  <span class="lead-duration duration">0.018</span>
+
+  </div>
+
+        
+
+
+                  <table class="step-arguments">
+                          <tr>
+                                  <td>+nodes</td>
+                                  <td>2</td>
+                              </tr>
+                          <tr>
+                                  <td>+labels</td>
+                                  <td>1</td>
+                              </tr>
+                          <tr>
+                                  <td>+properties</td>
+                                  <td>4</td>
+                              </tr>
+                      </table>
+        
+        
+
+        
+  <div class="outputs inner-level">
+          <div class="output indention">
+        <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#output-90">
+          Output 1
+          <i class="chevron fa fa-fw"></i>
+        </div>
+        <div id="output-90" class="collapse collapsable-details " >
+          
+          <pre><p>10:55:48.932 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.932 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+10:55:48.935 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+10:55:48.935 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.935 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+10:55:48.938 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+10:55:48.941 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+UNWIND labels(n) AS label
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.941 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+10:55:48.944 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().label().is(neq('vertex')).project('label').by(__.identity()).dedup()
+10:55:48.944 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+10:55:48.945 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:34849, hostUri=ws://localhost:34849/gremlin}}
+-labels:        0
++labels:        1
++nodes:         2
+-nodes:         0
+-properties:    0
++properties:    4
+-relationships: 0
++relationships: 0
+</p></pre>
+        </div>
+      </div>
+      </div>
+
+        
+  
+      </div>
+      </div>
+</div>
+
+
+    
+
+  </div>
+</div>
+
+                  </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-10">
+      <i class="fa fa-chevron-circle-down fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('show')"></i>
+      <i class="fa fa-chevron-circle-up fa-2x collapsable-control"
+        onClick="javascript:$('#report .collapsable-details').collapse('hide')"></i>
+    </div>
+  </div>
+</div>
+
+<br>
+
+<nav class="navbar navbar-default" id="footer">
+  <div class="container-fluid">
+    <p class="navbar-text navbar-right">
+        <small>generate Cucumber HTML reports via:&nbsp;</small>
+        <a class="navbar-link" href="https://github.com/jenkinsci/cucumber-reports-plugin">Jenkins Plugin</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-reporting">Standalone</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-sandwich">Sandwich</a> |
+        <a class="navbar-link" href="https://github.com/damianszczepanik/maven-cucumber-reporting">Maven</a>
+        &nbsp;&nbsp;
+    </p>
+  </div>
+</nav>
+
+</body>
+</html>
