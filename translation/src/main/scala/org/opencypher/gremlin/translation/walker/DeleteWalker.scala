@@ -57,13 +57,14 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       case Some(_: NodeType) if !detach =>
         subTraversal.sideEffect(expressionTraversal.aggregate(DELETE))
       case Some(_: PathType) if expr.isInstanceOf[Variable] =>
+        val deleteType = if (detach) DETACH_DELETE else DELETE
         val Variable(n) = expr
         subTraversal.sideEffect(
           expressionTraversal
             .unfold()
             .unfold()
             .where(p.without(PATH_EDGE + n))
-            .aggregate(DETACH_DELETE))
+            .aggregate(deleteType))
       case Some(_: RelationshipType) | Some(_: NodeType) =>
         subTraversal.sideEffect(expressionTraversal.aggregate(DETACH_DELETE))
       case Some(_: AnyType) if detach =>
