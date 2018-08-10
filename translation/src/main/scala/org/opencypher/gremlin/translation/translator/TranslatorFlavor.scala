@@ -26,6 +26,9 @@ sealed case class TranslatorFlavor private[translation] (
     postConditions: Seq[GremlinPostCondition]) {
   def extend(rewriters: Seq[GremlinRewriter], postConditions: Seq[GremlinPostCondition]): TranslatorFlavor =
     TranslatorFlavor(this.rewriters ++ rewriters, this.postConditions ++ postConditions)
+
+  def extend(rewriters: Seq[GremlinRewriter]): TranslatorFlavor =
+    TranslatorFlavor(this.rewriters ++ rewriters, this.postConditions)
 }
 
 object TranslatorFlavor {
@@ -63,7 +66,6 @@ object TranslatorFlavor {
     */
   val cosmosDb: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
-      CustomFunctionFallback,
       CosmosDbFlavor
     ),
     postConditions = Nil
@@ -74,7 +76,6 @@ object TranslatorFlavor {
     */
   val neptune: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
-      CustomFunctionFallback,
       NeptuneFlavor
     ),
     postConditions = Nil
