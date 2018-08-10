@@ -94,7 +94,7 @@ public class DeleteTest {
     }
 
     @Test
-    public void detachDeletePath() throws Exception {
+    public void detachDeletePaths() throws Exception {
         List<Map<String, Object>> beforeDelete = submitAndGet(
             "MATCH (n) RETURN count(*)"
         );
@@ -113,6 +113,55 @@ public class DeleteTest {
         assertThat(afterDelete)
             .extracting("count(*)")
             .containsExactly(1L);
+    }
+
+    @Test
+    public void deletePath() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (s:software) DELETE s"))
+            .hasMessageContaining("Cannot delete node, because it still has relationships.");
+
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH p = (:person {name: 'marko'})-[:created]->() DETACH DELETE p"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .isEmpty();
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(4L);
+    }
+
+    @Test
+    public void deleteSingleLongPath() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+        List<Map<String, Object>> onDelete = submitAndGet(
+            "MATCH p = (:person {name: 'peter'})-[:created]->()<-[:created]-(:person)-[:created]->() " +
+                "DETACH DELETE p"
+        );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .isEmpty();
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(2L);
     }
 
     @Test
@@ -147,40 +196,76 @@ public class DeleteTest {
 
     @Test
     public void deleteWithReturn() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
         List<Map<String, Object>> onDelete = submitAndGet(
             "MATCH (a:software) DETACH DELETE a RETURN a"
         );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
 
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
         assertThat(onDelete)
             .extracting("a")
             .extracting("name")
             .containsExactlyInAnyOrder("lop", "ripple");
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(4L);
     }
 
     @Test
     public void deleteWithReturnOther() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
         List<Map<String, Object>> onDelete = submitAndGet(
             "MATCH (a:software)<-[:created]-(p:person) DETACH DELETE a RETURN p"
         );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
 
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
         assertThat(onDelete)
             .extracting("p")
             .extracting("name")
             .containsExactlyInAnyOrder("marko", "josh", "josh", "peter");
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(4L);
     }
 
     @Test
     public void deleteWithAggregationOnField() throws Exception {
+        List<Map<String, Object>> beforeDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
         List<Map<String, Object>> onDelete = submitAndGet(
             "MATCH (a:software)<-[:created]-(p:person) DETACH DELETE a RETURN p.name, count(*)"
         );
+        List<Map<String, Object>> afterDelete = submitAndGet(
+            "MATCH (n) RETURN count(*)"
+        );
 
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
         assertThat(onDelete)
             .extracting("p.name", "count(*)")
             .containsExactlyInAnyOrder(
                 tuple("marko", 1L),
                 tuple("josh", 2L),
                 tuple("peter", 1L));
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(4L);
     }
 
     @Test
