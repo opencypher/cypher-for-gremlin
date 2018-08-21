@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.console.jsr223;
 
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static org.apache.tinkerpop.gremlin.console.jsr223.DriverRemoteAcceptor.NO_TIMEOUT;
 
@@ -60,10 +61,6 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
     public Object connect(List<String> args) throws RemoteException {
         Object result = delegate.connect(args);
         Client gremlinClient = getField(delegate, "currentClient");
-        Map<String, String> aliases = getField(delegate, "aliases");
-        if (aliases != null) {
-            gremlinClient = gremlinClient.alias(aliases);
-        }
         client = configureClient(gremlinClient, args);
         return result;
     }
@@ -140,7 +137,8 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
     }
 
     private List<Result> send(String query) throws Exception {
-        CompletableFuture<CypherResultSet> resultsFuture = client.submitAsync(query);
+        Map<String, String> aliases = getField(delegate, "aliases");
+        CompletableFuture<CypherResultSet> resultsFuture = client.submitAsync(query, aliases, emptyMap());
         CypherResultSet resultSet = (timeout > NO_TIMEOUT) ?
             resultsFuture.get(timeout, TimeUnit.MILLISECONDS) :
             resultsFuture.get();

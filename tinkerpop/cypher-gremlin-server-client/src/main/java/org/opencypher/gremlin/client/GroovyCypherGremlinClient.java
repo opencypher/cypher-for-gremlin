@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.client;
 
+import static java.util.Collections.emptyMap;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.opencypher.gremlin.client.CommonResultSets.exceptional;
 import static org.opencypher.gremlin.client.CommonResultSets.explain;
@@ -48,6 +49,11 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
 
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
+        return submitAsync(cypher, emptyMap(), parameters);
+    }
+
+    @Override
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String,String> aliases, Map<String, ?> parameters) {
         Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
         CypherAst ast;
         try {
@@ -68,7 +74,7 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(exceptional(e));
         }
 
-        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, normalizedParameters);
+        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, aliases, normalizedParameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture
             .thenApply(ResultSet::iterator)

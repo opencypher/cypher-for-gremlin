@@ -195,4 +195,14 @@ public interface CypherGremlinClient extends Closeable {
      * @return Cypher-style results
      */
     CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters);
+
+    /**
+     * Submits a Cypher query asynchronously.
+     *
+     * @param cypher     query text
+     * @param aliases    aliases for graph variables on the server
+     * @param parameters query parameters
+     * @return Cypher-style results
+     */
+    CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String,String> aliases, Map<String, ?> parameters);
 }

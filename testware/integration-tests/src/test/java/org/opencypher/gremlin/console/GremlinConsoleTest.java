@@ -19,6 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opencypher.gremlin.console.jsr223.CypherGremlinPlugin.NAME;
+import static org.opencypher.gremlin.server.GremlinServerKind.TINKERGRAPH_MULTIPLE_GRAPHS;
 
 import com.google.common.io.Files;
 import java.io.File;
@@ -38,7 +39,21 @@ import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 public class GremlinConsoleTest {
 
     @ClassRule
-    public static final GremlinServerExternalResource server = new GremlinServerExternalResource();
+    public static final GremlinServerExternalResource server =
+        new GremlinServerExternalResource(TINKERGRAPH_MULTIPLE_GRAPHS);
+
+    private static final String PERSON_NAMES_QUERY = "MATCH (p:person) RETURN p.name AS name";
+    private static final String[] PERSON_NAMES_RESULT = {
+        "==>[name:marko]",
+        "==>[name:vadas]",
+        "==>[name:josh]",
+        "==>[name:peter]"};
+
+    private static final String[] CREW_NAMES_RESULT = {
+        "==>[name:marko]",
+        "==>[name:stephen]",
+        "==>[name:matthias]",
+        "==>[name:daniel]"};
 
     @Rule
     public final GremlinConsoleExternalResource console = new GremlinConsoleExternalResource();
@@ -69,16 +84,11 @@ public class GremlinConsoleTest {
         String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration());
         assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
 
-        String queryResult = eval(":> MATCH (p:person) RETURN p.name AS name");
+        String queryResult = eval(":> " + PERSON_NAMES_QUERY);
         assertThat(queryResult)
             .contains("CypherOpProcessor")
-            .contains("Cypher: MATCH (p:person) RETURN p.name AS name")
-            .contains(
-                "==>[name:marko]",
-                "==>[name:vadas]",
-                "==>[name:josh]",
-                "==>[name:peter]"
-            );
+            .contains("Cypher: " + PERSON_NAMES_QUERY)
+            .contains(PERSON_NAMES_RESULT);
     }
 
     @Test
@@ -89,15 +99,10 @@ public class GremlinConsoleTest {
         String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration() + " translate");
         assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
 
-        String queryResult = eval(":> MATCH (p:person) RETURN p.name AS name");
+        String queryResult = eval(":> " + PERSON_NAMES_QUERY);
         assertThat(queryResult)
             .doesNotContain("CypherOpProcessor")
-            .contains(
-                "==>[name:marko]",
-                "==>[name:vadas]",
-                "==>[name:josh]",
-                "==>[name:peter]"
-            );
+            .contains(PERSON_NAMES_RESULT);
     }
 
     @Test
@@ -111,19 +116,41 @@ public class GremlinConsoleTest {
         String remoteConsole = eval(":remote console");
         assertThat(remoteConsole).contains("All scripts will now be sent to Gremlin Server");
 
-        String queryResult = eval("MATCH (p:person) RETURN p.name AS name");
+        String queryResult = eval(PERSON_NAMES_QUERY);
         assertThat(queryResult)
             .contains("CypherOpProcessor")
-            .contains("Cypher: MATCH (p:person) RETURN p.name AS name")
-            .contains(
-                "==>[name:marko]",
-                "==>[name:vadas]",
-                "==>[name:josh]",
-                "==>[name:peter]"
-            );
+            .contains("Cypher: " + PERSON_NAMES_QUERY)
+            .contains(PERSON_NAMES_RESULT);
 
         remoteConsole = eval(":remote console");
         assertThat(remoteConsole).contains("All scripts will now be evaluated locally");
+    }
+
+    @Test
+    public void remoteConfigAlias() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin)
+            .contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration());
+        assertThat(remoteConnect)
+            .contains("==>Configured localhost/127.0.0.1:" + server.getPort());
+
+        String remoteAlias = eval(":remote config alias g g2");
+        assertThat(remoteAlias)
+            .contains("==>g=g2");
+
+        String crewGraphResult = eval(":> " + PERSON_NAMES_QUERY);
+        assertThat(crewGraphResult)
+            .contains(CREW_NAMES_RESULT);
+
+        String remoteAliasReset = eval(":remote config alias reset");
+        assertThat(remoteAliasReset)
+            .contains("==>Aliases cleared");
+
+        String personGraphResult = eval(":> MATCH (p:person) RETURN p.name AS name");
+        assertThat(personGraphResult)
+            .contains(PERSON_NAMES_RESULT);
     }
 
     private void waitForPrompt() {

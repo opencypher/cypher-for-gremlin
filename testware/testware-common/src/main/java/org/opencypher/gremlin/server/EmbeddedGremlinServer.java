@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.MessageSerializer;
 import org.apache.tinkerpop.gremlin.server.GremlinServer;
 import org.apache.tinkerpop.gremlin.server.Settings;
@@ -79,7 +81,7 @@ public final class EmbeddedGremlinServer {
 
     public static final class Builder {
         private int port;
-        private String propertiesPath;
+        private Map<String, String> graphs = new HashMap<>();
         private String scriptPath;
         private Multimap<Class<? extends MessageSerializer>, Class<? extends IoRegistry>> serializers =
             HashMultimap.create();
@@ -92,8 +94,8 @@ public final class EmbeddedGremlinServer {
             return this;
         }
 
-        public Builder propertiesPath(String propertiesPath) {
-            this.propertiesPath = propertiesPath;
+        public Builder propertiesPath(String graph, String propertiesPath) {
+            this.graphs.put(graph, propertiesPath);
             return this;
         }
 
@@ -109,12 +111,12 @@ public final class EmbeddedGremlinServer {
         }
 
         public EmbeddedGremlinServer build() {
-            checkFile("propertiesPath", propertiesPath);
+            graphs.values().forEach(path -> checkFile("propertiesPath", path));
             checkFile("scriptPath", scriptPath);
 
             Settings settings = new Settings();
             settings.port = getFreePort();
-            settings.graphs = singletonMap("graph", propertiesPath);
+            settings.graphs = graphs;
 
             Settings.ScriptEngineSettings gremlinGroovy = settings.scriptEngines.get("gremlin-groovy");
             gremlinGroovy.imports.add("java.lang.Math");

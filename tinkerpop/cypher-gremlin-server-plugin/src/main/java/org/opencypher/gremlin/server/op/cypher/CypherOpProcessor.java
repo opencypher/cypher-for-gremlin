@@ -159,6 +159,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         if (gAlias == null) {
             return graphManager.getGraphNames().stream()
+                .sorted()
                 .findFirst()
                 .map(graphManager::getGraph)
                 .map(Graph::traversal)

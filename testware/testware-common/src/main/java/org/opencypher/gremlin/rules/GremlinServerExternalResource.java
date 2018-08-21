@@ -19,7 +19,7 @@ import static com.google.common.base.Strings.emptyToNull;
 import static org.opencypher.gremlin.GremlinQueries.CREATE_MODERN;
 import static org.opencypher.gremlin.GremlinQueries.DROP_ALL;
 import static org.opencypher.gremlin.client.GremlinClientFactory.TOKEN_TRANSLATE;
-import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.tinkerGraph;
+import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.gremlinServer;
 
 import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.Client;
@@ -29,6 +29,7 @@ import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
+import org.opencypher.gremlin.server.GremlinServerKind;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.slf4j.Logger;
@@ -40,6 +41,15 @@ public class GremlinServerExternalResource extends ExternalResource {
     private EmbeddedGremlinServer gremlinServer;
     private Client gremlinClient;
     private CypherGremlinClient cypherGremlinClient;
+    private GremlinServerKind kind;
+
+    public GremlinServerExternalResource() {
+        this(GremlinServerKind.TINKERGRAPH_MODERN);
+    }
+
+    public GremlinServerExternalResource(GremlinServerKind kind) {
+        this.kind = kind;
+    }
 
     @Override
     public void before() throws Throwable {
@@ -58,8 +68,8 @@ public class GremlinServerExternalResource extends ExternalResource {
             gremlinClient.submit(DROP_ALL).all().get();
             gremlinClient.submit(CREATE_MODERN).all().get();
         } else {
-            logger.info("Running tests using embeded TinkerGraph");
-            gremlinServer = tinkerGraph();
+            logger.info("Running tests using embedded {}", kind);
+            gremlinServer = gremlinServer(kind);
             gremlinServer.start();
             int port = gremlinServer.getPort();
             gremlinClient = GremlinClientFactory.create(port);
@@ -122,4 +132,6 @@ public class GremlinServerExternalResource extends ExternalResource {
     public CypherGremlinClient cypherGremlinClient() {
         return cypherGremlinClient;
     }
+
+
 }
