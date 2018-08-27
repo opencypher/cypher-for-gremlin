@@ -19,7 +19,6 @@ import static com.google.common.base.Strings.emptyToNull;
 import static org.opencypher.gremlin.GremlinQueries.CREATE_MODERN;
 import static org.opencypher.gremlin.GremlinQueries.DROP_ALL;
 import static org.opencypher.gremlin.client.GremlinClientFactory.TOKEN_TRANSLATE;
-import static org.opencypher.gremlin.server.EmbeddedGremlinServerFactory.gremlinServer;
 
 import java.util.Optional;
 import org.apache.tinkerpop.gremlin.driver.Client;
@@ -41,14 +40,14 @@ public class GremlinServerExternalResource extends ExternalResource {
     private EmbeddedGremlinServer gremlinServer;
     private Client gremlinClient;
     private CypherGremlinClient cypherGremlinClient;
-    private GremlinServerKind kind;
+    private GremlinServerKind serverKind;
 
     public GremlinServerExternalResource() {
         this(GremlinServerKind.TINKERGRAPH_MODERN);
     }
 
-    public GremlinServerExternalResource(GremlinServerKind kind) {
-        this.kind = kind;
+    public GremlinServerExternalResource(GremlinServerKind serverKind) {
+        this.serverKind = serverKind;
     }
 
     @Override
@@ -68,8 +67,8 @@ public class GremlinServerExternalResource extends ExternalResource {
             gremlinClient.submit(DROP_ALL).all().get();
             gremlinClient.submit(CREATE_MODERN).all().get();
         } else {
-            logger.info("Running tests using embedded {}", kind);
-            gremlinServer = gremlinServer(kind);
+            logger.info("Running tests using embedded {}", serverKind);
+            gremlinServer = serverKind.getGremlinServer();
             gremlinServer.start();
             int port = gremlinServer.getPort();
             gremlinClient = GremlinClientFactory.create(port);

@@ -71,9 +71,4 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
             .collect(toList());
         return completedFuture(new CypherResultSet(results.iterator()));
     }
-
-    @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, String> aliases, Map<String, ?> parameters) {
-        return submitAsync(cypher, parameters);
-    }
 }

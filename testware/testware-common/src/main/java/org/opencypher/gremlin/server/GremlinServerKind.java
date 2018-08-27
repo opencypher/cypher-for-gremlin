@@ -16,6 +16,16 @@
 package org.opencypher.gremlin.server;
 
 public enum GremlinServerKind {
-    TINKERGRAPH_MODERN,
-    TINKERGRAPH_MULTIPLE_GRAPHS
+    TINKERGRAPH_MODERN(EmbeddedGremlinServerFactory.tinkerGraph()),
+    TINKERGRAPH_MULTIPLE_GRAPHS(EmbeddedGremlinServerFactory.tinkerGraphMultiple(0));
+
+    private EmbeddedGremlinServer gremlinServer;
+
+    GremlinServerKind(EmbeddedGremlinServer gremlinServer) {
+        this.gremlinServer = gremlinServer;
+    }
+
+    public EmbeddedGremlinServer getGremlinServer() {
+        return gremlinServer;
+    }
 }

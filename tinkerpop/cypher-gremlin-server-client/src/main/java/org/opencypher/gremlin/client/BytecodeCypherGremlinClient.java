@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.client;
 
-import static java.util.Collections.*;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.opencypher.gremlin.client.CommonResultSets.exceptional;
 import static org.opencypher.gremlin.client.CommonResultSets.explain;
@@ -50,11 +49,6 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
 
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        return submitAsync(cypher, emptyMap(), parameters);
-    }
-
-    @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String,String> aliases, Map<String, ?> parameters) {
         Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
         CypherAst ast;
         try {
@@ -75,7 +69,7 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(exceptional(e));
         }
 
-        CompletableFuture<ResultSet> resultSetFuture = aliasedClient(aliases).submitAsync(bytecode);
+        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(bytecode);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture
             .thenApply(ResultSet::iterator)
@@ -83,13 +77,5 @@ final class BytecodeCypherGremlinClient implements CypherGremlinClient {
                 new TraverserIterator(resultIterator),
                 returnNormalizer::normalize
             ));
-    }
-
-    private Client aliasedClient(Map<String,String> aliases) {
-        if (aliases == null || aliases.isEmpty()) {
-            return client;
-        } else {
-            return client.alias(aliases);
-        }
     }
 }

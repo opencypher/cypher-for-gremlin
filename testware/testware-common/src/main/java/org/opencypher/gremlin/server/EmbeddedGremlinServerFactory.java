@@ -25,14 +25,6 @@ public final class EmbeddedGremlinServerFactory {
     private EmbeddedGremlinServerFactory() {
     }
 
-    public static EmbeddedGremlinServer gremlinServer(GremlinServerKind kind){
-        switch (kind) {
-            case TINKERGRAPH_MODERN: return tinkerGraph();
-            case TINKERGRAPH_MULTIPLE_GRAPHS: return tinkerGraphMultiple(0);
-            default: throw new UnsupportedOperationException("Unsupported GremlinServerKind");
-        }
-    }
-
     public static EmbeddedGremlinServer tinkerGraph() {
         return tinkerGraph(0);
     }

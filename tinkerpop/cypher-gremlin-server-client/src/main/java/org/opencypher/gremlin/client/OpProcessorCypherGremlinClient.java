@@ -15,8 +15,6 @@
  */
 package org.opencypher.gremlin.client;
 
-import static java.util.Collections.emptyMap;
-
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.apache.tinkerpop.gremlin.driver.Client;
@@ -40,8 +38,8 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String,String> aliases, Map<String, ?> parameters) {
-        RequestMessage requestMessage = buildRequest(cypher, aliases, parameters).create();
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
+        RequestMessage requestMessage = buildRequest(cypher, parameters).create();
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(requestMessage);
 
         return resultSetFuture
@@ -49,19 +47,10 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
             .thenApply(CypherResultSet::new);
     }
 
-    @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        return submitAsync(cypher, emptyMap(), parameters);
-    }
-
-    private static RequestMessage.Builder buildRequest(String query, Map<String,String> aliases, Map<String, ?> parameters) {
+    private static RequestMessage.Builder buildRequest(String query, Map<String, ?> parameters) {
         RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
             .processor(CYPHER_OP_PROCESSOR_NAME)
             .add(Tokens.ARGS_GREMLIN, query);
-
-        if (aliases != null && !aliases.isEmpty()) {
-            request.addArg(Tokens.ARGS_ALIASES, aliases);
-        }
 
         if (parameters != null && !parameters.isEmpty()) {
             request.addArg(Tokens.ARGS_BINDINGS, parameters);
