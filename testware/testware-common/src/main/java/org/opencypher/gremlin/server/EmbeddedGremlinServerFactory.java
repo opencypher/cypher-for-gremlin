@@ -32,8 +32,18 @@ public final class EmbeddedGremlinServerFactory {
     public static EmbeddedGremlinServer tinkerGraph(int port) {
         return EmbeddedGremlinServer.builder()
             .port(port)
-            .propertiesPath("../testware-common/src/main/resources/tinkergraph-empty.properties")
+            .propertiesPath("graph","../testware-common/src/main/resources/tinkergraph-empty.properties")
             .scriptPath("../testware-common/src/main/resources/generate-modern.groovy")
+            .serializer(GryoMessageSerializerV3d0.class, singletonList(TinkerIoRegistryV3d0.class))
+            .build();
+    }
+
+    public static EmbeddedGremlinServer tinkerGraphMultiple(int port) {
+        return EmbeddedGremlinServer.builder()
+            .port(port)
+            .propertiesPath("graph","../testware-common/src/main/resources/tinkergraph-empty.properties")
+            .propertiesPath("graph2","../testware-common/src/main/resources/tinkergraph-empty.properties")
+            .scriptPath("../testware-common/src/main/resources/generate-multiple.groovy")
             .serializer(GryoMessageSerializerV3d0.class, singletonList(TinkerIoRegistryV3d0.class))
             .build();
     }

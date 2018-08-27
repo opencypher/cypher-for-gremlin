@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.console.jsr223;
 
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static org.apache.tinkerpop.gremlin.console.jsr223.DriverRemoteAcceptor.NO_TIMEOUT;
 
@@ -30,6 +31,7 @@ import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.jsr223.console.GremlinShellEnvironment;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteException;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
@@ -48,6 +50,7 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
     private int timeout = NO_TIMEOUT;
 
     private CypherGremlinClient client;
+    private List<String> connectArgs;
 
     private static final String TOKEN_TRANSLATE = "translate";
 
@@ -58,12 +61,9 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
 
     @Override
     public Object connect(List<String> args) throws RemoteException {
+        connectArgs = args;
         Object result = delegate.connect(args);
         Client gremlinClient = getField(delegate, "currentClient");
-        Map<String, String> aliases = getField(delegate, "aliases");
-        if (aliases != null) {
-            gremlinClient = gremlinClient.alias(aliases);
-        }
         client = configureClient(gremlinClient, args);
         return result;
     }
@@ -140,13 +140,24 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
     }
 
     private List<Result> send(String query) throws Exception {
-        CompletableFuture<CypherResultSet> resultsFuture = client.submitAsync(query);
+        CompletableFuture<CypherResultSet> resultsFuture = aliasedClient().submitAsync(query, emptyMap());
         CypherResultSet resultSet = (timeout > NO_TIMEOUT) ?
             resultsFuture.get(timeout, TimeUnit.MILLISECONDS) :
             resultsFuture.get();
         return resultSet.stream()
             .map(Result::new)
             .collect(toList());
+    }
+
+    private CypherGremlinClient aliasedClient() throws RemoteException {
+        Map<String, String> aliases = getField(delegate, "aliases");
+        if (aliases == null || aliases.isEmpty()) {
+            return client;
+        } else {
+            Client gremlinClient = getField(delegate, "currentClient");
+            Client aliasedClient = gremlinClient.alias(aliases);
+            return configureClient(aliasedClient, connectArgs);
+        }
     }
 
     @SuppressWarnings("unchecked")
