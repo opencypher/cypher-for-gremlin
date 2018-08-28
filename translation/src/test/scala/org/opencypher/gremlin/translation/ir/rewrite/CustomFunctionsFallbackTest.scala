@@ -15,14 +15,19 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.structure.Column
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens
+import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
-import org.opencypher.gremlin.translation.translator.Translator
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
 import org.opencypher.gremlin.traversal.CustomFunction
 
 class CustomFunctionsFallbackTest {
+  private val flavor = TranslatorFlavor.gremlinServer
+  private val P = new IRGremlinPredicates
 
   @Test
   def enableCypherExtensions(): Unit = {
@@ -43,6 +48,17 @@ class CustomFunctionsFallbackTest {
         __.bothE()
           .path()
           .from("Cannot delete node, because it still has relationships. To delete this node, you must first delete its relationships."))
+  }
+
+  @Test
+  def cypherPlusFallback(): Unit = {
+    assertThat(parse("RETURN 1 + $noType AS a"))
+      .withFlavor(flavor)
+      .rewritingWith(CustomFunctionFallback)
+      .removes(__.select(Column.values).map(CustomFunction.cypherPlus()))
+      .adds(
+        __.select(Column.values)
+          .local(__.unfold().choose(P.neq(Tokens.NULL), __.sum(), __.start().constant(Tokens.NULL))))
   }
 
 }
