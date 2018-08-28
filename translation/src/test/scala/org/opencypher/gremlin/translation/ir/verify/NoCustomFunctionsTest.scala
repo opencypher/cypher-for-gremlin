@@ -35,11 +35,11 @@ class NoCustomFunctionsTest {
         |MATCH (n:N)
         |WITH n.p AS s
         |WHERE s STARTS WITH 'x' AND s ENDS WITH 'x' AND s CONTAINS 'x'
-        |RETURN size(s), toString(s)
+        |RETURN toString(s)
     """.stripMargin)
     val translator = Translator.builder.gremlinGroovy.build(flavor)
 
     assertThatThrownBy(() => ast.buildTranslation(translator))
-      .hasMessageContaining("cypherContains, cypherEndsWith, cypherSize, cypherStarsWith, cypherToString")
+      .hasMessageContaining("cypherContains, cypherEndsWith, cypherStarsWith, cypherToString")
   }
 }

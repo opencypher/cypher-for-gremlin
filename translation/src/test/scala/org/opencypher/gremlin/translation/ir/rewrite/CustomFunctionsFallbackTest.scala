@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
@@ -59,6 +60,30 @@ class CustomFunctionsFallbackTest {
       .adds(
         __.select(Column.values)
           .local(__.unfold().choose(P.neq(Tokens.NULL), __.sum(), __.start().constant(Tokens.NULL))))
+  }
+
+  @Test
+  def cypherSizeFallback(): Unit = {
+    assertThat(parse("RETURN size($noType) AS a"))
+      .withFlavor(flavor)
+      .rewritingWith(CustomFunctionFallback)
+      .removes(__.map(CustomFunction.cypherSize()))
+      .adds(__.count(Scope.local))
+  }
+
+  @Test
+  def cypherPropertiesFallback(): Unit = {
+    assertThat(parse("RETURN properties($noType) AS a"))
+      .withFlavor(flavor)
+      .rewritingWith(CustomFunctionFallback)
+      .removes(__.map(CustomFunction.cypherProperties()))
+      .adds(
+        __.local(
+          __.properties()
+            .group()
+            .by(__.key())
+            .by(__.map(__.value()))
+        ))
   }
 
 }

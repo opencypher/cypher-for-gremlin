@@ -15,12 +15,12 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.apache.tinkerpop.gremlin.structure.Column.values
+import org.apache.tinkerpop.gremlin.process.traversal.Scope.local
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.exception.CypherExceptions
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
-import org.opencypher.gremlin.traversal.CustomFunction.{cypherException, cypherPlus}
+import org.opencypher.gremlin.traversal.CustomFunction.{cypherException, cypherPlus, cypherProperties, cypherSize}
 
 /**
   * Replaces Custom Functions with "The Best We Could Do" Gremlin native alternatives
@@ -37,6 +37,12 @@ object CustomFunctionFallback extends GremlinRewriter {
 
       case SelectC(values) :: MapF(function) :: rest if function.getName == cypherPlus().getName =>
         SelectC(values) :: Local(Unfold :: ChooseP(Neq(NULL), Sum :: Nil, Constant(NULL) :: Nil) :: Nil) :: rest
+
+      case MapF(function) :: rest if function.getName == cypherSize().getName =>
+        CountS(local) :: rest
+
+      case MapF(function) :: rest if function.getName == cypherProperties().getName =>
+        Local(Properties() :: Group :: By(Key :: Nil, None) :: By(MapT(Value :: Nil) :: Nil, None) :: Nil) :: rest
     }))(steps)
   }
 }
