@@ -15,9 +15,12 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.structure.Column.values
+import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.exception.CypherExceptions
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
+import org.opencypher.gremlin.traversal.CustomFunction.{cypherException, cypherPlus}
 
 /**
   * Replaces Custom Functions with "The Best We Could Do" Gremlin native alternatives
@@ -28,10 +31,12 @@ object CustomFunctionFallback extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
 
     mapTraversals(replace({
-      case Constant(typ) :: MapF(function) :: rest if function.getName == "cypherException" => {
+      case Constant(typ) :: MapF(function) :: rest if function.getName == cypherException().getName =>
         val text = CypherExceptions.messageByName(typ)
         Path :: From(text) :: rest
-      }
+
+      case SelectC(values) :: MapF(function) :: rest if function.getName == cypherPlus().getName =>
+        SelectC(values) :: Local(Unfold :: ChooseP(Neq(NULL), Sum :: Nil, Constant(NULL) :: Nil) :: Nil) :: rest
     }))(steps)
   }
 }
