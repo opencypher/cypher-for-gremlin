@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
+import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalOptionParent.Pick
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
@@ -281,8 +281,50 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           context
         )
 
+      case CaseExpression(Some(expr), alternatives, defaultValue) =>
+        val r = __.choose(walkLocal(expr))
+
+        for ((pickToken, option) <- alternatives) {
+          r.option(
+            numbersToInt(pickToken),
+            walkLocal(option)
+          )
+        }
+
+        defaultValue match {
+          case Some(value) => r.option(Pick.none, walkLocal(value))
+          case None        => r.option(Pick.none, __.constant(NULL))
+        }
+
+      case CaseExpression(None, alternatives, defaultValue) =>
+        val p = context.dsl.predicates()
+
+        var r = defaultValue match {
+          case Some(value) => walkLocal(value)
+          case None        => __.constant(NULL)
+        }
+
+        for ((predicate, option) <- alternatives.reverse) {
+          r = __.choose(
+            walkLocal(predicate).is(p.isEq(true)),
+            walkLocal(option),
+            r
+          )
+        }
+
+        r
       case _ =>
         __.constant(expressionValue(expression, context))
+    }
+  }
+
+  //todo
+  private def numbersToInt(pickToken: Expression) = {
+    expressionValue(pickToken, context) match {
+      case n: Number =>
+        n.intValue()
+      case o =>
+        o
     }
   }
 

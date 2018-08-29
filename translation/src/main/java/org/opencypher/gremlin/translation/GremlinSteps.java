@@ -78,6 +78,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> cap(String sideEffectKey);
 
+    GremlinSteps<T, P> choose(GremlinSteps<T, P> choiceTraversal);
+
     GremlinSteps<T, P> choose(GremlinSteps<T, P> traversalPredicate,
                               GremlinSteps<T, P> trueChoice,
                               GremlinSteps<T, P> falseChoice);
@@ -156,6 +158,8 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> min();
 
     GremlinSteps<T, P> not(GremlinSteps<T, P> notTraversal);
+
+    GremlinSteps<T, P> option(Object pickToken, GremlinSteps<T, P> traversalOption);
 
     GremlinSteps<T, P> optional(GremlinSteps<T, P> optionalTraversal);
 

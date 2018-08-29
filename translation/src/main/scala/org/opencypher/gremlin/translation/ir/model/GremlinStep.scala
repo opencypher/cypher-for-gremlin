@@ -81,6 +81,16 @@ case class By(traversal: Seq[GremlinStep], order: Option[TraversalOrder]) extend
 
 case class Cap(sideEffectKey: String) extends GremlinStep
 
+case class ChooseC(choiceTraversal: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    ChooseC(f(choiceTraversal))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(z, choiceTraversal)
+  }
+}
+
 case class ChooseT(
     traversalPredicate: Seq[GremlinStep],
     trueChoice: Seq[GremlinStep],
@@ -213,6 +223,16 @@ case class Not(notTraversal: Seq[GremlinStep]) extends GremlinStep {
 
   override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
     op(z, notTraversal)
+  }
+}
+
+case class OptionT(pickToken: Object, traversalOption: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    OptionT(pickToken, f(traversalOption))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(z, traversalOption)
   }
 }
 
