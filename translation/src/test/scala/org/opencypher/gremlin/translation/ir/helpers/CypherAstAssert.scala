@@ -23,7 +23,6 @@ import org.opencypher.gremlin.translation.ir.model.{GremlinPredicate, GremlinSte
 import org.opencypher.gremlin.translation.ir.rewrite.{GremlinRewriter, IdentityRewriter}
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 import org.opencypher.gremlin.translation.{CypherAst, GremlinSteps}
-import org.opencypher.gremlin.traversal.ProcedureContext
 
 import scala.collection.Seq
 
@@ -56,45 +55,30 @@ class CypherAstAssert(
   }
 
   final def adds(traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): CypherAstAssert = {
-    assertTraversal(traversal, traversalNotContains)
-    assertTraversal(rewriteTraversal, traversal, traversalContains)
+    traversalNotContains("Traversal before rewrite", actualTraversal, traversal.current)
+    traversalContains("Traversal after rewrite", rewriteTraversal, traversal.current)
     this
   }
 
   final def removes(traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): CypherAstAssert = {
-    assertTraversal(traversal, traversalContains)
-    assertTraversal(rewriteTraversal, traversal, traversalNotContains)
+    traversalContains("Traversal before rewrite", actualTraversal, traversal.current)
+    traversalNotContains("Traversal after rewrite", rewriteTraversal, traversal.current)
     this
   }
 
   final def keeps(traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): CypherAstAssert = {
-    assertTraversal(traversal, traversalContains)
-    assertTraversal(rewriteTraversal, traversal, traversalContains)
+    traversalContains("Traversal before rewrite", actualTraversal, traversal.current)
+    traversalContains("Traversal after rewrite", rewriteTraversal, traversal.current)
     this
   }
 
   final def contains(traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): CypherAstAssert = {
-    assertTraversal(traversal, traversalContains)
+    traversalContains("Actual traversal", actualTraversal, traversal.current)
     this
   }
 
   final def doesNotContain(traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): CypherAstAssert = {
-    assertTraversal(traversal, traversalNotContains)
-    this
-  }
-
-  private def assertTraversal(
-      actual: Seq[GremlinStep],
-      expected: GremlinSteps[Seq[GremlinStep], GremlinPredicate],
-      assertion: TraversalAssertion) = {
-    assertion(actual, expected.current)
-    this
-  }
-
-  private def assertTraversal(
-      expected: GremlinSteps[Seq[GremlinStep], GremlinPredicate],
-      assertion: TraversalAssertion) = {
-    assertion(actualTraversal, expected.current)
+    traversalNotContains("Actual traversal", actualTraversal, traversal.current)
     this
   }
 

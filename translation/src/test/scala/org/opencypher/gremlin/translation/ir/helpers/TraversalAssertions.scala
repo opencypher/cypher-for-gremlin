@@ -22,31 +22,20 @@ import org.opencypher.gremlin.translation.ir.model.GremlinStep
 import org.opencypher.gremlin.translation.translator.Translator
 
 object TraversalAssertions {
-  type TraversalAssertion = (Seq[GremlinStep], Seq[GremlinStep]) => Unit
 
-  val traversalEquals: TraversalAssertion = (actual, expected) => {
-    if (actual != expected) {
-      fail(
-        "AST mismatch!\nExpected: <%s>\n  Actual: <%s>",
-        print(expected),
-        print(actual)
-      )
-    }
-  }
-
-  val traversalContains: TraversalAssertion = (actual, expected) => {
+  def traversalContains(description: String, actual: Seq[GremlinStep], expected: Seq[GremlinStep]): Unit = {
     if (!containsSteps(actual, expected))
       fail(
-        "Actual traversal does not contain expected steps!\nSteps expected: <%s>\n  Actual: <%s>",
+        s"$description does not contain expected steps!\nSteps expected: <%s>\n  Actual: <%s>",
         print(expected),
         print(actual)
       )
   }
 
-  val traversalNotContains: TraversalAssertion = (actual, expected) => {
+  def traversalNotContains(description: String, actual: Seq[GremlinStep], expected: Seq[GremlinStep]): Unit = {
     if (containsSteps(actual, expected))
       fail(
-        "Actual traversal expected not to contain steps!\nSteps not expected: <%s>\n  Actual: <%s>",
+        s"$description expected not to contain steps!\nSteps not expected: <%s>\n  Actual: <%s>",
         print(expected),
         print(actual)
       )

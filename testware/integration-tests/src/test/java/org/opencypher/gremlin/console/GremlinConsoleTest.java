@@ -19,7 +19,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opencypher.gremlin.console.jsr223.CypherGremlinPlugin.NAME;
-import static org.opencypher.gremlin.server.GremlinServerKind.TINKERGRAPH_MULTIPLE_GRAPHS;
 
 import com.google.common.io.Files;
 import java.io.File;
@@ -34,13 +33,14 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.junit.rules.TemporaryFolder;
 import org.opencypher.gremlin.rules.GremlinConsoleExternalResource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
 
 @Ignore("Server interferes with other integration tests on CI")
 public class GremlinConsoleTest {
 
     @ClassRule
     public static final GremlinServerExternalResource server =
-        new GremlinServerExternalResource(TINKERGRAPH_MULTIPLE_GRAPHS);
+        new GremlinServerExternalResource(() -> EmbeddedGremlinServerFactory.tinkerGraphMultiple(0));
 
     private static final String PERSON_NAMES_QUERY = "MATCH (p:person) RETURN p.name AS name";
     private static final String[] PERSON_NAMES_RESULT = {
