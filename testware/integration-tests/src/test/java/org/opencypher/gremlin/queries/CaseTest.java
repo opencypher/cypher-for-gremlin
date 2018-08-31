@@ -17,6 +17,7 @@ package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
 import java.util.Map;
@@ -178,6 +179,54 @@ public class CaseTest {
         assertThat(results)
             .extracting("result")
             .containsExactlyInAnyOrder(13L, 3.14, "bingo", true, null, asList("a"));
+    }
+
+    @Test
+    public void labelPredicatesWithAggregationProjection() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) " +
+                "WITH CASE " +
+                "  WHEN n:person THEN true " +
+                "  WHEN n:software THEN false " +
+                "END AS result, count(n) as count " +
+                "RETURN result, count * 2 as test"
+        );
+
+        assertThat(results)
+            .extracting("result", "test")
+            .containsExactlyInAnyOrder(tuple(true, 8L), tuple(false, 4L));
+    }
+
+    @Test
+    public void caseInWhere() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) WHERE " +
+                "(CASE " +
+                "  WHEN n.name= 'josh' THEN 1 " +
+                "  ELSE -1 " +
+                "END) > 0 " +
+                "RETURN n.age as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder(32L);
+    }
+
+    @Test
+    public void simpleCaseInWhere() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) WHERE " +
+                "(CASE n.name " +
+                "  WHEN 'josh' THEN 1 " +
+                "  ELSE -1 " +
+                "END) > 0 " +
+                "RETURN n.age as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder(32L);
     }
 
 

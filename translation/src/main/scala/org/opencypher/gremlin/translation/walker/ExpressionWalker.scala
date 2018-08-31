@@ -473,51 +473,41 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   private def caseExpression(
       maybeExpr: Option[Expression],
       alternatives: IndexedSeq[(Expression, Expression)],
-      defaultValue: Option[Expression]) = {
+      default: Option[Expression]): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
-
-    def nestedChoose(condition: GremlinSteps[T, P]) = {
-      var r = defaultValue match {
-        case Some(value) => walkLocal(value)
-        case None        => __.constant(NULL)
-      }
-
-      for ((predicate, option) <- alternatives.reverse) {
-        r = __.choose(
-          walkLocal(predicate).map(condition),
-          walkLocal(option),
-          r
-        )
-      }
-      r
+    val numbersInTokens = alternatives.exists { case (pickToken, _) => pickToken.isInstanceOf[NumberLiteral] }
+    val defaultValue = default match {
+      case Some(value) => walkLocal(value)
+      case None        => __.constant(NULL)
     }
 
-    def optionChoose(expression: Expression) = {
-      val r = __.choose(walkLocal(expression))
+    def nestedChoose(condition: GremlinSteps[T, P]) =
+      alternatives.reverse.foldLeft(defaultValue) { (nextOption, alternative) =>
+        val (predicate, option) = alternative
+        __.choose(walkLocal(predicate).map(condition), walkLocal(option), nextOption)
+      }
+
+    def optionChoose(choiceExpr: Expression) = {
+      val choose = __.choose(walkLocal(choiceExpr))
 
       for ((pickToken, option) <- alternatives) {
-        r.option(
+        choose.option(
           expressionValue(pickToken, context),
           walkLocal(option)
         )
       }
 
-      defaultValue match {
-        case Some(value) => r.option(Pick.none, walkLocal(value))
-        case None        => r.option(Pick.none, __.constant(NULL))
-      }
+      choose.option(Pick.none, defaultValue)
     }
 
-    val numbersInTokens = alternatives.exists { case (pickToken, _) => pickToken.isInstanceOf[NumberLiteral] }
-
     maybeExpr match {
-      case Some(expr) if !numbersInTokens =>
-        optionChoose(expr)
-      case Some(expr) =>
+      case Some(expr) if numbersInTokens =>
         val name = context.generateName()
         __.map(walkLocal(expr))
           .as(name)
           .map(nestedChoose(__.where(p.isEq(name))))
+      case Some(expr) =>
+        optionChoose(expr)
       case None =>
         nestedChoose(__.is(p.isEq(true)))
     }
