@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -33,18 +34,14 @@ public class CaseTest {
     }
 
     @Test
-    public void numericMatch() throws Exception {
+    public void simpleFormNumericMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
-            "MATCH (n:person)\n" +
-                "RETURN\n" +
-                "  CASE n.age\n" +
-                "  WHEN 35\n" +
-                "  THEN 'tetrahedral'\n" +
-                "  WHEN 27\n" +
-                "  THEN 'smith'\n" +
-                "  WHEN 29\n" +
-                "  THEN 'markov'\n" +
-                "  ELSE 'boring'\n" +
+            "MATCH (n:person) RETURN " +
+                "CASE n.age" +
+                "  WHEN 35 THEN 'tetrahedral' " +
+                "  WHEN 27 THEN 'smith' " +
+                "  WHEN 29 THEN 'markov' " +
+                "  ELSE 'boring' " +
                 "END AS number"
         );
 
@@ -54,16 +51,13 @@ public class CaseTest {
     }
 
     @Test
-    public void stringMatch() throws Exception {
+    public void simpleFormStringMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:software) RETURN\n" +
-                "CASE n.name\n" +
-                "  WHEN 'lop'\n" +
-                "  THEN 1\n" +
-                "  WHEN 'ripple'\n" +
-                "  THEN 2\n" +
-                "END\n" +
-                "AS index"
+                "CASE n.name " +
+                "  WHEN 'lop' THEN 1 " +
+                "  WHEN 'ripple' THEN 2 " +
+                "END AS index"
         );
 
         assertThat(results)
@@ -72,13 +66,11 @@ public class CaseTest {
     }
 
     @Test
-    public void partialMatch() throws Exception {
+    public void simpleFormPartialMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
-            "MATCH (n:person)\n" +
-                "RETURN\n" +
-                "  CASE n.age\n" +
-                "  WHEN 35\n" +
-                "  THEN 'tetrahedral'\n" +
+            "MATCH (n:person) RETURN " +
+                "CASE n.age " +
+                "  WHEN 35 THEN 'tetrahedral' " +
                 "END AS number"
         );
 
@@ -90,14 +82,12 @@ public class CaseTest {
     @Test
     public void predicateMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
-            "MATCH (n)\n" +
-                "RETURN\n" +
-                "CASE\n" +
-                "WHEN n.name = 'marko'\n" +
-                "THEN 1\n" +
-                "WHEN n.age < 40\n" +
-                "THEN 2\n" +
-                "ELSE 3 END AS result"
+            "MATCH (n) RETURN " +
+                "CASE " +
+                "  WHEN n.name = 'marko' THEN 1 " +
+                "  WHEN n.age < 40 THEN 2 " +
+                "  ELSE 3 " +
+                "END AS result"
         );
 
         assertThat(results)
@@ -105,7 +95,90 @@ public class CaseTest {
             .containsExactlyInAnyOrder(1L, 2L, 3L, 2L, 3L, 2L);
     }
 
-    //test predicate
+    @Test
+    public void orderWhenMatching2Predicates() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) RETURN\n" +
+                "CASE " +
+                "    WHEN n.name = 'marko' THEN 'one'" +
+                "    WHEN n.age < 30 THEN 0 " +
+                "END AS result"
+        );
 
-    //test expression is empty
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder("one", 0L, null, null);
+    }
+
+    @Test
+    public void simpleFormMatchUnexpectedNulls() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN " +
+                "CASE n.age" +
+                "  WHEN 32 THEN 'bingo'" +
+                "END as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder("bingo", null, null, null, null, null);
+    }
+
+    @Test
+    public void simpleMatchDifferentTypes() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND [13, 3.14, 'bingo', true, null, ['a']] AS n RETURN CASE n " +
+                "  WHEN 13 THEN 'integer' " +
+                "  WHEN 3.14 THEN 'float' " +
+                "  WHEN 'bingo' THEN 'string' " +
+                "  WHEN true THEN 'boolean' " +
+                "  WHEN null THEN 'null' " +
+                "  WHEN ['a'] THEN 'collection' " +
+                "END as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder("integer", "float", "string", "boolean", "null", "collection");
+    }
+
+    @Test
+    public void simpleReturnDifferentTypes() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN " +
+                "CASE n.name" +
+                "  WHEN 'marko' THEN 13 " +
+                "  WHEN 'vadas' THEN 3.14 " +
+                "  WHEN 'josh' THEN 'bingo' " +
+                "  WHEN 'peter' THEN true " +
+                "  WHEN 'lop' THEN null " +
+                "  WHEN 'ripple' THEN ['a'] " +
+                "END as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder(13L, 3.14, "bingo", true, null, asList("a"));
+    }
+
+    @Test
+    public void returnDifferentTypes() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN " +
+                "CASE" +
+                "  WHEN n.age = 29 THEN 13 " +
+                "  WHEN n.age = 27 THEN 3.14 " +
+                "  WHEN n.age = 32 THEN 'bingo' " +
+                "  WHEN n.age = 35 THEN true " +
+                "  WHEN n.name = 'lop' THEN null " +
+                "  WHEN n.name = 'ripple' THEN ['a'] " +
+                "END as result"
+        );
+
+        assertThat(results)
+            .extracting("result")
+            .containsExactlyInAnyOrder(13L, 3.14, "bingo", true, null, asList("a"));
+    }
+
+
 }
