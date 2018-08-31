@@ -129,7 +129,7 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
 
     @Override
     public GremlinSteps<Bytecode, P> choose(GremlinSteps<Bytecode, P> choiceTraversal) {
-        bytecode.addStep(Symbols.choose, choiceTraversal);
+        bytecode.addStep(Symbols.choose, choiceTraversal.current());
         return this;
     }
 
@@ -369,9 +369,10 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
 
     @Override
     public GremlinSteps<Bytecode, P> option(Object pickToken, GremlinSteps<Bytecode, P> traversalOption) {
-        bytecode.addStep(Symbols.optional, pickToken, traversalOption.current());
+        bytecode.addStep(Symbols.option, pickToken, traversalOption.current());
         return this;
     }
+
     @Override
     public GremlinSteps<Bytecode, P> optional(GremlinSteps<Bytecode, P> optionalTraversal) {
         bytecode.addStep(Symbols.optional, optionalTraversal.current());
