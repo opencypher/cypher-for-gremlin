@@ -281,50 +281,11 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           context
         )
 
-      case CaseExpression(Some(expr), alternatives, defaultValue) =>
-        val r = __.choose(walkLocal(expr))
+      case CaseExpression(expr, alternatives, defaultValue) =>
+        caseExpression(expr, alternatives, defaultValue)
 
-        for ((pickToken, option) <- alternatives) {
-          r.option(
-            numbersToInt(pickToken),
-            walkLocal(option)
-          )
-        }
-
-        defaultValue match {
-          case Some(value) => r.option(Pick.none, walkLocal(value))
-          case None        => r.option(Pick.none, __.constant(NULL))
-        }
-
-      case CaseExpression(None, alternatives, defaultValue) =>
-        val p = context.dsl.predicates()
-
-        var r = defaultValue match {
-          case Some(value) => walkLocal(value)
-          case None        => __.constant(NULL)
-        }
-
-        for ((predicate, option) <- alternatives.reverse) {
-          r = __.choose(
-            walkLocal(predicate).is(p.isEq(true)),
-            walkLocal(option),
-            r
-          )
-        }
-
-        r
       case _ =>
         __.constant(expressionValue(expression, context))
-    }
-  }
-
-  //todo
-  private def numbersToInt(pickToken: Expression) = {
-    expressionValue(pickToken, context) match {
-      case n: Number =>
-        n.intValue()
-      case o =>
-        o
     }
   }
 
@@ -506,6 +467,59 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case ListType(_: PathType) => __.count()
       case _: ListType           => __.count(Scope.local)
       case _                     => __.map(CustomFunction.cypherSize())
+    }
+  }
+
+  private def caseExpression(
+      maybeExpr: Option[Expression],
+      alternatives: IndexedSeq[(Expression, Expression)],
+      defaultValue: Option[Expression]) = {
+    val p = context.dsl.predicates()
+
+    def nestedChoose(condition: GremlinSteps[T, P]) = {
+      var r = defaultValue match {
+        case Some(value) => walkLocal(value)
+        case None        => __.constant(NULL)
+      }
+
+      for ((predicate, option) <- alternatives.reverse) {
+        r = __.choose(
+          walkLocal(predicate).map(condition),
+          walkLocal(option),
+          r
+        )
+      }
+      r
+    }
+
+    def optionChoose(expression: Expression) = {
+      val r = __.choose(walkLocal(expression))
+
+      for ((pickToken, option) <- alternatives) {
+        r.option(
+          expressionValue(pickToken, context),
+          walkLocal(option)
+        )
+      }
+
+      defaultValue match {
+        case Some(value) => r.option(Pick.none, walkLocal(value))
+        case None        => r.option(Pick.none, __.constant(NULL))
+      }
+    }
+
+    val numbersInTokens = alternatives.exists { case (pickToken, _) => pickToken.isInstanceOf[NumberLiteral] }
+
+    maybeExpr match {
+      case Some(expr) if !numbersInTokens =>
+        optionChoose(expr)
+      case Some(expr) =>
+        val name = context.generateName()
+        __.map(walkLocal(expr))
+          .as(name)
+          .map(nestedChoose(__.where(p.isEq(name))))
+      case None =>
+        nestedChoose(__.is(p.isEq(true)))
     }
   }
 
