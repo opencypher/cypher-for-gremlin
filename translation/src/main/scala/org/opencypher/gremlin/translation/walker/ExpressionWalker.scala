@@ -484,7 +484,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     def nestedChoose(condition: GremlinSteps[T, P]) =
       alternatives.reverse.foldLeft(defaultValue) { (nextOption, alternative) =>
         val (predicate, option) = alternative
-        __.choose(walkLocal(predicate).map(condition), walkLocal(option), nextOption)
+        __.choose(walkLocal(predicate).flatMap(condition), walkLocal(option), nextOption)
       }
 
     def optionChoose(choiceExpr: Expression) = {
@@ -503,9 +503,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     maybeExpr match {
       case Some(expr) if numbersInTokens =>
         val name = context.generateName()
-        __.map(walkLocal(expr))
+        __.flatMap(walkLocal(expr))
           .as(name)
-          .map(nestedChoose(__.where(p.isEq(name))))
+          .flatMap(nestedChoose(__.where(p.isEq(name))))
       case Some(expr) =>
         optionChoose(expr)
       case None =>
