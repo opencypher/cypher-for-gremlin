@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
+import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalOptionParent.Pick
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
@@ -281,6 +281,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           context
         )
 
+      case CaseExpression(expr, alternatives, defaultValue) =>
+        caseExpression(expr, alternatives, defaultValue)
+
       case _ =>
         __.constant(expressionValue(expression, context))
     }
@@ -464,6 +467,49 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case ListType(_: PathType) => __.count()
       case _: ListType           => __.count(Scope.local)
       case _                     => __.map(CustomFunction.cypherSize())
+    }
+  }
+
+  private def caseExpression(
+      maybeExpr: Option[Expression],
+      alternatives: IndexedSeq[(Expression, Expression)],
+      default: Option[Expression]): GremlinSteps[T, P] = {
+    val p = context.dsl.predicates()
+    val numbersInTokens = alternatives.exists { case (pickToken, _) => pickToken.isInstanceOf[NumberLiteral] }
+    val defaultValue = default match {
+      case Some(value) => walkLocal(value)
+      case None        => __.constant(NULL)
+    }
+
+    def nestedChoose(condition: GremlinSteps[T, P]) =
+      alternatives.reverse.foldLeft(defaultValue) { (nextOption, alternative) =>
+        val (predicate, option) = alternative
+        __.choose(walkLocal(predicate).flatMap(condition), walkLocal(option), nextOption)
+      }
+
+    def optionChoose(choiceExpr: Expression) = {
+      val choose = __.choose(walkLocal(choiceExpr))
+
+      for ((pickToken, option) <- alternatives) {
+        choose.option(
+          expressionValue(pickToken, context),
+          walkLocal(option)
+        )
+      }
+
+      choose.option(Pick.none, defaultValue)
+    }
+
+    maybeExpr match {
+      case Some(expr) if numbersInTokens =>
+        val name = context.generateName()
+        __.flatMap(walkLocal(expr))
+          .as(name)
+          .flatMap(nestedChoose(__.where(p.isEq(name))))
+      case Some(expr) =>
+        optionChoose(expr)
+      case None =>
+        nestedChoose(__.is(p.isEq(true)))
     }
   }
 

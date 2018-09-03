@@ -22,8 +22,8 @@ import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.ir.verify._
-import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFeature}
 import org.opencypher.gremlin.translation.translator.TranslatorFeature._
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFeature}
 
 import scala.collection.JavaConverters._
 
@@ -96,6 +96,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
             .getOrElse(g.by(writeLocalSteps(traversal)))
         case Cap(sideEffectKey) =>
           g.cap(sideEffectKey)
+        case ChooseC(choiceTraversal) =>
+          g.choose(writeLocalSteps(choiceTraversal))
         case ChooseT(traversalPredicate, trueChoice, falseChoice) =>
           if (trueChoice.nonEmpty && falseChoice.nonEmpty) {
             g.choose(writeLocalSteps(traversalPredicate), writeLocalSteps(trueChoice), writeLocalSteps(falseChoice))
@@ -176,6 +178,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.min()
         case Not(notTraversal) =>
           g.not(writeLocalSteps(notTraversal))
+        case OptionT(pickToken, optionalTraversal) =>
+          g.option(pickToken, writeLocalSteps(optionalTraversal))
         case Optional(optionalTraversal) =>
           g.optional(writeLocalSteps(optionalTraversal))
         case Or(orTraversals @ _*) =>

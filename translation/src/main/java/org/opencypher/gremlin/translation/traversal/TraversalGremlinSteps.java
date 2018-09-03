@@ -163,6 +163,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> choose(final GremlinSteps<GraphTraversal, P> choiceTraversal) {
+        g.choose(choiceTraversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> choose(final GremlinSteps<GraphTraversal, P> traversalPredicate,
                                                   GremlinSteps<GraphTraversal, P> trueChoice,
                                                   GremlinSteps<GraphTraversal, P> falseChoice) {
@@ -395,6 +401,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> not(GremlinSteps<GraphTraversal, P> notTraversal) {
         g.not(notTraversal.current());
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> option(Object pickToken, GremlinSteps<GraphTraversal, P> traversalOption) {
+        g.option(pickToken, traversalOption.current());
         return this;
     }
 

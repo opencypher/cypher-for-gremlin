@@ -61,7 +61,9 @@ object SimplifySingleProjections extends GremlinRewriter {
       case SelectK(key1) :: rest if key == key1 && rest.isEmpty =>
         Identity :: Nil
       case _ =>
-        steps
+        steps.map({ step =>
+          step.mapTraversals(subSteps => mapTraversals(removeSelect(key, _))(subSteps))
+        })
     }
   }
 

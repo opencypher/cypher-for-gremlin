@@ -101,6 +101,12 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def choose(choiceTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
+    : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += ChooseC(choiceTraversal.current())
+    this
+  }
+
   override def choose(
       traversalPredicate: GremlinSteps[Seq[GremlinStep], GremlinPredicate],
       trueChoice: GremlinSteps[Seq[GremlinStep], GremlinPredicate],
@@ -304,6 +310,12 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
   override def not(notTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Not(notTraversal.current())
+    this
+  }
+
+  override def option(pickToken: Object, traversalOption: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
+    : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += OptionT(pickToken, traversalOption.current())
     this
   }
 

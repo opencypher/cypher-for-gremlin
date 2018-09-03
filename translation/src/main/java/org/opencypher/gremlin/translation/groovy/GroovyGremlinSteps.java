@@ -134,6 +134,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> choose(GremlinSteps<String, GroovyPredicate> choiceTraversal) {
+        g.append(chain("choose", traversal(choiceTraversal)));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> choose(GremlinSteps<String, GroovyPredicate> predicate,
                                                         GremlinSteps<String, GroovyPredicate> trueChoice,
                                                         GremlinSteps<String, GroovyPredicate> falseChoice) {
@@ -367,6 +373,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @Override
     public GremlinSteps<String, GroovyPredicate> not(GremlinSteps<String, GroovyPredicate> notTraversal) {
         g.append(chain("not", traversal(notTraversal)));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> option(Object pickToken, GremlinSteps<String, GroovyPredicate> traversalOption) {
+        g.append(chain("option", pickToken, traversal(traversalOption)));
         return this;
     }
 
