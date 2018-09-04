@@ -243,13 +243,37 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         targetT.unfold().as(dependencyName).flatMap(functionT).fold()
 
       case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybeExpression, projection, _) =>
-        val varName = patternComprehensionPath(relationshipChain, maybeExpression, projection)
-        val traversal = __.select(varName)
-
         projection match {
           case PathExpression(_) =>
-            traversal.map(CustomFunction.cypherPathComprehension())
+            val select = __
+            val contextWhere = context.copy()
+            val name = contextWhere.generateName()
+
+            PatternWalker.walk(contextWhere, select, relationshipChain, Some(name))
+            maybeExpression.foreach(WhereWalker.walk(contextWhere, select, _))
+
+            select
+              .path()
+              .project(PROJECTION_RELATIONSHIP, PROJECTION_ELEMENT)
+              .by(
+                __.select(PATH_EDGE + name)
+                  .unfold()
+                  .project(PROJECTION_ID, PROJECTION_INV, PROJECTION_OUTV)
+                  .by(__.id())
+                  .by(__.inV().id())
+                  .by(__.outV().id())
+                  .fold()
+              )
+              .by(
+                __.unfold()
+                  .is(p.neq(START))
+                  .valueMap(true)
+                  .fold())
+              .fold()
           case expression: Expression =>
+            val varName = patternComprehensionPath(relationshipChain, maybeExpression, projection)
+            val traversal = __.select(varName)
+
             val functionT = walkLocal(expression)
             if (expression.dependencies.isEmpty) {
               traversal.unfold().flatMap(functionT).fold()
