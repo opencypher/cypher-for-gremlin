@@ -212,7 +212,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
-        val traversals = args.map(walkLocal)
+        val traversals = args.map(walkLocal(_, maybeAlias))
         val traversal = fnName.toLowerCase match {
           case "abs"           => traversals.head.math("abs(_)")
           case "coalesce"      => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
@@ -259,7 +259,27 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             PatternWalker.walk(contextWhere, select, relationshipChain, maybeAlias)
             maybeExpression.foreach(WhereWalker.walk(contextWhere, select, _))
 
-            __.coalesce(select.path(), __.constant(START))
+            val start = __
+
+            val name = context.generateName()
+            if (expression.dependencies.size > 1) {
+              start.as(name)
+            }
+
+            expression.dependencies.toStream.zipWithIndex.foreach {
+              case (LogicalVariable(alias), i) =>
+                if (i > 0) start.select(name)
+                start.select(alias).as(alias)
+                context.alias(alias)
+              case _ =>
+            }
+
+            start
+              .coalesce(
+                select
+                  .path()
+                  .from(MATCH_START + maybeAlias.get),
+                __.constant(START))
           case expression: Expression =>
             val varName = patternComprehensionPath(relationshipChain, maybeExpression, projection)
             val traversal = __.select(varName)
