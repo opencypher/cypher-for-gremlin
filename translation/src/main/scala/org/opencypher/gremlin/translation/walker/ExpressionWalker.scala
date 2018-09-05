@@ -40,8 +40,12 @@ object ExpressionWalker {
     new ExpressionWalker(context, g).walk(node)
   }
 
-  def walkLocal[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: Expression): GremlinSteps[T, P] = {
-    new ExpressionWalker(context, g).walkLocal(node)
+  def walkLocal[T, P](
+      context: WalkerContext[T, P],
+      g: GremlinSteps[T, P],
+      node: Expression,
+      maybeAlias: Option[String] = None): GremlinSteps[T, P] = {
+    new ExpressionWalker(context, g).walkLocal(node, maybeAlias)
   }
 
   def walkProperty[T, P](
@@ -62,6 +66,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   private def __ = g.start()
 
   private def walkLocal(expression: Expression): GremlinSteps[T, P] = {
+    walkLocal(expression, None)
+  }
+
+  private def walkLocal(expression: Expression, maybeAlias: Option[String]): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
 
     expression match {
@@ -247,29 +255,11 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case PathExpression(_) =>
             val select = __
             val contextWhere = context.copy()
-            val name = contextWhere.generateName()
 
-            PatternWalker.walk(contextWhere, select, relationshipChain, Some(name))
+            PatternWalker.walk(contextWhere, select, relationshipChain, maybeAlias)
             maybeExpression.foreach(WhereWalker.walk(contextWhere, select, _))
 
-            select
-              .path()
-              .project(PROJECTION_RELATIONSHIP, PROJECTION_ELEMENT)
-              .by(
-                __.select(PATH_EDGE + name)
-                  .unfold()
-                  .project(PROJECTION_ID, PROJECTION_INV, PROJECTION_OUTV)
-                  .by(__.id())
-                  .by(__.inV().id())
-                  .by(__.outV().id())
-                  .fold()
-              )
-              .by(
-                __.unfold()
-                  .is(p.neq(START))
-                  .valueMap(true)
-                  .fold())
-              .fold()
+            __.coalesce(select.path(), __.constant(START))
           case expression: Expression =>
             val varName = patternComprehensionPath(relationshipChain, maybeExpression, projection)
             val traversal = __.select(varName)

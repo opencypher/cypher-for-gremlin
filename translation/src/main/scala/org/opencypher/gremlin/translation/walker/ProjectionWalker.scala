@@ -251,9 +251,15 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       alias: String,
       expression: Expression,
       finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
-    Try(walkLocal(expression)).map { localTraversal =>
+
+    val variable = expression match {
+      case Variable(a) => a
+      case _           => alias
+    }
+
+    Try(walkLocal(expression, Some(alias))).map { localTraversal =>
       if (finalize) {
-        (Pivot, finalizeValue(localTraversal, alias))
+        (Pivot, finalizeValue(localTraversal, variable, expression))
       } else {
         (Pivot, localTraversal)
       }
@@ -265,10 +271,13 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }.get
   }
 
-  private def finalizeValue(subTraversal: GremlinSteps[T, P], alias: String): GremlinSteps[T, P] = {
+  private def finalizeValue(
+      subTraversal: GremlinSteps[T, P],
+      variable: String,
+      expression: Expression): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
 
-    val qualifiedType = context.returnTypes.get(alias) match {
+    val qualifiedType = context.expressionTypes.get(expression) match {
       case Some(typ: ListType) => (typ, typ.innerType)
       case Some(typ)           => (typ, AnyType.instance)
       case _                   => (AnyType.instance, AnyType.instance)
@@ -282,6 +291,24 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         .by(__.valueMap(true))
         .by(__.inV().id())
         .by(__.outV().id())
+
+    lazy val finalizePath =
+      __.is(p.neq(START))
+        .project(PROJECTION_RELATIONSHIP, PROJECTION_ELEMENT)
+        .by(
+          __.select(PATH_EDGE + variable)
+            .unfold()
+            .project(PROJECTION_ID, PROJECTION_INV, PROJECTION_OUTV)
+            .by(__.id())
+            .by(__.inV().id())
+            .by(__.outV().id())
+            .fold()
+        )
+        .by(
+          __.unfold()
+            .is(p.neq(START))
+            .valueMap(true)
+            .fold())
 
     qualifiedType match {
       case (_: NodeType, _) =>
@@ -310,21 +337,13 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case (_: PathType, _) =>
         nullIfNull(
           subTraversal,
-          __.project(PROJECTION_RELATIONSHIP, PROJECTION_ELEMENT)
-            .by(
-              __.select(PATH_EDGE + alias)
-                .unfold()
-                .project(PROJECTION_ID, PROJECTION_INV, PROJECTION_OUTV)
-                .by(__.id())
-                .by(__.inV().id())
-                .by(__.outV().id())
-                .fold()
-            )
-            .by(
-              __.unfold()
-                .is(p.neq(START))
-                .valueMap(true)
-                .fold())
+          finalizePath
+        )
+      case (_: ListType, _: PathType) =>
+        nullIfNull(
+          subTraversal,
+          __.flatMap(finalizePath)
+            .fold()
         )
       case _ =>
         subTraversal
@@ -353,7 +372,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "avg" =>
             (Aggregation, traversal.mean())
           case "collect" if finalize =>
-            (Aggregation, finalizeValue(traversal.fold(), alias))
+            (Aggregation, finalizeValue(traversal.fold(), alias, expression))
           case "collect" =>
             (Aggregation, traversal.fold())
           case "count" =>
@@ -399,6 +418,10 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     val traversal = walkLocal(args.head).fold().project(keys: _*).by(__.identity())
     args.drop(1).map(walkLocal).foreach(traversal.by)
     traversal.select(Column.values)
+  }
+
+  private def walkLocal(expression: Expression, maybeAlias: Option[String]): GremlinSteps[T, P] = {
+    ExpressionWalker.walkLocal(context, g, expression, maybeAlias)
   }
 
   private def walkLocal(expression: Expression): GremlinSteps[T, P] = {

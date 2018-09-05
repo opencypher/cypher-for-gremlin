@@ -78,7 +78,7 @@ class CypherAst private (
       .enableMultipleLabels()
       .build()
 
-    val context = WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)
+    val context = WalkerContext(dsl, expressionTypes, procedures, parameters)
     StatementWalker.walk(context, statement)
     val ir = dsl.translate()
 

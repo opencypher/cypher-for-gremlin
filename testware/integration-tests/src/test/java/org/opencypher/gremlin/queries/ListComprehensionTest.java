@@ -129,20 +129,6 @@ public class ListComprehensionTest {
     }
 
     @Test
-    public void pathInPatternComprehension2() throws Exception {
-        submitAndGet("CREATE (a:A) " +
-            "CREATE (a)-[:T]->(:B), " +
-            "       (a)-[:T]->(:C)");
-
-        String cypher = "MATCH (n) " +
-            "RETURN [p = (n)-->() | p] AS ps";
-
-        List<Map<String, Object>> results = submitAndGet(cypher);
-
-        System.out.println(results);
-    }
-
-    @Test
     public void patternComprehensionNodeDegree() throws Exception {
         submitAndGet("CREATE (x:X),\n" +
             "(x)-[:T]->(),\n" +
