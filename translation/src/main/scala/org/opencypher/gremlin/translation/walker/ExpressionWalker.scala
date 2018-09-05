@@ -85,7 +85,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case _                         => None
         }
         maybeExtractStep.map { extractStep =>
-          walkLocal(expr)
+          walkLocal(expr, maybeAlias)
             .flatMap(notNull(emptyToNull(extractStep(keyName), context), context))
         }.getOrElse {
           val key = StringLiteral(keyName)(InputPosition.NONE)
@@ -93,7 +93,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
 
       case HasLabels(expr, List(LabelName(label))) =>
-        walkLocal(expr)
+        walkLocal(expr, maybeAlias)
           .flatMap(notNull(anyMatch(__.hasLabel(label)), context))
 
       case Equals(lhs, rhs)             => comparison(lhs, rhs, p.isEq)
@@ -110,13 +110,13 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         membership(lhs, rhs)
 
       case IsNull(expr) =>
-        walkLocal(expr).flatMap(anyMatch(__.is(p.isEq(NULL))))
+        walkLocal(expr, maybeAlias).flatMap(anyMatch(__.is(p.isEq(NULL))))
 
       case IsNotNull(expr) =>
-        walkLocal(expr).flatMap(anyMatch(__.is(p.neq(NULL))))
+        walkLocal(expr, maybeAlias).flatMap(anyMatch(__.is(p.neq(NULL))))
 
       case Not(rhs) =>
-        val rhsT = walkLocal(rhs)
+        val rhsT = walkLocal(rhs, maybeAlias)
         __.choose(
           copy(rhsT).is(p.isEq(NULL)),
           __.constant(NULL),
@@ -128,7 +128,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         )
 
       case Ands(ands) =>
-        val traversals = ands.map(walkLocal).toSeq
+        val traversals = ands.map(walkLocal(_, maybeAlias)).toSeq
         __.choose(
           __.and(traversals.map(copy).map(_.is(p.isEq(true))): _*),
           __.constant(true),
@@ -140,7 +140,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         )
 
       case Ors(ors) =>
-        val traversals = ors.map(walkLocal).toSeq
+        val traversals = ors.map(walkLocal(_, maybeAlias)).toSeq
         __.choose(
           __.or(traversals.map(copy).map(_.is(p.isEq(true))): _*),
           __.constant(true),
@@ -152,8 +152,8 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         )
 
       case Xor(lhs, rhs) =>
-        val lhsT = walkLocal(lhs)
-        val rhsT = walkLocal(rhs)
+        val lhsT = walkLocal(lhs, maybeAlias)
+        val rhsT = walkLocal(rhs, maybeAlias)
         val rhsName = context.generateName()
         __.choose(
           __.or(copy(lhsT).is(p.isEq(NULL)), copy(rhsT).is(p.isEq(NULL))),
@@ -184,7 +184,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case ContainerIndex(expr, idx) =>
         (typeOf(expr), idx) match {
           case (_: ListType, l: IntegerLiteral) if l.value >= 0 =>
-            walkLocal(expr).flatMap(
+            walkLocal(expr, maybeAlias).flatMap(
               emptyToNull(
                 __.range(Scope.local, l.value, l.value + 1),
                 context
@@ -199,13 +199,13 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         (fromIdx, toIdx) match {
           case (from: IntegerLiteral, to: IntegerLiteral)
               if from.value == to.value || (from.value > to.value && to.value >= 0) =>
-            walkLocal(expr).limit(0).fold()
+            walkLocal(expr, maybeAlias).limit(0).fold()
           case (from: IntegerLiteral, to: IntegerLiteral) if from.value >= 0 && (to.value >= 1 || to.value == -1) =>
             val rangeT = __.range(Scope.local, from.value, to.value)
             if (to.value - from.value == 1) {
               rangeT.fold()
             }
-            walkLocal(expr)
+            walkLocal(expr, maybeAlias)
               .flatMap(emptyToNull(rangeT, context))
           case _ =>
             asList(expr, fromIdx, toIdx).map(CustomFunction.cypherListSlice())
@@ -244,58 +244,45 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         traversal
 
       case ListComprehension(ExtractScope(_, _, Some(function)), target) if function.dependencies.size == 1 =>
-        val targetT = walkLocal(target)
-        val functionT = walkLocal(function)
+        val targetT = walkLocal(target, maybeAlias)
+        val functionT = walkLocal(function, maybeAlias)
 
         val Variable(dependencyName) = function.dependencies.head
         targetT.unfold().as(dependencyName).flatMap(functionT).fold()
 
-      case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybeExpression, projection, _) =>
-        projection match {
-          case PathExpression(_) =>
-            val select = __
-            val contextWhere = context.copy()
+      case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybePredicate, PathExpression(_), _) =>
+        val select = __
+        val contextWhere = context.copy()
+        PatternWalker.walk(contextWhere, select, relationshipChain, maybeAlias)
+        maybePredicate.foreach(WhereWalker.walk(contextWhere, select, _))
 
-            PatternWalker.walk(contextWhere, select, relationshipChain, maybeAlias)
-            maybeExpression.foreach(WhereWalker.walk(contextWhere, select, _))
+        val pathName = maybeAlias.getOrElse(context.unsupported("unnamed path comprehension", expression))
+        reselectProjection(expression.dependencies.toSeq, context)
+          .coalesce(
+            select
+              .path()
+              .from(MATCH_START + pathName),
+            __.constant(UNUSED))
 
-            val start = __
+      case PatternComprehension(
+          _,
+          RelationshipsPattern(relationshipChain),
+          maybePredicate,
+          projection: Expression,
+          _) =>
+        val traversal = __
+        val contextWhere = context.copy()
+        PatternWalker.walk(contextWhere, traversal, relationshipChain)
+        maybePredicate.foreach(WhereWalker.walk(contextWhere, traversal, _))
 
-            val name = context.generateName()
-            if (expression.dependencies.size > 1) {
-              start.as(name)
-            }
-
-            expression.dependencies.toStream.zipWithIndex.foreach {
-              case (LogicalVariable(alias), i) =>
-                if (i > 0) start.select(name)
-                start.select(alias).as(alias)
-                context.alias(alias)
-              case _ =>
-            }
-
-            start
-              .coalesce(
-                select
-                  .path()
-                  .from(MATCH_START + maybeAlias.get),
-                __.constant(START))
-
-          case expression: Expression =>
-            val traversal = __
-            val contextWhere = context.copy()
-            PatternWalker.walk(contextWhere, traversal, relationshipChain)
-            maybeExpression.foreach(WhereWalker.walk(contextWhere, traversal, _))
-
-            val functionT = walkLocal(expression)
-            if (expression.dependencies.isEmpty) {
-              traversal.flatMap(functionT).fold()
-            } else if (expression.dependencies.size == 1) {
-              val Variable(dependencyName) = expression.dependencies.head
-              traversal.as(dependencyName).flatMap(functionT).fold()
-            } else {
-              context.unsupported("pattern comprehension with multiple arguments", expression)
-            }
+        val functionT = walkLocal(projection, maybeAlias)
+        if (projection.dependencies.isEmpty) {
+          traversal.flatMap(functionT).fold()
+        } else if (projection.dependencies.size == 1) {
+          val Variable(dependencyName) = projection.dependencies.head
+          traversal.as(dependencyName).flatMap(functionT).fold()
+        } else {
+          context.unsupported("pattern comprehension with multiple arguments", expression)
         }
 
       case PatternExpression(RelationshipsPattern(relationshipChain)) =>
@@ -309,7 +296,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case MapExpression(items @ _ :: _) =>
         val keys = items.map(_._1.name)
         val traversal = __.project(keys: _*)
-        items.map(_._2).map(walkLocal).foreach(traversal.by)
+        items.map(_._2).map(walkLocal(_, maybeAlias)).foreach(traversal.by)
         traversal
 
       case _: Parameter =>

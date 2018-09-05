@@ -19,6 +19,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
@@ -102,7 +103,27 @@ public class ListComprehensionTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void pathInPatternComprehension() throws Exception {
+        submitAndGet("CREATE (a:A), (:A), (:A) " +
+            "      CREATE (a)-[:HAS]->(:B)");
+
+        String cypher = "MATCH (n:A) " +
+            "RETURN [p = (n)-[:HAS]->() | p] AS ps";
+
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .hasSize(3)
+            .extracting("ps")
+            .flatExtracting(m -> ((Collection) m))
+            .flatExtracting(m -> m               )
+            .extracting("_label")
+            .contains("A", "HAS", "B");
+    }
+
+    @Test
+    public void varLengthPathInPatternComprehension() throws Exception {
         submitAndGet("CREATE (:A)-[:T]->(:B)");
 
         String cypher = "MATCH (a:A), (b:B) " +
