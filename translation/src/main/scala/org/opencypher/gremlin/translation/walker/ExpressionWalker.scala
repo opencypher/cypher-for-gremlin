@@ -280,16 +280,19 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
                   .path()
                   .from(MATCH_START + maybeAlias.get),
                 __.constant(START))
+
           case expression: Expression =>
-            val varName = patternComprehensionPath(relationshipChain, maybeExpression, projection)
-            val traversal = __.select(varName)
+            val traversal = __
+            val contextWhere = context.copy()
+            PatternWalker.walk(contextWhere, traversal, relationshipChain)
+            maybeExpression.foreach(WhereWalker.walk(contextWhere, traversal, _))
 
             val functionT = walkLocal(expression)
             if (expression.dependencies.isEmpty) {
-              traversal.unfold().flatMap(functionT).fold()
+              traversal.flatMap(functionT).fold()
             } else if (expression.dependencies.size == 1) {
               val Variable(dependencyName) = expression.dependencies.head
-              traversal.unfold().as(dependencyName).flatMap(functionT).fold()
+              traversal.as(dependencyName).flatMap(functionT).fold()
             } else {
               context.unsupported("pattern comprehension with multiple arguments", expression)
             }
@@ -545,24 +548,5 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case None =>
         nestedChoose(__.is(p.isEq(true)))
     }
-  }
-
-  private def patternComprehensionPath(
-      relationshipChain: RelationshipChain,
-      maybePredicate: Option[Expression],
-      projection: Expression): String = {
-    val select = __
-    val contextWhere = context.copy()
-    PatternWalker.walk(contextWhere, select, relationshipChain)
-    maybePredicate.foreach(WhereWalker.walk(contextWhere, select, _))
-
-    if (projection.isInstanceOf[PathExpression]) {
-      select.path()
-    }
-
-    val name = contextWhere.generateName()
-    g.sideEffect(select.aggregate(name)).barrier()
-
-    name
   }
 }
