@@ -9,6 +9,7 @@ jobs:
 
     environment:
       JAVA_OPTS: -Xmx512m
+      # Additionally memory is set in build.gradle
       TERM: dumb
 
     steps:
@@ -53,7 +54,8 @@ jobs:
     working_directory: ~/repo
 
     environment:
-      JVM_OPTS: -Xmx512m
+      JAVA_OPTS: -Xmx512m
+      # Additionally memory is set in build.gradle
       TERM: dumb
 
     steps:
