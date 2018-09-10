@@ -22,6 +22,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
@@ -36,6 +38,10 @@ public class SetTest {
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
+    }
+
+    private List<Map<String, Object>> submitAndGet(String cypher, Object... parameters) {
+        return gremlinServer.cypherGremlinClient().submit(cypher, parameterMap(parameters)).all();
     }
 
     @Before
@@ -147,6 +153,47 @@ public class SetTest {
     }
 
     @Test
+    public void setParameter() {
+        submitAndGet("CREATE (n:person {loc: 'uk'})");
+
+        String cypher = "MATCH (n:person)" +
+            "SET n.name = {prop} " +
+            "RETURN properties(n) as p";
+
+        List<Map<String, Object>> update = submitAndGet(cypher, "prop", "george");
+
+        System.out.println(update);
+
+        assertThat(update)
+            .extracting("p")
+            .containsExactly(ImmutableMap.of(
+                "loc", "uk",
+                "name", "george"));
+    }
+
+    @Test
+    public void addPropertiesWithMapParameter() {
+        submitAndGet("CREATE (n:person {loc: 'uk'})");
+
+        Map<Object, Object> props = new HashMap<>();
+        props.put("name", 1);
+        props.put("name2", 2);
+
+        String cypher = "MATCH (n:person)" +
+            "SET n += {props} " +
+            "RETURN properties(n) as p";
+
+        List<Map<String, Object>> update = submitAndGet(cypher, "props", props);
+
+        assertThat(update)
+            .extracting("p")
+            .containsExactly(ImmutableMap.of(
+                "loc", "uk",
+                "name", 1L,
+                "name2", 2L));
+    }
+
+    @Test
     public void setPropertiesWithMap() {
         submitAndGet("CREATE (n:person {name: 'peter', age: 60, loc: 'uk'})");
 
@@ -172,5 +219,13 @@ public class SetTest {
         assertThat(update)
             .extracting("a.foo")
             .containsExactly(3L);
+    }
+
+    private HashMap<String, Object> parameterMap(Object[] parameters) {
+        HashMap<String, Object> result = new HashMap<>();
+        for (int i = 0; i < parameters.length; i+=2) {
+            result.put(String.valueOf(parameters[i]), parameters[i+1]);
+        }
+        return result;
     }
 }

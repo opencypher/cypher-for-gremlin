@@ -18,11 +18,13 @@ package org.opencypher.gremlin.translation.walker
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.context.WalkerContext
-import org.opencypher.gremlin.translation.walker.NodeUtils.notNull
+import org.opencypher.gremlin.translation.walker.NodeUtils.{inlineExpressionValue, notNull, toLiteral}
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
-import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 import org.opencypher.v9_0.util.symbols.{AnyType, CypherType}
+import org.opencypher.v9_0.util.{ASTNode, InputPosition}
+
+import scala.collection.JavaConverters._
 
 /**
   * AST walker that handles translation
@@ -53,17 +55,32 @@ private class SetWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P
     items.foreach {
       case SetPropertyItem(Property(v @ Variable(variable), PropertyKeyName(key)), expression: Expression) =>
         setProperty(typeOf(v), variable, key, expression)
-      case SetIncludingPropertiesFromMapItem(v @ Variable(variable), MapExpression(pairs)) =>
-        pairs.foreach {
-          case (PropertyKeyName(key), expression) => setProperty(typeOf(v), variable, key, expression)
+      case SetIncludingPropertiesFromMapItem(v @ Variable(variable), expression) =>
+        asMap(expression).foreach {
+          case (key, value) => setProperty(typeOf(v), variable, key, value)
         }
-      case SetExactPropertiesFromMapItem(v @ Variable(variable), MapExpression(pairs)) =>
+      case SetExactPropertiesFromMapItem(v @ Variable(variable), expression) =>
         g.select(variable).sideEffect(g.start().is(p.neq(NULL)).properties().drop())
-        pairs.foreach {
-          case (PropertyKeyName(key), expression) => setProperty(typeOf(v), variable, key, expression)
+        asMap(expression).foreach {
+          case (key, value) => setProperty(typeOf(v), variable, key, value)
         }
       case n =>
         context.unsupported("set clause", n)
+    }
+  }
+
+  def asMap(map: Expression): Map[String, Expression] = {
+    map match {
+      case MapExpression(pairs) =>
+        pairs.map {
+          case (PropertyKeyName(key), expression) =>
+            (key, expression)
+        }.toMap
+      case p: Parameter =>
+        val map = inlineExpressionValue(p, context, classOf[java.util.Map[String, _]])
+        map.asScala.map {
+          case (name, value) => (name, toLiteral(value))
+        }.toMap
     }
   }
 

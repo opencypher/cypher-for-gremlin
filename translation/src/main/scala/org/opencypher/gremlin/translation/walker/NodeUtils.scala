@@ -23,8 +23,8 @@ import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.v9_0.expressions._
-import org.opencypher.v9_0.util.ASTNode
 import org.opencypher.v9_0.util.symbols.{CypherType, NodeType, RelationshipType}
+import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 
 import scala.collection.JavaConverters._
 
@@ -170,6 +170,18 @@ object NodeUtils {
       case _: NodeType         => traversal.property(single, key, value)
       case _: RelationshipType => traversal.property(key, value)
       case _                   => throw new UnsupportedOperationException(s"Unsupported property type: $cypherType")
+    }
+  }
+
+  def toLiteral(obj: Any): Literal = {
+    obj match {
+      case _: java.lang.Integer | _: java.lang.Long =>
+        SignedDecimalIntegerLiteral(String.valueOf(obj))(InputPosition.NONE)
+      case d: java.lang.Double => DecimalDoubleLiteral(String.valueOf(d))(InputPosition.NONE)
+      case s: java.lang.String => StringLiteral(s)(InputPosition.NONE)
+      case true                => True()(InputPosition.NONE)
+      case false               => False()(InputPosition.NONE)
+      case null                => Null()(InputPosition.NONE)
     }
   }
 }
