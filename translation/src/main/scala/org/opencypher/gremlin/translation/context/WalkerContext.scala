@@ -26,10 +26,9 @@ object WalkerContext {
   def apply[T, P](
       dsl: Translator[T, P],
       expressionTypes: Map[Expression, CypherType],
-      returnTypes: Map[String, CypherType],
       procedures: ProcedureContext,
       parameters: Map[String, Any]): WalkerContext[T, P] = {
-    new WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)
+    new WalkerContext(dsl, expressionTypes, procedures, parameters)
   }
 }
 
@@ -38,14 +37,12 @@ object WalkerContext {
   *
   * @param dsl             reference to [[Translator]] implementation in use
   * @param expressionTypes expression Cypher types
-  * @param returnTypes     return types by alias
   * @param procedures      registered procedure context
   * @param parameters      Cypher query parameters
   */
 sealed class WalkerContext[T, P](
     val dsl: Translator[T, P],
     val expressionTypes: Map[Expression, CypherType],
-    val returnTypes: Map[String, CypherType],
     val procedures: ProcedureContext,
     private val parameters: Map[String, Any]) {
 
@@ -114,7 +111,7 @@ sealed class WalkerContext[T, P](
   }
 
   def copy(): WalkerContext[T, P] = {
-    val result = WalkerContext(dsl, expressionTypes, returnTypes, procedures, parameters)
+    val result = WalkerContext(dsl, expressionTypes, procedures, parameters)
     result.firstStatement = firstStatement
     result.referencedAliases ++= referencedAliases
     result.nameGenerator = nameGenerator

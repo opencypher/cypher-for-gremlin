@@ -161,6 +161,24 @@ object NodeUtils {
     g
   }
 
+  def reselectProjection[T, P](items: Seq[LogicalVariable], context: WalkerContext[T, P]): GremlinSteps[T, P] = {
+    val traversal = context.dsl.steps().start()
+    val name = context.generateName()
+    if (items.lengthCompare(1) > 0) {
+      traversal.as(name)
+    }
+
+    items.toStream.zipWithIndex.foreach {
+      case (LogicalVariable(alias), i) =>
+        if (i > 0) traversal.select(name)
+        traversal.select(alias).as(alias)
+        context.alias(alias)
+      case _ =>
+    }
+
+    traversal
+  }
+
   def setProperty[T, P](
       traversal: GremlinSteps[T, P],
       cypherType: CypherType,

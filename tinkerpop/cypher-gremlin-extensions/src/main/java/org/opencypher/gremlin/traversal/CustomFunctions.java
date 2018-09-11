@@ -15,13 +15,7 @@
  */
 package org.opencypher.gremlin.traversal;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ELEMENT;
-import static org.opencypher.gremlin.translation.Tokens.PROJECTION_ID;
-import static org.opencypher.gremlin.translation.Tokens.PROJECTION_INV;
-import static org.opencypher.gremlin.translation.Tokens.PROJECTION_OUTV;
-import static org.opencypher.gremlin.translation.Tokens.PROJECTION_RELATIONSHIP;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,12 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalUtil;
-import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.opencypher.gremlin.translation.Tokens;
@@ -263,40 +252,6 @@ public final class CustomFunctions {
         return i;
     }
 
-    public static Function<Traverser, Object> cypherPathComprehension() {
-        return traverser -> ((Collection) traverser.get()).stream()
-            .map(CustomFunctions::pathToList)
-            .map(path -> {
-                Optional<Edge> first = ((Collection) path)
-                    .stream()
-                    .filter(Edge.class::isInstance)
-                    .map(Edge.class::cast)
-                    .findFirst();
-
-                Edge edge = first.orElseThrow(() -> new RuntimeException("Invalid path, no edge found!"));
-
-                Map<String, Object> result = new HashMap<>();
-
-                Map<String, Object> projectionRelationship = new HashMap<>();
-                projectionRelationship.put(PROJECTION_ID, edge.id());
-                projectionRelationship.put(PROJECTION_INV, edge.inVertex().id());
-                projectionRelationship.put(PROJECTION_OUTV, edge.outVertex().id());
-
-                result.put(PROJECTION_RELATIONSHIP, asList(projectionRelationship));
-
-                result.put(PROJECTION_ELEMENT,
-                    Stream.of(
-                        edge.outVertex(),
-                        edge,
-                        edge.inVertex())
-                        .map(e -> TraversalUtil.apply(e, __.start().valueMap(true).asAdmin()))
-                        .collect(toList()));
-
-                return result;
-            })
-            .collect(toList());
-    }
-
     public static Function<Traverser, Object> cypherPercentileCont() {
         return percentileFunction(
             (data, percentile) -> {
@@ -424,9 +379,5 @@ public final class CustomFunctions {
 
     private static Object nullToToken(Object maybeNull) {
         return maybeNull == null ? Tokens.NULL : maybeNull;
-    }
-
-    private static Object pathToList(Object value) {
-        return value instanceof Path ? new ArrayList<>(((Path) value).objects()) : value;
     }
 }

@@ -85,13 +85,6 @@ public class CustomFunction {
         );
     }
 
-    public static CustomFunction cypherPathComprehension() {
-        return new CustomFunction(
-            "cypherPathComprehension",
-            CustomFunctions.cypherPathComprehension()
-        );
-    }
-
     public static CustomFunction cypherPercentileCont() {
         return new CustomFunction(
             "cypherPercentileCont",
