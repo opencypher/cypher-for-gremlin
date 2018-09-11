@@ -10,6 +10,26 @@ To execute the TCK, from project root:
 
 It is expected for some tests for fail, but the report will give you an overview of supported Cypher features.
 
+### Options
+
+To execute single scenario:
+
+```
+./gradlew tck -Dfeature="featureName" -Dscenario="scenarioName"
+```
+
+To execute single feature:
+
+```
+./gradlew tck -Dfeature="featureName"
+``` 
+
+To exclude scenarios listed in csv file (csv should contain columns `feature` and `scenario`)
+
+```
+./gradlew tck -DignoreFile="/path/to/file.csv"
+```
+
 ### TCK Regression Report
 
 To compare TCK results with some baseline TCK run use these tasks:

@@ -15,9 +15,11 @@
  */
 package org.opencypher.gremlin.tck
 
+import java.io.File
 import java.util
 import java.util.concurrent.TimeUnit.SECONDS
 
+import com.github.tototoshi.csv.CSVReader
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
@@ -29,6 +31,7 @@ import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
 import scala.collection.JavaConverters._
+import scala.io.Source
 
 object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
   val TIME_OUT_SECONDS = 10
@@ -76,8 +79,12 @@ class TckTest {
   def testTck(): util.Collection[DynamicTest] = {
     val scenarioName = System.getProperty("scenario")
     val featureName = System.getProperty("feature")
+    val ignoreFile = System.getProperty("ignoreFile")
+
+    val ignore = Option(ignoreFile).filter(!_.isEmpty).map(readIgnore).getOrElse(Seq())
 
     val scenarios = CypherTCK.allTckScenarios
+      .filter(s => !ignore.contains((s.featureName, s.name)))
       .filter(s => Set(null, "", s.name).contains(scenarioName))
       .filter(s => Set(null, "", s.featureName).contains(featureName))
 
@@ -93,5 +100,12 @@ class TckTest {
       DynamicTest.dynamicTest(name, executable)
     }
     dynamicTests.asJavaCollection
+  }
+
+  private def readIgnore(path: String): Seq[(String, String)] = {
+    CSVReader
+      .open(new File(path))
+      .allWithHeaders()
+      .map(row => (row("feature"), row("scenario")))
   }
 }
