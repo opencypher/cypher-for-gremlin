@@ -29,7 +29,6 @@ import org.opencypher.v9_0.util.symbols._
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
-import scala.util.Try
 
 /**
   * AST walker that handles translation
@@ -102,7 +101,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     for (item <- items) {
       val AliasedReturnItem(expression, Variable(alias)) = item
 
-      val (returnType, traversal) = pivot(alias, expression, finalize)
+      val (returnType, traversal) = subTraversal(alias, expression, finalize)
 
       allCollector.put(alias, traversal)
 
@@ -240,7 +239,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     g.choose(p.neq(NULL), trueChoice, g.start().constant(NULL))
   }
 
-  private def pivot(
+  private def subTraversal(
       alias: String,
       expression: Expression,
       finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
@@ -250,18 +249,16 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case _           => alias
     }
 
-    Try(walkLocal(expression, Some(alias))).map { localTraversal =>
+    if (expression.containsAggregate) {
+      aggregation(alias, expression, finalize)
+    } else {
+      val localTraversal = walkLocal(expression, Some(alias))
       if (finalize) {
         (Pivot, finalizeValue(localTraversal, variable, expression))
       } else {
         (Pivot, localTraversal)
       }
-    }.recover {
-      case e: SyntaxException if e.getMessage.startsWith("Unknown function") =>
-        aggregation(alias, expression, finalize)
-      case e: UnsupportedOperationException if e.getMessage.startsWith("Unsupported value expression") =>
-        aggregation(alias, expression, finalize)
-    }.get
+    }
   }
 
   private def finalizeValue(
@@ -353,7 +350,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case node: FunctionInvocation =>
         val FunctionInvocation(_, FunctionName(fnName), distinct, args) = node
 
-        val (_, traversal) = pivot(alias, args.head, finalize = false)
+        val (_, traversal) = subTraversal(alias, args.head, finalize = false)
 
         if (distinct) {
           traversal.dedup()
