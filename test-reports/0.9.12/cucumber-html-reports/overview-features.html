@@ -1,0 +1,855 @@
+<!doctype html>
+<html>
+ <head> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+  <script type="text/javascript" src="js/jquery.min.js"></script> 
+  <script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>  
+  <script type="text/javascript" src="js/moment.min.js"></script> 
+  <script type="text/javascript" src="js/bootstrap.min.js"></script> 
+  <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"> 
+  <link rel="stylesheet" href="css/cucumber.css" type="text/css"> 
+  <link rel="stylesheet" href="css/font-awesome.min.css"> 
+  <link rel="shortcut icon" href="images/favicon.png"> 
+  <script type="text/javascript">
+$(document).ready(function() {
+    // this will tell tablesorter to try looking for the data-value attribute
+    // if present, it'll sort by that instead
+    // otherwise, it'll sort by the text content of the table cell
+    $("#tablesorter").tablesorter({
+        textAttribute: 'data-value',
+        // ignores the first row of the header, the 'scenario', 'steps', since
+        // sorting those doesn't make sense
+        selectorHeaders: '> thead tr:not(.dont-sort) th',
+        // use a stable sort
+        sortStable: true
+    });
+});
+</script> 
+  <title>Cucumber Reports (no 0.9.12) - Features Overview</title>  
+ </head> 
+ <body> 
+  <nav class="navbar navbar-default navbar-fixed-top" id="navigation"> 
+   <div class="container-fluid"> 
+    <div class="collapse navbar-collapse"> 
+     <p class="navbar-text navbar-left">Cucumber Report</p> 
+     <ul class="nav navbar-nav navbar-right"> 
+      <li role="presentation" class="active"><a href="overview-features.html">Features</a></li> 
+      <li role="presentation"><a href="overview-tags.html">Tags</a></li> 
+      <li role="presentation"><a href="overview-steps.html">Steps</a></li> 
+      <li role="presentation"><a href="overview-failures.html">Failures</a></li> 
+     </ul> 
+    </div> 
+   </div> 
+  </nav> 
+  <div class="container-fluid"> 
+   <div class="col-md-5 col-md-offset-1"> 
+    <table class="table table-bordered" id="build-info"> 
+     <thead> 
+      <tr> 
+       <th>Project</th> 
+       <th>Number</th> 
+       <th>Date</th> 
+      </tr> 
+     </thead> 
+     <tbody> 
+      <tr class="info"> 
+       <td>cypher-for-gremlin</td> 
+       <td>0.9.12</td> 
+       <td>13 Sep 2018, 16:07</td> 
+      </tr> 
+     </tbody> 
+    </table> 
+   </div> 
+   <div class="col-md-3 col-md-offset-2"> 
+    <table class="table table-bordered" id="classifications"> 
+     <tbody> 
+      <tr class="info"> 
+       <th>Platform</th> 
+       <td>Linux</td> 
+      </tr> 
+      <tr class="info"> 
+       <th>Backend</th> 
+       <td>Tinker Graph</td> 
+      </tr> 
+      <tr class="info"> 
+       <th>Branch</th> 
+       <td>master</td> 
+      </tr> 
+      <tr class="info"> 
+       <th>Build</th> 
+       <td></td> 
+      </tr> 
+     </tbody> 
+    </table> 
+   </div> 
+  </div>   
+  <br> 
+  <div class="container-fluid" id="report"> 
+   <div class="row"> 
+    <div class="col-md-10 col-md-offset-1"> 
+     <table id="tablesorter" class="stats-table table-hover"> 
+      <thead> 
+       <tr class="header dont-sort"> 
+        <th></th> 
+        <th colspan="6">Steps</th> 
+        <th colspan="3">Scenarios</th> 
+        <th colspan="2">Features</th> 
+       </tr> 
+       <tr> 
+        <th>Feature</th> 
+        <th class="passed">Passed</th> 
+        <th class="failed">Failed</th> 
+        <th class="skipped">Skipped</th> 
+        <th class="pending">Pending</th> 
+        <th class="undefined">Undefined</th> 
+        <th class="total">Total</th> 
+        <th class="passed">Passed</th> 
+        <th class="failed">Failed</th> 
+        <th class="total">Total</th> 
+        <th>Duration</th> 
+        <th>Status</th> 
+       </tr> 
+      </thead> 
+      <tbody> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-WhereAcceptance-feature.html">WhereAcceptance</a></td> 
+        <td class="passed">5</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">5</td> 
+        <td class="passed">1</td> 
+        <td>0</td> 
+        <td class="total">1</td> 
+        <td class="duration" data-value="1003985930">1.003</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-PathEquality-feature.html">PathEquality</a></td> 
+        <td class="passed">3</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">4</td> 
+        <td>0</td> 
+        <td class="failed">1</td> 
+        <td class="total">1</td> 
+        <td class="duration" data-value="87796823">0.087</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-RemoveAcceptance-feature.html">RemoveAcceptance</a></td> 
+        <td class="passed">36</td> 
+        <td class="failed">2</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">38</td> 
+        <td class="passed">6</td> 
+        <td class="failed">2</td> 
+        <td class="total">8</td> 
+        <td class="duration" data-value="734253170">0.734</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-TypeConversionFunctions-feature.html">TypeConversionFunctions</a></td> 
+        <td class="passed">202</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">202</td> 
+        <td class="passed">45</td> 
+        <td>0</td> 
+        <td class="total">45</td> 
+        <td class="duration" data-value="3175362704">3.175</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-SetAcceptance-feature.html">SetAcceptance</a></td> 
+        <td class="passed">71</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">72</td> 
+        <td class="passed">14</td> 
+        <td class="failed">1</td> 
+        <td class="total">15</td> 
+        <td class="duration" data-value="719063571">0.719</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-CreateAcceptance-feature.html">CreateAcceptance</a></td> 
+        <td class="passed">144</td> 
+        <td class="failed">2</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">146</td> 
+        <td class="passed">28</td> 
+        <td class="failed">2</td> 
+        <td class="total">30</td> 
+        <td class="duration" data-value="1587301672">1.587</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-MergeRelationshipAcceptance-feature.html">MergeRelationshipAcceptance</a></td> 
+        <td class="passed">139</td> 
+        <td class="failed">4</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">143</td> 
+        <td class="passed">27</td> 
+        <td class="failed">4</td> 
+        <td class="total">31</td> 
+        <td class="duration" data-value="1001679233">1.001</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-FunctionsAcceptance-feature.html">FunctionsAcceptance</a></td> 
+        <td class="passed">211</td> 
+        <td class="failed">6</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">217</td> 
+        <td class="passed">39</td> 
+        <td class="failed">6</td> 
+        <td class="total">45</td> 
+        <td class="duration" data-value="1853283949">1.853</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-ColumnNameAcceptance-feature.html">ColumnNameAcceptance</a></td> 
+        <td class="passed">20</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">20</td> 
+        <td class="passed">4</td> 
+        <td>0</td> 
+        <td class="total">4</td> 
+        <td class="duration" data-value="125263171">0.125</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-TernaryLogicAcceptance-feature.html">TernaryLogicAcceptanceTest</a></td> 
+        <td class="passed">130</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">130</td> 
+        <td class="passed">27</td> 
+        <td>0</td> 
+        <td class="total">27</td> 
+        <td class="duration" data-value="1808426058">1.808</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-SemanticErrorAcceptance-feature.html">SemanticErrorAcceptance</a></td> 
+        <td class="passed">179</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">180</td> 
+        <td class="passed">44</td> 
+        <td class="failed">1</td> 
+        <td class="total">45</td> 
+        <td class="duration" data-value="2163126250">2.163</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-VarLengthAcceptance2-feature.html">VarLengthAcceptance2</a></td> 
+        <td class="passed">3</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">4</td> 
+        <td>0</td> 
+        <td class="failed">1</td> 
+        <td class="total">1</td> 
+        <td class="duration" data-value="35982859">0.035</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-ComparisonOperatorAcceptance-feature.html">ComparisonOperatorAcceptance</a></td> 
+        <td class="passed">50</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">50</td> 
+        <td class="passed">10</td> 
+        <td>0</td> 
+        <td class="total">10</td> 
+        <td class="duration" data-value="362212479">0.362</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-Create-feature.html">Create</a></td> 
+        <td class="passed">20</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">20</td> 
+        <td class="passed">5</td> 
+        <td>0</td> 
+        <td class="total">5</td> 
+        <td class="duration" data-value="222183561">0.222</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-PatternComprehension-feature.html">PatternComprehension</a></td> 
+        <td class="passed">65</td> 
+        <td class="failed">5</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">70</td> 
+        <td class="passed">10</td> 
+        <td class="failed">5</td> 
+        <td class="total">15</td> 
+        <td class="duration" data-value="494107971">0.494</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-MatchingSelfRelationships-feature.html">MatchingSelfRelationships</a></td> 
+        <td class="passed">95</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">95</td> 
+        <td class="passed">19</td> 
+        <td>0</td> 
+        <td class="total">19</td> 
+        <td class="duration" data-value="564588755">0.564</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-OptionalMatch-feature.html">OptionalMatch</a></td> 
+        <td class="passed">15</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">15</td> 
+        <td class="passed">3</td> 
+        <td>0</td> 
+        <td class="total">3</td> 
+        <td class="duration" data-value="90373152">0.090</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-TriadicSelection-feature.html">TriadicSelection</a></td> 
+        <td class="passed">76</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">76</td> 
+        <td class="passed">19</td> 
+        <td>0</td> 
+        <td class="total">19</td> 
+        <td class="duration" data-value="900718384">0.900</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-Literals-feature.html">Literals</a></td> 
+        <td class="passed">44</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">44</td> 
+        <td class="passed">11</td> 
+        <td>0</td> 
+        <td class="total">11</td> 
+        <td class="duration" data-value="447907221">0.447</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-LabelsAcceptance-feature.html">LabelsAcceptance</a></td> 
+        <td class="passed">56</td> 
+        <td class="failed">10</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">66</td> 
+        <td class="passed">7</td> 
+        <td class="failed">10</td> 
+        <td class="total">17</td> 
+        <td class="duration" data-value="260886720">0.260</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-Comparability-feature.html">Comparability</a></td> 
+        <td class="passed">18</td> 
+        <td class="failed">6</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">24</td> 
+        <td>0</td> 
+        <td class="failed">6</td> 
+        <td class="total">6</td> 
+        <td class="duration" data-value="98875141">0.098</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-WithAcceptance-feature.html">WithAcceptance</a></td> 
+        <td class="passed">81</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">82</td> 
+        <td class="passed">16</td> 
+        <td class="failed">1</td> 
+        <td class="total">17</td> 
+        <td class="duration" data-value="499152579">0.499</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-UnionAcceptance-feature.html">UnionAcceptance</a></td> 
+        <td class="passed">21</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">21</td> 
+        <td class="passed">5</td> 
+        <td>0</td> 
+        <td class="total">5</td> 
+        <td class="duration" data-value="139706078">0.139</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-SkipLimitAcceptance-feature.html">SkipLimitAcceptanceTest</a></td> 
+        <td class="passed">14</td> 
+        <td class="failed">2</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">16</td> 
+        <td class="passed">2</td> 
+        <td class="failed">2</td> 
+        <td class="total">4</td> 
+        <td class="duration" data-value="185909182">0.185</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-StartsWithAcceptance-feature.html">StartsWithAcceptance</a></td> 
+        <td class="passed">112</td> 
+        <td class="failed">7</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">119</td> 
+        <td class="passed">17</td> 
+        <td class="failed">7</td> 
+        <td class="total">24</td> 
+        <td class="duration" data-value="609053506">0.609</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-Aggregation-feature.html">Aggregation</a></td> 
+        <td class="passed">34</td> 
+        <td class="failed">7</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">41</td> 
+        <td class="passed">5</td> 
+        <td class="failed">7</td> 
+        <td class="total">12</td> 
+        <td class="duration" data-value="449179359">0.449</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-KeysAcceptance-feature.html">KeysAcceptance</a></td> 
+        <td class="passed">40</td> 
+        <td class="failed">2</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">42</td> 
+        <td class="passed">7</td> 
+        <td class="failed">2</td> 
+        <td class="total">9</td> 
+        <td class="duration" data-value="254411078">0.254</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-AggregationAcceptance-feature.html">AggregationAcceptance</a></td> 
+        <td class="passed">118</td> 
+        <td class="failed">7</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">125</td> 
+        <td class="passed">21</td> 
+        <td class="failed">7</td> 
+        <td class="total">28</td> 
+        <td class="duration" data-value="1014634486">1.014</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-ProcedureCallAcceptance-feature.html">ProcedureCallAcceptance</a></td> 
+        <td class="passed">185</td> 
+        <td class="failed">3</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">188</td> 
+        <td class="passed">35</td> 
+        <td class="failed">3</td> 
+        <td class="total">38</td> 
+        <td class="duration" data-value="958130931">0.958</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-MiscellaneousErrorAcceptance-feature.html">MiscellaneousErrorAcceptance</a></td> 
+        <td class="passed">82</td> 
+        <td class="failed">3</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">85</td> 
+        <td class="passed">19</td> 
+        <td class="failed">3</td> 
+        <td class="total">22</td> 
+        <td class="duration" data-value="999403948">0.999</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-VarLengthAcceptance-feature.html">VarLengthAcceptance</a></td> 
+        <td class="passed">160</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">161</td> 
+        <td class="passed">30</td> 
+        <td class="failed">1</td> 
+        <td class="total">31</td> 
+        <td class="duration" data-value="1494737986">1.494</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-JoinAcceptance-feature.html">ValueHashJoinAcceptance</a></td> 
+        <td class="passed">8</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">9</td> 
+        <td class="passed">1</td> 
+        <td class="failed">1</td> 
+        <td class="total">2</td> 
+        <td class="duration" data-value="564198860">0.564</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-ReturnAcceptance2-feature.html">ReturnAcceptance2</a></td> 
+        <td class="passed">166</td> 
+        <td class="failed">5</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">171</td> 
+        <td class="passed">32</td> 
+        <td class="failed">5</td> 
+        <td class="total">37</td> 
+        <td class="duration" data-value="1171032892">1.171</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-OptionalMatchAcceptance-feature.html">OptionalMatchAcceptance</a></td> 
+        <td class="passed">108</td> 
+        <td class="failed">2</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">110</td> 
+        <td class="passed">20</td> 
+        <td class="failed">2</td> 
+        <td class="total">22</td> 
+        <td class="duration" data-value="747574569">0.747</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-MatchAcceptance2-feature.html">MatchAcceptance2</a></td> 
+        <td class="passed">458</td> 
+        <td class="failed">13</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">471</td> 
+        <td class="passed">85</td> 
+        <td class="failed">13</td> 
+        <td class="total">98</td> 
+        <td class="duration" data-value="2958283683">2.958</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-DeleteAcceptance-feature.html">DeleteAcceptance</a></td> 
+        <td class="passed">102</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">103</td> 
+        <td class="passed">20</td> 
+        <td class="failed">1</td> 
+        <td class="total">21</td> 
+        <td class="duration" data-value="628262686">0.628</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-MatchAcceptance-feature.html">MatchAcceptance</a></td> 
+        <td class="passed">144</td> 
+        <td class="failed">3</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">147</td> 
+        <td class="passed">27</td> 
+        <td class="failed">3</td> 
+        <td class="total">30</td> 
+        <td class="duration" data-value="966324159">0.966</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-NullAcceptance-feature.html">NullAcceptance</a></td> 
+        <td class="passed">28</td> 
+        <td class="failed">2</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">30</td> 
+        <td class="passed">6</td> 
+        <td class="failed">2</td> 
+        <td class="total">8</td> 
+        <td class="duration" data-value="238932576">0.238</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-ListComprehension-feature.html">ListComprehension</a></td> 
+        <td class="passed">9</td> 
+        <td class="failed">3</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">12</td> 
+        <td>0</td> 
+        <td class="failed">3</td> 
+        <td class="total">3</td> 
+        <td class="duration" data-value="49787411">0.049</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-LargeIntegerEquality-feature.html">LargeIntegerEquality</a></td> 
+        <td class="passed">25</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">25</td> 
+        <td class="passed">5</td> 
+        <td>0</td> 
+        <td class="total">5</td> 
+        <td class="duration" data-value="189916863">0.189</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-UnwindAcceptance-feature.html">UnwindAcceptance</a></td> 
+        <td class="passed">61</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">61</td> 
+        <td class="passed">14</td> 
+        <td>0</td> 
+        <td class="total">14</td> 
+        <td class="duration" data-value="520790100">0.520</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-SyntaxErrorAcceptance-feature.html">SyntaxErrorAcceptance</a></td> 
+        <td class="passed">14</td> 
+        <td class="failed">1</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">15</td> 
+        <td class="passed">3</td> 
+        <td class="failed">1</td> 
+        <td class="total">4</td> 
+        <td class="duration" data-value="169072157">0.169</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-ExpressionAcceptance-feature.html">ExpressionAcceptance</a></td> 
+        <td class="passed">88</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">88</td> 
+        <td class="passed">19</td> 
+        <td>0</td> 
+        <td class="total">19</td> 
+        <td class="duration" data-value="925059222">0.925</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-MergeIntoAcceptance-feature.html">MergeIntoAcceptance</a></td> 
+        <td class="passed">32</td> 
+        <td class="failed">6</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">38</td> 
+        <td>0</td> 
+        <td class="failed">6</td> 
+        <td class="total">6</td> 
+        <td class="duration" data-value="202438695">0.202</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-EqualsAcceptance-feature.html">EqualsAcceptance</a></td> 
+        <td class="passed">25</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">25</td> 
+        <td class="passed">5</td> 
+        <td>0</td> 
+        <td class="total">5</td> 
+        <td class="duration" data-value="175939911">0.175</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-MergeNodeAcceptance-feature.html">MergeNodeAcceptance</a></td> 
+        <td class="passed">111</td> 
+        <td class="failed">5</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">116</td> 
+        <td class="passed">21</td> 
+        <td class="failed">5</td> 
+        <td class="total">26</td> 
+        <td class="duration" data-value="706367586">0.706</td> 
+        <td class="failed">Failed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-ReturnAcceptance-feature.html">ReturnAcceptanceTest</a></td> 
+        <td class="passed">77</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">77</td> 
+        <td class="passed">16</td> 
+        <td>0</td> 
+        <td class="total">16</td> 
+        <td class="duration" data-value="579039478">0.579</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-OrderByAcceptance-feature.html">OrderByAcceptance</a></td> 
+        <td class="passed">75</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">75</td> 
+        <td class="passed">17</td> 
+        <td>0</td> 
+        <td class="total">17</td> 
+        <td class="duration" data-value="615565059">0.615</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-LargeCreateQuery-feature.html">LargeCreateQuery</a></td> 
+        <td class="passed">8</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">8</td> 
+        <td class="passed">2</td> 
+        <td>0</td> 
+        <td class="total">2</td> 
+        <td class="duration" data-value="11494970795">11.494</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+       <tr> 
+        <td class="tagname"><a href="report-feature_features-StartingPointAcceptance-feature.html">StartingPointAcceptance</a></td> 
+        <td class="passed">15</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td class="total">15</td> 
+        <td class="passed">3</td> 
+        <td>0</td> 
+        <td class="total">3</td> 
+        <td class="duration" data-value="72986177">0.072</td> 
+        <td class="passed">Passed</td> 
+       </tr> 
+      </tbody> 
+      <tfoot class="total"> 
+       <tr> 
+        <td></td> 
+        <td>3983</td> 
+        <td>114</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>0</td> 
+        <td>4097</td> 
+        <td>772</td> 
+        <td>114</td> 
+        <td>886</td> 
+        <td class="duration">47.318</td> 
+        <td>50</td> 
+       </tr> 
+       <tr> 
+        <td></td> 
+        <td>97.22%</td> 
+        <td>2.78%</td> 
+        <td>0.00%</td> 
+        <td>0.00%</td> 
+        <td>0.00%</td> 
+        <td></td> 
+        <td>87.13%</td> 
+        <td>12.87%</td> 
+        <td></td> 
+        <td></td> 
+        <td>38.00%</td> 
+       </tr> 
+      </tfoot> 
+     </table> 
+    </div> 
+   </div> 
+  </div> 
+  <nav class="navbar navbar-default" id="footer"> 
+   <div class="container-fluid"> 
+    <p class="navbar-text navbar-right"> <small>generate Cucumber HTML reports via:&nbsp;</small> <a class="navbar-link" href="https://github.com/jenkinsci/cucumber-reports-plugin">Jenkins Plugin</a> | <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-reporting">Standalone</a> | <a class="navbar-link" href="https://github.com/damianszczepanik/cucumber-sandwich">Sandwich</a> | <a class="navbar-link" href="https://github.com/damianszczepanik/maven-cucumber-reporting">Maven</a> &nbsp;&nbsp; </p> 
+   </div> 
+  </nav>   
+ </body>
+</html>
