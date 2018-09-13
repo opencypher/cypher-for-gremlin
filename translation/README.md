@@ -15,7 +15,7 @@ To add a dependency using Maven:
 <dependency>
     <groupId>org.opencypher.gremlin</groupId>
     <artifactId>translation</artifactId>
-    <version>0.9.11</version>
+    <version>0.9.12</version>
 </dependency>
 ```
 
@@ -23,7 +23,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'org.opencypher.gremlin:translation:0.9.11'
+  compile 'org.opencypher.gremlin:translation:0.9.12'
 }
 ```
 
@@ -100,7 +100,7 @@ Translator.builder()
     .build();
 ```
 
-Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.11/java/org/opencypher/gremlin/translation/package-summary.html) for more information.
+Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/org/opencypher/gremlin/translation/package-summary.html) for more information.
 
 ## Running Cypher
 

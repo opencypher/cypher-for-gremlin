@@ -20,8 +20,8 @@ The plugin and its dependencies can be automatically downloaded and installed in
 
 Run `bin/gremlin-server.sh` with `install` switch and supply the Maven coordinates of the plugin:
 ```sh
-bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.11
-Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.11
+bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
+Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
 ...
 ```
 
