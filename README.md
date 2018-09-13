@@ -28,6 +28,7 @@ With Cypher for Gremlin you can use the following Cypher language features:
 - `WHERE`, `ORDER BY`, `SKIP`, and `LIMIT` sub-clauses
 - `RETURN`, `WITH`, and `UNWIND` projections, including basic support for list and path comprehensions
 - `CREATE`, `MERGE`, `SET`, `REMOVE`, and `DETACH DELETE`
+- `CASE` expressions
 - `UNION` operations
 
 It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers around 70% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) and an additional 15% on Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions). Note that latest TCK M11 covers [Temporal types and functions](https://github.com/opencypher/openCypher/commit/e4b3b7540b506ed2755f0a8116a3f465a5bd9ad9#diff-c26e3fb690fe2673a8f456add0fb3ec8) support of which is currently not implemented in Cypher for Gremlin. Coverage of TCK M10:
