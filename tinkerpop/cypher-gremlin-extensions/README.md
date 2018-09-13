@@ -8,7 +8,6 @@ The [translation module](../../translation) relies on these extensions to produc
 - [List](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/) access by non-constant index
 - [Map](https://neo4j.com/docs/developer-manual/current/cypher/syntax/maps/) access
 - String concatenation and non-constant plus operator
-- [Pattern comprehensions](https://neo4j.com/docs/developer-manual/current/cypher/syntax/lists/#cypher-pattern-comprehension)
 - The following [functions](https://neo4j.com/docs/developer-manual/current/cypher/functions/): `percentileCont`, `percentileDisc`, `toBoolean`, `toFloat`, `toInteger`, `toString`
 - Some instances of `properties`, `size`
 
