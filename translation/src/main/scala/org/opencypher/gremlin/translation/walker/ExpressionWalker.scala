@@ -243,7 +243,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
         traversal
 
-      case ListComprehension(ExtractScope(_, _, Some(function)), target) if function.dependencies.size == 1 =>
+      case ListComprehension(ExtractScope(_, _, Some(function)), target) =>
         val targetT = walkLocal(target, maybeAlias)
         val functionT = walkLocal(function, maybeAlias)
 
