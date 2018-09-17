@@ -173,6 +173,9 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       orderBy: Option[OrderBy],
       skip: Option[Skip],
       limit: Option[Limit]): Unit = {
+    def roundedLongValue(expression: Expression) =
+      Math.round(inlineExpressionValue(expression, context, classOf[Number]).doubleValue())
+
     if (distinct) {
       g.dedup()
     }
@@ -182,17 +185,15 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case _                        =>
     }
 
-    for (s <- skip) {
-      val Skip(expression) = s
-      val value = inlineExpressionValue(expression, context, classOf[Number]).longValue()
+    for (Skip(expression) <- skip) {
+      val value = roundedLongValue(expression)
       if (value != 0L) {
         g.skip(value)
       }
     }
 
-    for (l <- limit) {
-      val Limit(expression) = l
-      val value = inlineExpressionValue(expression, context, classOf[Number]).longValue()
+    for (Limit(expression) <- limit) {
+      val value = roundedLongValue(expression)
       g.limit(value)
     }
   }
