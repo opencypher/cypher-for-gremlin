@@ -17,8 +17,10 @@ package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.WalkerContext
+import org.opencypher.gremlin.translation.exception.EntityNotFound
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
+import org.opencypher.v9_0.expressions.{FunctionInvocation, FunctionName, Property}
 import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 
 /**
@@ -138,14 +140,21 @@ class StatementWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P])
       context.unsupported("query. Multiple delete clauses", deleteClauses)
     }
 
-    val returnDependencies = returnClauses.flatMap {
-      case Return(_, returnItems, _, _, _, _) => returnItems.items.map(_.expression.dependencies)
-      case _                                  => None
+    val deleteDependencies = deleteClauses.flatMap {
+      case Delete(expressions, _) => expressions.flatMap(_.dependencies)
+      case _                      => Seq()
     }
 
-    val deleteDependencies = deleteClauses.flatMap {
-      case Delete(expressions, _) => expressions.map(_.dependencies)
-      case _                      => None
+    val returnDependencies = returnClauses.flatMap {
+      case Return(_, returnItems, _, _, _, _) => returnItems.items
+      case _                                  => Seq()
+    }.flatMap {
+      case AliasedReturnItem(FunctionInvocation(_, FunctionName("labels"), _, args), _)
+          if deleteDependencies.intersect(args).nonEmpty =>
+        throw new EntityNotFound("Deleted entity label access " + args)
+      case AliasedReturnItem(Property(expression, _), _) if deleteDependencies.contains(expression) =>
+        throw new EntityNotFound("Deleted entity property access " + expression)
+      case n => n.expression.dependencies
     }
 
     returnDependencies.intersect(deleteDependencies).nonEmpty

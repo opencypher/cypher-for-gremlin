@@ -129,6 +129,12 @@ object GremlinErrors {
     "Invalid element access of .+" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ELEMENT_ACCESS),
     ".*Cannot delete node, because it still has relationships.+" ->
-      ExecutionFailed(SEMANTIC_ERROR, RUNTIME, DELETE_CONNECTED_NODE)
+      ExecutionFailed(SEMANTIC_ERROR, RUNTIME, DELETE_CONNECTED_NODE),
+    "Can't use aggregate functions inside of aggregate functions" ->
+      ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, NESTED_AGGREGATION),
+    "Can't use non-deterministic \\(random\\) functions inside of aggregate functions" ->
+      ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, NON_CONSTANT_EXPRESSION),
+    "Deleted entity (.+) access (.+)" ->
+      ExecutionFailed(ENTITY_NOT_FOUND, RUNTIME, DELETED_ENTITY_ACCESS)
   )
 }

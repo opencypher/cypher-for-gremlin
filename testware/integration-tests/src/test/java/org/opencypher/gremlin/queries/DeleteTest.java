@@ -389,6 +389,45 @@ public class DeleteTest {
             .containsExactly(5L);
     }
 
+    @Test
+    public void failOnPropertyAccess() {
+        Object beforeDelete = submitAndGet("MATCH (n) RETURN count(*)").get(0).get("count(*)");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n) DELETE n RETURN n.name"))
+            .hasMessageContaining("Deleted entity property access");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n) DELETE n RETURN labels(n)"))
+            .hasMessageContaining("Deleted entity label access");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n:person)-[r]->(a:software) " +
+            "DELETE n " +
+            "RETURN a.name, n.name"))
+            .hasMessageContaining("Deleted entity property access");
+
+        Object afterDelete = submitAndGet("MATCH (n) RETURN count(*)").get(0).get("count(*)");
+
+        assertThat(beforeDelete).isEqualTo(afterDelete);
+    }
+
+    @Test
+    public void dontFailOnUnrelatedPropertyAccess() {
+        List<Map<String, Object>> beforeDelete = submitAndGet("MATCH (n) RETURN count(*)");
+
+        List<Map<String, Object>> onDelete = submitAndGet("MATCH (n:person)-[r]->(a:software) DETACH DELETE n RETURN a.name");
+
+        List<Map<String, Object>> afterDelete = submitAndGet("MATCH (n) RETURN count(*)");
+
+        assertThat(beforeDelete)
+            .extracting("count(*)")
+            .containsExactly(6L);
+        assertThat(onDelete)
+            .extracting("a.name")
+                    .containsExactlyInAnyOrder("lop", "lop", "lop", "ripple");
+        assertThat(afterDelete)
+            .extracting("count(*)")
+            .containsExactly(3L);
+    }
+
     private HashMap<String, Object> parameterMap(Object[] parameters) {
         HashMap<String, Object> result = new HashMap<>();
         for (int i = 0; i < parameters.length; i+=2) {

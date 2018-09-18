@@ -348,8 +348,14 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     val p = context.dsl.predicates()
 
     expression match {
-      case node: FunctionInvocation =>
-        val FunctionInvocation(_, FunctionName(fnName), distinct, args) = node
+      case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
+        if (args.flatMap(n => n +: n.subExpressions).exists {
+              case FunctionInvocation(_, FunctionName("rand"), _, _) => true
+              case _                                                 => false
+            }) throw new SyntaxException("Can't use non-deterministic (random) functions inside of aggregate functions")
+
+        if (args.exists(_.containsAggregate))
+          throw new SyntaxException("Can't use aggregate functions inside of aggregate functions")
 
         val (_, traversal) = subTraversal(alias, args.head, finalize = false)
 

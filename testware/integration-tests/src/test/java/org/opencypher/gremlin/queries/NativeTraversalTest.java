@@ -17,6 +17,7 @@ package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.extractor.Extractors.byName;
 import static org.assertj.core.groups.FieldsOrPropertiesExtractor.extract;
@@ -449,6 +450,21 @@ public class NativeTraversalTest {
         assertThat(cypherResults)
             .extracting("result")
             .containsExactly(3L);
+    }
+
+    @Test
+    public void failOnInvalidAggregation() throws Exception {
+        assertThatThrownBy(() -> submitAndGet("RETURN count(rand())"))
+                .hasMessageContaining("Can't use non-deterministic (random) functions inside of aggregate functions");
+
+        assertThatThrownBy(() -> submitAndGet("RETURN count(toInteger(rand()+1))"))
+                .hasMessageContaining("Can't use non-deterministic (random) functions inside of aggregate functions");
+
+        assertThatThrownBy(() -> submitAndGet("RETURN count(count(*))"))
+                .hasMessageContaining("Can't use aggregate functions inside of aggregate functions");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n) RETURN count(toInteger(avg(n.prop)) + 1)"))
+                .hasMessageContaining("contains child expressions which are aggregations");
     }
 
     public static Comparator<? super Tuple> ignoreOrderInCollections() {
