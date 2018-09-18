@@ -453,12 +453,18 @@ public class NativeTraversalTest {
     }
 
     @Test
-    public void failOnNonConstantExpression() throws Exception {
+    public void failOnInvalidAggregation() throws Exception {
         assertThatThrownBy(() -> submitAndGet("RETURN count(rand())"))
                 .hasMessageContaining("Can't use non-deterministic (random) functions inside of aggregate functions");
 
         assertThatThrownBy(() -> submitAndGet("RETURN count(toInteger(rand()+1))"))
                 .hasMessageContaining("Can't use non-deterministic (random) functions inside of aggregate functions");
+
+        assertThatThrownBy(() -> submitAndGet("RETURN count(count(*))"))
+                .hasMessageContaining("Can't use aggregate functions inside of aggregate functions");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n) RETURN count(toInteger(avg(n.prop)) + 1)"))
+                .hasMessageContaining("contains child expressions which are aggregations");
     }
 
     public static Comparator<? super Tuple> ignoreOrderInCollections() {
