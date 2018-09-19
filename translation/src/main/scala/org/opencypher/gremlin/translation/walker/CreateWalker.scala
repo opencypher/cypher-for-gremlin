@@ -15,9 +15,8 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
-import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.opencypher.gremlin.translation.GremlinSteps
+import org.opencypher.gremlin.translation.Tokens.MATCH_START
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.walker.NodeUtils.setProperty
@@ -49,6 +48,10 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
     patternParts.foreach {
       case EveryPath(n: PatternElement) =>
         walkPattern(n)
+      case NamedPatternPart(Variable(name), EveryPath(n: PatternElement)) =>
+        walkPattern(n)
+        PatternWalker.walk(context, g, n, Some(name))
+        g.path().from(MATCH_START + name).as(name)
       case n =>
         context.unsupported("create pattern", n)
     }
