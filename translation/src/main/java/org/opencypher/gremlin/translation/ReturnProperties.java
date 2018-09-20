@@ -49,14 +49,21 @@ public final class ReturnProperties {
 
         List list = (List) value;
 
-        if (list.isEmpty() || !isNode(list.get(0))) {
+        if (list.isEmpty()) {
             return false;
         }
 
+        boolean nodeCheck = true;
         for (Object e : list) {
-            if (!isNode(e) && !isRelationship(e)) {
+            if (nodeCheck && !isNode(e)) {
                 return false;
             }
+
+            if (!nodeCheck && !isRelationship(e)) {
+                return false;
+            }
+
+            nodeCheck = !nodeCheck;
         }
 
         return true;
