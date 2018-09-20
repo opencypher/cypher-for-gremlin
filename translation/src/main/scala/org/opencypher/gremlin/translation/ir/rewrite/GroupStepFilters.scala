@@ -38,8 +38,8 @@ object GroupStepFilters extends GremlinRewriter {
 
   private def rewriteSegment(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     val rewrittenStepLabels = extract({
-      case As(stepLabel) :: _                   => stepLabel
-      case Repeat(_ :: As(stepLabel) :: _) :: _ => stepLabel
+      case prev :: As(stepLabel) :: _ if prev != AddV => stepLabel
+      case Repeat(_ :: As(stepLabel) :: _) :: _       => stepLabel
     })(steps).toSet
 
     if (rewrittenStepLabels.isEmpty) {

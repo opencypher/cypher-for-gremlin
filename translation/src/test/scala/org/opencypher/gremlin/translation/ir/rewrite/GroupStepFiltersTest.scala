@@ -15,9 +15,9 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.Tokens.UNNAMED
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
@@ -165,5 +165,13 @@ class GroupStepFiltersTest {
       .rewritingWith(GroupStepFilters)
       .adds(__.V().as(UNNAMED + 7).hasLabel("person").has("name", P.isEq("marko")))
       .adds(__.inV().as(UNNAMED + 44).hasLabel("person").has("name", P.isEq("josh")))
+  }
+
+  @Test
+  def keepAdditions(): Unit = {
+    assertThat(parse("MERGE p = (a {x: 1}) RETURN p"))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .keeps(__.addV().as("a").property(single, "x", __.constant(1)))
   }
 }
