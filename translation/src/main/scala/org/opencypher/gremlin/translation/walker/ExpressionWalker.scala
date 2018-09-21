@@ -246,7 +246,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
         traversal
 
-      case ListComprehension(ExtractScope(_, _, Some(function)), target) =>
+      case ListComprehension(ExtractScope(_, None, Some(function)), target) =>
         val targetT = walkLocal(target, maybeAlias)
         val functionT = walkLocal(function, maybeAlias)
 
@@ -283,7 +283,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           traversal.flatMap(functionT).fold()
         } else if (projection.dependencies.size == 1) {
           val Variable(dependencyName) = projection.dependencies.head
-          traversal.as(dependencyName).flatMap(functionT).fold()
+          traversal.select(dependencyName).flatMap(functionT).fold()
         } else {
           context.unsupported("pattern comprehension with multiple arguments", expression)
         }
