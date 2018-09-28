@@ -21,7 +21,9 @@ import org.apache.tinkerpop.gremlin.structure.Column
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
+import org.opencypher.gremlin.translation.exception.CypherExceptions
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
+import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.util.symbols.{CypherType, NodeType, RelationshipType}
 import org.opencypher.v9_0.util.{ASTNode, InputPosition}
@@ -202,4 +204,18 @@ object NodeUtils {
       case null                => Null()(InputPosition.NONE)
     }
   }
+
+  def runtimeValidation[T, P](
+      throwIfTrue: GremlinSteps[T, P],
+      exception: CypherExceptions,
+      context: WalkerContext[T, P]): GremlinSteps[T, P] =
+    context.dsl
+      .steps()
+      .start()
+      .sideEffect(
+        throwIfTrue
+          .constant(exception.toString)
+          .map(CustomFunction.cypherException())
+      )
+
 }
