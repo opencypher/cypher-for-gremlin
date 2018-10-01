@@ -17,18 +17,15 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert._
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 
-class RemoveUselessNullChecksTest {
+class RemoveIntermediateProjectionTest {
 
   val flavor = new TranslatorFlavor(
     rewriters = Seq(
-      InlineFlatMapTraversal,
-      RemoveIntermediateProjection,
-      SimplifySingleProjections
+      InlineFlatMapTraversal
     ),
     postConditions = Nil
   )
@@ -40,22 +37,53 @@ class RemoveUselessNullChecksTest {
         |RETURN n
       """.stripMargin))
       .withFlavor(flavor)
-      .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
-      .adds(__.by(__.valueMap(true)))
+      .rewritingWith(RemoveIntermediateProjection)
+      .removes(
+        __.project("n")
+          .by(__.select("n")))
   }
 
   @Test
-  def multipleProjections(): Unit = {
+  def multipleProjection(): Unit = {
     assertThat(parse("""
-        |MATCH (n)-->(m)
+        |MATCH (n)-[r]->(m)
         |RETURN n, m
       """.stripMargin))
       .withFlavor(flavor)
-      .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
-      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
-      .adds(__.by(__.select("n").valueMap(true)))
-      .adds(__.by(__.select("m").valueMap(true)))
+      .rewritingWith(RemoveIntermediateProjection)
+      .removes(
+        __.project("n", "m")
+          .by(__.select("n"))
+          .by(__.select("m")))
+  }
+
+  @Test
+  def singleAlias(): Unit = {
+    assertThat(parse("""
+        |MATCH (n)
+        |RETURN n as a
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveIntermediateProjection)
+      .removes(
+        __.project("a")
+          .by(__.select("n")))
+      .removes(__.select("a"))
+  }
+
+  @Test
+  def multipleAliases(): Unit = {
+    assertThat(parse("""
+        |MATCH (n)-[r]->(m)
+        |RETURN n as a, m as b
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveIntermediateProjection)
+      .removes(
+        __.project("a", "b")
+          .by(__.select("n"))
+          .by(__.select("m")))
+      .removes(__.select("a"))
+      .removes(__.select("b"))
   }
 }

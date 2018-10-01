@@ -104,7 +104,7 @@ public class AstRewriterTest {
     }
 
     @Test
-    public void matchWhereOrderBy() throws Exception {
+    public void dontRewriteMatchWhereOrderBy() throws Exception {
         assertThat(parse(
             "MATCH (a:artist) " +
                 "WITH a WHERE a.age > 18 " +
@@ -112,44 +112,40 @@ public class AstRewriterTest {
                 "ORDER BY a.name"
         )).normalizedTo(
             "MATCH (a:artist) " +
-                "WITH a AS a " +
-                "WHERE a.age > 18 " +
-                "WITH a.name AS `  FRESHID50` " +
-                "ORDER BY `  FRESHID50` " +
-                "RETURN `  FRESHID50` AS `a.name`"
+                "WITH a WHERE a.age > 18 " +
+                "RETURN a.name " +
+                "ORDER BY a.name"
         );
     }
 
     @Test
-    public void matchOrderBySingleName() throws Exception {
+    public void dontRewriteMatchOrderBySingleName() throws Exception {
         assertThat(parse(
             "MATCH (a:artist) " +
                 "RETURN a.name " +
                 "ORDER BY a.name"
         )).normalizedTo(
             "MATCH (a:artist) " +
-                "WITH a.name AS `  FRESHID26` " +
-                "ORDER BY `  FRESHID26` " +
-                "RETURN `  FRESHID26` AS `a.name`"
+                 "RETURN a.name " +
+                 "ORDER BY a.name"
         );
     }
 
     @Test
-    public void matchOrderByMultipleNames() throws Exception {
+    public void dontRewriteMatchOrderByMultipleNames() throws Exception {
         assertThat(parse(
             "MATCH (a:artist)<-[:writtenBy]-(s:song) " +
                 "RETURN a.name, s.name " +
                 "ORDER BY a.name, s.name"
         )).normalizedTo(
             "MATCH (a:artist)<-[:writtenBy]-(s:song) " +
-                "WITH a.name AS `  FRESHID49`, s.name AS `  FRESHID57` " +
-                "ORDER BY `  FRESHID49`, `  FRESHID57` " +
-                "RETURN `  FRESHID49` AS `a.name`, `  FRESHID57` AS `s.name`"
+                "RETURN a.name, s.name " +
+                "ORDER BY a.name, s.name"
         );
     }
 
     @Test
-    public void matchOrderBySkipLimit() throws Exception {
+    public void dontRewriteMatchOrderBySkipLimit() throws Exception {
         assertThat(parse(
             "MATCH (a:artist) " +
                 "RETURN a.name " +
@@ -157,9 +153,9 @@ public class AstRewriterTest {
                 "SKIP 1 LIMIT 2"
         )).normalizedTo(
             "MATCH (a:artist) " +
-                "WITH a.name AS `  FRESHID26` " +
-                "ORDER BY `  FRESHID26` SKIP 1 LIMIT 2 " +
-                "RETURN `  FRESHID26` AS `a.name`"
+                "RETURN a.name " +
+                "ORDER BY a.name " +
+                "SKIP 1 LIMIT 2"
         );
     }
 

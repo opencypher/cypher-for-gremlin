@@ -38,7 +38,7 @@ object ProjectionWalker {
   def walk[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P], node: ProjectionClause): Unit = {
     node match {
       case Return(distinct, ReturnItems(_, items), orderBy, skip, limit, _) =>
-        new ProjectionWalker(context, g).walk(distinct, items, orderBy, skip, limit, finalize = true)
+        new ProjectionWalker(context, g).walkFinal(distinct, items, orderBy, skip, limit)
       case With(distinct, ReturnItems(_, items), orderBy, skip, limit, where) =>
         new ProjectionWalker(context, g).walkIntermediate(distinct, items, orderBy, skip, limit, where)
       case _ => context.unsupported("projection", node)
@@ -64,11 +64,10 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       items: Seq[ReturnItem],
       orderBy: Option[OrderBy],
       skip: Option[Skip],
-      limit: Option[Limit],
-      finalize: Boolean): Unit = {
+      limit: Option[Limit]): Unit = {
     ensureFirstStatement(g, context)
 
-    val subTraversals = returnSubTraversals(items, finalize)
+    val subTraversals = returnSubTraversals(items)
 
     applyProjection(subTraversals)
     applyLimits(distinct, orderBy, skip, limit)
@@ -82,16 +81,26 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       limit: Option[Limit],
       where: Option[Where]): Unit = {
     applyWhereFromReturnItems(items)
-    walk(distinct, items, orderBy, skip, limit, finalize = false)
+    walk(distinct, items, orderBy, skip, limit)
     applyWhere(where)
     reselectProjection(items)
+  }
+
+  def walkFinal(
+      distinct: Boolean,
+      items: Seq[ReturnItem],
+      orderBy: Option[OrderBy],
+      skip: Option[Skip],
+      limit: Option[Limit]): Unit = {
+    walk(distinct, items, orderBy, skip, limit)
+    finalizeProjection(items)
   }
 
   private def __ = {
     g.start()
   }
 
-  private def returnSubTraversals(items: Seq[ReturnItem], finalize: Boolean = false): SubTraversals = {
+  private def returnSubTraversals(items: Seq[ReturnItem]): SubTraversals = {
     val select = getVariableNames(items)
 
     val pivotCollector = mutable.LinkedHashMap.empty[String, GremlinSteps[T, P]]
@@ -101,7 +110,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     for (item <- items) {
       val AliasedReturnItem(expression, Variable(alias)) = item
 
-      val (returnType, traversal) = subTraversal(alias, expression, finalize)
+      val (returnType, traversal) = subTraversal(alias, expression)
 
       allCollector.put(alias, traversal)
 
@@ -229,6 +238,31 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     g.flatMap(NodeUtils.reselectProjection(variables, context))
   }
 
+  private def finalizeProjection(items: Seq[ReturnItem]): Unit = {
+    val aliasToExpression = items.flatMap {
+      case AliasedReturnItem(expression, Variable(alias)) => Some((alias, expression))
+      case _                                              => None
+    }
+
+    val needsFinalization = aliasToExpression.exists(n =>
+      qualifiedType(n._2) match {
+        case (_: NodeType, _)                   => true
+        case (_: ListType, _: NodeType)         => true
+        case (_: RelationshipType, _)           => true
+        case (_: ListType, _: RelationshipType) => true
+        case (_: PathType, _)                   => true
+        case (_: ListType, _: PathType)         => true
+        case _                                  => false
+    })
+
+    if (needsFinalization) {
+      g.project(aliasToExpression.map(_._1): _*)
+      for ((alias, expression) <- aliasToExpression) {
+        g.by(finalizeValue(__.select(alias), alias, expression))
+      }
+    }
+  }
+
   private def getVariableNames(items: Seq[ReturnItem]): Seq[String] = {
     val dependencyNames = for (AliasedReturnItem(expression, _) <- items;
                                Variable(n) <- expression.dependencies) yield n
@@ -240,25 +274,11 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     g.choose(p.neq(NULL), trueChoice, g.start().constant(NULL))
   }
 
-  private def subTraversal(
-      alias: String,
-      expression: Expression,
-      finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
-
-    val variable = expression match {
-      case Variable(a) => a
-      case _           => alias
-    }
-
+  private def subTraversal(alias: String, expression: Expression): (ReturnFunctionType, GremlinSteps[T, P]) = {
     if (expression.containsAggregate) {
-      aggregation(alias, expression, finalize)
+      aggregation(alias, expression)
     } else {
-      val localTraversal = walkLocal(expression, Some(alias))
-      if (finalize) {
-        (Pivot, finalizeValue(localTraversal, variable, expression))
-      } else {
-        (Pivot, localTraversal)
-      }
+      (Pivot, walkLocal(expression, Some(alias)))
     }
   }
 
@@ -267,12 +287,6 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       variable: String,
       expression: Expression): GremlinSteps[T, P] = {
     val p = context.dsl.predicates()
-
-    val qualifiedType = context.expressionTypes.get(expression) match {
-      case Some(typ: ListType) => (typ, typ.innerType)
-      case Some(typ)           => (typ, AnyType.instance)
-      case _                   => (AnyType.instance, AnyType.instance)
-    }
 
     lazy val finalizeNode =
       __.valueMap(true)
@@ -301,7 +315,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             .valueMap(true)
             .fold())
 
-    qualifiedType match {
+    qualifiedType(expression) match {
       case (_: NodeType, _) =>
         nullIfNull(
           subTraversal,
@@ -341,10 +355,14 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
   }
 
-  private def aggregation(
-      alias: String,
-      expression: Expression,
-      finalize: Boolean): (ReturnFunctionType, GremlinSteps[T, P]) = {
+  private def qualifiedType(expression: Expression): (CypherType, CypherType) =
+    context.expressionTypes.get(expression) match {
+      case Some(typ: ListType) => (typ, typ.innerType)
+      case Some(typ)           => (typ, AnyType.instance)
+      case _                   => (AnyType.instance, AnyType.instance)
+    }
+
+  private def aggregation(alias: String, expression: Expression): (ReturnFunctionType, GremlinSteps[T, P]) = {
     val p = context.dsl.predicates()
 
     expression match {
@@ -357,7 +375,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         if (args.exists(_.containsAggregate))
           throw new SyntaxException("Can't use aggregate functions inside of aggregate functions")
 
-        val (_, traversal) = subTraversal(alias, args.head, finalize = false)
+        val (_, traversal) = subTraversal(alias, args.head)
 
         if (distinct) {
           traversal.dedup()
@@ -368,8 +386,6 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         fnName.toLowerCase match {
           case "avg" =>
             (Aggregation, traversal.mean())
-          case "collect" if finalize =>
-            (Aggregation, finalizeValue(traversal.fold(), alias, expression))
           case "collect" =>
             (Aggregation, traversal.fold())
           case "count" =>
@@ -389,7 +405,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
       case CountStar() =>
         (Aggregation, __.count())
-      case _: Expression if !finalize && isWherePrecondition(expression) =>
+      case _: Expression if isWherePrecondition(expression) =>
         (Expression, __.identity())
       case _ =>
         context.unsupported("expression", expression)
