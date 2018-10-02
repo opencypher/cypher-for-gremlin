@@ -103,7 +103,7 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
 
   override def choose(choiceTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
-    buf += ChooseC(choiceTraversal.current())
+    buf += ChooseT(choiceTraversal.current())
     this
   }
 
@@ -112,7 +112,7 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
       trueChoice: GremlinSteps[Seq[GremlinStep], GremlinPredicate],
       falseChoice: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
-    buf += ChooseT(traversalPredicate.current(), trueChoice.current(), falseChoice.current())
+    buf += ChooseT(traversalPredicate.current(), Some(trueChoice.current()), Some(falseChoice.current()))
     this
   }
 
@@ -121,13 +121,13 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
       trueChoice: GremlinSteps[Seq[GremlinStep], GremlinPredicate],
       falseChoice: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
-    buf += ChooseP(predicate, trueChoice.current(), falseChoice.current())
+    buf += ChooseP(predicate, trueChoice.current(), Some(falseChoice.current()))
     this
   }
 
   override def choose(predicate: GremlinPredicate, trueChoice: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
-    buf += ChooseP(predicate, trueChoice.current(), Nil)
+    buf += ChooseP(predicate, trueChoice.current())
     this
   }
 

@@ -41,7 +41,7 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
+      .removes(__.by(__.choose(P.neq(NULL), __.valueMap(true))))
       .adds(__.by(__.valueMap(true)))
   }
 
@@ -53,8 +53,8 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
-      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true), __.constant(NULL))))
+      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true))))
+      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true))))
       .adds(__.by(__.select("n").valueMap(true)))
       .adds(__.by(__.select("m").valueMap(true)))
   }

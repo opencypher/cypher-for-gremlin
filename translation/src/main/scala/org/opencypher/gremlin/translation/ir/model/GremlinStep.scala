@@ -69,7 +69,7 @@ case object Barrier extends GremlinStep
 
 case class BothE(edgeLabels: String*) extends GremlinStep
 
-case class By(traversal: Seq[GremlinStep], order: Option[TraversalOrder]) extends GremlinStep {
+case class By(traversal: Seq[GremlinStep], order: Option[TraversalOrder] = None) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
     By(f(traversal), order)
   }
@@ -81,38 +81,36 @@ case class By(traversal: Seq[GremlinStep], order: Option[TraversalOrder]) extend
 
 case class Cap(sideEffectKey: String) extends GremlinStep
 
-case class ChooseC(choiceTraversal: Seq[GremlinStep]) extends GremlinStep {
-  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
-    ChooseC(f(choiceTraversal))
-  }
-
-  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
-    op(z, choiceTraversal)
-  }
-}
-
 case class ChooseT(
     traversalPredicate: Seq[GremlinStep],
-    trueChoice: Seq[GremlinStep],
-    falseChoice: Seq[GremlinStep] = Nil)
+    trueChoice: Option[Seq[GremlinStep]] = None,
+    falseChoice: Option[Seq[GremlinStep]] = None)
     extends GremlinStep {
+
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
-    ChooseT(f(traversalPredicate), f(trueChoice), f(falseChoice))
+    ChooseT(f(traversalPredicate), trueChoice.map(f(_)), falseChoice.map(f(_)))
   }
 
   override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
-    op(op(op(z, traversalPredicate), trueChoice), falseChoice)
+    val predicateFold = op(z, traversalPredicate)
+    val trueChoiceFold = trueChoice.map(op(predicateFold, _)).getOrElse(predicateFold)
+    falseChoice.map(op(trueChoiceFold, _)).getOrElse(trueChoiceFold)
   }
 }
 
-case class ChooseP(predicate: GremlinPredicate, trueChoice: Seq[GremlinStep], falseChoice: Seq[GremlinStep] = Nil)
+case class ChooseP(
+    predicate: GremlinPredicate,
+    trueChoice: Seq[GremlinStep],
+    falseChoice: Option[Seq[GremlinStep]] = None)
     extends GremlinStep {
+
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
-    ChooseP(predicate, f(trueChoice), f(falseChoice))
+    ChooseP(predicate, f(trueChoice), falseChoice.map(f(_)))
   }
 
   override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
-    op(op(z, trueChoice), falseChoice)
+    val trueChoiceFold = op(z, trueChoice)
+    falseChoice.map(op(trueChoiceFold, _)).getOrElse(trueChoiceFold)
   }
 }
 

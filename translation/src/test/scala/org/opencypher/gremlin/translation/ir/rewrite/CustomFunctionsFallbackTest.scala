@@ -59,7 +59,7 @@ class CustomFunctionsFallbackTest {
       .removes(__.select(Column.values).map(CustomFunction.cypherPlus()))
       .adds(
         __.select(Column.values)
-          .local(__.unfold().choose(P.neq(Tokens.NULL), __.sum(), __.start().constant(Tokens.NULL))))
+          .local(__.unfold().choose(P.neq(Tokens.NULL), __.sum())))
   }
 
   @Test
