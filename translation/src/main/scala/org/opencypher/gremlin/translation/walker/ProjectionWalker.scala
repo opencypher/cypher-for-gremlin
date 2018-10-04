@@ -269,10 +269,6 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     dependencyNames.distinct
   }
 
-  private def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
-    NodeUtils.notNull(traversal, context)
-  }
-
   private def subTraversal(alias: String, expression: Expression): (ReturnFunctionType, GremlinSteps[T, P]) = {
     if (expression.containsAggregate) {
       aggregation(alias, expression)
@@ -313,6 +309,10 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             .is(p.neq(START))
             .valueMap(true)
             .fold())
+
+    def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+      NodeUtils.notNull(traversal, context)
+    }
 
     qualifiedType(expression) match {
       case (_: NodeType, _) =>

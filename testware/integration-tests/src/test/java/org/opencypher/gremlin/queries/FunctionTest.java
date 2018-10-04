@@ -18,6 +18,7 @@ package org.opencypher.gremlin.queries;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -298,6 +299,15 @@ public class FunctionTest {
         assertThat(results)
             .extracting("n.name")
             .containsExactly("marko", "josh");
+    }
 
+    @Test
+    public void propertiesOnNode() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n {name:'marko'}) RETURN properties(n) as r");
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly(ImmutableMap.of("age", 29L, "name", "marko"));
     }
 }

@@ -58,4 +58,103 @@ class RemoveUselessNullChecksTest {
       .adds(__.by(__.select("n").valueMap(true)))
       .adds(__.by(__.select("m").valueMap(true)))
   }
+
+  @Test
+  def singleOptionalProjection(): Unit = {
+    assertThat(parse("""
+        |OPTIONAL MATCH (n)
+        |RETURN n
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveUselessNullChecks)
+      .keeps(__.choose(P.neq(NULL), __.valueMap(true)))
+  }
+
+  @Test
+  def functionInvocation(): Unit = {
+    assertThat(parse("""
+      MATCH (n:notExising) WITH n AS n RETURN head(collect(n)) AS head
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveUselessNullChecks)
+      .keeps(__.choose(P.neq(NULL), __.valueMap(true)))
+  }
+
+  @Test
+  def multipleOptionalProjections(): Unit = {
+    assertThat(parse("""
+        |OPTIONAL MATCH (n)-->(m)
+        |RETURN n, m
+      """.stripMargin))
+      .withFlavor(flavor)
+      .keeps(__.select("n").choose(P.neq(NULL), __.valueMap(true)))
+      .keeps(__.select("m").choose(P.neq(NULL), __.valueMap(true)))
+  }
+
+  @Test
+  def optionalWithProjection(): Unit = {
+    assertThat(parse("""
+        |OPTIONAL MATCH (n:notExisting) WITH (n) as m RETURN m
+      """.stripMargin))
+      .withFlavor(flavor)
+      .contains(__.choose(P.neq(NULL), __.valueMap(true)))
+  }
+
+  @Test
+  def create(): Unit = {
+    assertThat(parse("""
+        |CREATE (n)-[r:knows]->(m) RETURN n, r, m
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveUselessNullChecks)
+      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true))))
+      .removes(
+        __.by(
+          __.select("r")
+            .choose(
+              P.neq("  cypher.null"),
+              __.project("  cypher.element", "  cypher.inv", "  cypher.outv")
+                .by(__.valueMap(true))
+                .by(__.inV().id())
+                .by(__.outV().id()))))
+      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true))))
+      .adds(__.by(__.select("n").valueMap(true)))
+      .adds(
+        __.by(
+          __.select("r")
+            .project("  cypher.element", "  cypher.inv", "  cypher.outv")
+            .by(__.valueMap(true))
+            .by(__.inV().id())
+            .by(__.outV().id())))
+      .adds(__.by(__.select("m").valueMap(true)))
+  }
+
+  @Test
+  def merge(): Unit = {
+    assertThat(parse("""
+        |MERGE (n)-[r:knows]->(m) RETURN n, r, m
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(RemoveUselessNullChecks)
+      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true))))
+      .removes(
+        __.by(
+          __.select("r")
+            .choose(
+              P.neq("  cypher.null"),
+              __.project("  cypher.element", "  cypher.inv", "  cypher.outv")
+                .by(__.valueMap(true))
+                .by(__.inV().id())
+                .by(__.outV().id()))))
+      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true))))
+      .adds(__.by(__.select("n").valueMap(true)))
+      .adds(
+        __.by(
+          __.select("r")
+            .project("  cypher.element", "  cypher.inv", "  cypher.outv")
+            .by(__.valueMap(true))
+            .by(__.inV().id())
+            .by(__.outV().id())))
+      .adds(__.by(__.select("m").valueMap(true)))
+  }
 }
