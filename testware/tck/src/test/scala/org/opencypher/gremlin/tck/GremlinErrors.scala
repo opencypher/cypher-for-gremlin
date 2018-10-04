@@ -114,7 +114,7 @@ object GremlinErrors {
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_VALUE),
     "Number out of range: (.+)" ->
       ExecutionFailed(ARGUMENT_ERROR, RUNTIME, NUMBER_OUT_OF_RANGE),
-    "step cannot be .+" ->
+    "Step argument to range\\(\\) cannot be zero" ->
       ExecutionFailed(ARGUMENT_ERROR, RUNTIME, NUMBER_OUT_OF_RANGE),
     "Unable to convert param (.+)" ->
       ExecutionFailed(TYPE_ERROR, RUNTIME, INVALID_ARGUMENT_TYPE),

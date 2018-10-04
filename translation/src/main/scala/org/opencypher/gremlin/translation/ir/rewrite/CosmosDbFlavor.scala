@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -26,7 +25,7 @@ object CosmosDbFlavor extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     Seq(
       rewriteValues(_),
-      rewriteLoops(_)
+      rewriteRange(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -38,13 +37,25 @@ object CosmosDbFlavor extends GremlinRewriter {
     })(steps)
   }
 
-  private def rewriteLoops(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+  val rangeStepExpression = "\\(_ - [0-9]+\\) \\% ([0-9]+)".r
+
+  private def rewriteRange(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
-      case Inject(START) :: Repeat(_) :: Times(end) ::
-            Cap(_) :: Unfold ::
-            Skip(start) :: Limit(_) :: As(stepLabel) :: rest =>
-        val range = start until end
-        Inject(range: _*) :: As(stepLabel) :: rest
+      case Repeat(SideEffect(aggregation) :: Nil) :: Until(untilTraversal) :: Cap(_) :: rest =>
+        (aggregation, untilTraversal) match {
+          case (Loops :: Is(Gte(start: Long)) :: Aggregate(_) :: Nil, Loops :: Is(Gt(end: Long)) :: Nil) =>
+            val range = start until (end + 1)
+            Inject(range: _*) :: rest
+          case (
+              Loops :: Is(Gte(start: Long)) :: WhereT(Math(expr) :: Is(_) :: Nil) :: Aggregate(_) :: Nil,
+              Loops :: Is(Gt(end: Long)) :: Nil) =>
+            val step = expr match {
+              case rangeStepExpression(s) => s.toLong
+            }
+            val range = start until (end + 1) by step
+            Inject(range: _*) :: rest
+          case _ => throw new IllegalArgumentException("Ranges with expressions are not supported in Cosmos Db")
+        }
     })(steps)
   }
 }

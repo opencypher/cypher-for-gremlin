@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.walker
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
+import org.opencypher.gremlin.translation.walker.NodeUtils.runtimeValidation
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
@@ -90,11 +91,7 @@ class DeleteWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       .unfold()
       .dedup()
       .is(p.neq(Tokens.NULL))
-      .sideEffect(
-        __.bothE()
-          .constant(DELETE_CONNECTED_NODE.toString)
-          .map(CustomFunction.cypherException())
-      )
+      .flatMap(runtimeValidation(__.bothE(), DELETE_CONNECTED_NODE, context))
       .drop()
 
     sideEffectOnceForAllTraversers(g, delete)

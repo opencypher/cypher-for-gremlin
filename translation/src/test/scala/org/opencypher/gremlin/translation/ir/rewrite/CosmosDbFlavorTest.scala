@@ -15,8 +15,11 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.{Assertions, ThrowableAssert}
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.ir.helpers.JavaHelpers.objects
@@ -32,6 +35,8 @@ class CosmosDbFlavorTest {
     postConditions = Nil
   )
 
+  private val P = new IRGremlinPredicates
+
   @Test
   def values(): Unit = {
     assertThat(parse("""
@@ -45,7 +50,7 @@ class CosmosDbFlavorTest {
   }
 
   @Test
-  def loops(): Unit = {
+  def range(): Unit = {
     assertThat(parse("""
         |UNWIND range(1, 3) AS i
         |RETURN i
@@ -53,13 +58,40 @@ class CosmosDbFlavorTest {
       .withFlavor(flavor)
       .rewritingWith(CosmosDbFlavor)
       .removes(
-        __.repeat(__.loops().aggregate("  GENERATED1"))
-          .times(4)
-          .cap("  GENERATED1")
-          .unfold()
-          .skip(1)
-          .limit(3)
+        __.repeat(__.sideEffect(__.loops().is(P.gte(1)).aggregate("  GENERATED1")))
+          .until(__.loops().is(P.gt(3)))
       )
       .adds(__.inject(objects(1, 2, 3): _*))
+  }
+
+  @Test
+  def rangeWithStep(): Unit = {
+    assertThat(parse("""
+        |UNWIND range(1, 5, 2) AS i
+        |RETURN i
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(
+        __.repeat(
+            __.sideEffect(
+              __.loops()
+                .is(P.gte(1))
+                .where(__
+                  .math("(_ - 1) % 2")
+                  .is(P.isEq(0)))
+                .aggregate("  GENERATED1")))
+          .until(__.loops().is(P.gt(5)))
+      )
+      .adds(__.inject(objects(1, 3, 5): _*))
+  }
+
+  @Test
+  def rangeWithExpression(): Unit = {
+    assertThatThrownBy(new ThrowableAssert.ThrowingCallable {
+      override def call(): Unit =
+        parse("WITH ['a', 'b', 'c'] AS a RETURN range(1, size(a) - 1) as r")
+          .translate(flavor.extend(Seq(CosmosDbFlavor)))
+    }).hasMessageContaining("Ranges with expressions are not supported")
   }
 }
