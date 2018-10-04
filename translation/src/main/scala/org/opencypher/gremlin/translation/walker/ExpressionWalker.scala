@@ -219,20 +219,20 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "abs"              => traversals.head.math("abs(_)")
           case "coalesce"         => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
           case "exists"           => traversals.head.flatMap(anyMatch(__.is(p.neq(NULL))))
-          case "head"             => traversals.head.flatMap(notNull(emptyToNull(__.limit(Scope.local, 1), context), context))
+          case "head"             => traversals.head.flatMap(emptyToNull(__.limit(Scope.local, 1), context))
           case "id"               => traversals.head.flatMap(notNull(__.id(), context))
           case "keys" if onEntity => traversals.head.properties().key().fold()
           case "keys"             => traversals.head.select(Column.keys)
           case "labels"           => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
           case "length"           => traversals.head.count(Scope.local).math("(_-1)/2")
-          case "last"             => traversals.head.flatMap(notNull(emptyToNull(__.tail(Scope.local, 1), context), context))
+          case "last"             => traversals.head.flatMap(emptyToNull(__.tail(Scope.local, 1), context))
           case "nodes"            => traversals.head.flatMap(filterElements(args, includeNodes = true))
           case "properties"       => traversals.head.flatMap(properties(args))
           case "range"            => range(args)
           case "relationships"    => traversals.head.flatMap(filterElements(args, includeRelationships = true))
           case "size"             => traversals.head.flatMap(size(args))
           case "sqrt"             => traversals.head.math("sqrt(_)")
-          case "tail"             => traversals.head.flatMap(notNull(__.range(Scope.local, 1, -1), context))
+          case "tail"             => traversals.head.flatMap(__.range(Scope.local, 1, -1))
           case "type"             => traversals.head.flatMap(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
           case "toboolean"        => traversals.head.map(CustomFunction.cypherToBoolean())
           case "tofloat"          => traversals.head.map(CustomFunction.cypherToFloat())
@@ -440,21 +440,23 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   }
 
   private def properties(args: Seq[Expression]): GremlinSteps[T, P] = {
-    lazy val elementT = __.local(
-      __.properties()
-        .group()
-        .by(__.key())
-        .by(__.map(__.value()))
-    )
+    lazy val elementT =
+      notNull(
+        __.local(
+          __.properties()
+            .group()
+            .by(__.key())
+            .by(__.map(__.value()))
+        ),
+        context)
 
     val typ = typeOf(args.head)
-    val traversal = typ match {
+    typ match {
       case _: NodeType         => elementT
       case _: RelationshipType => elementT
       case _: MapType          => __.identity()
       case _                   => __.map(CustomFunction.cypherProperties())
     }
-    notNull(traversal, context)
   }
 
   private val injectHardLimit = 10000

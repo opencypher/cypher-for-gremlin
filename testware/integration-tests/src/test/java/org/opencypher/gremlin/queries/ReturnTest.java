@@ -503,4 +503,15 @@ public class ReturnTest {
                 .containsExactly(result);
         }
     }
+
+    @Test
+    public void optionalProjection() throws Exception {
+        String cypher = "OPTIONAL MATCH (n:notExisting) WITH (n) as m RETURN m";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+
+        assertThat(cypherResults)
+            .extracting("m")
+            .containsExactly((Object) null);
+    }
 }

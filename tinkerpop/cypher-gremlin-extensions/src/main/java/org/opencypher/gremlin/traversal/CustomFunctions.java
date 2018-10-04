@@ -142,6 +142,11 @@ public final class CustomFunctions {
     public static Function<Traverser, Object> cypherProperties() {
         return traverser -> {
             Object argument = traverser.get();
+
+            if (argument == Tokens.NULL) {
+                return Tokens.NULL;
+            }
+
             if (argument instanceof Map) {
                 return argument;
             }

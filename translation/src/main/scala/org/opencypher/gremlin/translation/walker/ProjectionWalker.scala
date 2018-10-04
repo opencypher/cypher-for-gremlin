@@ -269,11 +269,6 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     dependencyNames.distinct
   }
 
-  private def nullIfNull(g: GremlinSteps[T, P], trueChoice: GremlinSteps[T, P]): GremlinSteps[T, P] = {
-    val p = context.dsl.predicates()
-    g.choose(p.neq(NULL), trueChoice, g.start().constant(NULL))
-  }
-
   private def subTraversal(alias: String, expression: Expression): (ReturnFunctionType, GremlinSteps[T, P]) = {
     if (expression.containsAggregate) {
       aggregation(alias, expression)
@@ -315,12 +310,13 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             .valueMap(true)
             .fold())
 
+    def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+      NodeUtils.notNull(traversal, context)
+    }
+
     qualifiedType(expression) match {
       case (_: NodeType, _) =>
-        nullIfNull(
-          subTraversal,
-          finalizeNode
-        )
+        subTraversal.flatMap(notNull(finalizeNode))
       case (_: ListType, _: NodeType) =>
         __.flatMap(subTraversal)
           .unfold()
@@ -328,28 +324,20 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           .flatMap(finalizeNode)
           .fold()
       case (_: RelationshipType, _) =>
-        nullIfNull(
-          subTraversal,
-          finalizeRelationship
-        )
+        subTraversal.flatMap(notNull(finalizeRelationship))
       case (_: ListType, _: RelationshipType) =>
-        nullIfNull(
-          subTraversal,
-          __.unfold()
-            .flatMap(finalizeRelationship)
-            .fold()
-        )
+        subTraversal.flatMap(
+          notNull(
+            __.unfold()
+              .flatMap(finalizeRelationship)
+              .fold()))
       case (_: PathType, _) =>
-        nullIfNull(
-          subTraversal,
-          finalizePath
-        )
+        subTraversal.flatMap(notNull(finalizePath))
       case (_: ListType, _: PathType) =>
-        nullIfNull(
-          subTraversal,
-          __.flatMap(finalizePath)
-            .fold()
-        )
+        subTraversal.flatMap(
+          notNull(
+            __.flatMap(finalizePath)
+              .fold()))
       case _ =>
         subTraversal
     }

@@ -33,7 +33,7 @@ object SimplifyPropertySetters extends GremlinRewriter {
         PropertyV(key, value) :: rest
       case PropertyTC(cardinality, key, Constant(value) :: Nil) :: rest =>
         PropertyVC(cardinality, key, value) :: rest
-      case ChooseT(_, PropertyV(key, value) :: Nil, drop) :: rest =>
+      case ChooseT(_, Some(PropertyV(key, value) :: Nil), Some(drop)) :: rest =>
         val empty = value match {
           case NULL                     => true
           case coll: util.Collection[_] => coll.isEmpty
@@ -44,7 +44,7 @@ object SimplifyPropertySetters extends GremlinRewriter {
         } else {
           PropertyV(key, value) :: rest
         }
-      case step @ ChooseT(_, prop @ PropertyT(_, Project(_*) :: valueTail) :: Nil, _) :: rest
+      case step @ ChooseT(_, Some(prop @ PropertyT(_, Project(_*) :: valueTail) :: Nil), _) :: rest
           if valueTail.init.forall(_.isInstanceOf[By]) =>
         valueTail.last match {
           case _: By | _: SelectC => prop ++ rest
