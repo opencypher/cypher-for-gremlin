@@ -120,6 +120,41 @@ public class CustomFunction {
         );
     }
 
+    public static CustomFunction cypherSplit() {
+        return new CustomFunction(
+            "cypherSplit",
+            CustomFunctions.cypherSplit()
+        );
+    }
+
+    public static CustomFunction cypherReverse() {
+        return new CustomFunction(
+            "cypherReverse",
+            CustomFunctions.cypherReverse()
+        );
+    }
+
+    public static CustomFunction cypherSubstring() {
+        return new CustomFunction(
+            "cypherSubstring",
+            CustomFunctions.cypherSubstring()
+        );
+    }
+
+    public static CustomFunction cypherToLower() {
+        return new CustomFunction(
+            "cypherToLower",
+            CustomFunctions.cypherToLower()
+        );
+    }
+
+    public static CustomFunction cypherToUpper() {
+        return new CustomFunction(
+            "cypherToUpper",
+            CustomFunctions.cypherToUpper()
+        );
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

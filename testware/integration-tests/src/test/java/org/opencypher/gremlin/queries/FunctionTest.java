@@ -17,6 +17,8 @@ package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
@@ -310,4 +312,161 @@ public class FunctionTest {
             .extracting("r")
             .containsExactly(ImmutableMap.of("age", 29L, "name", "marko"));
     }
+
+    @Test
+    public void startNode() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH ()-[r:knows]->()\n" +
+                "RETURN startNode(r).name as r");
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly("marko", "marko");
+    }
+
+    @Test
+    public void endNode() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH ()-[r:knows]->()\n" +
+                "RETURN endNode(r).name as r");
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactlyInAnyOrder("josh", "vadas");
+    }
+
+    @Test
+    public void startEndNode() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH ()-[r:knows]-()-[s:created]-()\n" +
+                "RETURN startNode(r).name as a, endNode(r).name as b, startNode(s).name as c, endNode(s).name as d");
+
+        assertThat(results)
+            .extracting("a", "b", "c", "d")
+            .containsExactlyInAnyOrder(
+                tuple("marko", "josh", "josh", "lop"),
+                tuple("marko", "josh", "josh", "ripple"),
+                tuple("marko", "vadas", "marko", "lop"),
+                tuple("marko", "josh", "marko", "lop")
+            );
+    }
+
+    @Test
+    public void optionalStartEndNode() {
+        List<Map<String, Object>> results = submitAndGet(
+            "OPTIONAL MATCH ()-[r:notExisting]-()\n" +
+                "RETURN startNode(r) as a, endNode(r) as b");
+
+        assertThat(results)
+            .extracting("a", "b")
+            .containsExactlyInAnyOrder(tuple(null, null));
+    }
+
+    @Test
+    public void stringFunctions() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH \"wOrD\" as m RETURN " +
+                "upper(m) as u," +
+                "lower(m) as l," +
+                "reverse(m) as r");
+
+        assertThat(results)
+            .extracting("u", "l", "r")
+            .containsExactlyInAnyOrder(tuple("WORD", "word", "DrOw"));
+    }
+
+    @Test
+    public void nullInStringFunctions() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (m {name: 'marko'}) RETURN " +
+                "upper(m.notExisting) as u," +
+                "lower(m.notExisting) as l," +
+                "reverse(m.notExisting) as r");
+
+        assertThat(results)
+            .extracting("u", "l", "r")
+            .containsExactlyInAnyOrder(tuple(null, null, null));
+    }
+
+    @Test
+    public void invalidArgumentInStringFunctions() {
+        assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN tolower(n.age)"))
+                        .hasMessageContaining("Expected a String value for <function1>, but got: Integer(29)");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN split(n.age, '1')"))
+                        .hasMessageContaining("Expected a String value for <function1>, but got: Integer(29)");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN split('word', n.age)"))
+                        .hasMessageContaining("Expected a String value for <function1>, but got: Integer(29)");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN reverse(n.age)"))
+                        .hasMessageContaining("Expected a string or list value for reverse, but got: Integer(29)");
+    }
+
+    @Test
+    public void reverseList() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH [1, 2, 3] as m RETURN reverse(m) as r");
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactlyInAnyOrder(asList(3L, 2L, 1L));
+    }
+
+    @Test
+    public void split() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH \"wOrD\" as m RETURN " +
+                "split(m, 'O') as s1," +
+                "split(m, 'x') as s2," +
+                "split(null, m) as s3," +
+                "split(m, null) as s4," +
+                "split('', 'x') as s5");
+
+        assertThat(results)
+            .extracting("s1", "s2", "s3", "s4", "s5")
+            .containsExactlyInAnyOrder(tuple(asList("w", "rD"), asList("wOrD"), null, null, asList("")));
+    }
+
+    @Test
+    public void subString() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH \"wOrDwEb\" as m RETURN " +
+                "substring(m, 0, 2) as s0," +
+                "substring(m, 1, 2) as s1," +
+                "substring(m, 1, 4) as s2," +
+                "substring(m, 1, 6) as s3," +
+                "substring(m, 1, 50) as s4," +
+                "substring(m, 1) as s5, " +
+                "substring(null, 1) as s6");
+
+        assertThat(results)
+            .extracting("s0", "s1", "s2", "s3", "s4", "s5", "s6")
+            .containsExactlyInAnyOrder(tuple("wO","Or", "OrDw", "OrDwEb", "OrDwEb", "OrDwEb", null));
+    }
+
+    @Test
+    public void subStringValidation() {
+        assertThatThrownBy(() -> submitAndGet("RETURN substring('string', -1)"))
+                        .hasMessageContaining("String index out of range: -1");
+
+        assertThatThrownBy(() -> submitAndGet("RETURN substring('string', -1, 2)"))
+                        .hasMessageContaining("String index out of range: -1");
+
+        assertThatThrownBy(() -> submitAndGet("RETURN substring('string', 1, -1)"))
+                        .hasMessageContaining("String index out of range: -1");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (m {name: 'marko'}) RETURN substring('s', m.notExisting)"))
+                        .hasMessageContaining("Expected substring(String, Integer, [Integer]), but got: (s,   cypher.null)");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (m {name: 'marko'}) RETURN substring('s', m.notExisting, 2)"))
+                        .hasMessageContaining("Expected substring(String, Integer, [Integer]), but got: (s,   cypher.null)");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (m {name: 'marko'}) RETURN substring('s', 1, m.notExisting)"))
+                        .hasMessageContaining("Expected substring(String, Integer, [Integer]), but got: (s, 1,   cypher.null)");
+
+        assertThatThrownBy(() -> submitAndGet("MATCH (m {name: 'marko'}) RETURN substring(m.age, 1, 2)"))
+                        .hasMessageContaining("Expected substring(String, Integer, [Integer]), but got: (29, 1)");
+    }
+
 }

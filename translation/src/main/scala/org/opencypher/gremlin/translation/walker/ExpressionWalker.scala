@@ -212,10 +212,12 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
         def onEntity = typeOf(args.head).isInstanceOf[NodeType] || typeOf(args.head).isInstanceOf[RelationshipType]
 
+        lazy val a3 = args.size == 3
         val traversals = args.map(walkLocal(_, maybeAlias))
         val traversal = fnName.toLowerCase match {
           case "abs"              => traversals.head.math("abs(_)")
           case "coalesce"         => __.coalesce(traversals.init.map(_.is(p.neq(NULL))) :+ traversals.last: _*)
+          case "endnode"          => traversals.head.flatMap(notNull(__.inV(), context))
           case "exists"           => traversals.head.flatMap(anyMatch(__.is(p.neq(NULL))))
           case "head"             => traversals.head.flatMap(emptyToNull(__.limit(Scope.local, 1), context))
           case "id"               => traversals.head.flatMap(notNull(__.id(), context))
@@ -229,9 +231,16 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "range"            => range(args)
           case "relationships"    => traversals.head.flatMap(filterElements(args, includeRelationships = true))
           case "size"             => traversals.head.flatMap(size(args))
+          case "startnode"        => traversals.head.flatMap(notNull(__.outV(), context))
           case "sqrt"             => traversals.head.math("sqrt(_)")
           case "tail"             => traversals.head.flatMap(__.range(Scope.local, 1, -1))
           case "type"             => traversals.head.flatMap(notNull(__.label().is(p.neq(Vertex.DEFAULT_LABEL)), context))
+          case "reverse"          => traversals.head.map(CustomFunction.cypherReverse())
+          case "split"            => asList(args(0), args(1)).map(CustomFunction.cypherSplit())
+          case "substring" if a3  => asList(args(0), args(1), args(2)).map(CustomFunction.cypherSubstring())
+          case "substring"        => asList(args(0), args(1)).map(CustomFunction.cypherSubstring())
+          case "toupper"          => traversals.head.map(CustomFunction.cypherToUpper())
+          case "tolower"          => traversals.head.map(CustomFunction.cypherToLower())
           case "toboolean"        => traversals.head.map(CustomFunction.cypherToBoolean())
           case "tofloat"          => traversals.head.map(CustomFunction.cypherToFloat())
           case "tointeger"        => traversals.head.map(CustomFunction.cypherToInteger())

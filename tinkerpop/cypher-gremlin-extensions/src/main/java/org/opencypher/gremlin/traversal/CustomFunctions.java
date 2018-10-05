@@ -15,10 +15,13 @@
  */
 package org.opencypher.gremlin.traversal;
 
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -369,6 +372,82 @@ public final class CustomFunctions {
                 return String.valueOf(a) + String.valueOf(b);
             }
         };
+    }
+
+    public static Function<Traverser, Object> cypherReverse() {
+        return traverser -> {
+            Object o = traverser.get();
+            if (o == Tokens.NULL) {
+                return Tokens.NULL;
+            } else if (o instanceof Collection) {
+                ArrayList result = new ArrayList((Collection) o);
+                Collections.reverse(result);
+                return result;
+            } else if (o instanceof String) {
+                return new StringBuilder((String) o).reverse().toString();
+            } else {
+                throw new TypeException(format("Expected a string or list value for reverse, but got: %s(%s)",
+                    o.getClass().getSimpleName(), o));
+            }
+        };
+    }
+
+    public static Function<Traverser, Object> cypherSubstring() {
+        return traverser -> {
+            List<?> args = (List<?>) traverser.get();
+            Object a = args.get(0);
+            Object b = args.get(1);
+
+            if (a == Tokens.NULL) {
+                return Tokens.NULL;
+            } else if (!(a instanceof String) || (!(b instanceof Number))) {
+                throw new TypeException(format("Expected substring(String, Integer, [Integer]), but got: (%s, %s)",
+                    a, b));
+            } else if (args.size() == 3 && (!(args.get(2) instanceof Number))) {
+                throw new TypeException(format("Expected substring(String, Integer, [Integer]), but got: (%s, %s, %s)",
+                    a, b, args.get(2)));
+            } else if (args.size() == 3) {
+                String s = (String) a;
+                int endIndex = ((Number) b).intValue() + ((Number) args.get(2)).intValue();
+                endIndex = endIndex > s.length() ? s.length() : endIndex;
+                return s.substring(((Number) b).intValue(), endIndex);
+            } else {
+                return ((String) a).substring(((Number) b).intValue());
+            }
+        };
+    }
+
+    private static Function<Traverser, Object> cypherFunction(Function<List, Object> func, Class<?>... clazzes) {
+        return traverser -> {
+            List args = traverser.get() instanceof List ? ((List) traverser.get()) : asList(traverser.get());
+
+            for (int i = 0; i < clazzes.length; i++) {
+                if (args.get(i) == Tokens.NULL) {
+                    return Tokens.NULL;
+                }
+
+                if (!clazzes[i].isInstance(args.get(i))) {
+                    throw new TypeException(format("Expected a %s value for <function1>, but got: %s(%s)",
+                        clazzes[i].getSimpleName(),
+                        args.get(i).getClass().getSimpleName(),
+                        args.get(i)));
+                }
+            }
+
+            return func.apply(args);
+        };
+    }
+
+    public static Function<Traverser, Object> cypherToUpper() {
+        return cypherFunction(a -> ((String) a.get(0)).toUpperCase(), String.class);
+    }
+
+    public static Function<Traverser, Object> cypherToLower() {
+        return cypherFunction(a -> ((String) a.get(0)).toLowerCase(), String.class);
+    }
+
+    public static Function<Traverser, Object> cypherSplit() {
+        return cypherFunction(a -> asList(((String) a.get(0)).split((String) a.get(1))), String.class, String.class);
     }
 
     public static Function<Traverser, Object> cypherException() {
