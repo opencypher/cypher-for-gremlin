@@ -25,17 +25,14 @@ class RemoveUselessStepsTest {
 
   val flavor = new TranslatorFlavor(
     rewriters = Seq(
-      InlineFlatMapTraversal
+      InlineFlatMapTraversal,
+      SimplifySingleProjections
     ),
     postConditions = Nil
   )
 
   @Test def foldUnfold(): Unit = {
-    assertThat(parse("""
-        |MATCH (n)
-        |UNWIND labels(n) as l
-        |RETURN l
-      """.stripMargin))
+    assertThat(parse("MATCH (n) RETURN count(*)"))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessSteps)
       .removes(__.fold().unfold())

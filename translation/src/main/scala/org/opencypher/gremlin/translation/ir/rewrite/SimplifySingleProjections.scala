@@ -61,9 +61,7 @@ object SimplifySingleProjections extends GremlinRewriter {
       case SelectK(key1) :: rest if key == key1 && rest.isEmpty =>
         Identity :: Nil
       case _ =>
-        steps.map({ step =>
-          step.mapTraversals(subSteps => mapTraversals(removeSelect(key, _))(subSteps))
-        })
+        removeSelectFromSubtraversals(key, steps)
     }
   }
 
@@ -75,6 +73,15 @@ object SimplifySingleProjections extends GremlinRewriter {
         By(removeSelect(key, projection), None)
       case step @ _ => step
     } ::: rest
+  }
+
+  private def removeSelectFromSubtraversals(key: String, steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    val (replaceable, rest) =
+      steps.span(s => !s.isInstanceOf[Constant] || s.isInstanceOf[SelectC] || s.isInstanceOf[SelectK])
+
+    replaceable.map({ step =>
+      step.mapTraversals(subSteps => mapTraversals(removeSelect(key, _))(subSteps))
+    }) ++ rest
   }
 
   private def eqUnused(stepLabel: String, key2: String): Boolean = {
