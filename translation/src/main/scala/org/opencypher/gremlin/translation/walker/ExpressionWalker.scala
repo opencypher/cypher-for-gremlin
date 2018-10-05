@@ -221,9 +221,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "exists"           => traversals.head.flatMap(anyMatch(__.is(p.neq(NULL))))
           case "head"             => traversals.head.flatMap(emptyToNull(__.limit(Scope.local, 1), context))
           case "id"               => traversals.head.flatMap(notNull(__.id(), context))
-          case "keys" if onEntity => traversals.head.properties().key().fold()
+          case "keys" if onEntity => traversals.head.map(__.properties().key().fold())
           case "keys"             => traversals.head.select(Column.keys)
-          case "labels"           => traversals.head.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold()
+          case "labels"           => traversals.head.map(__.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold())
           case "length"           => traversals.head.count(Scope.local).math("(_-1)/2")
           case "last"             => traversals.head.flatMap(emptyToNull(__.tail(Scope.local, 1), context))
           case "nodes"            => traversals.head.flatMap(filterElements(args, includeNodes = true))
@@ -258,7 +258,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         val functionT = walkLocal(function, maybeAlias)
 
         val Variable(dependencyName) = function.dependencies.head
-        targetT.unfold().as(dependencyName).flatMap(functionT).fold()
+        targetT.map(__.unfold().as(dependencyName).flatMap(functionT).fold())
 
       case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybePredicate, PathExpression(_), _) =>
         val select = __
@@ -287,10 +287,10 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
         val functionT = walkLocal(projection, maybeAlias)
         if (projection.dependencies.isEmpty) {
-          traversal.flatMap(functionT).fold()
+          __.map(traversal.flatMap(functionT).fold())
         } else if (projection.dependencies.size == 1) {
           val Variable(dependencyName) = projection.dependencies.head
-          traversal.select(dependencyName).flatMap(functionT).fold()
+          __.map(traversal.select(dependencyName).flatMap(functionT).fold())
         } else {
           context.unsupported("pattern comprehension with multiple arguments", expression)
         }
