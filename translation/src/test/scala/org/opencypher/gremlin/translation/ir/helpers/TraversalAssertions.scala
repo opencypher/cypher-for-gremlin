@@ -41,7 +41,7 @@ object TraversalAssertions {
       )
   }
 
-  private def print(traversal: Seq[GremlinStep]): String = {
+  def print(traversal: Seq[GremlinStep]): String = {
     val translator = Translator
       .builder()
       .gremlinGroovy()
