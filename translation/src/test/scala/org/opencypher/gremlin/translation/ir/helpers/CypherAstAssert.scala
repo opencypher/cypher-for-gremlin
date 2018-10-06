@@ -82,6 +82,12 @@ class CypherAstAssert(
     this
   }
 
+  final def debug(): CypherAstAssert = {
+    println("\nTraversal before rewrite:\n" + TraversalAssertions.print(actualTraversal))
+    println("\nTraversal after rewrite:\n" + TraversalAssertions.print(rewriteTraversal))
+    this
+  }
+
   private def actualTraversal = {
     actual.translate(flavor)
   }
