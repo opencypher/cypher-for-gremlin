@@ -34,8 +34,8 @@ object RemoveIdentityReselect extends GremlinRewriter {
 
   private def removeReselect(steps: Seq[GremlinStep], stepLabel: String): Seq[GremlinStep] = {
     val (filters, suffix) = steps.span {
-      case _: HasP | _: HasLabel => true
-      case _                     => false
+      case _: HasP | _: HasLabel | _: Is => true
+      case _                             => false
     }
     suffix match {
       case SelectK(selectKey) :: rest if stepLabel == selectKey =>

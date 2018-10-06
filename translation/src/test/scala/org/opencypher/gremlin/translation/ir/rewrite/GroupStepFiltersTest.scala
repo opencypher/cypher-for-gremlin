@@ -16,9 +16,9 @@
 package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
-import org.junit.Test
+import org.junit.{Ignore, Test}
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.Tokens.UNNAMED
+import org.opencypher.gremlin.translation.Tokens.{NULL, UNNAMED}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
@@ -40,7 +40,7 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(__.where(__.select("n").hasLabel("N")))
+      .removes(__.where(__.select("n").hasLabel("N").is(P.neq(NULL))))
       .keeps(__.hasLabel("N"))
   }
 
@@ -52,7 +52,7 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(__.where(__.select("n").hasLabel("A").hasLabel("B")))
+      .removes(__.where(__.select("n").hasLabel("A").hasLabel("B").is(P.neq(NULL))))
       .keeps(__.hasLabel("A"))
       .keeps(__.hasLabel("B"))
   }
@@ -66,15 +66,16 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(
-        __.where(
-          __.and(
-            __.select("n").values("p").is(P.isEq("n")),
-            __.constant(1).is(P.neq(2))
-          )))
+      .removes(__.where(__.and(
+        __.select("n")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("n")))
+          .is(P.neq(NULL)),
+        __.constant(1).choose(P.neq(NULL), __.is(P.neq(2))).is(P.neq(NULL))
+      )))
       .adds(
         __.has("p", P.isEq("n"))
-          .where(__.constant(1).is(P.neq(2)))
+          .where(__.constant(1).choose(P.neq(NULL), __.is(P.neq(2))).is(P.neq(NULL)))
       )
   }
 
@@ -87,9 +88,18 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(__.select("n").values("p").is(P.isEq("n")))
-      .removes(__.select("r").values("p").is(P.isEq("r")))
-      .removes(__.select("m").values("p").is(P.isEq("m")))
+      .removes(
+        __.select("n")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("n"))))
+      .removes(
+        __.select("r")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("r"))))
+      .removes(
+        __.select("m")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("m"))))
       .adds(__.hasLabel("N").has("p", P.isEq("n")))
       .adds(__.as("r").has("p", P.isEq("r")))
       .adds(__.hasLabel("M").has("p", P.isEq("m")))
@@ -104,9 +114,18 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(__.select("n").values("p").is(P.isEq("n")))
-      .removes(__.select("r").values("p").is(P.isEq("r")))
-      .removes(__.select("m").values("p").is(P.isEq("m")))
+      .removes(
+        __.select("n")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("n"))))
+      .removes(
+        __.select("r")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("r"))))
+      .removes(
+        __.select("m")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("m"))))
       .adds(__.hasLabel("N").has("p", P.isEq("n")))
       .adds(__.as("r").has("p", P.isEq("r")))
       .adds(__.hasLabel("M").has("p", P.isEq("m")))
@@ -121,9 +140,18 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(__.select("n").values("p").is(P.isEq("n")))
-      .removes(__.select("k").values("p").is(P.isEq("k")))
-      .removes(__.select("m").values("p").is(P.isEq("m")))
+      .removes(
+        __.select("n")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("n"))))
+      .removes(
+        __.select("k")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("k"))))
+      .removes(
+        __.select("m")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("m"))))
       .adds(__.as("n").hasLabel("N").has("p", P.isEq("n")))
       .adds(__.as("m").hasLabel("M").has("p", P.isEq("m")))
       .adds(__.as("k").hasLabel("K").has("p", P.isEq("k")))
@@ -137,12 +165,13 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(
-        __.where(
-          __.and(
-            __.select("n").values("p").is(P.isEq("n")),
-            __.select("n").hasLabel("N")
-          )))
+      .removes(__.where(__.and(
+        __.select("n")
+          .choose(__.values("p"), __.values("p"), __.constant(NULL))
+          .choose(P.neq(NULL), __.is(P.isEq("n")))
+          .is(P.neq(NULL)),
+        __.select("n").hasLabel("N").is(P.neq(NULL))
+      )))
       .adds(__.as("n").hasLabel("N").has("p", P.isEq("n")))
   }
 
@@ -151,7 +180,12 @@ class GroupStepFiltersTest {
     assertThat(parse("MERGE (n:N {p: 'n'})"))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .removes(__.select("n").values("p").is(P.isEq("n")))
+      .removes(
+        __.where(
+          __.select("n")
+            .choose(__.values("p"), __.values("p"), __.constant(NULL))
+            .choose(P.neq(NULL), __.is(P.isEq("n")))
+            .is(P.neq(NULL))))
       .adds(__.as("n").has("p", P.isEq("n")))
   }
 
@@ -163,8 +197,8 @@ class GroupStepFiltersTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
-      .adds(__.V().as(UNNAMED + 7).hasLabel("person").has("name", P.isEq("marko")))
-      .adds(__.inV().as(UNNAMED + 44).hasLabel("person").has("name", P.isEq("josh")))
+      .adds(__.V().as(UNNAMED + 7).hasLabel("person").is(P.neq(NULL)).has("name", P.isEq("marko")))
+      .adds(__.inV().as(UNNAMED + 44).hasLabel("person").is(P.neq(NULL)) has ("name", P.isEq("josh")))
   }
 
   @Test

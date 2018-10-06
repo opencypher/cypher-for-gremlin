@@ -47,6 +47,13 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
         public boolean test(Object a, Object b) {
             return a instanceof Vertex;
         }
+    },
+
+    cypherIsString {
+        @Override
+        public boolean test(Object a, Object b) {
+            return a instanceof String;
+        }
     };
 
     public static P<Object> cypherStartsWith(final Object prefix) {
@@ -63,5 +70,9 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
 
     public static P<Object> cypherIsNode() {
         return new P<>(CustomPredicate.cypherIsNode, null);
+    }
+
+    public static P<Object> cypherIsString() {
+        return new P<>(CustomPredicate.cypherIsString, null);
     }
 }

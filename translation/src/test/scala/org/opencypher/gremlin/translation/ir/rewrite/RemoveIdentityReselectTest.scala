@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert._
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
@@ -53,8 +54,23 @@ class RemoveIdentityReselectTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveIdentityReselect)
-      .removes(__.as("n").hasLabel("L").has("foo", P.isEq("bar")).select("n"))
-      .keeps(__.as("n").hasLabel("L").has("foo", P.isEq("bar")))
+      .removes(
+        __.as("n")
+          .hasLabel("L")
+          .is(P.neq(NULL))
+          .has("foo", P.isEq("bar"))
+          .hasLabel("L")
+          .is(P.neq(NULL))
+          .has("foo", P.isEq("bar"))
+          .select("n"))
+      .keeps(
+        __.as("n")
+          .hasLabel("L")
+          .is(P.neq(NULL))
+          .has("foo", P.isEq("bar"))
+          .hasLabel("L")
+          .is(P.neq(NULL))
+          .has("foo", P.isEq("bar")))
   }
 
 }

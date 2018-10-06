@@ -53,4 +53,6 @@ public interface GremlinPredicates<P> {
     P contains(Object value);
 
     P isNode();
+
+    P isString();
 }

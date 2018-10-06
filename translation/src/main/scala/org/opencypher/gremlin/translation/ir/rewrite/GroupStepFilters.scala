@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -68,7 +69,7 @@ object GroupStepFilters extends GremlinRewriter {
     }
 
     val aliasesWhereFilter = whereFilter(rewrittenStepLabels) _
-    val firstPass = replace({
+    val replaceInSteps = replace({
       case As(stepLabel) :: rest if hasSteps.contains(stepLabel) =>
         val steps = sortedHasSteps(stepLabel)
         As(stepLabel) +: (steps ++ rest)
@@ -83,17 +84,21 @@ object GroupStepFilters extends GremlinRewriter {
         aliasesWhereFilter(whereTraversal :: Nil)
           .map(_ :: rest)
           .getOrElse(rest)
-    })(steps)
+    }) _
 
-    firstPass
+    val firstPass = replaceInSteps(steps)
+    val secondPass = replaceInSteps(firstPass)
+
+    secondPass
   }
 
   // Extracts "has" steps from a list of WHERE expressions
   private def whereExtractor(traversals: Seq[Seq[GremlinStep]]): Seq[(String, GremlinStep)] = {
     traversals.flatMap {
-      case SelectK(stepLabel) :: Values(propertyKey) :: Is(predicate) :: Nil =>
+      case SelectK(stepLabel) :: ChooseT3(Values(propertyKey) :: Nil, Values(_) :: Nil, Constant(NULL) :: Nil)
+            :: ChooseP2(Neq(NULL), Is(predicate) :: Nil) :: Is(Neq(NULL)) :: Nil =>
         (stepLabel, HasP(propertyKey, predicate)) :: Nil
-      case SelectK(stepLabel) :: rest if rest.forall(_.isInstanceOf[HasLabel]) =>
+      case SelectK(stepLabel) :: rest if rest.dropRight(1).forall(_.isInstanceOf[HasLabel]) =>
         rest.map((stepLabel, _))
       case _ =>
         Nil
@@ -103,9 +108,10 @@ object GroupStepFilters extends GremlinRewriter {
   // Filters out relocated expressions from WHERE
   private def whereFilter(aliases: Set[String])(traversals: Seq[Seq[GremlinStep]]): Option[GremlinStep] = {
     val newTraversals = traversals.flatMap {
-      case SelectK(alias) :: Values(_) :: Is(_) :: Nil if aliases.contains(alias) =>
+      case SelectK(alias) :: ChooseT3(Values(_) :: Nil, Values(_) :: Nil, Constant(NULL) :: Nil)
+            :: ChooseP2(Neq(NULL), Is(_) :: Nil) :: Is(Neq(NULL)) :: Nil if aliases.contains(alias) =>
         None
-      case SelectK(alias) :: rest if aliases.contains(alias) && rest.forall(_.isInstanceOf[HasLabel]) =>
+      case SelectK(alias) :: rest if aliases.contains(alias) && rest.dropRight(1).forall(_.isInstanceOf[HasLabel]) =>
         None
       case other =>
         Some(other)

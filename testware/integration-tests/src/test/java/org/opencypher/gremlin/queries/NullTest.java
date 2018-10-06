@@ -22,6 +22,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class NullTest {
@@ -62,5 +64,62 @@ public class NullTest {
         assertThat(results)
             .extracting("a")
             .containsExactly((Object) null);
+    }
+
+    /**
+     * Custom predicate deserialization is not implemented
+     */
+    @Test
+    @Category(SkipWithBytecode.class)
+    public void predicateOnNull() {
+        submitAndGet("CREATE (a)");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)\n" +
+                "WHERE a.name CONTAINS 'b'\n" +
+                "RETURN count(a) as cnt"
+        );
+
+        assertThat(results)
+            .extracting("cnt")
+            .containsExactly(0L);
+    }
+
+    /**
+     * Custom predicate deserialization is not implemented
+     */
+    @Test
+    @Category(SkipWithBytecode.class)
+    public void negationOfPredicateOnNullLhs() {
+        submitAndGet("CREATE (a)");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)\n" +
+                "WHERE NOT a.name CONTAINS 'b'\n" +
+                "RETURN count(a) as cnt"
+        );
+
+        assertThat(results)
+            .extracting("cnt")
+            .containsExactly(0L);
+    }
+
+    /**
+     * Custom predicate deserialization is not implemented
+     */
+    @Test
+    @Category(SkipWithBytecode.class)
+    public void negationOfPredicateOnNullRhs() {
+        submitAndGet("CREATE ({name: 'a'})");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)\n" +
+                "WHERE NOT a.name CONTAINS null\n" +
+                "RETURN count(a) as cnt"
+        );
+
+        assertThat(results)
+            .extracting("cnt")
+            .containsExactly(0L);
     }
 }

@@ -37,10 +37,10 @@ object RemoveUselessNullChecks extends GremlinRewriter {
 
   private def splitSegment(steps: Seq[GremlinStep]): (Seq[GremlinStep], Seq[GremlinStep]) = {
     val (segment, rest) = steps.span {
-      case By(SelectK(_) :: ChooseP(Neq(NULL), _, None) :: Nil, None) => false
-      case By(ChooseP(Neq(NULL), _, None) :: Nil, None)               => false
-      case ChooseP(Neq(NULL), _, None)                                => false
-      case _                                                          => true
+      case By(SelectK(_) :: ChooseP2(Neq(NULL), _) :: Nil, None) => false
+      case By(ChooseP2(Neq(NULL), _) :: Nil, None)               => false
+      case ChooseP2(Neq(NULL), _)                                => false
+      case _                                                     => true
     }
     rest match {
       case head :: tail => (segment :+ head, tail)
@@ -62,11 +62,11 @@ object RemoveUselessNullChecks extends GremlinRewriter {
     }
 
     val last = steps.last match {
-      case By(SelectK(key) :: ChooseP(Neq(NULL), traversal, None) :: Nil, None) =>
+      case By(SelectK(key) :: ChooseP2(Neq(NULL), traversal) :: Nil, None) =>
         By(SelectK(key) +: traversal, None) :: Nil
-      case By(ChooseP(Neq(NULL), traversal, None) :: Nil, None) =>
+      case By(ChooseP2(Neq(NULL), traversal) :: Nil, None) =>
         By(traversal, None) :: Nil
-      case ChooseP(Neq(NULL), traversal, None) =>
+      case ChooseP2(Neq(NULL), traversal) =>
         traversal
       case step =>
         step :: Nil
