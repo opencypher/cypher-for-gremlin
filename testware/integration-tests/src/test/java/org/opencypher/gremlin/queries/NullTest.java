@@ -122,4 +122,21 @@ public class NullTest {
             .extracting("cnt")
             .containsExactly(0L);
     }
+
+    /**
+     * Custom predicate deserialization is not implemented
+     */
+    @Test
+    @Category(SkipWithBytecode.class)
+    public void nullOnIncompatibleTypes() {
+        submitAndGet(" CREATE ({val: 1})");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN 'a' STARTS WITH n.val as r"
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly((Object) null);
+    }
 }

@@ -24,21 +24,21 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
     cypherStartsWith {
         @Override
         public boolean test(Object a, Object b) {
-            return a != null && b != null && a.toString().startsWith(b.toString());
+            return a.toString().startsWith(b.toString());
         }
     },
 
     cypherEndsWith {
         @Override
         public boolean test(Object a, Object b) {
-            return a != null && b != null && a.toString().endsWith(b.toString());
+            return a.toString().endsWith(b.toString());
         }
     },
 
     cypherContains {
         @Override
         public boolean test(Object a, Object b) {
-            return a != null && b != null && a.toString().contains(b.toString());
+            return a.toString().contains(b.toString());
         }
     },
 
