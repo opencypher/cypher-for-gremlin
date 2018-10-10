@@ -319,18 +319,21 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         subTraversal.flatMap(notNull(finalizeNode))
       case (_: ListType, _: NodeType) =>
         __.flatMap(subTraversal)
-          .unfold()
-          .is(p.neq(NULL))
-          .flatMap(finalizeNode)
-          .fold()
+          .local(
+            __.unfold()
+              .is(p.neq(NULL))
+              .flatMap(finalizeNode)
+              .fold()
+          )
       case (_: RelationshipType, _) =>
         subTraversal.flatMap(notNull(finalizeRelationship))
       case (_: ListType, _: RelationshipType) =>
         subTraversal.flatMap(
           notNull(
-            __.unfold()
-              .flatMap(finalizeRelationship)
-              .fold()))
+            __.local(
+              __.unfold()
+                .flatMap(finalizeRelationship)
+                .fold())))
       case (_: PathType, _) =>
         subTraversal.flatMap(notNull(finalizePath))
       case (_: ListType, _: PathType) =>

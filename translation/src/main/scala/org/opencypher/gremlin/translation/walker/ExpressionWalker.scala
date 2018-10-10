@@ -229,7 +229,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "nodes"            => traversals.head.flatMap(filterElements(args, includeNodes = true))
           case "properties"       => traversals.head.flatMap(properties(args))
           case "range"            => range(args)
-          case "relationships"    => traversals.head.flatMap(filterElements(args, includeRelationships = true))
+          case "relationships"    => traversals.head.flatMap(filterElements(args, includeNodes = false))
           case "size"             => traversals.head.flatMap(size(args))
           case "startnode"        => traversals.head.flatMap(notNull(__.outV(), context))
           case "sqrt"             => traversals.head.math("sqrt(_)")
@@ -429,20 +429,17 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     bothNotNull(lhs, rhs, traversal, rhsName)
   }
 
-  private def filterElements(
-      args: Seq[Expression],
-      includeNodes: Boolean = false,
-      includeRelationships: Boolean = false): GremlinSteps[T, P] = {
+  private def filterElements(args: Seq[Expression], includeNodes: Boolean): GremlinSteps[T, P] = {
     val pathName = args.head match {
       case Variable(name) => name
       case n              => context.unsupported("nodes() or relationships() argument", n)
     }
-    __.path()
-      .from(MATCH_START + pathName)
-      .to(MATCH_END + pathName)
-      .by(if (includeNodes) __.identity() else __.constant(UNUSED))
-      .by(if (includeRelationships) __.identity() else __.constant(UNUSED))
-      .local(__.unfold().is(p.neq(UNUSED)).fold())
+
+    if (includeNodes) {
+      __.local(__.unfold().where(p.without(PATH_EDGE + pathName)).fold())
+    } else {
+      __.local(__.unfold().where(p.within(PATH_EDGE + pathName)).fold())
+    }
   }
 
   private def properties(args: Seq[Expression]): GremlinSteps[T, P] = {
