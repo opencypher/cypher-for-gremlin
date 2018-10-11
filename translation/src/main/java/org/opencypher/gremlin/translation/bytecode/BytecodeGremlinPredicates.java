@@ -88,6 +88,11 @@ public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
         return CustomPredicate.cypherIsNode();
     }
 
+    @Override
+    public P isRelationship() {
+        return CustomPredicate.cypherIsRelationship();
+    }
+
     private static Object[] inlineParameters(Object... values) {
         return Stream.of(values)
             .map(BytecodeGremlinPredicates::inlineParameter)
