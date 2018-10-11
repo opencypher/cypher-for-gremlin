@@ -16,7 +16,7 @@
 package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope.local
-import org.opencypher.gremlin.translation.Tokens.NULL
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.exception.CypherExceptions
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
@@ -26,7 +26,9 @@ import org.opencypher.gremlin.traversal.CustomFunction.{cypherException, cypherP
   * Replaces Custom Functions with "The Best We Could Do" Gremlin native alternatives
   */
 object CustomFunctionFallback extends GremlinRewriter {
-  val asSeq: Seq[GremlinRewriter] = Seq(CustomFunctionFallback)
+  def prepend(rewriters: Seq[GremlinRewriter]): Seq[GremlinRewriter] = {
+    CustomFunctionFallback +: rewriters
+  }
 
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
 
@@ -43,6 +45,18 @@ object CustomFunctionFallback extends GremlinRewriter {
 
       case MapF(function) :: rest if function.getName == cypherProperties().getName =>
         Local(Properties() :: Group :: By(Key :: Nil, None) :: By(MapT(Value :: Nil) :: Nil, None) :: Nil) :: rest
+
+      case Unfold :: Is(IsNode()) :: As(hint) :: Fold :: rest if hint.startsWith(REWRITER_HINT) =>
+        val pathName = hint.replaceFirst("^" + REWRITER_HINT, "")
+
+        Path :: From(MATCH_START + pathName) :: To(MATCH_END + pathName) :: By(Identity :: Nil) :: By(
+          Constant(UNUSED) :: Nil) :: Local(Unfold :: Is(Neq(UNUSED)) :: Fold :: Nil) :: rest
+
+      case Unfold :: Is(IsRelationship()) :: As(hint) :: Fold :: rest if hint.startsWith(REWRITER_HINT) =>
+        val pathName = hint.replaceFirst("^" + REWRITER_HINT, "")
+
+        Path :: From(MATCH_START + pathName) :: To(MATCH_END + pathName) :: By(Constant(UNUSED) :: Nil) :: By(
+          Identity :: Nil) :: Local(Unfold :: Is(Neq(UNUSED)) :: Fold :: Nil) :: rest
     }))(steps)
   }
 }

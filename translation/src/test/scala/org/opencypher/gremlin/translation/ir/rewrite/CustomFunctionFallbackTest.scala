@@ -20,14 +20,20 @@ import org.apache.tinkerpop.gremlin.structure.Column
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens
+import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
 import org.opencypher.gremlin.traversal.CustomFunction
 
-class CustomFunctionsFallbackTest {
-  private val flavor = TranslatorFlavor.gremlinServer
+class CustomFunctionFallbackTest {
+  val flavor = new TranslatorFlavor(
+    rewriters = Seq(
+      InlineFlatMapTraversal
+    ),
+    postConditions = Nil
+  )
   private val P = new IRGremlinPredicates
 
   @Test
@@ -84,6 +90,44 @@ class CustomFunctionsFallbackTest {
             .by(__.key())
             .by(__.map(__.value()))
         ))
+  }
+
+  @Test
+  def cypherNodesFallback(): Unit = {
+    assertThat(parse("MATCH p=()-[]->() RETURN nodes(p)"))
+      .withFlavor(flavor)
+      .rewritingWith(CustomFunctionFallback)
+      .removes(__.is(P.isNode))
+      .adds(
+        __.path()
+          .from(MATCH_START + "p")
+          .to(MATCH_END + "p")
+          .by(__.identity())
+          .by(__.constant(UNUSED))
+          .local(
+            __.unfold()
+              .is(P.neq(UNUSED))
+              .fold())
+      )
+  }
+
+  @Test
+  def cypherRelationshipsFallback(): Unit = {
+    assertThat(parse("MATCH p=()-[]->() RETURN relationships(p)"))
+      .withFlavor(flavor)
+      .rewritingWith(CustomFunctionFallback)
+      .removes(__.is(P.isRelationship))
+      .adds(
+        __.path()
+          .from(MATCH_START + "p")
+          .to(MATCH_END + "p")
+          .by(__.constant(UNUSED))
+          .by(__.identity())
+          .local(
+            __.unfold()
+              .is(P.neq(UNUSED))
+              .fold())
+      )
   }
 
 }

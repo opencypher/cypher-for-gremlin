@@ -292,7 +292,10 @@ public final class Translator<T, P> {
             if (features.contains(TranslatorFeature.CYPHER_EXTENSIONS)) {
                 return result;
             } else {
-                return result.extend(CustomFunctionFallback.asSeq());
+                return TranslatorFlavor.empty()
+                    .extend(
+                        CustomFunctionFallback.prepend(result.rewriters()),
+                        result.postConditions());
             }
         }
     }

@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 import org.assertj.core.groups.Tuple;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithBytecode;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ReturnTest {
@@ -369,7 +371,11 @@ public class ReturnTest {
             .containsExactlyInAnyOrder("knows", "created");
     }
 
+    /**
+     * Custom predicate deserialization is not implemented
+     */
     @Test
+    @Category(SkipWithBytecode.class)
     @SuppressWarnings("unchecked")
     public void nodesAndRelationshipsFunctions() throws Exception {
         String cypher = "MATCH p = (:person)-[:knows]->(:person)-[:created]->(:software)\n" +

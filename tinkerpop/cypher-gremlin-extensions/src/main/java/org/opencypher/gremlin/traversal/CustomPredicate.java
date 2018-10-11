@@ -17,6 +17,7 @@ package org.opencypher.gremlin.traversal;
 
 import java.util.function.BiPredicate;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 
@@ -47,6 +48,13 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
         public boolean test(Object a, Object b) {
             return a instanceof Vertex;
         }
+    },
+
+    cypherIsRelationship {
+        @Override
+        public boolean test(Object a, Object b) {
+            return a instanceof Edge;
+        }
     };
 
     public static P<Object> cypherStartsWith(final Object prefix) {
@@ -63,5 +71,9 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
 
     public static P<Object> cypherIsNode() {
         return new P<>(CustomPredicate.cypherIsNode, null);
+    }
+
+    public static P<Object> cypherIsRelationship() {
+        return new P<>(CustomPredicate.cypherIsRelationship, null);
     }
 }
