@@ -23,6 +23,7 @@ import org.opencypher.gremlin.translation.CypherAst
 import org.opencypher.gremlin.translation.ReturnProperties._
 import org.opencypher.gremlin.translation.exception.{ConstraintException, SyntaxException, TypeException}
 import org.opencypher.gremlin.traversal.ProcedureContext
+import org.opencypher.tools.tck.ListAccessor.unorderedList
 import org.opencypher.tools.tck.api.{CypherValueRecords, ExecutionFailed}
 import org.opencypher.tools.tck.constants.TCKErrorPhases.RUNTIME
 import org.opencypher.tools.tck.values._
@@ -137,9 +138,12 @@ object TckGremlinCypherValueConverter {
     case r: util.Map[_, _] if isRelationship(r) => toCypherRelationship(r)
     case m: util.Map[_, _]                      => toCypherPropertyMap(m)
     case p: util.List[_] if isPath(v)           => toCypherPath(p.asInstanceOf[util.List[util.Map[_, _]]])
+    case p: util.List[_] if isListOfPaths(p)    => toCypherList(p, ordered = false)
     case p: util.List[_]                        => toCypherList(p)
     case other                                  => throw new IllegalArgumentException(s"Unable to convert result $other")
   }
+
+  def isListOfPaths(value: util.List[_]): Boolean = value.asScala.forall(isPath)
 
   def toCypherPropertyMap(javaMap: util.Map[_, _]): CypherPropertyMap = {
     val map = javaMap.asScala
@@ -150,12 +154,16 @@ object TckGremlinCypherValueConverter {
     CypherPropertyMap(map)
   }
 
-  private def toCypherList(gremlinList: util.List[_]): CypherValue = {
+  private def toCypherList(gremlinList: util.List[_], ordered: Boolean = true): CypherValue = {
     val list = gremlinList.asScala
       .map(e => toCypherValue(e))
       .toList
 
-    CypherOrderedList(list)
+    if (ordered) {
+      CypherOrderedList(list)
+    } else {
+      unorderedList(list)
+    }
   }
 
   def toCypherRelationship(e: util.Map[_, _]): CypherRelationship = {
