@@ -18,6 +18,12 @@ package org.opencypher.gremlin.queries;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
+import static org.opencypher.gremlin.test.TestCommons.JOSH;
+import static org.opencypher.gremlin.test.TestCommons.LOP;
+import static org.opencypher.gremlin.test.TestCommons.MARKO;
+import static org.opencypher.gremlin.test.TestCommons.PETER;
+import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
+import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +48,7 @@ public class MatchTest {
 
         assertThat(results)
             .extracting("n")
-            .hasSize(6);
+            .containsExactlyInAnyOrder(MARKO, VADAS, JOSH, PETER, LOP, RIPPLE);
     }
 
     @Test
@@ -161,8 +167,7 @@ public class MatchTest {
 
         assertThat(results)
             .extracting("m")
-            .extracting(byElementProperty("name"))
-            .containsExactly("marko");
+            .containsExactly(MARKO);
     }
 
     @Test

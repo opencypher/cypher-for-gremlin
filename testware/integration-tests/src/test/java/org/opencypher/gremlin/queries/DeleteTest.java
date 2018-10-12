@@ -18,8 +18,8 @@ package org.opencypher.gremlin.queries;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.TestCommons.parameterMap;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Rule;
@@ -428,11 +428,4 @@ public class DeleteTest {
             .containsExactly(3L);
     }
 
-    private HashMap<String, Object> parameterMap(Object[] parameters) {
-        HashMap<String, Object> result = new HashMap<>();
-        for (int i = 0; i < parameters.length; i+=2) {
-            result.put(String.valueOf(parameters[i]), parameters[i+1]);
-        }
-        return result;
-    }
 }
