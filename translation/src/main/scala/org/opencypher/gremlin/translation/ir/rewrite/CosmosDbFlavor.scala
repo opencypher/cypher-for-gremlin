@@ -41,7 +41,7 @@ object CosmosDbFlavor extends GremlinRewriter {
 
   private def rewriteRange(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
-      case Repeat(SideEffect(aggregation) :: Nil) :: Until(untilTraversal) :: Cap(_) :: rest =>
+      case Repeat(SideEffect(aggregation) :: Nil) :: Until(untilTraversal) :: SelectK(_) :: rest =>
         (aggregation, untilTraversal) match {
           case (Loops :: Is(Gte(start: Long)) :: Aggregate(_) :: Nil, Loops :: Is(Gt(end: Long)) :: Nil) =>
             val range = start until (end + 1)

@@ -19,6 +19,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,19 @@ public class RangeTest {
         assertThat(results)
             .extracting("r")
             .containsExactly(asList(2L, 4L));
+    }
+
+    @Test
+    public void keepTraversalHistory() throws Exception {
+        String cypher = "WITH ['a', 'b'] AS a UNWIND range(1, 2) as r RETURN r, a";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("r", "a")
+            .containsExactly(
+                tuple(1L, asList("a", "b")),
+                tuple(2L, asList("a", "b"))
+            );
     }
 
     @Test
