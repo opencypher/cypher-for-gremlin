@@ -245,14 +245,11 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
 
     val needsFinalization = aliasToExpression.exists(n =>
-      qualifiedType(n._2) match {
-        case (_: NodeType, _)                   => true
-        case (_: ListType, _: NodeType)         => true
-        case (_: RelationshipType, _)           => true
-        case (_: ListType, _: RelationshipType) => true
-        case (_: PathType, _)                   => true
-        case (_: ListType, _: PathType)         => true
-        case _                                  => false
+      qualifiedType(n._2).exists {
+        case _: NodeType         => true
+        case _: RelationshipType => true
+        case _: PathType         => true
+        case _                   => false
     })
 
     if (needsFinalization) {
@@ -310,48 +307,45 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             .valueMap(true)
             .fold())
 
-    def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] = {
+    def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] =
       NodeUtils.notNull(traversal, context)
-    }
 
-    qualifiedType(expression) match {
-      case (_: NodeType, _) =>
-        subTraversal.flatMap(notNull(finalizeNode))
-      case (_: ListType, _: NodeType) =>
-        __.flatMap(subTraversal)
-          .local(
+    def finalize(types: Seq[CypherType]): GremlinSteps[T, P] = types match {
+      case NodeType.instance :: Nil =>
+        notNull(finalizeNode)
+      case RelationshipType.instance :: Nil =>
+        notNull(finalizeRelationship)
+      case PathType.instance :: Nil =>
+        notNull(finalizePath)
+      case (_: ListType) :: rest =>
+        notNull(
+          __.local(
             __.unfold()
-              .is(p.neq(NULL))
-              .flatMap(finalizeNode)
+              .flatMap(finalize(rest))
               .fold()
           )
-      case (_: RelationshipType, _) =>
-        subTraversal.flatMap(notNull(finalizeRelationship))
-      case (_: ListType, _: RelationshipType) =>
-        subTraversal.flatMap(
-          notNull(
-            __.local(
-              __.unfold()
-                .flatMap(finalizeRelationship)
-                .fold())))
-      case (_: PathType, _) =>
-        subTraversal.flatMap(notNull(finalizePath))
-      case (_: ListType, _: PathType) =>
-        subTraversal.flatMap(
-          notNull(
-            __.flatMap(finalizePath)
-              .fold()))
+        )
       case _ =>
-        subTraversal
+        __.identity()
     }
+
+    subTraversal.flatMap(finalize(qualifiedType(expression)))
   }
 
-  private def qualifiedType(expression: Expression): (CypherType, CypherType) =
+  private def qualifiedType(expression: Expression): Seq[CypherType] = {
+    def extractTyp(typ: CypherType): Seq[CypherType] =
+      typ match {
+        case l: ListType =>
+          l +: extractTyp(l.innerType)
+        case _ =>
+          typ :: Nil
+      }
+
     context.expressionTypes.get(expression) match {
-      case Some(typ: ListType) => (typ, typ.innerType)
-      case Some(typ)           => (typ, AnyType.instance)
-      case _                   => (AnyType.instance, AnyType.instance)
+      case Some(typ) => extractTyp(typ)
+      case _         => Seq(AnyType.instance)
     }
+  }
 
   private def aggregation(alias: String, expression: Expression): (ReturnFunctionType, GremlinSteps[T, P]) = {
     val p = context.dsl.predicates()
