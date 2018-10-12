@@ -543,7 +543,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         )
       )
       .until(untilCondition)
-      .cap(rangeLabel)
+      .select(rangeLabel)
   }
 
   private def size(args: Seq[Expression]): GremlinSteps[T, P] = {
