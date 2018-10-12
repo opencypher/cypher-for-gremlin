@@ -21,6 +21,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.TestCommons.parameterMap;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
@@ -219,13 +220,5 @@ public class SetTest {
         assertThat(update)
             .extracting("a.foo")
             .containsExactly(3L);
-    }
-
-    private HashMap<String, Object> parameterMap(Object[] parameters) {
-        HashMap<String, Object> result = new HashMap<>();
-        for (int i = 0; i < parameters.length; i+=2) {
-            result.put(String.valueOf(parameters[i]), parameters[i+1]);
-        }
-        return result;
     }
 }

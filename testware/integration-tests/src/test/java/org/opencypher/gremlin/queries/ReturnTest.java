@@ -22,6 +22,16 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
+import static org.opencypher.gremlin.test.TestCommons.JOSH;
+import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_RIPPLE;
+import static org.opencypher.gremlin.test.TestCommons.LOP;
+import static org.opencypher.gremlin.test.TestCommons.MARKO;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.PETER;
+import static org.opencypher.gremlin.test.TestCommons.PETER_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
+import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
@@ -30,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.assertj.core.groups.Tuple;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -171,66 +180,46 @@ public class ReturnTest {
     @Test
     public void returnPath() throws Exception {
         String cypher = "MATCH p = (:person)-[:created]->(:software) RETURN p";
-        List<Map<String, Object>> maps = submitAndGet(cypher);
-
-        List<Tuple> results = maps.stream()
-            .map(result -> (List) result.get("p"))
-            .map(result -> tuple(
-                byElementProperty("name").extract(result.get(0)),
-                byElementProperty("weight").extract(result.get(1)),
-                byElementProperty("name").extract(result.get(2))
-            ))
-            .collect(toList());
+        List<Map<String, Object>> results = submitAndGet(cypher);
 
         assertThat(results)
-            .hasSize(4)
+            .extracting("p")
             .containsExactlyInAnyOrder(
-                tuple("peter", 0.2, "lop"),
-                tuple("josh", 0.4, "lop"),
-                tuple("marko", 0.4, "lop"),
-                tuple("josh", 1.0, "ripple")
+                asList(MARKO, MARKO_CREATED_LOP, LOP),
+                asList(JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
+                asList(JOSH, JOSH_CREATED_LOP, LOP),
+                asList(PETER, PETER_CREATED_LOP, LOP)
             );
     }
 
     @Test
     public void returnUndirectedPath() throws Exception {
         String cypher = "MATCH p = (:person)-[:created]-(:software) RETURN p";
-        List<Map<String, Object>> maps = submitAndGet(cypher);
-
-        List<Tuple> results = maps.stream()
-            .map(result -> (List) result.get("p"))
-            .map(result -> tuple(
-                byElementProperty("name").extract(result.get(0)),
-                byElementProperty("weight").extract(result.get(1)),
-                byElementProperty("name").extract(result.get(2))
-            ))
-            .collect(toList());
+        List<Map<String, Object>> results = submitAndGet(cypher);
 
         assertThat(results)
-            .hasSize(4)
+            .extracting("p")
             .containsExactlyInAnyOrder(
-                tuple("peter", 0.2, "lop"),
-                tuple("josh", 0.4, "lop"),
-                tuple("marko", 0.4, "lop"),
-                tuple("josh", 1.0, "ripple")
+                asList(MARKO, MARKO_CREATED_LOP, LOP),
+                asList(JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
+                asList(JOSH, JOSH_CREATED_LOP, LOP),
+                asList(PETER, PETER_CREATED_LOP, LOP)
             );
     }
 
     @Test
     public void returnVertexAsPath() throws Exception {
         String cypher = "MATCH p = (:person) RETURN p";
-        List<Object> results = submitAndGet(cypher).stream()
-            .map(result -> (List) result.get("p"))
-            .map(result -> byElementProperty("name").extract(result.get(0)))
-            .collect(toList());
+        List<Map<String, Object>> results = submitAndGet(cypher);
 
         assertThat(results)
             .hasSize(4)
+            .extracting("p")
             .containsExactlyInAnyOrder(
-                "marko",
-                "vadas",
-                "peter",
-                "josh"
+                asList(MARKO),
+                asList(VADAS),
+                asList(JOSH),
+                asList(PETER)
             );
     }
 
@@ -530,25 +519,14 @@ public class ReturnTest {
 
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
 
-        Map<String, Object> marko = parameterMap("_id", 1, "_label", "person", "_type", "node", "age", 29L, "name", "marko");
-        Map<String, Object> created = parameterMap("_id", 9, "_inV", 3, "_label", "created", "_outV", 1, "_type", "relationship", "weight", 0.4);
-        Map<String, Object> oss = parameterMap("_id", 3, "_label", "software", "_type", "node", "lang", "java", "name", "lop");
-        List<Map<String, Object>> markoCreatedOss = asList(marko, created, oss);
+        List<Map<String, Object>> markoCreatedOssPath = asList(MARKO, MARKO_CREATED_LOP, LOP);
 
         assertThat(cypherResults)
             .extracting("n", "r", "p")
             .containsExactly(tuple(
-                asList(asList(asList(marko))),
-                asList(asList(asList(created))),
-                asList(asList(asList(markoCreatedOss))))
+                asList(asList(asList(MARKO))),
+                asList(asList(asList(MARKO_CREATED_LOP))),
+                asList(asList(asList(markoCreatedOssPath))))
             );
-    }
-
-    private Map<String, Object> parameterMap(Object... parameters) {
-        HashMap<String, Object> result = new HashMap<>();
-        for (int i = 0; i < parameters.length; i += 2) {
-            result.put(String.valueOf(parameters[i]), parameters[i + 1]);
-        }
-        return result;
     }
 }
