@@ -520,4 +520,35 @@ public class ReturnTest {
             .extracting("m")
             .containsExactly((Object) null);
     }
+
+    @Test
+    public void returnNestedLists() throws Exception {
+        String cypher = "MATCH p=(n {name:'marko'})-[r:created]->(o)\n" +
+            "WITH collect(n) as nl, collect(r) as rl, collect(p) as pl\n" +
+            "WITH collect(nl) as nl2, collect(rl) as rl2, collect(pl) as pl2\n" +
+            "RETURN collect(nl2) as n, collect(rl2) as r, collect(pl2) as p";
+
+        List<Map<String, Object>> cypherResults = submitAndGet(cypher);
+
+        Map<String, Object> marko = parameterMap("_id", 1, "_label", "person", "_type", "node", "age", 29L, "name", "marko");
+        Map<String, Object> created = parameterMap("_id", 9, "_inV", 3, "_label", "created", "_outV", 1, "_type", "relationship", "weight", 0.4);
+        Map<String, Object> oss = parameterMap("_id", 3, "_label", "software", "_type", "node", "lang", "java", "name", "lop");
+        List<Map<String, Object>> markoCreatedOss = asList(marko, created, oss);
+
+        assertThat(cypherResults)
+            .extracting("n", "r", "p")
+            .containsExactly(tuple(
+                asList(asList(asList(marko))),
+                asList(asList(asList(created))),
+                asList(asList(asList(markoCreatedOss))))
+            );
+    }
+
+    private Map<String, Object> parameterMap(Object... parameters) {
+        HashMap<String, Object> result = new HashMap<>();
+        for (int i = 0; i < parameters.length; i += 2) {
+            result.put(String.valueOf(parameters[i]), parameters[i + 1]);
+        }
+        return result;
+    }
 }
