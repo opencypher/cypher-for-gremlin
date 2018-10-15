@@ -15,9 +15,22 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.TestCommons.JOSH;
+import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_RIPPLE;
+import static org.opencypher.gremlin.test.TestCommons.LOP;
+import static org.opencypher.gremlin.test.TestCommons.MARKO;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_JOSH;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_VADAS;
+import static org.opencypher.gremlin.test.TestCommons.PETER;
+import static org.opencypher.gremlin.test.TestCommons.PETER_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
+import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import java.util.List;
 import java.util.Map;
@@ -69,7 +82,15 @@ public class OptionalMatchTest {
         );
 
         assertThat(results)
-            .hasSize(6);
+            .extracting("p")
+            .containsExactlyInAnyOrder(
+                asList(MARKO, MARKO_KNOWS_VADAS, VADAS),
+                asList(MARKO, MARKO_KNOWS_JOSH, JOSH),
+                asList(MARKO, MARKO_CREATED_LOP, LOP),
+                asList(JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
+                asList(JOSH, JOSH_CREATED_LOP, LOP),
+                asList(PETER, PETER_CREATED_LOP, LOP)
+            );
     }
 
     @Test
