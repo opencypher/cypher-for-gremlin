@@ -33,8 +33,8 @@ public class TestCommons {
     public static Map<String, Object> LOP = parameterMap(ID, 3, LABEL, "software", TYPE, "node", "lang", "java", "name", "lop");
     public static Map<String, Object> RIPPLE = parameterMap(ID, 5, LABEL, "software", TYPE, "node", "lang", "java", "name", "ripple");
 
-    public static Map<String, Object> MARKO_KNOWS_VADAS = parameterMap(ID, 7, LABEL, "created", TYPE, "relationship", "weight", 0.5, OUTV, MARKO.get(ID), INV, VADAS.get(ID));
-    public static Map<String, Object> MARKO_KNOWS_JOSH = parameterMap(ID, 8, LABEL, "created", TYPE, "relationship", "weight", 1.0, OUTV, MARKO.get(ID), INV, JOSH.get(ID));
+    public static Map<String, Object> MARKO_KNOWS_VADAS = parameterMap(ID, 7, LABEL, "knows", TYPE, "relationship", "weight", 0.5, OUTV, MARKO.get(ID), INV, VADAS.get(ID));
+    public static Map<String, Object> MARKO_KNOWS_JOSH = parameterMap(ID, 8, LABEL, "knows", TYPE, "relationship", "weight", 1.0, OUTV, MARKO.get(ID), INV, JOSH.get(ID));
     public static Map<String, Object> MARKO_CREATED_LOP = parameterMap(ID, 9, LABEL, "created", TYPE, "relationship", "weight", 0.4, OUTV, MARKO.get(ID), INV, LOP.get(ID));
 
     public static Map<String, Object> JOSH_CREATED_RIPPLE = parameterMap(ID, 10, LABEL, "created", TYPE, "relationship", "weight", 1.0, OUTV, JOSH.get(ID), INV, RIPPLE.get(ID));
