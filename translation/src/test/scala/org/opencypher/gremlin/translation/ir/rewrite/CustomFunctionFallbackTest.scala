@@ -28,12 +28,7 @@ import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlav
 import org.opencypher.gremlin.traversal.CustomFunction
 
 class CustomFunctionFallbackTest {
-  val flavor = new TranslatorFlavor(
-    rewriters = Seq(
-      InlineFlatMapTraversal
-    ),
-    postConditions = Nil
-  )
+  private val flavor = TranslatorFlavor.empty //CustomFunctionFallback is applied as first rewriter
   private val P = new IRGremlinPredicates
 
   @Test

@@ -18,16 +18,15 @@ package org.opencypher.gremlin.queries;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 import static org.opencypher.gremlin.test.TestCommons.JOSH;
 import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_LOP;
 import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_RIPPLE;
 import static org.opencypher.gremlin.test.TestCommons.LOP;
 import static org.opencypher.gremlin.test.TestCommons.MARKO;
 import static org.opencypher.gremlin.test.TestCommons.MARKO_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_JOSH;
 import static org.opencypher.gremlin.test.TestCommons.PETER;
 import static org.opencypher.gremlin.test.TestCommons.PETER_CREATED_LOP;
 import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
@@ -35,11 +34,9 @@ import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -365,29 +362,53 @@ public class ReturnTest {
      */
     @Test
     @Category(SkipWithBytecode.class)
+    public void nodesFunction() throws Exception {
+        String cypher = "MATCH p = (:person)-[:knows]->(:person)\n" +
+            "RETURN nodes(p) as r";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactlyInAnyOrder(
+                asList(MARKO, VADAS),
+                asList(MARKO, JOSH)
+            );
+    }
+
+    /**
+     * Custom predicate deserialization is not implemented
+     */
+    @Test
+    @Category(SkipWithBytecode.class)
+    public void nodesFunctionKeepsTraversalHistory() throws Exception {
+        String cypher = "MATCH p = (first:person)-[:knows]->(:person)\n" +
+            "RETURN nodes(p) as r, first.name as n";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("r", "n")
+            .containsExactlyInAnyOrder(
+                tuple(asList(MARKO, VADAS), "marko"),
+                tuple(asList(MARKO, JOSH), "marko")
+            );
+    }
+
+    /**
+     * Custom predicate deserialization is not implemented
+     */
+    @Test
+    @Category(SkipWithBytecode.class)
     @SuppressWarnings("unchecked")
     public void nodesAndRelationshipsFunctions() throws Exception {
         String cypher = "MATCH p = (:person)-[:knows]->(:person)-[:created]->(:software)\n" +
             "RETURN nodes(p) AS nodes, relationships(p) AS rels";
         List<Map<String, Object>> results = submitAndGet(cypher);
-        Stream<Map<String, List<Object>>> mappedResults = results.stream()
-            .map(result -> {
-                Map<String, List<Object>> map = new HashMap<>();
-                map.put("nodes", ((Collection<Map<String, Object>>) result.get("nodes")).stream()
-                    .map(node -> byElementProperty("name").extract(node))
-                    .collect(toList()));
-                map.put("rels", ((Collection<Map<String, Object>>) result.get("rels")).stream()
-                    .map(rel -> byElementProperty("weight").extract(rel))
-                    .collect(toList()));
-                return map;
-            });
 
-        assertThat(mappedResults)
-            .hasSize(2)
+        assertThat(results)
             .extracting("nodes", "rels")
             .containsExactlyInAnyOrder(
-                tuple(asList("marko", "josh", "lop"), asList(1.0, 0.4)),
-                tuple(asList("marko", "josh", "ripple"), asList(1.0, 1.0))
+                tuple(asList(MARKO, JOSH, LOP), asList(MARKO_KNOWS_JOSH, JOSH_CREATED_LOP)),
+                tuple(asList(MARKO, JOSH, RIPPLE), asList(MARKO_KNOWS_JOSH, JOSH_CREATED_RIPPLE))
             );
     }
 

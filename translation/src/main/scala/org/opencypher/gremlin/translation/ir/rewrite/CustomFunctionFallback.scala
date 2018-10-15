@@ -46,17 +46,13 @@ object CustomFunctionFallback extends GremlinRewriter {
       case MapF(function) :: rest if function.getName == cypherProperties().getName =>
         Local(Properties() :: Group :: By(Key :: Nil, None) :: By(MapT(Value :: Nil) :: Nil, None) :: Nil) :: rest
 
-      case Unfold :: Is(IsNode()) :: As(hint) :: Fold :: rest if hint.startsWith(REWRITER_HINT) =>
-        val pathName = hint.replaceFirst("^" + REWRITER_HINT, "")
-
-        Path :: From(MATCH_START + pathName) :: To(MATCH_END + pathName) :: By(Identity :: Nil) :: By(
+      case SelectK(pathName) :: FlatMapT(MapT(Unfold :: Is(IsNode()) :: Fold :: Nil) :: Nil) :: rest =>
+        SelectK(pathName) :: Path :: From(MATCH_START + pathName) :: To(MATCH_END + pathName) :: By(Identity :: Nil) :: By(
           Constant(UNUSED) :: Nil) :: Local(Unfold :: Is(Neq(UNUSED)) :: Fold :: Nil) :: rest
 
-      case Unfold :: Is(IsRelationship()) :: As(hint) :: Fold :: rest if hint.startsWith(REWRITER_HINT) =>
-        val pathName = hint.replaceFirst("^" + REWRITER_HINT, "")
-
-        Path :: From(MATCH_START + pathName) :: To(MATCH_END + pathName) :: By(Constant(UNUSED) :: Nil) :: By(
-          Identity :: Nil) :: Local(Unfold :: Is(Neq(UNUSED)) :: Fold :: Nil) :: rest
+      case SelectK(pathName) :: FlatMapT(MapT(Unfold :: Is(IsRelationship()) :: Fold :: Nil) :: Nil) :: rest =>
+        SelectK(pathName) :: Path :: From(MATCH_START + pathName) :: To(MATCH_END + pathName) :: By(
+          Constant(UNUSED) :: Nil) :: By(Identity :: Nil) :: Local(Unfold :: Is(Neq(UNUSED)) :: Fold :: Nil) :: rest
     }))(steps)
   }
 }

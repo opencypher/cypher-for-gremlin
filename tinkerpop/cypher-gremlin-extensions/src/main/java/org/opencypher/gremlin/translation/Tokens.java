@@ -41,6 +41,4 @@ public final class Tokens {
     public static final String DELETE = "  cypher.delete";
     public static final String DETACH_DELETE = "  cypher.delete.detach";
     public static final String DELETE_ONCE = "  cypher.delete.once";
-
-    public static final String REWRITER_HINT = "  cypher.hint.";
 }

@@ -437,9 +437,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
 
     if (includeNodes) {
-      __.local(__.unfold().is(p.isNode).as(REWRITER_HINT + pathName).fold())
+      __.map(__.unfold().is(p.isNode).fold())
     } else {
-      __.local(__.unfold().is(p.isRelationship).as(REWRITER_HINT + pathName).fold())
+      __.map(__.unfold().is(p.isRelationship).fold())
     }
   }
 
