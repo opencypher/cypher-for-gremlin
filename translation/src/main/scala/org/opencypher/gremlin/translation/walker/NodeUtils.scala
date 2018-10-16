@@ -218,4 +218,10 @@ object NodeUtils {
           .map(CustomFunction.cypherException())
       )
 
+  def isElement[T, P](expression: Expression, context: WalkerContext[T, P]): Boolean = {
+    context.expressionTypes.get(expression).exists {
+      case _: NodeType | _: RelationshipType => true
+      case _                                 => false
+    }
+  }
 }

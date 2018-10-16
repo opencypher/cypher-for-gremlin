@@ -155,6 +155,13 @@ public class CustomFunction {
         );
     }
 
+    public static CustomFunction cypherCopyProperties() {
+        return new CustomFunction(
+            "cypherCopyProperties",
+            CustomFunctions.cypherCopyProperties()
+        );
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

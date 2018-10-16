@@ -20,7 +20,9 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 import static org.opencypher.gremlin.test.TestCommons.parameterMap;
 
 import com.google.common.collect.ImmutableMap;
@@ -221,4 +223,66 @@ public class SetTest {
             .extracting("a.foo")
             .containsExactly(3L);
     }
+
+    @Test
+    public void copyPropertiesNodeToNode() {
+        submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})-[:REL]->(:TO {prop1: 'x', prop3: 'y'})");
+
+        List<Map<String, Object>> update = submitAndGet("MATCH (n:FROM)-[r]->(m:TO) SET m=n RETURN m");
+        List<Map<String, Object>> result = submitAndGet("MATCH (m:TO) RETURN m");
+
+        assertThat(update)
+            .isEqualTo(result)
+            .extracting("m")
+            .extracting(byElementProperty("prop1", "prop2", "prop3"))
+            .contains(tuple("a", "b", null));
+    }
+
+    @Test
+    public void copyPropertiesNodeToRelationship() {
+        submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})-[:REL {prop1: 'x', prop3: 'y'}]->()");
+
+        List<Map<String, Object>> update = submitAndGet("MATCH (n:FROM)-[r]->(m) SET r=n RETURN r");
+        List<Map<String, Object>> result = submitAndGet("MATCH (n)-[r:REL]->(m) RETURN r");
+
+        assertThat(update)
+            .isEqualTo(result)
+            .extracting("r")
+            .extracting(byElementProperty("prop1", "prop2", "prop3"))
+            .contains(tuple("a", "b", null));
+    }
+
+    @Test
+    public void copyPropertiesRelationshipToNode() {
+        submitAndGet("CREATE (:TO {prop1: 'a', prop2: 'b'})-[:REL {prop1: 'x', prop3: 'y'}]->()");
+
+        List<Map<String, Object>> update = submitAndGet("MATCH (n:TO)-[r]->(m) SET n=r RETURN n");
+        List<Map<String, Object>> result = submitAndGet("MATCH (n:TO) RETURN n");
+
+        assertThat(update)
+            .isEqualTo(result)
+            .extracting("n")
+            .extracting(byElementProperty("prop1", "prop2", "prop3"))
+            .contains(tuple("x", null, "y"));
+    }
+
+    @Test
+    public void copyPropertiesFromNull() {
+        submitAndGet("CREATE (:TO {prop1: 'x', prop3: 'y'})");
+
+        assertThatThrownBy(() -> submitAndGet("OPTIONAL MATCH (x:NOT_EXISTING) WITH x MATCH (to:TO) SET to=x RETURN to"))
+                        .hasMessageContaining("Expected   cypher.null to be Element");
+    }
+
+    @Test
+    public void copyPropertiesToNull() {
+        submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})");
+
+        List<Map<String, Object>> result = submitAndGet("OPTIONAL MATCH (x:NOT_EXISTING) WITH x MATCH (n:FROM) SET x=n RETURN x");
+
+        assertThat(result)
+            .extracting("x")
+            .contains((Object) null);
+    }
+
 }
