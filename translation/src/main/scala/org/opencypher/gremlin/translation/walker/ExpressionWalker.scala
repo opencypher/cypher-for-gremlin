@@ -259,7 +259,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
         targetT.map(__.unfold().as(dependencyName).flatMap(functionT).fold())
 
-      case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybePredicate, PathExpression(_), _) =>
+      case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybePredicate, PathExpression(_)) =>
         val select = __
         val contextWhere = context.copy()
         PatternWalker.walk(contextWhere, select, relationshipChain, maybeAlias)
@@ -275,12 +275,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
                 __.constant(UNUSED))
               .fold())
 
-      case PatternComprehension(
-          _,
-          RelationshipsPattern(relationshipChain),
-          maybePredicate,
-          projection: Expression,
-          _) =>
+      case PatternComprehension(_, RelationshipsPattern(relationshipChain), maybePredicate, projection: Expression) =>
         val traversal = __
         val contextWhere = context.copy()
         PatternWalker.walk(contextWhere, traversal, relationshipChain, startNewTraversal = false)
