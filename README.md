@@ -41,6 +41,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 
 * Some functionality is exclusive to Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions), commonly provided by the [Cypher Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin).
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
+* For more details refer to [list of scenarios](../../wiki/Non-translatable-queries) in Cypher TCK without known translation to Gremlin.
 
 See the current [TCK report](testware/tck) for a detailed overview of language coverage.
 
