@@ -210,9 +210,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         }
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
-        def onEntity = typeOf(args.head).isInstanceOf[NodeType] || typeOf(args.head).isInstanceOf[RelationshipType]
-
+        lazy val onEntity = isElement(args.head, context)
         lazy val a3 = args.size == 3
+
         val traversals = args.map(walkLocal(_, maybeAlias))
         val traversal = fnName.toLowerCase match {
           case "abs"              => traversals.head.math("abs(_)")
@@ -345,10 +345,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   }
 
   private def asList(expressions: Expression*): GremlinSteps[T, P] = {
-    val keys = expressions.map(_ => context.generateName())
-    val traversal = __.project(keys: _*)
-    expressions.map(walkLocal).foreach(traversal.by)
-    traversal.select(Column.values)
+    NodeUtils.asList(expressions.toList, context)
   }
 
   private def bothNotNull(
