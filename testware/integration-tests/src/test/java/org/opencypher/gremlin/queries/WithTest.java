@@ -232,4 +232,21 @@ public class WithTest {
             .extracting("p.name")
             .containsExactly("josh");
     }
+
+    @Test
+    public void onlyAliasesInWithAreBound() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (unbound:person {name: 'marko'})-[:created]->(bound:software {name: 'lop'})" +
+                "WITH bound " +
+                "MATCH (unbound)-[:created]->(bound)" +
+                "RETURN unbound.name, bound.name"
+        );
+
+        assertThat(results)
+            .extracting("unbound.name", "bound.name")
+            .containsExactlyInAnyOrder(
+                tuple("josh", "lop"),
+                tuple("peter", "lop"),
+                tuple("marko", "lop"));
+    }
 }

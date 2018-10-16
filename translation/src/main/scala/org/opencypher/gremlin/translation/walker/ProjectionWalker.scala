@@ -83,6 +83,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     applyWhereFromReturnItems(items)
     walk(distinct, items, orderBy, skip, limit)
     applyWhere(where)
+    context.clearAliases()
     reselectProjection(items)
   }
 
