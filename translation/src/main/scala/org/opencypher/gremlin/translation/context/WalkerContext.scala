@@ -104,6 +104,10 @@ sealed class WalkerContext[T, P](
     }
   }
 
+  def clearAliases() = {
+    referencedAliases.clear()
+  }
+
   private var nameGenerator = new NameGenerator()
 
   def generateName(): String = {
