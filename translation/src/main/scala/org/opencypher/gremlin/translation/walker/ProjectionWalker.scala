@@ -246,7 +246,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
 
     val needsFinalization = aliasToExpression.exists(n =>
-      qualifiedType(n._2).exists {
+      qualifiedType(n._2, context).exists {
         case _: NodeType         => true
         case _: RelationshipType => true
         case _: PathType         => true
@@ -330,22 +330,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         __.identity()
     }
 
-    subTraversal.flatMap(finalize(qualifiedType(expression)))
-  }
-
-  private def qualifiedType(expression: Expression): Seq[CypherType] = {
-    def extractTyp(typ: CypherType): Seq[CypherType] =
-      typ match {
-        case l: ListType =>
-          l +: extractTyp(l.innerType)
-        case _ =>
-          typ :: Nil
-      }
-
-    context.expressionTypes.get(expression) match {
-      case Some(typ) => extractTyp(typ)
-      case _         => Seq(AnyType.instance)
-    }
+    subTraversal.flatMap(finalize(qualifiedType(expression, context)))
   }
 
   private def aggregation(alias: String, expression: Expression): (ReturnFunctionType, GremlinSteps[T, P]) = {
