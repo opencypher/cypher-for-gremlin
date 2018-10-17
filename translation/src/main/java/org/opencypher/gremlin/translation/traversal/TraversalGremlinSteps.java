@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.traversal;
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal.Symbols;
@@ -500,6 +501,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> repeat(GremlinSteps<GraphTraversal, P> repeatTraversal) {
         g.repeat(repeatTraversal.current());
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> select(final Pop pop, String selectKey) {
+        g.select(pop, selectKey);
         return this;
     }
 

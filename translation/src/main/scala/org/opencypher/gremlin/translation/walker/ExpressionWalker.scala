@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Pop.mixed
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalOptionParent.Pick
 import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
@@ -71,6 +72,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
   private def walkLocal(expression: Expression, maybeAlias: Option[String]): GremlinSteps[T, P] = {
     expression match {
+      case Variable(varName) if context.expressionTypes.get(expression).exists(_.isInstanceOf[ListType]) =>
+        __.select(mixed, varName)
+
       case Variable(varName) =>
         __.select(varName)
 

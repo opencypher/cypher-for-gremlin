@@ -20,6 +20,7 @@ import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.c
 
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality;
@@ -470,6 +471,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @Override
     public GremlinSteps<String, GroovyPredicate> repeat(GremlinSteps<String, GroovyPredicate> repeatTraversal) {
         g.append(chain("repeat", traversal(repeatTraversal)));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> select(final Pop pop, String selectKey) {
+        g.append(chain("select", pop, selectKey));
         return this;
     }
 
