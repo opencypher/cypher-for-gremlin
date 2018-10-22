@@ -210,6 +210,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.range(scope, low, high)
         case Repeat(repeatTraversal) =>
           g.repeat(writeLocalSteps(repeatTraversal))
+        case SelectP(pop, selectKey) =>
+          g.select(pop, selectKey)
         case SelectK(selectKeys @ _*) =>
           g.select(selectKeys: _*)
         case SelectC(column) =>

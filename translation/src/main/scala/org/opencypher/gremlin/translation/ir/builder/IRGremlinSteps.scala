@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.builder
 
-import org.apache.tinkerpop.gremlin.process.traversal.{Scope, Order => TOrder}
+import org.apache.tinkerpop.gremlin.process.traversal.{Pop, Scope, Order => TOrder}
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
 import org.opencypher.gremlin.translation.GremlinSteps
@@ -402,6 +402,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
   override def repeat(repeatTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
     : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Repeat(repeatTraversal.current())
+    this
+  }
+
+  override def select(pop: Pop, selectKey: String): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += SelectP(pop, selectKey)
     this
   }
 

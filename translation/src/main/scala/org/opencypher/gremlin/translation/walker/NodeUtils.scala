@@ -25,7 +25,7 @@ import org.opencypher.gremlin.translation.exception.CypherExceptions
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.expressions._
-import org.opencypher.v9_0.util.symbols.{CypherType, NodeType, RelationshipType}
+import org.opencypher.v9_0.util.symbols.{AnyType, CypherType, ListType, NodeType, RelationshipType}
 import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 
 import scala.collection.JavaConverters._
@@ -222,6 +222,21 @@ object NodeUtils {
     context.expressionTypes.get(expression).exists {
       case _: NodeType | _: RelationshipType => true
       case _                                 => false
+    }
+  }
+
+  def qualifiedType[T, P](expression: Expression, context: WalkerContext[T, P]): Seq[CypherType] = {
+    def extractTyp(typ: CypherType): Seq[CypherType] =
+      typ match {
+        case l: ListType =>
+          l +: extractTyp(l.innerType)
+        case _ =>
+          typ :: Nil
+      }
+
+    context.expressionTypes.get(expression) match {
+      case Some(typ) => extractTyp(typ)
+      case _         => Seq(AnyType.instance)
     }
   }
 }

@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.structure.Column;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality;
@@ -191,6 +192,8 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> range(Scope scope, long low, long high);
 
     GremlinSteps<T, P> repeat(GremlinSteps<T, P> repeatTraversal);
+
+    GremlinSteps<T, P> select(Pop pop, String selectKey);
 
     GremlinSteps<T, P> select(String... selectKeys);
 

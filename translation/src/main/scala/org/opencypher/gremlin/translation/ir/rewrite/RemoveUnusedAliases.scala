@@ -39,6 +39,7 @@ object RemoveUnusedAliases extends GremlinRewriter {
       acc ++ extract({
         case From(fromStepLabel) :: _      => increment(fromStepLabel)
         case To(toStepLabel) :: _          => increment(toStepLabel)
+        case SelectP(_, selectKey) :: _    => increment(selectKey)
         case SelectK(selectKeys @ _*) :: _ => increment(selectKeys: _*)
         case Dedup(dedupLabels @ _*) :: _  => increment(dedupLabels: _*)
         case WhereP(predicate) :: _        => increment(predicateAliases(predicate): _*)

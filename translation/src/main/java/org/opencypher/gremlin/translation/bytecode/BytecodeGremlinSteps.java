@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.Scope;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal.Symbols;
 import org.apache.tinkerpop.gremlin.structure.Column;
@@ -460,6 +461,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     @Override
     public GremlinSteps<Bytecode, P> repeat(GremlinSteps<Bytecode, P> repeatTraversal) {
         bytecode.addStep(Symbols.repeat, repeatTraversal.current());
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<Bytecode, P> select(final Pop pop, String selectKey) {
+        bytecode.addStep(Symbols.select, pop, selectKey);
         return this;
     }
 

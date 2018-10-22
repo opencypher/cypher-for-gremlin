@@ -19,8 +19,17 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.util.Lists.newArrayList;
+import static org.opencypher.gremlin.test.TestCommons.JOSH;
+import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_RIPPLE;
+import static org.opencypher.gremlin.test.TestCommons.LOP;
+import static org.opencypher.gremlin.test.TestCommons.MARKO;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_CREATED_LOP;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_JOSH;
+import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_VADAS;
+import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
+import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +37,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.ReturnProperties;
@@ -43,7 +51,6 @@ public class VariableLengthPathTest {
     }
 
     @Test
-    @Ignore("TinkerPop 3.3.0 migration - breaking change in SelectStep")
     public void variableLengthPath() throws Exception {
         String cypher = "MATCH (p:person {name: 'marko'}) " +
             "MATCH (p)-[r*1..2]->(s:software) " +
@@ -80,7 +87,7 @@ public class VariableLengthPathTest {
         return submitAndGet(cypher).stream()
             .map(result -> {
                 if (result.get("r") instanceof Edge) {
-                    result.put("r", Arrays.asList(result.get("r")));
+                    result.put("r", newArrayList(result.get("r")));
                 }
 
                 Map<String, Object> map = new HashMap<>();
@@ -206,6 +213,14 @@ public class VariableLengthPathTest {
                 "RETURN p");
 
         assertThat(results)
-            .hasSize(6);
+            .extracting("p")
+            .containsExactlyInAnyOrder(
+                newArrayList(MARKO),
+                newArrayList(MARKO, MARKO_CREATED_LOP, LOP),
+                newArrayList(MARKO, MARKO_KNOWS_VADAS, VADAS),
+                newArrayList(MARKO, MARKO_KNOWS_JOSH, JOSH),
+                newArrayList(MARKO, MARKO_KNOWS_JOSH, JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
+                newArrayList(MARKO, MARKO_KNOWS_JOSH, JOSH, JOSH_CREATED_LOP, LOP)
+            );
     }
 }

@@ -15,12 +15,14 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Pop
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
+import org.opencypher.v9_0.util.symbols.{ListType, RelationshipType}
 
 object MatchWalker {
 
@@ -75,5 +77,22 @@ private class MatchWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
     }
 
     whereOption.foreach(WhereWalker.walk(context, g, _))
+
+    reselectVarLengthPathRelationshipLists(patternParts)
+  }
+
+  private def reselectVarLengthPathRelationshipLists(patternParts: Seq[PatternPart]): Unit = {
+    patternParts
+      .flatMap(_.element.allVariables)
+      .filter(
+        qualifiedType(_, context) match {
+          case (_: ListType) :: (_: RelationshipType) :: Nil => true
+          case _                                             => false
+        }
+      )
+      .foreach {
+        case Variable(name) =>
+          g.optional(g.start().select(Pop.all, name).as(name))
+      }
   }
 }

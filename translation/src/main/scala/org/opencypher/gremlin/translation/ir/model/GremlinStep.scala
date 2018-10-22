@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.model
 
-import org.apache.tinkerpop.gremlin.process.traversal.{Scope, Order => TraversalOrder}
+import org.apache.tinkerpop.gremlin.process.traversal.{Pop, Scope, Order => TraversalOrder}
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
 import org.opencypher.gremlin.traversal.CustomFunction
@@ -303,6 +303,8 @@ case class Repeat(repeatTraversal: Seq[GremlinStep]) extends GremlinStep {
     op(z, repeatTraversal)
   }
 }
+
+case class SelectP(pop: Pop, selectKey: String) extends GremlinStep
 
 case class SelectK(selectKeys: String*) extends GremlinStep
 
