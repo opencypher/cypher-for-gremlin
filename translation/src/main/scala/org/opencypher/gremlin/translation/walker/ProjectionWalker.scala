@@ -388,9 +388,9 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     for (sortItem <- sortItems) {
       val order = sortItem match {
         case _: AscSortItem =>
-          Order.incr
+          Order.asc
         case _: DescSortItem =>
-          Order.decr
+          Order.desc
       }
       val sortExpression = walkLocal(sortItem.expression, None)
       g.by(sortExpression, order)
