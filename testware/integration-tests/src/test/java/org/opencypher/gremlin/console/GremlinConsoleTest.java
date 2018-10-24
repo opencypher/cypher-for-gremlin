@@ -26,7 +26,6 @@ import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
@@ -35,7 +34,6 @@ import org.opencypher.gremlin.rules.GremlinConsoleExternalResource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
 
-@Ignore("Server interferes with other integration tests on CI")
 public class GremlinConsoleTest {
 
     @ClassRule
