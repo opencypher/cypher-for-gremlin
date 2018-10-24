@@ -551,7 +551,6 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       maybeExpr: Option[Expression],
       alternatives: IndexedSeq[(Expression, Expression)],
       default: Option[Expression]): GremlinSteps[T, P] = {
-    val numbersInTokens = alternatives.exists { case (pickToken, _) => pickToken.isInstanceOf[NumberLiteral] }
     val defaultValue = default match {
       case Some(value) => walkLocal(value)
       case None        => __.constant(NULL)
@@ -577,11 +576,6 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     }
 
     maybeExpr match {
-      case Some(expr) if numbersInTokens =>
-        val name = context.generateName()
-        __.flatMap(walkLocal(expr))
-          .as(name)
-          .flatMap(nestedChoose(__.where(p.isEq(name))))
       case Some(expr) =>
         optionChoose(expr)
       case None =>
