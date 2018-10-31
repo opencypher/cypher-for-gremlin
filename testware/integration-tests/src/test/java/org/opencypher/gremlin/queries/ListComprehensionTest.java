@@ -25,6 +25,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ListComprehensionTest {
@@ -42,6 +44,7 @@ public class ListComprehensionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listComprehensionInFirstReturnStatement() throws Exception {
         String cypher = "RETURN [x IN [1, 2.3, true, 'apa'] | toString(x) ] AS list";
 
@@ -54,6 +57,7 @@ public class ListComprehensionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void simplestCaseOfListComprehension() throws Exception {
         String cypher = "WITH [2, 2.9] AS numbers\n" +
             " RETURN [n IN numbers | toInteger(n)] AS int_numbers";
@@ -67,6 +71,7 @@ public class ListComprehensionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void applyMultipleFunctions() throws Exception {
         String cypher = "WITH [2, 2.9] AS numbers\n" +
             " RETURN [n IN numbers | toString(toInteger(n))] AS int_numbers";

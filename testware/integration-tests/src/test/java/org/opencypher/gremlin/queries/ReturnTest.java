@@ -40,7 +40,8 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithBytecode;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
+import org.opencypher.gremlin.groups.WithCustomPredicates;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ReturnTest {
@@ -66,6 +67,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void nestedProperty() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: {bar: 'baz'}} AS nestedMap " +
@@ -78,6 +80,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void propertyFromExpression() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [{bar: 'baz'}, 1] AS list " +
@@ -357,11 +360,8 @@ public class ReturnTest {
             .containsExactlyInAnyOrder("knows", "created");
     }
 
-    /**
-     * Custom predicate deserialization is not implemented
-     */
     @Test
-    @Category(SkipWithBytecode.class)
+    @Category(WithCustomPredicates.class)
     public void nodesFunction() throws Exception {
         String cypher = "MATCH p = (:person)-[:knows]->(:person)\n" +
             "RETURN nodes(p) as r";
@@ -375,11 +375,8 @@ public class ReturnTest {
             );
     }
 
-    /**
-     * Custom predicate deserialization is not implemented
-     */
     @Test
-    @Category(SkipWithBytecode.class)
+    @Category(WithCustomPredicates.class)
     public void nodesFunctionKeepsTraversalHistory() throws Exception {
         String cypher = "MATCH p = (first:person)-[:knows]->(:person)\n" +
             "RETURN nodes(p) as r, first.name as n";
@@ -393,11 +390,8 @@ public class ReturnTest {
             );
     }
 
-    /**
-     * Custom predicate deserialization is not implemented
-     */
     @Test
-    @Category(SkipWithBytecode.class)
+    @Category(WithCustomPredicates.class)
     @SuppressWarnings("unchecked")
     public void nodesAndRelationshipsFunctions() throws Exception {
         String cypher = "MATCH p = (:person)-[:knows]->(:person)-[:created]->(:software)\n" +
@@ -492,6 +486,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void plusTest() throws Exception {
         Map<String, Object> tests = new LinkedHashMap<>();
         tests.put("1 AS a, 2 AS b", 3L);

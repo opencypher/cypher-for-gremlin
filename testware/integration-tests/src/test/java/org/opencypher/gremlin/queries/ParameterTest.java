@@ -24,7 +24,8 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithBytecode;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
+import org.opencypher.gremlin.groups.WithCustomPredicates;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ParameterTest {
@@ -50,11 +51,8 @@ public class ParameterTest {
             .containsExactly(29L);
     }
 
-    /**
-     * Custom predicate deserialization is not implemented
-     */
     @Test
-    @Category(SkipWithBytecode.class)
+    @Category(WithCustomPredicates.class)
     public void whereIn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) " +
@@ -68,11 +66,8 @@ public class ParameterTest {
             .containsExactlyInAnyOrder(27L, 29L);
     }
 
-    /**
-     * Custom predicate deserialization is not implemented
-     */
     @Test
-    @Category(SkipWithBytecode.class)
+    @Category(WithCustomPredicates.class)
     public void patternMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person {name: $name}) " +
@@ -85,11 +80,8 @@ public class ParameterTest {
             .containsExactly(29L);
     }
 
-    /**
-     * Custom predicate deserialization is not implemented
-     */
     @Test
-    @Category(SkipWithBytecode.class)
+    @Category(WithCustomPredicates.class)
     public void startsWith() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) " +
@@ -104,6 +96,7 @@ public class ParameterTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void containerIndex() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH ['Apa'] AS expr " +
