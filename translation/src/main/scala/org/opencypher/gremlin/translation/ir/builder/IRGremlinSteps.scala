@@ -361,6 +361,13 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def property(
+      key: org.apache.tinkerpop.gremlin.structure.T,
+      value: Any): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += PropertyG(key, value)
+    this
+  }
+
   override def property(key: String, value: Any): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += PropertyV(key, value)
     this

@@ -23,6 +23,7 @@ import static org.opencypher.gremlin.translation.ReturnProperties.TYPE;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 
 public class TestCommons {
     public static Map<String, Object> MARKO = parameterMap(ID, 1, LABEL, "person", TYPE, "node", "age", 29L, "name", "marko");
@@ -41,6 +42,22 @@ public class TestCommons {
     public static Map<String, Object> JOSH_CREATED_LOP = parameterMap(ID, 11, LABEL, "created", TYPE, "relationship", "weight", 0.4, OUTV, JOSH.get(ID), INV, LOP.get(ID));
     public static Map<String, Object> PETER_CREATED_LOP = parameterMap(ID, 12, LABEL, "created", TYPE, "relationship", "weight", 0.2, OUTV, PETER.get(ID), INV, LOP.get(ID));
 
+    public static String DROP_ALL = new GroovyGremlinSteps().V().drop().current();
+
+    public static String CREATE_MODERN = new GroovyGremlinSteps()
+        .addV("person").property("name", "marko").property("age", 29).as("marko")
+        .addV("person").property("name", "vadas").property("age", 27).as("vadas")
+        .addV("software").property("name", "lop").property("lang", "java").as("lop")
+        .addV("person").property("name", "josh").property("age", 32).as("josh")
+        .addV("software").property("name", "ripple").property("lang", "java").as("ripple")
+        .addV("person").property("name", "peter").property("age", 35).as("peter")
+        .addE("knows").from("marko").to("vadas").property("weight", 0.5d)
+        .addE("knows").from("marko").to("josh").property("weight", 1.0d)
+        .addE("created").from("marko").to("lop").property("weight", 0.4d)
+        .addE("created").from("josh").to("ripple").property("weight", 1.0d)
+        .addE("created").from("josh").to("lop").property("weight", 0.4d)
+        .addE("created").from("peter").to("lop").property("weight", 0.2d)
+        .current();
 
     public static Map<String, Object> parameterMap(Object... parameters) {
         HashMap<String, Object> result = new HashMap<>();

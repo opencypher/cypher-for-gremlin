@@ -423,6 +423,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> property(org.apache.tinkerpop.gremlin.structure.T token, Object value) {
+        bytecode.addStep(Symbols.property, token, value);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> property(String key, Object value) {
         bytecode.addStep(Symbols.property, key, value);
         return this;

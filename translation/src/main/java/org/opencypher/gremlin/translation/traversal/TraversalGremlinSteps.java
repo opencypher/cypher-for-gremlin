@@ -460,6 +460,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> property(org.apache.tinkerpop.gremlin.structure.T token, Object value) {
+        g.property(token, value);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> property(String key, Object value) {
         g.property(key, value);
         return this;

@@ -16,9 +16,9 @@
 package org.opencypher.gremlin.rules;
 
 import static com.google.common.base.Strings.emptyToNull;
-import static org.opencypher.gremlin.GremlinQueries.CREATE_MODERN;
-import static org.opencypher.gremlin.GremlinQueries.DROP_ALL;
 import static org.opencypher.gremlin.client.GremlinClientFactory.TOKEN_TRANSLATE;
+import static org.opencypher.gremlin.test.TestCommons.CREATE_MODERN;
+import static org.opencypher.gremlin.test.TestCommons.DROP_ALL;
 
 import java.util.Optional;
 import java.util.function.Supplier;
