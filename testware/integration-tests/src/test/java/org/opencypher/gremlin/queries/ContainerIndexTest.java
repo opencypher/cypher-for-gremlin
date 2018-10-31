@@ -30,6 +30,8 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ContainerIndexTest {
@@ -63,6 +65,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listIndexInReturnFunction() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list\n" +
@@ -100,6 +103,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listNegativeIndex() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -112,6 +116,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void nonExistentListIndex() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -124,6 +129,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void nullList() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH null AS list\n" +
@@ -136,6 +142,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listInvalidIndex() throws Exception {
         List<Throwable> throwables = Stream.of(
             new HashMap<>(ImmutableMap.of("expr", emptyMap(), "idx", 1)),
@@ -156,6 +163,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listIndexOnAnyType() {
         submitAndGet("CREATE (:N {p1: 1, p2: 2})");
         List<Map<String, Object>> results = submitAndGet(
@@ -170,6 +178,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void filterByListIndexOnAnyType() {
         submitAndGet("CREATE (:N {p: 1}), (:N {p: 2}), (:N)");
         List<Map<String, Object>> results = submitAndGet(
@@ -185,6 +194,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void mapIndexInReturn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
@@ -197,6 +207,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void mapIndexInReturnFunction() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1, bar: 2, baz: 3} AS map\n" +
@@ -209,6 +220,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void nonExistentMapIndex() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: 1} AS map\n" +
@@ -220,6 +232,7 @@ public class ContainerIndexTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void mapInMap() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: {bar: 'baz'}} AS map " +

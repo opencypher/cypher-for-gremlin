@@ -25,7 +25,7 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.SkipWithBytecode;
+import org.opencypher.gremlin.groups.WithCustomPredicates;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class DeleteTest {
@@ -290,11 +290,8 @@ public class DeleteTest {
             .containsExactly(6L);
     }
 
-    /**
-     * Custom predicate deserialization is not implemented
-     */
     @Test
-    @Category(SkipWithBytecode.class)
+    @Category(WithCustomPredicates.class)
     public void deleteWithTypeLost() throws Exception {
         assertThatThrownBy(() -> submitAndGet(
             "MATCH (n) WITH collect(n) as typelost\n" +

@@ -28,6 +28,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ListSliceTest {
@@ -109,6 +111,7 @@ public class ListSliceTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listNegativeRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -133,6 +136,7 @@ public class ListSliceTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listExceedingRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -145,6 +149,7 @@ public class ListSliceTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listRangeParametrized() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -158,6 +163,7 @@ public class ListSliceTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void listParametrizedEmptyRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +

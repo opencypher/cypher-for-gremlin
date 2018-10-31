@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class FunctionTest {
@@ -148,6 +150,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void sizeOfString() {
         List<Map<String, Object>> results = submitAndGet(
             "RETURN size('Alice') as size"
@@ -363,6 +366,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void stringFunctions() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH \"wOrD\" as m RETURN " +
@@ -376,6 +380,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void nullInStringFunctions() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (m {name: 'marko'}) RETURN " +
@@ -389,6 +394,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void invalidArgumentInStringFunctions() {
         assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN tolower(n.age)"))
                         .hasMessageContaining("Expected a String value for <function1>, but got: Integer(29)");
@@ -404,6 +410,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void reverseList() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] as m RETURN reverse(m) as r");
@@ -414,6 +421,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void split() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH \"wOrD\" as m RETURN " +
@@ -429,6 +437,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void subString() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH \"wOrDwEb\" as m RETURN " +
@@ -446,6 +455,7 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void subStringValidation() {
         assertThatThrownBy(() -> submitAndGet("RETURN substring('string', -1)"))
                         .hasMessageContaining("String index out of range: -1");

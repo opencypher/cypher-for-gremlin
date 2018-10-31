@@ -230,6 +230,12 @@ project(':testware:integration-tests') {
     test {
         systemProperty 'translate', System.getProperty('translate')
         systemProperty 'configPath', System.getProperty('configPath')
+
+        if (System.getProperty('excludeCategories')!=null) {
+            useJUnit {
+                excludeCategories System.getProperty('excludeCategories').split(",")
+            }
+        }
     }
 
     task('testGremlinGroovyTranslation', type: Test) {
@@ -259,7 +265,7 @@ project(':testware:integration-tests') {
 
         useJUnit {
             include 'org/opencypher/gremlin/queries/**'
-            excludeCategories 'org.opencypher.gremlin.groups.SkipWithBytecode'
+            excludeCategories 'org.opencypher.gremlin.groups.SkipWithBytecode', 'org.opencypher.gremlin.groups.WithCustomPredicates'
         }
     }
     check.dependsOn testBytecodeTranslation

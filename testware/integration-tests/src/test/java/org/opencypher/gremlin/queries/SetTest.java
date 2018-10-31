@@ -32,6 +32,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class SetTest {
@@ -225,6 +227,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void copyPropertiesNodeToNode() {
         submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})-[:REL]->(:TO {prop1: 'x', prop3: 'y'})");
 
@@ -239,6 +242,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void copyPropertiesNodeToRelationship() {
         submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})-[:REL {prop1: 'x', prop3: 'y'}]->()");
 
@@ -253,6 +257,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void copyPropertiesRelationshipToNode() {
         submitAndGet("CREATE (:TO {prop1: 'a', prop2: 'b'})-[:REL {prop1: 'x', prop3: 'y'}]->()");
 
@@ -267,6 +272,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void copyPropertiesFromNull() {
         submitAndGet("CREATE (:TO {prop1: 'x', prop3: 'y'})");
 
@@ -275,6 +281,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(WithCustomFunctions.class)
     public void copyPropertiesToNull() {
         submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})");
 

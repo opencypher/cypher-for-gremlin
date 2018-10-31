@@ -28,8 +28,11 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
+@Category(WithCustomFunctions.class)
 public class PercentileTest {
 
     @ClassRule
