@@ -179,6 +179,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> properties(String... propertyKeys);
 
+    GremlinSteps<T, P> property(org.apache.tinkerpop.gremlin.structure.T token, Object value);
+
     GremlinSteps<T, P> property(String key, Object value);
 
     GremlinSteps<T, P> property(Cardinality cardinality, String key, Object value);

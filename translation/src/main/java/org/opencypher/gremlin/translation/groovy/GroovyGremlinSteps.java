@@ -433,6 +433,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> property(org.apache.tinkerpop.gremlin.structure.T token, Object value) {
+        g.append(chain("property", token, value));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> property(String key, Object value) {
         g.append(chain("property", key, value));
         return this;

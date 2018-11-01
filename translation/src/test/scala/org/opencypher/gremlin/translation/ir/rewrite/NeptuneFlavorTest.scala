@@ -15,13 +15,18 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.Tokens
+import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
 import org.opencypher.gremlin.translation.Tokens._
+import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor
+import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
+import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
+import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
+import org.opencypher.gremlin.translation.walker.NodeUtils
 
 class NeptuneFlavorTest {
 
@@ -114,5 +119,39 @@ class NeptuneFlavorTest {
       .withFlavor(neptuneFlavor)
       .contains(__.aggregate(Tokens.PATH_EDGE + "p"))
       .doesNotContain(__.sideEffect(__.aggregate(Tokens.PATH_EDGE + "p")))
+  }
+
+  @Test
+  def tinkerPop334WorkaroundAsc(): Unit = {
+    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .removes(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          Order.asc))
+      .adds(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          incr))
+  }
+
+  @Test
+  def tinkerPop334WorkaroundDesc(): Unit = {
+    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name DESC"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .removes(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          Order.desc))
+      .adds(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          decr))
   }
 }

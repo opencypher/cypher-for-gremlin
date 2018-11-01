@@ -266,6 +266,8 @@ case object Path extends GremlinStep
 
 case class Properties(propertyKeys: String*) extends GremlinStep
 
+case class PropertyG(token: org.apache.tinkerpop.gremlin.structure.T, value: Any) extends GremlinStep
+
 case class PropertyV(key: String, value: Any) extends GremlinStep
 
 case class PropertyVC(cardinality: Cardinality, key: String, value: Any) extends GremlinStep

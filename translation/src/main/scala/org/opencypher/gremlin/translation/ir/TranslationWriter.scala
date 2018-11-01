@@ -196,6 +196,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.path()
         case Properties(propertyKeys @ _*) =>
           g.properties(propertyKeys: _*)
+        case PropertyG(token, value) =>
+          g.property(token, writeValue(value))
         case PropertyV(key, value) =>
           g.property(key, writeValue(value))
         case PropertyVC(cardinality, key, value) =>
