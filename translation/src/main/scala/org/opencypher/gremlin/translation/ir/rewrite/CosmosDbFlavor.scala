@@ -15,7 +15,8 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.apache.tinkerpop.gremlin.process.traversal.Order
+import org.apache.tinkerpop.gremlin.process.traversal.{Order, Scope}
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
@@ -29,6 +30,8 @@ object CosmosDbFlavor extends GremlinRewriter {
       rewriteValues(_),
       rewriteRange(_),
       rewriteChoose(_),
+      rewriteSkip(_),
+      stringIds(_),
       tinkerPop334Workaround(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
@@ -77,6 +80,22 @@ object CosmosDbFlavor extends GremlinRewriter {
     replace({
       case ChooseP2(predicate, trueChoice) :: rest =>
         ChooseP3(predicate, trueChoice, Identity :: Nil) :: rest
+    })(steps)
+  }
+
+  private def rewriteSkip(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Skip(skip) :: rest =>
+        Range(Scope.global, skip, Int.MaxValue) :: rest
+    })(steps)
+  }
+
+  private def stringIds(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case PropertyVC(Cardinality.single, "id", value) :: rest =>
+        PropertyVC(Cardinality.single, "id", "" + value) :: rest
+      case PropertyTC(Cardinality.single, "id", Constant(value) :: Nil) :: rest =>
+        PropertyTC(Cardinality.single, "id", Constant("" + value) :: Nil) :: rest
     })(steps)
   }
 }
