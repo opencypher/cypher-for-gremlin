@@ -15,7 +15,8 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.apache.tinkerpop.gremlin.process.traversal.Order
+import org.apache.tinkerpop.gremlin.process.traversal.{Order, Scope}
+import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.ThrowableAssert
 import org.junit.Test
@@ -142,6 +143,32 @@ class CosmosDbFlavorTest {
       )
       .adds(
         __.select("value").choose(P.neq("  cypher.null"), __.id(), __.identity())
+      )
+  }
+
+  @Test
+  def skip(): Unit = {
+    assertThat(parse("MATCH (n) RETURN n SKIP 2"))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(
+        __.skip(2)
+      )
+      .adds(
+        __.range(Scope.global, 2, Integer.MAX_VALUE)
+      )
+  }
+
+  @Test
+  def stringIds(): Unit = {
+    assertThat(parse("CREATE ({id: 1})"))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(
+        __.property(Cardinality.single, "id", __.constant(1L))
+      )
+      .adds(
+        __.property(Cardinality.single, "id", __.constant("1"))
       )
   }
 }
