@@ -15,15 +15,18 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.assertj.core.api.{Assertions, ThrowableAssert}
+import org.assertj.core.api.ThrowableAssert
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.ir.helpers.JavaHelpers.objects
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
+import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
 
 class CosmosDbFlavorTest {
 
@@ -93,5 +96,52 @@ class CosmosDbFlavorTest {
         parse("WITH ['a', 'b', 'c'] AS a RETURN range(1, size(a) - 1) as r")
           .translate(flavor.extend(Seq(CosmosDbFlavor)))
     }).hasMessageContaining("Ranges with expressions are not supported")
+  }
+
+  @Test
+  def tinkerPop334WorkaroundAsc(): Unit = {
+    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .removes(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          Order.asc))
+      .adds(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          incr))
+  }
+
+  @Test
+  def tinkerPop334WorkaroundDesc(): Unit = {
+    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name DESC"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .removes(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          Order.desc))
+      .adds(
+        __.by(
+          __.select("n")
+            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
+          decr))
+  }
+
+  @Test
+  def choose(): Unit = {
+    assertThat(parse("MATCH (n) WITH n.value as value RETURN id(value)"))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(
+        __.select("value").choose(P.neq("  cypher.null"), __.id())
+      )
+      .adds(
+        __.select("value").choose(P.neq("  cypher.null"), __.id(), __.identity())
+      )
   }
 }

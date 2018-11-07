@@ -26,7 +26,7 @@ object SimplifyDelete extends GremlinRewriter {
   def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     val withChoose = foldTraversals(false)((acc, localSteps) => {
       acc || extract({
-        case ChooseP(IsNode(), Aggregate(DELETE) :: Nil, Some(Aggregate(DETACH_DELETE) :: Nil)) :: _ => true
+        case ChooseP3(IsNode(), Aggregate(DELETE) :: Nil, Aggregate(DETACH_DELETE) :: Nil) :: _ => true
       })(localSteps).contains(true)
     })(steps)
 

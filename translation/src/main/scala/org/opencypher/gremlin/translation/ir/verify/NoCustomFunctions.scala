@@ -41,10 +41,10 @@ object NoCustomFunctions extends GremlinPostCondition {
     })(steps)
 
     val predicates = extract({
-      case ChooseP(predicate, _, _) :: _ => predicate
-      case HasP(_, predicate) :: _       => predicate
-      case Is(predicate) :: _            => predicate
-      case WhereP(predicate) :: _        => predicate
+      case ChooseP3(predicate, _, _) :: _ => predicate
+      case HasP(_, predicate) :: _        => predicate
+      case Is(predicate) :: _             => predicate
+      case WhereP(predicate) :: _         => predicate
     })(steps)
       .flatMap({
         case _: StartsWith => Some("cypherStarsWith")

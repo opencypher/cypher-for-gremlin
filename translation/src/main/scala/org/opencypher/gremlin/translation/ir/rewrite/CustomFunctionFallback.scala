@@ -38,7 +38,7 @@ object CustomFunctionFallback extends GremlinRewriter {
         Path :: From(text) :: rest
 
       case SelectC(values) :: MapF(function) :: rest if function.getName == cypherPlus().getName =>
-        SelectC(values) :: Local(Unfold :: ChooseP(Neq(NULL), Sum :: Nil, None) :: Nil) :: rest
+        SelectC(values) :: Local(Unfold :: ChooseP2(Neq(NULL), Sum :: Nil) :: Nil) :: rest
 
       case MapF(function) :: rest if function.getName == cypherSize().getName =>
         CountS(local) :: rest
