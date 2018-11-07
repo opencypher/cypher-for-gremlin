@@ -18,15 +18,12 @@ package org.opencypher.gremlin.translation.ir.rewrite
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
+import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.Tokens._
-import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
-import org.opencypher.gremlin.translation.translator.{Translator, TranslatorFlavor}
-import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
-import org.opencypher.gremlin.translation.walker.NodeUtils
 
 class NeptuneFlavorTest {
 

@@ -96,17 +96,13 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
             .getOrElse(g.by(writeLocalSteps(traversal)))
         case Cap(sideEffectKey) =>
           g.cap(sideEffectKey)
-        case ChooseT(choiceTraversal, None, None) =>
+        case ChooseT1(choiceTraversal) =>
           g.choose(writeLocalSteps(choiceTraversal))
-        case c @ ChooseT(_, None, Some(_)) =>
-          throw new UnsupportedOperationException(s"Unsupported $c")
-        case c @ ChooseT(_, Some(_), None) =>
-          throw new UnsupportedOperationException(s"Unsupported $c")
-        case ChooseT(traversalPredicate, Some(trueChoice), Some(falseChoice)) =>
+        case ChooseT3(traversalPredicate, trueChoice, falseChoice) =>
           g.choose(writeLocalSteps(traversalPredicate), writeLocalSteps(trueChoice), writeLocalSteps(falseChoice))
-        case ChooseP(predicate, trueChoice, None) =>
+        case ChooseP2(predicate, trueChoice) =>
           g.choose(writePredicate(predicate), writeLocalSteps(trueChoice))
-        case ChooseP(predicate, trueChoice, Some(falseChoice)) =>
+        case ChooseP3(predicate, trueChoice, falseChoice) =>
           g.choose(writePredicate(predicate), writeLocalSteps(trueChoice), writeLocalSteps(falseChoice))
         case Coalesce(coalesceTraversals @ _*) =>
           g.coalesce(coalesceTraversals.map(writeLocalSteps): _*)

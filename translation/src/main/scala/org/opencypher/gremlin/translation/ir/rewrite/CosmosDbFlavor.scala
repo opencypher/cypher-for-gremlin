@@ -15,8 +15,10 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
+import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
 
 /**
   * This is a set of rewrites to adapt the translation to Cosmos DB.
@@ -25,7 +27,9 @@ object CosmosDbFlavor extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     Seq(
       rewriteValues(_),
-      rewriteRange(_)
+      rewriteRange(_),
+      rewriteChoose(_),
+      tinkerPop334Workaround(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -56,6 +60,23 @@ object CosmosDbFlavor extends GremlinRewriter {
             Inject(range: _*) :: rest
           case _ => throw new IllegalArgumentException("Ranges with expressions are not supported in Cosmos Db")
         }
+    })(steps)
+  }
+
+  private def tinkerPop334Workaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case By(traversal, Some(Order.asc)) :: rest =>
+        By(traversal, Some(incr)) :: rest
+      case By(traversal, Some(Order.desc)) :: rest =>
+        By(traversal, Some(decr)) :: rest
+
+    })(steps)
+  }
+
+  private def rewriteChoose(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case ChooseP2(predicate, trueChoice) :: rest =>
+        ChooseP3(predicate, trueChoice, Identity :: Nil) :: rest
     })(steps)
   }
 }
