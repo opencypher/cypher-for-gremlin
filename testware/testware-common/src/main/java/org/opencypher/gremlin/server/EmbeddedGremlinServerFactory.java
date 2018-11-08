@@ -33,7 +33,7 @@ public final class EmbeddedGremlinServerFactory {
         return EmbeddedGremlinServer.builder()
             .port(port)
             .propertiesPath("graph","../testware-common/src/main/resources/tinkergraph-empty.properties")
-            .scriptPath("../testware-common/src/main/resources/generate-modern.groovy")
+            .scriptPath("../testware-common/src/main/resources/generate-empty.groovy")
             .serializer(GryoMessageSerializerV3d0.class, singletonList(TinkerIoRegistryV3d0.class))
             .build();
     }

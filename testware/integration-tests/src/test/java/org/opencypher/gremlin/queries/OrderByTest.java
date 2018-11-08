@@ -23,11 +23,12 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class OrderByTest {
 
     @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     private static final int VERTICES_COUNT = 6;
 

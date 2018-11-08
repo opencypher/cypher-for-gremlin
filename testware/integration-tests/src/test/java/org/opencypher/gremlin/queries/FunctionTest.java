@@ -29,11 +29,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class FunctionTest {
 
     @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -303,7 +304,7 @@ public class FunctionTest {
 
         assertThat(results)
             .extracting("n.name")
-            .containsExactly("marko", "josh");
+            .containsExactlyInAnyOrder("marko", "josh");
     }
 
     @Test
@@ -397,16 +398,16 @@ public class FunctionTest {
     @Category(WithCustomFunctions.class)
     public void invalidArgumentInStringFunctions() {
         assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN tolower(n.age)"))
-                        .hasMessageContaining("Expected a String value for <function1>, but got: Integer(29)");
+                        .hasMessageContaining("Expected a String value for <function1>, but got:");
 
         assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN split(n.age, '1')"))
-                        .hasMessageContaining("Expected a String value for <function1>, but got: Integer(29)");
+                        .hasMessageContaining("Expected a String value for <function1>, but got:");
 
         assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN split('word', n.age)"))
-                        .hasMessageContaining("Expected a String value for <function1>, but got: Integer(29)");
+                        .hasMessageContaining("Expected a String value for <function1>, but got:");
 
         assertThatThrownBy(() -> submitAndGet("MATCH (n {name: 'marko'}) RETURN reverse(n.age)"))
-                        .hasMessageContaining("Expected a string or list value for reverse, but got: Integer(29)");
+                        .hasMessageContaining("Expected a string or list value for reverse, but got:");
     }
 
     @Test

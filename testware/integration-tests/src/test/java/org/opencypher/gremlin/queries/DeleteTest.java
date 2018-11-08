@@ -22,16 +22,18 @@ import static org.opencypher.gremlin.test.TestCommons.parameterMap;
 
 import java.util.List;
 import java.util.Map;
-import org.junit.Rule;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.WithCustomPredicates;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class DeleteTest {
 
-    @Rule
-    public final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+    @ClassRule
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -39,6 +41,11 @@ public class DeleteTest {
 
     private List<Map<String, Object>> submitAndGet(String cypher, Object... parameters) {
         return gremlinServer.cypherGremlinClient().submit(cypher, parameterMap(parameters)).all();
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
     }
 
     @Test

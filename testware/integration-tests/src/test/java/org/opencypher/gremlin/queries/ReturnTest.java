@@ -20,34 +20,32 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.opencypher.gremlin.test.TestCommons.JOSH;
-import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_RIPPLE;
-import static org.opencypher.gremlin.test.TestCommons.LOP;
-import static org.opencypher.gremlin.test.TestCommons.MARKO;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_JOSH;
-import static org.opencypher.gremlin.test.TestCommons.PETER;
-import static org.opencypher.gremlin.test.TestCommons.PETER_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
-import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.groups.WithCustomPredicates;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
+import org.opencypher.gremlin.test.TestCommons.ModernGraph;
 
 public class ReturnTest {
-
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+
+    public static ModernGraph g;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        g = TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
+    }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return submitAndGet(cypher, emptyMap());
@@ -185,10 +183,10 @@ public class ReturnTest {
         assertThat(results)
             .extracting("p")
             .containsExactlyInAnyOrder(
-                asList(MARKO, MARKO_CREATED_LOP, LOP),
-                asList(JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
-                asList(JOSH, JOSH_CREATED_LOP, LOP),
-                asList(PETER, PETER_CREATED_LOP, LOP)
+                asList(g.MARKO, g.MARKO_CREATED_LOP,   g.LOP),
+                asList(g.JOSH,  g.JOSH_CREATED_RIPPLE, g.RIPPLE),
+                asList(g.JOSH,  g.JOSH_CREATED_LOP,    g.LOP),
+                asList(g.PETER, g.PETER_CREATED_LOP,   g.LOP)
             );
     }
 
@@ -200,10 +198,10 @@ public class ReturnTest {
         assertThat(results)
             .extracting("p")
             .containsExactlyInAnyOrder(
-                asList(MARKO, MARKO_CREATED_LOP, LOP),
-                asList(JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
-                asList(JOSH, JOSH_CREATED_LOP, LOP),
-                asList(PETER, PETER_CREATED_LOP, LOP)
+                asList(g. MARKO, g.MARKO_CREATED_LOP,   g.LOP),
+                asList(g. JOSH,  g.JOSH_CREATED_RIPPLE, g.RIPPLE),
+                asList(g. JOSH,  g.JOSH_CREATED_LOP,    g.LOP),
+                asList(g. PETER, g.PETER_CREATED_LOP,   g.LOP)
             );
     }
 
@@ -216,10 +214,10 @@ public class ReturnTest {
             .hasSize(4)
             .extracting("p")
             .containsExactlyInAnyOrder(
-                asList(MARKO),
-                asList(VADAS),
-                asList(JOSH),
-                asList(PETER)
+                asList(g.MARKO),
+                asList(g.VADAS),
+                asList(g.JOSH),
+                asList(g.PETER)
             );
     }
 
@@ -370,8 +368,8 @@ public class ReturnTest {
         assertThat(results)
             .extracting("r")
             .containsExactlyInAnyOrder(
-                asList(MARKO, VADAS),
-                asList(MARKO, JOSH)
+                asList(g.MARKO, g.VADAS),
+                asList(g.MARKO, g.JOSH)
             );
     }
 
@@ -385,8 +383,8 @@ public class ReturnTest {
         assertThat(results)
             .extracting("r", "n")
             .containsExactlyInAnyOrder(
-                tuple(asList(MARKO, VADAS), "marko"),
-                tuple(asList(MARKO, JOSH), "marko")
+                tuple(asList(g.MARKO, g.VADAS), "marko"),
+                tuple(asList(g.MARKO, g.JOSH), "marko")
             );
     }
 
@@ -401,8 +399,8 @@ public class ReturnTest {
         assertThat(results)
             .extracting("nodes", "rels")
             .containsExactlyInAnyOrder(
-                tuple(asList(MARKO, JOSH, LOP), asList(MARKO_KNOWS_JOSH, JOSH_CREATED_LOP)),
-                tuple(asList(MARKO, JOSH, RIPPLE), asList(MARKO_KNOWS_JOSH, JOSH_CREATED_RIPPLE))
+                tuple(asList(g.MARKO, g.JOSH, g.LOP), asList(g.MARKO_KNOWS_JOSH, g.JOSH_CREATED_LOP)),
+                tuple(asList(g.MARKO, g.JOSH, g.RIPPLE), asList(g.MARKO_KNOWS_JOSH, g.JOSH_CREATED_RIPPLE))
             );
     }
 
@@ -535,13 +533,13 @@ public class ReturnTest {
 
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
 
-        List<Map<String, Object>> markoCreatedOssPath = asList(MARKO, MARKO_CREATED_LOP, LOP);
+        List<Map<String, Object>> markoCreatedOssPath = asList(g.MARKO, g.MARKO_CREATED_LOP, g.LOP);
 
         assertThat(cypherResults)
             .extracting("n", "r", "p")
             .containsExactly(tuple(
-                asList(asList(asList(MARKO))),
-                asList(asList(asList(MARKO_CREATED_LOP))),
+                asList(asList(asList(g.MARKO))),
+                asList(asList(asList(g.MARKO_CREATED_LOP))),
                 asList(asList(asList(markoCreatedOssPath))))
             );
     }
