@@ -24,11 +24,12 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class WithTest {
 
     @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -141,7 +142,7 @@ public class WithTest {
 
         assertThat(results)
             .extracting("a.name")
-            .containsExactly("marko", "vadas", "josh", "peter");
+            .containsExactlyInAnyOrder("marko", "vadas", "josh", "peter");
     }
 
     @Test

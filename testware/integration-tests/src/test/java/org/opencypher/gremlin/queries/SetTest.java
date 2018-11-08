@@ -81,7 +81,7 @@ public class SetTest {
     }
 
     private List<Object> setAndGetProperty(String value) throws Exception {
-        String query = "MATCH (n) SET n.property = %s RETURN n.property AS prop LIMIT 1";
+        String query = "MATCH (n) SET n.property1 = %s RETURN n.property1 AS prop LIMIT 1";
         return submitAndGet(format(query, value)).stream().map(r -> r.get("prop")).collect(toList());
     }
 

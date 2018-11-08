@@ -17,6 +17,7 @@ package org.opencypher.gremlin.queries;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opencypher.gremlin.test.TestCommons.ignoreOrderInCollections;
 import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 
 import java.util.Collection;
@@ -104,6 +105,7 @@ public class ListComprehensionTest {
         assertThat(results)
             .hasSize(1)
             .extracting("years")
+            .usingElementComparator(ignoreOrderInCollections())
             .containsExactly(asList(1987L, 1979L, 1984L));
     }
 

@@ -297,7 +297,7 @@ public class ComplexExamplesTest {
 
         assertThat(results)
             .extracting("n.name", "x.name")
-            .containsExactly(tuple("house1", "house3"),
+            .containsExactlyInAnyOrder(tuple("house1", "house3"),
                 tuple("house1", "house4"));
     }
 

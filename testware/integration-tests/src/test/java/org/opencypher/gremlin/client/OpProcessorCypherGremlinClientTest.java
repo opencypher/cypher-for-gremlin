@@ -25,11 +25,12 @@ import org.apache.tinkerpop.gremlin.driver.Client;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class OpProcessorCypherGremlinClientTest {
 
     @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     @Test
     public void submitToDefaultGraph() {

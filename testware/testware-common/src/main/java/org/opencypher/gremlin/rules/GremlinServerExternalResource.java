@@ -17,13 +17,12 @@ package org.opencypher.gremlin.rules;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static org.opencypher.gremlin.client.GremlinClientFactory.TOKEN_TRANSLATE;
-import static org.opencypher.gremlin.test.TestCommons.CREATE_MODERN;
-import static org.opencypher.gremlin.test.TestCommons.DROP_ALL;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
 import org.assertj.core.util.Strings;
 import org.junit.rules.ExternalResource;
 import org.opencypher.gremlin.client.CypherGremlinClient;
@@ -42,19 +41,29 @@ public class GremlinServerExternalResource extends ExternalResource {
     private Client gremlinClient;
     private CypherGremlinClient cypherGremlinClient;
     private Supplier<EmbeddedGremlinServer> serverSupplier;
+    private ThrowingConsumer<CypherGremlinClient> setup;
 
     public GremlinServerExternalResource() {
-        this(EmbeddedGremlinServerFactory::tinkerGraph);
+        this((o) -> {
+        });
     }
 
     public GremlinServerExternalResource(Supplier<EmbeddedGremlinServer> serverSupplier) {
         this.serverSupplier = serverSupplier;
+        this.setup = (o) -> {
+        };
+    }
+
+    public GremlinServerExternalResource(ThrowingConsumer<CypherGremlinClient> setup) {
+        this.serverSupplier = (EmbeddedGremlinServerFactory::tinkerGraph);
+        this.setup = setup;
     }
 
     @Override
     public void before() throws Throwable {
         gremlinClient = configuredGremlinClient();
         cypherGremlinClient = configuredCypherGremlinClient();
+        setup.accept(cypherGremlinClient);
     }
 
     private Client configuredGremlinClient() throws Exception {
@@ -64,9 +73,6 @@ public class GremlinServerExternalResource extends ExternalResource {
         if (!Strings.isNullOrEmpty(configPath)) {
             logger.info("Running tests using configuration " + configPath);
             gremlinClient = Cluster.open(configPath).connect();
-
-            gremlinClient.submit(DROP_ALL).all().get();
-            gremlinClient.submit(CREATE_MODERN).all().get();
         } else {
             logger.info("Running tests using embeded TinkerGraph");
             gremlinServer = serverSupplier.get();

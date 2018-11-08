@@ -18,23 +18,26 @@ package org.opencypher.gremlin.queries;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
-import static org.opencypher.gremlin.test.TestCommons.JOSH;
-import static org.opencypher.gremlin.test.TestCommons.LOP;
-import static org.opencypher.gremlin.test.TestCommons.MARKO;
-import static org.opencypher.gremlin.test.TestCommons.PETER;
-import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
-import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import java.util.List;
 import java.util.Map;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
+import org.opencypher.gremlin.test.TestCommons.ModernGraph;
 
 public class MatchTest {
-
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+
+    public static ModernGraph g;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        g = TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
+    }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -48,7 +51,7 @@ public class MatchTest {
 
         assertThat(results)
             .extracting("n")
-            .containsExactlyInAnyOrder(MARKO, VADAS, JOSH, PETER, LOP, RIPPLE);
+            .containsExactlyInAnyOrder(g.MARKO, g.VADAS, g.JOSH, g.PETER, g.LOP, g.RIPPLE);
     }
 
     @Test
@@ -167,7 +170,7 @@ public class MatchTest {
 
         assertThat(results)
             .extracting("m")
-            .containsExactly(MARKO);
+            .containsExactly(g.MARKO);
     }
 
     @Test

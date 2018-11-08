@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -38,11 +37,6 @@ public class ContainerIndexTest {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
-
-    @Before
-    public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
-    }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return submitAndGet(cypher, emptyMap());

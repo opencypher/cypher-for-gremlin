@@ -21,15 +21,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.extractor.Extractors.byName;
 import static org.assertj.core.groups.FieldsOrPropertiesExtractor.extract;
+import static org.opencypher.gremlin.test.TestCommons.ignoreOrderInCollections;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Streams;
-import com.google.common.io.Resources;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -37,6 +33,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class NativeTraversalTest {
 
@@ -49,10 +46,7 @@ public class NativeTraversalTest {
 
     @Before
     public void setUp() throws Exception {
-        String createSnMini = Resources.toString(Resources.getResource("snMini.cyp"), Charsets.UTF_8).trim();
-        for (String statement : createSnMini.split(";")) {
-            submitAndGet(statement);
-        }
+        TestCommons.snGraph(gremlinServer.cypherGremlinClient());
     }
 
     @Test
@@ -471,25 +465,5 @@ public class NativeTraversalTest {
 
         assertThatThrownBy(() -> submitAndGet("MATCH (n) RETURN count(toInteger(avg(n.prop)) + 1)"))
                 .hasMessageContaining("contains child expressions which are aggregations");
-    }
-
-    public static Comparator<? super Tuple> ignoreOrderInCollections() {
-        return (t1, t2) ->
-            (int) Streams.zip(t1.toList().stream(), t2.toList().stream(),
-                (o1, o2) ->
-                    areEqualCollections(o1, o2) || Objects.equals(o1, o2))
-                .filter(isEqual -> !isEqual)
-                .count();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static boolean areEqualCollections(Object o1, Object o2) {
-        if (o1 != null && (o2 != null) &&
-            (o1 instanceof Collection) && (o2 instanceof Collection)) {
-            Collection list1 = Collection.class.cast(o1);
-            Collection list2 = Collection.class.cast(o2);
-            return list1.size() == list2.size() && list1.containsAll(list2);
-        }
-        return false;
     }
 }

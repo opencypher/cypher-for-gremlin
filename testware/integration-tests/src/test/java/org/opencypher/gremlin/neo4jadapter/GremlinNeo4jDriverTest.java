@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.neo4jadapter;
 
-import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.neo4j.driver.v1.Values.parameters;
@@ -37,11 +36,12 @@ import org.neo4j.driver.v1.types.Relationship;
 import org.opencypher.gremlin.neo4j.driver.Config;
 import org.opencypher.gremlin.neo4j.driver.GremlinDatabase;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class GremlinNeo4jDriverTest {
     @ClassRule
-    public static final GremlinServerExternalResource server = new GremlinServerExternalResource();
+    public static final GremlinServerExternalResource server = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     @Test
     public void simple() {

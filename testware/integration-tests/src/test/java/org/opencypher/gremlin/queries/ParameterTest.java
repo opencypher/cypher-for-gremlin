@@ -27,11 +27,12 @@ import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.WithCustomFunctions;
 import org.opencypher.gremlin.groups.WithCustomPredicates;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class ParameterTest {
 
     @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     private List<Map<String, Object>> submitAndGet(String cypher, Map<String, ?> parameters) {
         return gremlinServer.cypherGremlinClient().submit(cypher, parameters).all();

@@ -195,7 +195,7 @@ public class MergeTest {
 
     @Test
     public void vertexOn() throws Exception {
-        String query = "MERGE (a:Label {prop: 'value'}) " +
+        String query = "MERGE (a:lbl {prop: 'value'}) " +
             "ON MATCH SET a.action = 'on match' " +
             "ON CREATE SET a.action = 'on create' " +
             "RETURN a.action, a.prop, labels(a)";
@@ -204,7 +204,7 @@ public class MergeTest {
         List<Map<String, Object>> results = submitAndGet(query);
         assertThat(results)
             .extracting("a.prop", "labels(a)")
-            .containsExactly(tuple("value", singletonList("Label")));
+            .containsExactly(tuple("value", singletonList("lbl")));
 
         // checking SET clause
         assertThat(results)

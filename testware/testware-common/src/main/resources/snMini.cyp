@@ -1,5 +1,3 @@
-MATCH (n) DETACH DELETE n;
-
 CREATE (id52171:City {cityId:52171, name:'Copenhagen'})
 CREATE (id53019:City {cityId:53019, name:'Oslo'})
 CREATE (id53109:City {cityId:53109, name:'Helsinki'})

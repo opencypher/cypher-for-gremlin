@@ -19,29 +19,26 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.opencypher.gremlin.test.TestCommons.JOSH;
-import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_RIPPLE;
-import static org.opencypher.gremlin.test.TestCommons.LOP;
-import static org.opencypher.gremlin.test.TestCommons.MARKO;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_JOSH;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_VADAS;
-import static org.opencypher.gremlin.test.TestCommons.PETER;
-import static org.opencypher.gremlin.test.TestCommons.PETER_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
-import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import java.util.List;
 import java.util.Map;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
+import org.opencypher.gremlin.test.TestCommons.ModernGraph;
 
 public class OptionalMatchTest {
-
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+
+    public static ModernGraph g;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        g = TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
+    }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -84,12 +81,12 @@ public class OptionalMatchTest {
         assertThat(results)
             .extracting("p")
             .containsExactlyInAnyOrder(
-                asList(MARKO, MARKO_KNOWS_VADAS, VADAS),
-                asList(MARKO, MARKO_KNOWS_JOSH, JOSH),
-                asList(MARKO, MARKO_CREATED_LOP, LOP),
-                asList(JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
-                asList(JOSH, JOSH_CREATED_LOP, LOP),
-                asList(PETER, PETER_CREATED_LOP, LOP)
+                asList(g.MARKO, g.MARKO_KNOWS_VADAS, g.VADAS),
+                asList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH),
+                asList(g.MARKO, g.MARKO_CREATED_LOP, g.LOP),
+                asList(g.JOSH, g.JOSH_CREATED_RIPPLE, g.RIPPLE),
+                asList(g.JOSH, g.JOSH_CREATED_LOP, g.LOP),
+                asList(g.PETER, g.PETER_CREATED_LOP, g.LOP)
             );
     }
 

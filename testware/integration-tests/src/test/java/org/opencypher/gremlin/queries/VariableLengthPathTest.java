@@ -19,16 +19,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.util.Lists.newArrayList;
-import static org.opencypher.gremlin.test.TestCommons.JOSH;
-import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.JOSH_CREATED_RIPPLE;
-import static org.opencypher.gremlin.test.TestCommons.LOP;
-import static org.opencypher.gremlin.test.TestCommons.MARKO;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_CREATED_LOP;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_JOSH;
-import static org.opencypher.gremlin.test.TestCommons.MARKO_KNOWS_VADAS;
-import static org.opencypher.gremlin.test.TestCommons.RIPPLE;
-import static org.opencypher.gremlin.test.TestCommons.VADAS;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,15 +26,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
+import org.opencypher.gremlin.test.TestCommons.ModernGraph;
 import org.opencypher.gremlin.translation.ReturnProperties;
 
 public class VariableLengthPathTest {
-
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+
+    public static ModernGraph g;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        g = TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
+    }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -215,12 +214,12 @@ public class VariableLengthPathTest {
         assertThat(results)
             .extracting("p")
             .containsExactlyInAnyOrder(
-                newArrayList(MARKO),
-                newArrayList(MARKO, MARKO_CREATED_LOP, LOP),
-                newArrayList(MARKO, MARKO_KNOWS_VADAS, VADAS),
-                newArrayList(MARKO, MARKO_KNOWS_JOSH, JOSH),
-                newArrayList(MARKO, MARKO_KNOWS_JOSH, JOSH, JOSH_CREATED_RIPPLE, RIPPLE),
-                newArrayList(MARKO, MARKO_KNOWS_JOSH, JOSH, JOSH_CREATED_LOP, LOP)
+                newArrayList(g.MARKO),
+                newArrayList(g.MARKO, g.MARKO_CREATED_LOP, g.LOP),
+                newArrayList(g.MARKO, g.MARKO_KNOWS_VADAS, g.VADAS),
+                newArrayList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH),
+                newArrayList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH, g.JOSH_CREATED_RIPPLE, g.RIPPLE),
+                newArrayList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH, g.JOSH_CREATED_LOP, g.LOP)
             );
     }
 }
