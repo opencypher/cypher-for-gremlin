@@ -15,13 +15,10 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.apache.tinkerpop.gremlin.process
-import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model.{GremlinStep, _}
-import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
 
 /**
   * This is a set of rewrites to adapt the translation to AWS Neptune.
@@ -42,8 +39,7 @@ object NeptuneFlavor extends GremlinRewriter {
   private def traversalRewriters(topLevelRewrites: Seq[GremlinStep]) = {
     Seq(
       barrierAfterCountWorkaround(_),
-      expandListProperties(_),
-      tinkerPop334Workaround(_)
+      expandListProperties(_)
     ).foldLeft(topLevelRewrites) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -55,16 +51,6 @@ object NeptuneFlavor extends GremlinRewriter {
         Count :: Barrier :: rest
       case CountS(scope) :: rest =>
         CountS(scope) :: Barrier :: rest
-    })(steps)
-  }
-
-  private def tinkerPop334Workaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    replace({
-      case By(traversal, Some(Order.asc)) :: rest =>
-        By(traversal, Some(incr)) :: rest
-      case By(traversal, Some(Order.desc)) :: rest =>
-        By(traversal, Some(decr)) :: rest
-
     })(steps)
   }
 
