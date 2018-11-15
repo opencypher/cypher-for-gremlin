@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens
@@ -119,16 +118,11 @@ class NeptuneFlavorTest {
   }
 
   @Test
-  def tinkerPop334WorkaroundAsc(): Unit = {
+  def incrInOrder(): Unit = {
     assertThat(parse("MATCH (n) RETURN n ORDER BY n.name"))
       .withFlavor(flavor)
       .rewritingWith(NeptuneFlavor)
-      .removes(
-        __.by(
-          __.select("n")
-            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
-          Order.asc))
-      .adds(
+      .contains(
         __.by(
           __.select("n")
             .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
@@ -136,16 +130,11 @@ class NeptuneFlavorTest {
   }
 
   @Test
-  def tinkerPop334WorkaroundDesc(): Unit = {
+  def decrInOrder(): Unit = {
     assertThat(parse("MATCH (n) RETURN n ORDER BY n.name DESC"))
       .withFlavor(flavor)
       .rewritingWith(NeptuneFlavor)
-      .removes(
-        __.by(
-          __.select("n")
-            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
-          Order.desc))
-      .adds(
+      .contains(
         __.by(
           __.select("n")
             .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
