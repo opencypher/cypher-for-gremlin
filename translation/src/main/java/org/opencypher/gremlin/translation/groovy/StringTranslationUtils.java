@@ -59,6 +59,9 @@ public final class StringTranslationUtils {
         if (argument instanceof String) {
             return toStringLiteral((String) argument);
         }
+        if (argument instanceof Double || argument instanceof Float) {
+            return argument.toString() + "d";
+        }
         if (argument == null) {
             return "null";
         }
