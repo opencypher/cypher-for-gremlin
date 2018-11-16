@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
+import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
 import static org.opencypher.gremlin.translation.groovy.StringTranslationUtils.toLiteral;
 
 import java.util.ArrayList;
@@ -30,6 +31,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithNeptune;
+import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.groovy.StringTranslationUtils;
 
@@ -42,7 +46,7 @@ public class LiteralTest {
 
     @Before
     public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
+        submitAndGet(DELETE_ALL);
 
         literalMap = new LinkedHashMap<>();
         literalMap.put("p0", 13L);
@@ -64,6 +68,7 @@ public class LiteralTest {
     }
 
     @Test
+    @Category(UsesCollectionsInProperties.ListDataType.class)
     public void create() {
         String fieldMap = literalMap.entrySet().stream()
             .map(e -> e.getKey() + ":" + toLiteral(e.getValue()))
@@ -142,6 +147,7 @@ public class LiteralTest {
     }
 
     @Test
+    @Category(SkipWithNeptune.EmptyMap.class)
     public void returnEmptyMap() {
         List<Map<String, Object>> results = submitAndGet(
             "RETURN {} AS map"

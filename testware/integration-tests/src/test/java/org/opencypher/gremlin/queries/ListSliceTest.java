@@ -20,6 +20,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.WithCustomFunctions;
+import org.opencypher.gremlin.groups.UsesExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ListSliceTest {
@@ -39,7 +40,7 @@ public class ListSliceTest {
 
     @Before
     public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
+        submitAndGet(DELETE_ALL);
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
@@ -111,7 +112,7 @@ public class ListSliceTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void listNegativeRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -136,7 +137,7 @@ public class ListSliceTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void listExceedingRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -149,7 +150,7 @@ public class ListSliceTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void listRangeParametrized() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +
@@ -163,7 +164,7 @@ public class ListSliceTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void listParametrizedEmptyRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +

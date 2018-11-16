@@ -18,7 +18,8 @@ package org.opencypher.gremlin.suites;
 import org.junit.experimental.categories.Categories;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.opencypher.gremlin.groups.UsesExtensions;
+import org.opencypher.gremlin.groups.SkipWithJanusGraph;
+import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
 import org.opencypher.gremlin.queries.CaseTest;
 import org.opencypher.gremlin.queries.CastTest;
 import org.opencypher.gremlin.queries.ComparisonTest;
@@ -53,8 +54,9 @@ import org.opencypher.gremlin.queries.WithTest;
 
 @RunWith(Categories.class)
 @Categories.ExcludeCategory({
-    UsesExtensions.class
+    SkipWithJanusGraph.class,
+    UsesCollectionsInProperties.class
 })
 @Suite.SuiteClasses({CaseTest.class, NativeTraversalTest.class, CastTest.class, NullTest.class, ComparisonTest.class, OptionalMatchTest.class, ComplexExamplesTest.class, OrderByTest.class, ContainerIndexTest.class, ParameterTest.class, CreateTest.class, PercentileTest.class, DeleteTest.class, ProcedureTest.class, ExplainTest.class, RangeTest.class, ExpressionTest.class, ReturnTest.class, FunctionTest.class, SetTest.class, ListComprehensionTest.class, UnionTest.class, ListSliceTest.class, UnwindTest.class, LiteralTest.class, VariableLengthPathTest.class, MatchTest.class, WhereTest.class, MergeTest.class, WithTest.class, SpecificsTest.class})
-public class NativeTranslationSuite {
+public class JanusGraphSuite {
 }

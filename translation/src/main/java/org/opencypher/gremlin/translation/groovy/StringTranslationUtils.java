@@ -56,6 +56,9 @@ public final class StringTranslationUtils {
                 })
                 .collect(Collectors.joining(", ", "[", "]"));
         }
+        if (argument instanceof Double || argument instanceof Float) {
+            return argument.toString() + "d";
+        }
         if (argument instanceof String) {
             return toStringLiteral((String) argument);
         }

@@ -33,7 +33,9 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.WithCustomFunctions;
+import org.opencypher.gremlin.groups.SkipWithJanusGraph;
+import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
+import org.opencypher.gremlin.groups.UsesExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class SetTest {
@@ -56,7 +58,8 @@ public class SetTest {
     }
 
     @Test
-    public void setAndGetString() throws Exception {
+    @Category(SkipWithJanusGraph.ChangePropertyType.class)
+    public void setAndGetLiteral() throws Exception {
         assertThat(setAndGetProperty("1")).containsExactly(1L);
     }
 
@@ -71,11 +74,13 @@ public class SetTest {
     }
 
     @Test
+    @Category(UsesCollectionsInProperties.ListDataType.class)
     public void setAndGetList() throws Exception {
         assertThat(setAndGetProperty("[1, 2, 3]")).containsExactly(asList(1L, 2L, 3L));
     }
 
     @Test
+    @Category(UsesCollectionsInProperties.MapDataType.class)
     public void setAndGetMap() throws Exception {
         assertThat(setAndGetProperty("{key: 'value'}")).containsExactly(singletonMap("key", "value"));
     }
@@ -109,6 +114,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithJanusGraph.SetAndGetEdgeProperty.class)
     public void setEdgeProperty() {
         submitAndGet("CREATE ()-[:REL]->()");
 
@@ -121,6 +127,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithJanusGraph.SetAndGetEdgeProperty.class)
     public void setEdgeProperty2() {
         submitAndGet("CREATE (n)-[r:REL]->(m)");
 
@@ -181,7 +188,7 @@ public class SetTest {
         submitAndGet("CREATE (n:person {loc: 'uk'})");
 
         Map<Object, Object> props = new HashMap<>();
-        props.put("name", 1);
+        props.put("name1", 1);
         props.put("name2", 2);
 
         String cypher = "MATCH (n:person)" +
@@ -194,7 +201,7 @@ public class SetTest {
             .extracting("p")
             .containsExactly(ImmutableMap.of(
                 "loc", "uk",
-                "name", 1L,
+                "name1", 1L,
                 "name2", 2L));
     }
 
@@ -212,22 +219,22 @@ public class SetTest {
 
     @Test
     public void setPropertyToAnExpression() {
-        submitAndGet("CREATE (:A {foo: 2})");
-        submitAndGet("CREATE (:B {foo: 3})");
+        submitAndGet("CREATE (:A {bar: 2})");
+        submitAndGet("CREATE (:B {bar: 3})");
 
         List<Map<String, Object>> update = submitAndGet(
             "MATCH (a:A), (b:B) " +
-                "SET a.foo = b.foo " +
-                "RETURN a.foo"
+                "SET a.bar = b.bar " +
+                "RETURN a.bar"
         );
 
         assertThat(update)
-            .extracting("a.foo")
+            .extracting("a.bar")
             .containsExactly(3L);
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void copyPropertiesNodeToNode() {
         submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})-[:REL]->(:TO {prop1: 'x', prop3: 'y'})");
 
@@ -242,7 +249,7 @@ public class SetTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void copyPropertiesNodeToRelationship() {
         submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})-[:REL {prop1: 'x', prop3: 'y'}]->()");
 
@@ -257,7 +264,7 @@ public class SetTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void copyPropertiesRelationshipToNode() {
         submitAndGet("CREATE (:TO {prop1: 'a', prop2: 'b'})-[:REL {prop1: 'x', prop3: 'y'}]->()");
 
@@ -272,7 +279,7 @@ public class SetTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void copyPropertiesFromNull() {
         submitAndGet("CREATE (:TO {prop1: 'x', prop3: 'y'})");
 
@@ -281,7 +288,7 @@ public class SetTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void copyPropertiesToNull() {
         submitAndGet("CREATE (:FROM {prop1: 'a', prop2: 'b'})");
 

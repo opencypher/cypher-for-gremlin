@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,10 +30,10 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.WithCustomFunctions;
+import org.opencypher.gremlin.groups.UsesExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
-@Category(WithCustomFunctions.class)
+@Category(UsesExtensions.CustomFunctions.class)
 public class PercentileTest {
 
     @ClassRule
@@ -40,7 +41,7 @@ public class PercentileTest {
 
     @Before
     public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
+        submitAndGet(DELETE_ALL);
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {

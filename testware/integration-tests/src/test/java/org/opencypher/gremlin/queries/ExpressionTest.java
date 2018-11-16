@@ -26,7 +26,7 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.WithCustomPredicates;
+import org.opencypher.gremlin.groups.UsesExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ExpressionTest {
@@ -85,7 +85,7 @@ public class ExpressionTest {
     }
 
     @Test
-    @Category(WithCustomPredicates.class)
+    @Category(UsesExtensions.CustomPredicates.class)
     public void stringComparison() {
         Map<String, Object> args = new HashMap<>();
         args.put("s", "abc");

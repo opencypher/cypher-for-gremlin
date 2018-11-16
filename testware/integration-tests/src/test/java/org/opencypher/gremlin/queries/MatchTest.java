@@ -24,6 +24,8 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithJanusGraph;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.test.TestCommons.ModernGraph;
@@ -223,7 +225,8 @@ public class MatchTest {
     }
 
     @Test
-    public void matchNullProperty() throws Exception {
+    @Category(SkipWithJanusGraph.ChangePropertyType.class)
+    public void emptyMatchNullProperty() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n {name: \"marko\", age: null}) RETURN n"
         );

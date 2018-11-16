@@ -30,8 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.WithCustomFunctions;
-import org.opencypher.gremlin.groups.WithCustomPredicates;
+import org.opencypher.gremlin.groups.UsesExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.test.TestCommons.ModernGraph;
@@ -65,7 +64,7 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void nestedProperty() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH {foo: {bar: 'baz'}} AS nestedMap " +
@@ -78,7 +77,7 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void propertyFromExpression() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [{bar: 'baz'}, 1] AS list " +
@@ -359,7 +358,7 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(WithCustomPredicates.class)
+    @Category(UsesExtensions.CustomPredicates.class)
     public void nodesFunction() throws Exception {
         String cypher = "MATCH p = (:person)-[:knows]->(:person)\n" +
             "RETURN nodes(p) as r";
@@ -374,7 +373,7 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(WithCustomPredicates.class)
+    @Category(UsesExtensions.CustomPredicates.class)
     public void nodesFunctionKeepsTraversalHistory() throws Exception {
         String cypher = "MATCH p = (first:person)-[:knows]->(:person)\n" +
             "RETURN nodes(p) as r, first.name as n";
@@ -389,7 +388,7 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(WithCustomPredicates.class)
+    @Category(UsesExtensions.CustomPredicates.class)
     @SuppressWarnings("unchecked")
     public void nodesAndRelationshipsFunctions() throws Exception {
         String cypher = "MATCH p = (:person)-[:knows]->(:person)-[:created]->(:software)\n" +
@@ -484,7 +483,7 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void plusTest() throws Exception {
         Map<String, Object> tests = new LinkedHashMap<>();
         tests.put("1 AS a, 2 AS b", 3L);

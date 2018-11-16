@@ -19,5 +19,5 @@ package org.opencypher.gremlin.groups;
  * Tests that are skipped in 'testBytecodeTranslation' Gradle task
  * Must have description explaining reason
  */
-public class SkipWithBytecode {
+public interface SkipWithBytecode {
 }

@@ -18,6 +18,7 @@ package org.opencypher.gremlin.queries;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
+import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
 import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.WithCustomFunctions;
+import org.opencypher.gremlin.groups.UsesExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ComplexExamplesTest {
@@ -37,7 +38,7 @@ public class ComplexExamplesTest {
 
     @Before
     public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
+        submitAndGet(DELETE_ALL);
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
@@ -147,7 +148,7 @@ public class ComplexExamplesTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void returnExpressionUnrelatedToMatch() throws Exception {
         submitAndGet("CREATE ()-[:T]->()");
         List<Map<String, Object>> results = submitAndGet(
@@ -305,19 +306,19 @@ public class ComplexExamplesTest {
     public void stringInequality() {
         submitAndGet(
             "CREATE (root:Root {name: 'x'}), " +
-                "(child1:TextNode {id: 'text'}), " +
-                "(child2:IntNode {id: 0}), " +
+                "(child1:TextNode {prop2: 'text'}), " +
+                "(child2:IntNode {prop2: 0}), " +
                 "(root)-[:T]->(child1), " +
                 "(root)-[:T]->(child2)"
         );
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (:Root {name: 'x'})-->(i:TextNode) " +
-                "WHERE i.id > 'te' " +
-                "RETURN i.id as id"
+                "WHERE i.prop2 > 'te' " +
+                "RETURN i.prop2 as prop"
         );
 
         assertThat(results)
-            .extracting("id")
+            .extracting("prop")
             .containsExactly("text");
     }
 

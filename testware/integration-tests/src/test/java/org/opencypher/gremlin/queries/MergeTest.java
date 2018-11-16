@@ -18,12 +18,15 @@ package org.opencypher.gremlin.queries;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
 
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class MergeTest {
@@ -33,7 +36,7 @@ public class MergeTest {
 
     @Before
     public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
+        submitAndGet(DELETE_ALL);
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
@@ -66,32 +69,32 @@ public class MergeTest {
 
     @Test
     public void byProperty() {
-        submitAndGet("MERGE (n {foo: 1})");
-        submitAndGet("MERGE (n {foo: 1})");
-        submitAndGet("MERGE (n {foo: 2})");
+        submitAndGet("MERGE (n {baz: 1})");
+        submitAndGet("MERGE (n {baz: 1})");
+        submitAndGet("MERGE (n {baz: 2})");
         List<Map<String, Object>> match = submitAndGet(
-            "MATCH (n) RETURN n.foo"
+            "MATCH (n) RETURN n.baz"
         );
 
         assertThat(match)
-            .extracting("n.foo")
+            .extracting("n.baz")
             .containsExactlyInAnyOrder(1L, 2L);
     }
 
     @Test
     public void byMultipleProperties() {
-        submitAndGet("MERGE (n {foo: 1, bar: 1})");
-        submitAndGet("MERGE (n {foo: 1, bar: 1})");
-        submitAndGet("MERGE (n {foo: 1})");
+        submitAndGet("MERGE (n {baz: 1, bar: 1})");
+        submitAndGet("MERGE (n {baz: 1, bar: 1})");
+        submitAndGet("MERGE (n {baz: 1})");
         submitAndGet("MERGE (n {bar: 1})");
-        submitAndGet("MERGE (n {foo: 1, bar: 2})");
-        submitAndGet("MERGE (n {foo: 2, bar: 1})");
+        submitAndGet("MERGE (n {baz: 1, bar: 2})");
+        submitAndGet("MERGE (n {baz: 2, bar: 1})");
         List<Map<String, Object>> match = submitAndGet(
-            "MATCH (n) RETURN n.foo, n.bar"
+            "MATCH (n) RETURN n.baz, n.bar"
         );
 
         assertThat(match)
-            .extracting("n.foo", "n.bar")
+            .extracting("n.baz", "n.bar")
             .containsExactlyInAnyOrder(
                 tuple(1L, 1L),
                 tuple(1L, 2L),
@@ -118,21 +121,21 @@ public class MergeTest {
 
     @Test
     public void byLabelAndProperties() {
-        submitAndGet("MERGE (n:Foo {foo: 1, bar: 1})");
-        submitAndGet("MERGE (n:Foo {foo: 1, bar: 1})");
-        submitAndGet("MERGE (n:Bar {foo: 1, bar: 1})");
+        submitAndGet("MERGE (n:Foo {baz: 1, bar: 1})");
+        submitAndGet("MERGE (n:Foo {baz: 1, bar: 1})");
+        submitAndGet("MERGE (n:Bar {baz: 1, bar: 1})");
         submitAndGet("MERGE (n:Foo)");
         submitAndGet("MERGE (n:Bar)");
-        submitAndGet("MERGE (n {foo: 1})");
+        submitAndGet("MERGE (n {baz: 1})");
         submitAndGet("MERGE (n {bar: 1})");
-        submitAndGet("MERGE (n:Foo {foo: 1, bar: 2})");
-        submitAndGet("MERGE (n:Bar {foo: 2, bar: 1})");
+        submitAndGet("MERGE (n:Foo {baz: 1, bar: 2})");
+        submitAndGet("MERGE (n:Bar {baz: 2, bar: 1})");
         List<Map<String, Object>> match = submitAndGet(
-            "MATCH (n) RETURN labels(n), n.foo, n.bar"
+            "MATCH (n) RETURN labels(n), n.baz, n.bar"
         );
 
         assertThat(match)
-            .extracting("labels(n)", "n.foo", "n.bar")
+            .extracting("labels(n)", "n.baz", "n.bar")
             .containsExactlyInAnyOrder(
                 tuple(singletonList("Foo"), 1L, 1L),
                 tuple(singletonList("Bar"), 1L, 1L),
@@ -161,6 +164,7 @@ public class MergeTest {
     }
 
     @Test
+    @Category(UsesCollectionsInProperties.ListDataType.class)
     public void byRelationshipListProperty() {
         submitAndGet(
             "CREATE (a:A), (b:B) " +
@@ -195,15 +199,15 @@ public class MergeTest {
 
     @Test
     public void vertexOn() throws Exception {
-        String query = "MERGE (a:lbl {prop: 'value'}) " +
+        String query = "MERGE (a:lbl {prop3: 'value'}) " +
             "ON MATCH SET a.action = 'on match' " +
             "ON CREATE SET a.action = 'on create' " +
-            "RETURN a.action, a.prop, labels(a)";
+            "RETURN a.action, a.prop3, labels(a)";
 
         // checking created vertex properties
         List<Map<String, Object>> results = submitAndGet(query);
         assertThat(results)
-            .extracting("a.prop", "labels(a)")
+            .extracting("a.prop3", "labels(a)")
             .containsExactly(tuple("value", singletonList("lbl")));
 
         // checking SET clause

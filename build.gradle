@@ -223,6 +223,7 @@ project(':testware:integration-tests') {
         testCompile project(':testware:testware-common')
         testCompile project(':tinkerpop:cypher-gremlin-neo4j-driver')
 
+        testCompile 'org.janusgraph:janusgraph-core:0.3.1'
         testCompile 'com.github.stefanbirkner:system-rules:1.17.1'
         testCompile 'org.awaitility:awaitility:3.0.0'
     }
@@ -238,6 +239,11 @@ project(':testware:integration-tests') {
                 excludeCategories System.getProperty('excludeCategories').split(",")
             }
         }
+    }
+
+    task('testSuite', type: Test) {
+        systemProperty 'translate', System.getProperty('translate')
+        systemProperty 'configPath', System.getProperty('configPath')
     }
 
     task('testGremlinGroovyTranslation', type: Test) {
@@ -271,7 +277,7 @@ project(':testware:integration-tests') {
 
         useJUnit {
             include 'org/opencypher/gremlin/queries/**'
-            excludeCategories 'org.opencypher.gremlin.groups.SkipWithBytecode', 'org.opencypher.gremlin.groups.WithCustomPredicates'
+            excludeCategories 'org.opencypher.gremlin.groups.SkipWithBytecode', 'org.opencypher.gremlin.groups.UsesExtensions'
         }
     }
     check.dependsOn testBytecodeTranslation

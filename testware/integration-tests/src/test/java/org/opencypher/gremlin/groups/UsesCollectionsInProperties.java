@@ -16,7 +16,18 @@
 package org.opencypher.gremlin.groups;
 
 /**
- * Tests that contains custom predicates
+ * Tests that use collections as element property.
  */
-public class WithCustomPredicates {
+public interface UsesCollectionsInProperties {
+    /**
+     * List property data type. List cardinality is currently not supported in Cypher for Gremlin.
+     */
+    interface ListDataType extends UsesCollectionsInProperties {
+    }
+
+    /**
+     * Map property data type.
+     */
+    interface MapDataType extends UsesCollectionsInProperties {
+    }
 }

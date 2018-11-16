@@ -35,6 +35,8 @@ It is not guaranteed that all instances and combinations of the listed features 
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
 
+To see feature support on different platforms (Neptune, JanusGraph), refer to `ExcludeCategory` in [test suites](testware/integration-tests/src/test/java/org/opencypher/gremlin/suites) for each platform. Go to each category description for more details and examples.
+
 You are very welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
 
 ### Major Limitations

@@ -28,7 +28,7 @@ import org.assertj.core.groups.Tuple;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 
 public class TestCommons {
-    public static String DELETE = "MATCH (n) DETACH DELETE n;";
+    public static String DELETE_ALL = "MATCH (n) DETACH DELETE n;";
 
     public static class ModernGraph {
         private ModernGraph() {
@@ -55,7 +55,7 @@ public class TestCommons {
     public static ModernGraph modernGraph(CypherGremlinClient client) throws IOException {
         String createModern = Resources.toString(Resources.getResource("modern.cyp"), Charsets.UTF_8).trim();
 
-        client.submit(DELETE).all();
+        client.submit(DELETE_ALL).all();
         Map<String, Object> r = client.submit(createModern).all().get(0);
 
         ModernGraph g = new ModernGraph();
@@ -78,7 +78,7 @@ public class TestCommons {
 
     public static void snGraph(CypherGremlinClient client) throws IOException {
         String createModern = Resources.toString(Resources.getResource("snMini.cyp"), Charsets.UTF_8).trim();
-        client.submit(DELETE).all();
+        client.submit(DELETE_ALL).all();
         client.submit(createModern).all();
     }
 

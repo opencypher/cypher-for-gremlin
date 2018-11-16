@@ -29,6 +29,7 @@ import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
+import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.slf4j.Logger;
@@ -44,8 +45,7 @@ public class GremlinServerExternalResource extends ExternalResource {
     private ThrowingConsumer<CypherGremlinClient> setup;
 
     public GremlinServerExternalResource() {
-        this((o) -> {
-        });
+        this((o) -> o.submit(TestCommons.DELETE_ALL));
     }
 
     public GremlinServerExternalResource(Supplier<EmbeddedGremlinServer> serverSupplier) {

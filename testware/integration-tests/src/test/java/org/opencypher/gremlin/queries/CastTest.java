@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.WithCustomFunctions;
+import org.opencypher.gremlin.groups.UsesExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class CastTest {
@@ -38,7 +38,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castToString() throws Exception {
         List<Map<String, Object>> results = Stream.of(
             "13",
@@ -65,7 +65,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castInvalidToString() throws Exception {
         List<Throwable> throwables = Stream.of(
             "[]",
@@ -84,7 +84,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castToInteger() throws Exception {
         List<Map<String, Object>> results = Stream.of(
             "13",
@@ -115,7 +115,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castInvalidToInteger() throws Exception {
         List<Throwable> throwables = Stream.of(
             "true",
@@ -136,7 +136,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castToFloat() throws Exception {
         List<Map<String, Object>> results = Stream.of(
             "13",
@@ -165,7 +165,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castInvalidToFloat() throws Exception {
         List<Throwable> throwables = Stream.of(
             "true",
@@ -186,7 +186,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castToBoolean() throws Exception {
         List<Map<String, Object>> results = Stream.of(
             "true",
@@ -219,7 +219,7 @@ public class CastTest {
     }
 
     @Test
-    @Category(WithCustomFunctions.class)
+    @Category(UsesExtensions.CustomFunctions.class)
     public void castInvalidToBoolean() throws Exception {
         List<Throwable> throwables = Stream.of(
             "13",
