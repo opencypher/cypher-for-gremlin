@@ -29,14 +29,6 @@ class NeptuneFlavorTest {
   private val flavor = TranslatorFlavor.gremlinServer
 
   @Test
-  def injectWorkaroundTest(): Unit = {
-    assertThat(parse("RETURN 1"))
-      .withFlavor(flavor)
-      .rewritingWith(NeptuneFlavor)
-      .adds(__.V().limit(0))
-  }
-
-  @Test
   def limit0Workaround(): Unit = {
     assertThat(parse("CREATE ()"))
       .withFlavor(flavor)
