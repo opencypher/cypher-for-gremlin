@@ -18,12 +18,21 @@ The plugin and its dependencies can be automatically downloaded and installed in
 
 ### Automated Installation
 
-Run `bin/gremlin-server.sh` with `install` switch and supply the Maven coordinates of the plugin:
-```sh
-bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
-Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
-...
-```
+* For TinkerPop 3.3.x:
+  - Run `bin/gremlin-server.sh` with `install` switch and supply the Maven coordinates of the plugin:
+
+  ```sh
+  bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
+  Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
+  ...
+  ```
+* For TinkerPop 3.2.x (including JanusGraph):
+  - Run `bin/gremlin-server.sh` with `-i` switch and supply the Maven coordinates of the plugin:
+  ```sh
+  bin/gremlin-server.sh -i org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
+  ...
+  ```
+* Add `['org.opencypher.gremlin.process.traversal.CustomPredicates.*']` to Gremlin Server configuration file at `scriptEngines/gremlin-groovy/staticImports`.
 
 ### Manual Installation
 
