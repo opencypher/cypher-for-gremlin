@@ -218,12 +218,28 @@ project(':testware:testware-common') {
     }
 }
 
+project(':testware:integration-test-suites') {
+    dependencies {
+        testCompile project(':testware:integration-tests').sourceSets.test.output
+        testCompile project(':testware:testware-common')
+        testCompile 'org.janusgraph:janusgraph-core:0.3.1'
+    }
+
+    test {
+        enabled = false
+    }
+
+    task('suite', type: Test) {
+        systemProperty 'translate', System.getProperty('translate')
+        systemProperty 'configPath', System.getProperty('configPath')
+    }
+}
+
 project(':testware:integration-tests') {
     dependencies {
         testCompile project(':testware:testware-common')
         testCompile project(':tinkerpop:cypher-gremlin-neo4j-driver')
 
-        testCompile 'org.janusgraph:janusgraph-core:0.3.1'
         testCompile 'com.github.stefanbirkner:system-rules:1.17.1'
         testCompile 'org.awaitility:awaitility:3.0.0'
     }
@@ -232,8 +248,6 @@ project(':testware:integration-tests') {
         systemProperty 'translate', System.getProperty('translate')
         systemProperty 'configPath', System.getProperty('configPath')
 
-        exclude "**/suites/**"
-
         if (System.getProperty('excludeCategories')!=null) {
             useJUnit {
                 excludeCategories System.getProperty('excludeCategories').split(",")
@@ -241,15 +255,8 @@ project(':testware:integration-tests') {
         }
     }
 
-    task('testSuite', type: Test) {
-        systemProperty 'translate', System.getProperty('translate')
-        systemProperty 'configPath', System.getProperty('configPath')
-    }
-
     task('testGremlinGroovyTranslation', type: Test) {
         systemProperty 'translate', 'gremlin'
-
-        exclude "**/suites/**"
 
         if (project.hasProperty('ci')) {
             testLogging.showStandardStreams = true
@@ -267,8 +274,6 @@ project(':testware:integration-tests') {
     task('testBytecodeTranslation', type: Test) {
         systemProperty 'translate', 'bytecode'
 
-        exclude "**/suites/**"
-
         if (project.hasProperty('ci')) {
             testLogging.showStandardStreams = true
             minHeapSize = '256m'
@@ -277,7 +282,7 @@ project(':testware:integration-tests') {
 
         useJUnit {
             include 'org/opencypher/gremlin/queries/**'
-            excludeCategories 'org.opencypher.gremlin.groups.SkipWithBytecode', 'org.opencypher.gremlin.groups.UsesExtensions'
+            excludeCategories 'org.opencypher.gremlin.groups.SkipWithBytecode', 'org.opencypher.gremlin.groups.UsesExtensions$CustomPredicates'
         }
     }
     check.dependsOn testBytecodeTranslation
