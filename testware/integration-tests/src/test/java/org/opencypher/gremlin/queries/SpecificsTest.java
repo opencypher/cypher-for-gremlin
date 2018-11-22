@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
+import static org.opencypher.gremlin.test.TestCommons.snGraph;
 import static org.opencypher.gremlin.translation.ReturnProperties.NODE_TYPE;
 import static org.opencypher.gremlin.translation.ReturnProperties.RELATIONSHIP_TYPE;
 import static org.opencypher.gremlin.translation.ReturnProperties.TYPE;
@@ -31,6 +32,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.client.CypherGremlinClient;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.groups.SkipWithJanusGraph;
 import org.opencypher.gremlin.groups.SkipWithNeptune;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
@@ -61,6 +64,23 @@ public class SpecificsTest {
 
         assertThat(results)
             .hasSize(100);
+    }
+
+    @Test
+    public void sequentialDropCreate() throws Exception {
+        CypherGremlinClient client = gremlinServer.cypherGremlinClient();
+
+        snGraph(client);
+        snGraph(client);
+        snGraph(client);
+        snGraph(client);
+        snGraph(client);
+        snGraph(client);
+        snGraph(client);
+        snGraph(client);
+
+        long size = gremlinServer.gremlinClient().submit("g.V().count()").one().getLong();
+        assertThat(size).isEqualTo(18L);
     }
 
     @Test
@@ -219,7 +239,7 @@ public class SpecificsTest {
     }
 
     @Test
-    @Category(SkipWithNeptune.NoExceptionDetailMessage.class)
+    @Category({SkipWithNeptune.NoExceptionDetailMessage.class, SkipWithCosmosDB.NoMath.class})
     public void noExceptionDetailMessage() throws Exception {
         Client client = gremlinServer.gremlinClient();
 

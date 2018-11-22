@@ -20,10 +20,14 @@ import static org.opencypher.gremlin.client.CommonResultSets.exceptional;
 import static org.opencypher.gremlin.client.CommonResultSets.explain;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
@@ -44,6 +48,33 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
     @Override
     public void close() {
         client.close();
+    }
+
+    @Override
+    public CypherResultSet submit(String cypher) {
+        return submit(cypher, new HashMap<>());
+    }
+
+    @Override
+    public CypherResultSet submit(String cypher, Map<String, ?> parameters) {
+        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
+        CypherAst ast = CypherAst.parse(cypher, normalizedParameters);
+
+        if (ast.getOptions().contains(EXPLAIN)) {
+            return explain(ast);
+        }
+
+        Translator<String, GroovyPredicate> translator = translatorSupplier.get();
+        String gremlin = ast.buildTranslation(translator);
+
+        ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
+
+        try {
+            List<Result> resultSet = client.submit(gremlin, normalizedParameters).all().get();
+            return new CypherResultSet(resultSet.iterator(), returnNormalizer::normalize);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

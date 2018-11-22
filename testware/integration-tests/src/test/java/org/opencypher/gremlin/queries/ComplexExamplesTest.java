@@ -266,6 +266,7 @@ public class ComplexExamplesTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Truncate4096.class)
     public void matchAndReverseOptionalMatch() throws Exception {
         submitAndGet("CREATE (:A {name: 'A'})-[:T {name: 'T'}]->(:B {name: 'B'})");
         List<Map<String, Object>> results = submitAndGet(

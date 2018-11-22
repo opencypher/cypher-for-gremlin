@@ -30,6 +30,8 @@ object CosmosDbFlavor extends GremlinRewriter {
       rewriteRange(_),
       rewriteChoose(_),
       rewriteSkip(_),
+      removeFromTo(_),
+      singlePropertyNotSupported(_),
       stringIds(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
@@ -39,6 +41,20 @@ object CosmosDbFlavor extends GremlinRewriter {
   private def rewriteValues(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
       case Values(propertyKeys @ _*) :: rest => Properties() :: HasKey(propertyKeys: _*) :: Value :: rest
+    })(steps)
+  }
+
+  private def removeFromTo(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Path :: From(_) :: To(_) :: rest => Path :: rest
+      case Path :: From(_) :: rest          => Path :: rest
+    })(steps)
+  }
+
+  private def singlePropertyNotSupported(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case PropertyVC(Cardinality.single, key, value) :: rest => PropertyV(key, value) :: rest
+      case PropertyTC(Cardinality.single, key, value) :: rest => PropertyT(key, value) :: rest
     })(steps)
   }
 
@@ -80,10 +96,10 @@ object CosmosDbFlavor extends GremlinRewriter {
 
   private def stringIds(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
-      case PropertyVC(Cardinality.single, "id", value) :: rest =>
-        PropertyVC(Cardinality.single, "id", "" + value) :: rest
-      case PropertyTC(Cardinality.single, "id", Constant(value) :: Nil) :: rest =>
-        PropertyTC(Cardinality.single, "id", Constant("" + value) :: Nil) :: rest
+      case PropertyVC(single, "id", value) :: rest =>
+        PropertyVC(single, "id", "" + value) :: rest
+      case PropertyTC(single, "id", Constant(value) :: Nil) :: rest =>
+        PropertyTC(single, "id", Constant("" + value) :: Nil) :: rest
     })(steps)
   }
 }

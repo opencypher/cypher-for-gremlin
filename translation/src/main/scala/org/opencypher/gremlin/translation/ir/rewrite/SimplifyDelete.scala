@@ -15,7 +15,8 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.opencypher.gremlin.translation.Tokens.{DELETE, DETACH_DELETE, NULL}
+import org.opencypher.gremlin.translation.Tokens
+import org.opencypher.gremlin.translation.Tokens.{DELETE, DELETE_ONCE, DETACH_DELETE, NULL}
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -23,7 +24,33 @@ import org.opencypher.gremlin.translation.ir.model._
   * Removes surplus actions if `delete` or `detach delete` is not used in query
   */
 object SimplifyDelete extends GremlinRewriter {
-  def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+  override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    Seq(
+      removeSurplus(_),
+      simplifyDetachDelete(_)
+    ).foldLeft(steps) { (steps, rewriter) =>
+      rewriter(steps)
+    }
+  }
+
+  def simplifyDetachDelete(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    steps match {
+      case Vertex :: As(n1) :: Barrier ::
+            SideEffect(SelectK(n2) :: Aggregate(DETACH_DELETE) :: Nil) ::
+            SideEffect(Limit(0) :: Aggregate(DELETE_ONCE) :: Nil) ::
+            Barrier ::
+            SideEffect(
+            Coalesce(
+              Cap(DELETE_ONCE) :: Unfold :: Nil,
+              Constant(true) :: Aggregate(DELETE_ONCE) :: Cap(DETACH_DELETE) :: Unfold :: Dedup() :: Is(
+                Neq(Tokens.NULL)) :: Drop :: Nil) :: Nil) ::
+            Barrier :: Limit(0) :: Nil =>
+        Vertex :: Drop :: Nil
+      case _ => steps
+    }
+  }
+
+  def removeSurplus(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     val withChoose = foldTraversals(false)((acc, localSteps) => {
       acc || extract({
         case ChooseP3(IsNode(), Aggregate(DELETE) :: Nil, Aggregate(DETACH_DELETE) :: Nil) :: _ => true
