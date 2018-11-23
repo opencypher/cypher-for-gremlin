@@ -32,8 +32,7 @@ The plugin and its dependencies can be automatically downloaded and installed in
   bin/gremlin-server.sh -i org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.12
   ...
   ```
-* Add `['org.opencypher.gremlin.process.traversal.CustomPredicates.*']` to Gremlin Server configuration file at `scriptEngines/gremlin-groovy/staticImports`.
-
+  
 ### Manual Installation
 
 Run the following commands from project root.
