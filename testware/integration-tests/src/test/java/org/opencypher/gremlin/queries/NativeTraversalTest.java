@@ -383,6 +383,7 @@ public class NativeTraversalTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.IsNeqOnDifferentTypes.class)
     public void labelPredicate() throws Exception {
         String[] columnNames = {"isPerson", "count"};
         String cypher = "MATCH (n)\n" +

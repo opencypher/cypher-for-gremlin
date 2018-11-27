@@ -49,4 +49,36 @@ public interface SkipWithCosmosDB {
      */
     interface RangeWithExpression extends SkipWithCosmosDB {
     }
+
+    /**
+     * Inner traversals are not supported
+     * https://github.com/Azure/azure-documentdb-dotnet/issues/316
+     */
+    interface InnerTraversals extends SkipWithCosmosDB {
+    }
+
+    /**
+     - `g.inject(1).as('x').select('x')` returns `1`
+     - `g.inject(1).as('x').select('x').as('x').select('x')` returns `[1,1]`
+     - `g.inject(1).as('x').select('x').as('x').select('x').as('x').select('x')` returns `[1,1,[1,1]]`
+     */
+    interface RealiasingCreatesCollection extends SkipWithCosmosDB {
+    }
+
+    /**
+      * Combination of `group()` and `choose()` behavior is different from reference implementation. Is it supported?
+      *  - Query `g.V().as('n').select('n').group().by(choose(hasLabel('person'), constant(true), constant(false))).by("name")` on [Modern Graph](https://tinkerpop.apache.org/docs/current/reference/#intro):
+      *  - TinkerGraph returns: `[false:[lop,ripple],true:[josh,peter,marko,vadas]]`
+      *  - Cosmos DB returns: `[true:[marko,vadas,lop,josh,ripple,peter]]`
+     */
+    interface GroupChoose extends SkipWithCosmosDB {
+    }
+
+    /**
+     * g.inject(1).is(neq('a'))
+     */
+    interface IsNeqOnDifferentTypes extends SkipWithCosmosDB {
+    }
+
+
 }
