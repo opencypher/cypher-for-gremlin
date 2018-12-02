@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
+import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 
@@ -305,7 +305,7 @@ public class CreateTest {
             .containsExactly(tuple("foo", "bar"));
     }
     @Test
-    @Category(UsesCollectionsInProperties.ListDataType.class)
+    @Category(SkipCollectionsInProperties.ListDataType.class)
     public void createListProperty() throws Exception {
         List<Map<String, Object>> results = submitAndGet("CREATE (n {foo: [1, 2, 3]}) RETURN n.foo AS f");
 
@@ -315,7 +315,7 @@ public class CreateTest {
     }
 
     @Test
-    @Category({UsesCollectionsInProperties.MapDataType.class})
+    @Category({SkipCollectionsInProperties.MapDataType.class})
     public void createMapProperty() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "CREATE (n {foo: {foo: 'bar', baz: 'qux'}}) RETURN n.foo AS f"
@@ -455,7 +455,7 @@ public class CreateTest {
     }
 
     @Test
-    @Category(UsesCollectionsInProperties.ListDataType.class)
+    @Category(SkipCollectionsInProperties.ListDataType.class)
     public void createNodeWithListProperty() throws Exception {
         assertThat(submitAndGet(
             "CREATE (n:L {foo: ['one', 'two', 'three']})"

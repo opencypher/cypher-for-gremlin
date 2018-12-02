@@ -32,8 +32,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
 import org.opencypher.gremlin.groups.SkipWithNeptune;
-import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.groovy.StringTranslationUtils;
 
@@ -68,7 +68,7 @@ public class LiteralTest {
     }
 
     @Test
-    @Category(UsesCollectionsInProperties.ListDataType.class)
+    @Category(SkipCollectionsInProperties.ListDataType.class)
     public void create() {
         String fieldMap = literalMap.entrySet().stream()
             .map(e -> e.getKey() + ":" + toLiteral(e.getValue()))

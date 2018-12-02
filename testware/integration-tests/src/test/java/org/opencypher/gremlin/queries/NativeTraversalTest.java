@@ -31,7 +31,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.UsesExtensions;
+import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -75,7 +75,7 @@ public class NativeTraversalTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomFunctions.class)
+    @Category(SkipExtensions.CustomFunctions.class)
     public void returnFunction() throws Exception {
         List<Map<String, Object>> result = submitAndGet("RETURN toString(1) AS function");
         assertThat(result)
@@ -91,7 +91,7 @@ public class NativeTraversalTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomFunctions.class)
+    @Category(SkipExtensions.CustomFunctions.class)
     public void aggregationFromPivot() throws Exception {
         List<Map<String, Object>> result = submitAndGet("match (n:Person) RETURN max(size(n.firstName)) as longest_name");
         assertThat(result)
@@ -100,7 +100,7 @@ public class NativeTraversalTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomFunctions.class)
+    @Category(SkipExtensions.CustomFunctions.class)
     public void functionChain() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1.235] AS list\n" +
@@ -440,7 +440,7 @@ public class NativeTraversalTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomFunctions.class)
+    @Category(SkipExtensions.CustomFunctions.class)
     public void math() throws Exception {
         String cypher = "MATCH (n:Person {firstName: 'Erlend'}) " +
             "RETURN toInteger(sqrt(abs(1 + (2 - (3 * (4 / (5 ^ ((n.born - 1990) % 3)))))))) AS result";

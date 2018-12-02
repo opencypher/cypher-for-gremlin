@@ -24,7 +24,7 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.UsesExtensions;
+import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -52,7 +52,7 @@ public class ParameterTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomPredicates.class)
+    @Category(SkipExtensions.CustomPredicates.class)
     public void whereIn() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) " +
@@ -67,7 +67,7 @@ public class ParameterTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomPredicates.class)
+    @Category(SkipExtensions.CustomPredicates.class)
     public void patternMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person {name: $name}) " +
@@ -81,7 +81,7 @@ public class ParameterTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomPredicates.class)
+    @Category(SkipExtensions.CustomPredicates.class)
     public void startsWith() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) " +
@@ -96,7 +96,7 @@ public class ParameterTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomFunctions.class)
+    @Category(SkipExtensions.CustomFunctions.class)
     public void containerIndex() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH ['Apa'] AS expr " +

@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
+import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class MergeTest {
@@ -164,7 +164,7 @@ public class MergeTest {
     }
 
     @Test
-    @Category(UsesCollectionsInProperties.ListDataType.class)
+    @Category(SkipCollectionsInProperties.ListDataType.class)
     public void byRelationshipListProperty() {
         submitAndGet(
             "CREATE (a:A), (b:B) " +

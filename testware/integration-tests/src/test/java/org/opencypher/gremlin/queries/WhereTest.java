@@ -23,7 +23,7 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.UsesExtensions;
+import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -171,7 +171,7 @@ public class WhereTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomPredicates.class)
+    @Category(SkipExtensions.CustomPredicates.class)
     public void constantsCustomPredicate() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:software) " +

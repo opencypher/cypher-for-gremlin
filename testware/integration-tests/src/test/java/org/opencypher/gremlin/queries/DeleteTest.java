@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.UsesExtensions;
+import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -298,7 +298,7 @@ public class DeleteTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomPredicates.class)
+    @Category(SkipExtensions.CustomPredicates.class)
     public void deleteWithTypeLost() throws Exception {
         assertThatThrownBy(() -> submitAndGet(
             "MATCH (n) WITH collect(n) as typelost\n" +

@@ -15,19 +15,23 @@
  */
 package org.opencypher.gremlin.groups;
 
+import org.opencypher.gremlin.traversal.CustomPredicate;
+
 /**
- * Tests that use collections as element property.
+ * Tests that use custom functions or predicates. Requires <a href="https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-server-plugin">Gremlin Server Cypher Plugin</a>
+ * or <a href="https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-extensions">Gremlin Cypher Extensions</a>
+ * to be installed on target.
  */
-public interface UsesCollectionsInProperties {
+public interface SkipExtensions {
     /**
-     * List property data type. List cardinality is currently not supported in Cypher for Gremlin.
+     * @see CustomFunctions
      */
-    interface ListDataType extends UsesCollectionsInProperties {
+    interface CustomFunctions extends SkipExtensions {
     }
 
     /**
-     * Map property data type.
+     * @see CustomPredicate
      */
-    interface MapDataType extends UsesCollectionsInProperties {
+    interface CustomPredicates extends SkipExtensions {
     }
 }

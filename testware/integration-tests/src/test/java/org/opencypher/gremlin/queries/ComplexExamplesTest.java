@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opencypher.gremlin.groups.UsesExtensions;
+import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ComplexExamplesTest {
@@ -148,7 +148,7 @@ public class ComplexExamplesTest {
     }
 
     @Test
-    @Category(UsesExtensions.CustomFunctions.class)
+    @Category(SkipExtensions.CustomFunctions.class)
     public void returnExpressionUnrelatedToMatch() throws Exception {
         submitAndGet("CREATE ()-[:T]->()");
         List<Map<String, Object>> results = submitAndGet(
