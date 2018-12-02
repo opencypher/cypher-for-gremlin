@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
 import static org.opencypher.gremlin.translation.ReturnProperties.ID;
 import static org.opencypher.gremlin.translation.ReturnProperties.INV;
 import static org.opencypher.gremlin.translation.ReturnProperties.LABEL;
@@ -30,13 +31,15 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 
 public class CreateTest {
 
@@ -45,7 +48,7 @@ public class CreateTest {
 
     @Before
     public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
+        submitAndGet(DELETE_ALL);
     }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
@@ -282,25 +285,27 @@ public class CreateTest {
             .extracting("r.foo")
             .containsExactly("bar");
 
-        List<? extends Map<String, ?>> properties = gremlinServer.gremlinClient().alias("g").submit(
-            __.V()
-                .outE()
-                .as("E")
-                .properties()
-                .project("key", "value")
-                .by(__.key())
-                .by(__.value())
-        ).all().join().stream()
-            .map(r -> (Traverser<Map<String, ?>>) r.getObject())
-            .map(Traverser::get)
+        GroovyGremlinSteps __ = new GroovyGremlinSteps();
+        String getProperties = __.V()
+            .outE()
+            .as("E")
+            .properties()
+            .project("key", "value")
+            .by(__.start().key())
+            .by(__.start().value())
+            .current();
+
+        List<Object> properties = gremlinServer.gremlinClient().submit(getProperties).all()
+            .join().stream()
+            .map(Result::getObject)
             .collect(toList());
 
         assertThat(properties)
             .extracting("key", "value")
             .containsExactly(tuple("foo", "bar"));
     }
-
     @Test
+    @Category(SkipCollectionsInProperties.ListDataType.class)
     public void createListProperty() throws Exception {
         List<Map<String, Object>> results = submitAndGet("CREATE (n {foo: [1, 2, 3]}) RETURN n.foo AS f");
 
@@ -310,6 +315,7 @@ public class CreateTest {
     }
 
     @Test
+    @Category({SkipCollectionsInProperties.MapDataType.class})
     public void createMapProperty() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "CREATE (n {foo: {foo: 'bar', baz: 'qux'}}) RETURN n.foo AS f"
@@ -449,6 +455,7 @@ public class CreateTest {
     }
 
     @Test
+    @Category(SkipCollectionsInProperties.ListDataType.class)
     public void createNodeWithListProperty() throws Exception {
         assertThat(submitAndGet(
             "CREATE (n:L {foo: ['one', 'two', 'three']})"

@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.queries;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opencypher.gremlin.test.TestCommons.DELETE_ALL;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class NullTest {
 
     @Before
     public void setUp() {
-        gremlinServer.gremlinClient().submit("g.V().drop()").all().join();
+        submitAndGet(DELETE_ALL);
     }
 
     @Test

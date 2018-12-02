@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithJanusGraph;
+import org.opencypher.gremlin.groups.SkipWithNeptune;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class RangeTest {
@@ -132,18 +135,10 @@ public class RangeTest {
 
         assertThatThrownBy(() -> submitAndGet("RETURN range(0, 1, -1) as r"))
             .hasMessageContaining("Unsupported negative range steps");
-
-        assertThatThrownBy(() -> submitAndGet("RETURN range(null, 3, 1) as r"))
-            .hasMessageContaining("cannot be cast");
-
-        assertThatThrownBy(() -> submitAndGet("RETURN range(0, null, 1) as r"))
-            .hasMessageContaining("cannot be cast");
-
-        assertThatThrownBy(() -> submitAndGet("RETURN range(0, 3, null) as r"))
-            .hasMessageContaining("cannot be cast");
     }
 
     @Test
+    @Category(SkipWithNeptune.NoExceptionDetailMessage.class)
     public void runTimeValidations() throws Exception {
         assertThatThrownBy(() -> submitAndGet("WITH ['a'] AS a RETURN range(0, size(a) + 10000) as r"))
             .hasMessageContaining("Invalid range argument");
@@ -162,15 +157,19 @@ public class RangeTest {
 
         assertThatThrownBy(() -> submitAndGet("WITH ['a'] AS a RETURN range(0, 1, size(a) - 2) as r"))
             .hasMessageContaining("Invalid range argument");
+    }
 
+    @Test
+    @Category({SkipWithJanusGraph.NoExceptionDetailMessage.class, SkipWithNeptune.NoExceptionDetailMessage.class})
+    public void runTimeNullValidations() throws Exception {
         assertThatThrownBy(() -> submitAndGet("WITH [null] AS a RETURN RANGE (a[0], 3, 1)"))
-            .hasMessageContaining("cannot be cast");
+            .hasStackTraceContaining("cannot be cast");
 
         assertThatThrownBy(() -> submitAndGet("WITH [null] AS a RETURN RANGE (0, a[0], 1)"))
-            .hasMessageContaining("cannot be cast");
+            .hasStackTraceContaining("cannot be cast");
 
         assertThatThrownBy(() -> submitAndGet("WITH [null] AS a RETURN RANGE (0, 3, a[0])"))
-            .hasMessageContaining("cannot be cast");
+            .hasStackTraceContaining("cannot be cast");
     }
 
 }

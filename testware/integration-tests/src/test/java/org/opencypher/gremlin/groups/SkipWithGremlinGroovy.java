@@ -19,5 +19,5 @@ package org.opencypher.gremlin.groups;
  * Tests that are skipped in 'testGremlinGroovyTranslation' Gradle task
  * Must have description explaining reason
  */
-public class SkipWithGremlinGroovy {
+public interface SkipWithGremlinGroovy {
 }

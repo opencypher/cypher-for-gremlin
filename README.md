@@ -31,9 +31,11 @@ With Cypher for Gremlin you can use the following Cypher language features:
 - `CASE` expressions
 - `UNION` operations
 
-It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers around 70% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) and an additional 15% on Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions). Note that latest TCK M11 covers [Temporal types and functions](https://github.com/opencypher/openCypher/commit/e4b3b7540b506ed2755f0a8116a3f465a5bd9ad9#diff-c26e3fb690fe2673a8f456add0fb3ec8) support of which is currently not implemented in Cypher for Gremlin. Coverage of TCK M10:
+It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers around 70% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) and an additional 15% on Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions). Note that latest TCK M11 covers [Temporal types and functions](https://github.com/opencypher/openCypher/commit/e4b3b7540b506ed2755f0a8116a3f465a5bd9ad9#diff-c26e3fb690fe2673a8f456add0fb3ec8) support of which is currently not implemented in Cypher for Gremlin. Coverage of TCK M10 on TinkerGraph:
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
+
+To see feature support on different platforms (Neptune, JanusGraph), refer to `ExcludeCategory` in [test suites](testware/integration-tests/src/test/java/org/opencypher/gremlin/suites) for each platform. Go to each category description for more details and examples.
 
 You are very welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
 

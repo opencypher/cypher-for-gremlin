@@ -18,8 +18,9 @@ package org.opencypher.gremlin.suites;
 import org.junit.experimental.categories.Categories;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.opencypher.gremlin.groups.WithCustomFunctions;
-import org.opencypher.gremlin.groups.WithCustomPredicates;
+import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
+import org.opencypher.gremlin.groups.SkipExtensions;
+import org.opencypher.gremlin.groups.SkipWithNeptune;
 import org.opencypher.gremlin.queries.CaseTest;
 import org.opencypher.gremlin.queries.CastTest;
 import org.opencypher.gremlin.queries.ComparisonTest;
@@ -45,6 +46,7 @@ import org.opencypher.gremlin.queries.ProcedureTest;
 import org.opencypher.gremlin.queries.RangeTest;
 import org.opencypher.gremlin.queries.ReturnTest;
 import org.opencypher.gremlin.queries.SetTest;
+import org.opencypher.gremlin.queries.SpecificsTest;
 import org.opencypher.gremlin.queries.UnionTest;
 import org.opencypher.gremlin.queries.UnwindTest;
 import org.opencypher.gremlin.queries.VariableLengthPathTest;
@@ -52,7 +54,11 @@ import org.opencypher.gremlin.queries.WhereTest;
 import org.opencypher.gremlin.queries.WithTest;
 
 @RunWith(Categories.class)
-@Categories.ExcludeCategory({WithCustomFunctions.class, WithCustomPredicates.class})
-@Suite.SuiteClasses({CaseTest.class, NativeTraversalTest.class, CastTest.class, NullTest.class, ComparisonTest.class, OptionalMatchTest.class, ComplexExamplesTest.class, OrderByTest.class, ContainerIndexTest.class, ParameterTest.class, CreateTest.class, PercentileTest.class, DeleteTest.class, ProcedureTest.class, ExplainTest.class, RangeTest.class, ExpressionTest.class, ReturnTest.class, FunctionTest.class, SetTest.class, ListComprehensionTest.class, UnionTest.class, ListSliceTest.class, UnwindTest.class, LiteralTest.class, VariableLengthPathTest.class, MatchTest.class, WhereTest.class, MergeTest.class, WithTest.class})
-public class NativeTranslationSuite {
+@Categories.ExcludeCategory({
+    SkipWithNeptune.class,
+    SkipExtensions.class,
+    SkipCollectionsInProperties.class
+})
+@Suite.SuiteClasses({CaseTest.class, NativeTraversalTest.class, CastTest.class, NullTest.class, ComparisonTest.class, OptionalMatchTest.class, ComplexExamplesTest.class, OrderByTest.class, ContainerIndexTest.class, ParameterTest.class, CreateTest.class, PercentileTest.class, DeleteTest.class, ProcedureTest.class, ExplainTest.class, RangeTest.class, ExpressionTest.class, ReturnTest.class, FunctionTest.class, SetTest.class, ListComprehensionTest.class, UnionTest.class, ListSliceTest.class, UnwindTest.class, LiteralTest.class, VariableLengthPathTest.class, MatchTest.class, WhereTest.class, MergeTest.class, WithTest.class, SpecificsTest.class})
+public class NeptuneSuite {
 }
