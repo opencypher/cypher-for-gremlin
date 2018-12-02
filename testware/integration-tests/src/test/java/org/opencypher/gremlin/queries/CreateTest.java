@@ -31,15 +31,15 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.driver.exception.ResponseException;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.UsesCollectionsInProperties;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 
 public class CreateTest {
 
@@ -285,24 +285,25 @@ public class CreateTest {
             .extracting("r.foo")
             .containsExactly("bar");
 
-        List<? extends Map<String, ?>> properties = gremlinServer.gremlinClient().alias("g").submit(
-            __.V()
-                .outE()
-                .as("E")
-                .properties()
-                .project("key", "value")
-                .by(__.key())
-                .by(__.value())
-        ).all().join().stream()
-            .map(r -> (Traverser<Map<String, ?>>) r.getObject())
-            .map(Traverser::get)
+        GroovyGremlinSteps __ = new GroovyGremlinSteps();
+        String getProperties = __.V()
+            .outE()
+            .as("E")
+            .properties()
+            .project("key", "value")
+            .by(__.start().key())
+            .by(__.start().value())
+            .current();
+
+        List<Object> properties = gremlinServer.gremlinClient().submit(getProperties).all()
+            .join().stream()
+            .map(Result::getObject)
             .collect(toList());
 
         assertThat(properties)
             .extracting("key", "value")
             .containsExactly(tuple("foo", "bar"));
     }
-
     @Test
     @Category(UsesCollectionsInProperties.ListDataType.class)
     public void createListProperty() throws Exception {

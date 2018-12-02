@@ -102,7 +102,9 @@ public class OrderByTest {
                 "ORDER BY relevance, p.age"
         );
 
-        System.out.println(results);
+        assertThat(results)
+            .extracting("age")
+            .containsExactly(27L, 29L, 32L, 35L);
     }
 
     @Test
