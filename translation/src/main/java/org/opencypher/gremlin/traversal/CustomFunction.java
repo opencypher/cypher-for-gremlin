@@ -36,6 +36,13 @@ public class CustomFunction {
         return implementation;
     }
 
+    public static CustomFunction cypherRound() {
+        return new CustomFunction(
+            "cypherRound",
+            CustomFunctions.cypherRound()
+        );
+    }
+
     public static CustomFunction cypherToString() {
         return new CustomFunction(
             "cypherToString",
@@ -138,6 +145,14 @@ public class CustomFunction {
         return new CustomFunction(
             "cypherSubstring",
             CustomFunctions.cypherSubstring()
+        );
+    }
+
+
+    public static CustomFunction cypherTrim() {
+        return new CustomFunction(
+            "cypherTrim",
+            CustomFunctions.cypherTrim()
         );
     }
 
