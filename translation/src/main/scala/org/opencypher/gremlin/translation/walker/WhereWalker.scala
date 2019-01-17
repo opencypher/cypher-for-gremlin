@@ -27,7 +27,9 @@ import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.util.InputPosition
 import org.opencypher.v9_0.util.symbols._
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.util.Try
 
 /**
   * AST walker that handles translation
@@ -142,8 +144,8 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
       case StartsWith(lhs, rhs)         => walkPredicate(lhs, rhs, p.startsWith)
       case EndsWith(lhs, rhs)           => walkPredicate(lhs, rhs, p.endsWith)
       case Contains(lhs, rhs)           => walkPredicate(lhs, rhs, p.contains)
-      case In(lhs, rhs)                 => walkPredicate(lhs, rhs, p.within(_))
-      case Not(In(lhs, rhs))            => walkPredicate(lhs, rhs, p.without(_))
+      case In(lhs, rhs)                 => walkVargPredicate(lhs, rhs, a => p.within(a: _*))
+      case Not(In(lhs, rhs))            => walkVargPredicate(lhs, rhs, a => p.without(a: _*))
 
       case Ands(ands) => __.and(ands.map(walkBooleanExpression).toSeq: _*)
       case Ors(ors)   => __.or(ors.map(walkBooleanExpression).toSeq: _*)
@@ -159,6 +161,18 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
 
       case _ =>
         ExpressionWalker.walkLocal(context, g, node).is(p.neq(NULL))
+    }
+  }
+
+  private def walkVargPredicate(lhs: Expression, rhs: Expression, predicate: Seq[AnyRef] => P): GremlinSteps[T, P] = {
+    val value = Try(expressionValue(rhs, context)).getOrElse(null)
+    (value, rhs) match {
+      case (list: java.lang.Iterable[_], _: ListLiteral) =>
+        val lhsT = walkExpression(lhs)
+        val seq = list.asScala.map(_.asInstanceOf[AnyRef]).toSeq
+        lhsT.is(predicate(seq))
+      case _ =>
+        walkPredicate(lhs, rhs, a => predicate(Seq(a)))
     }
   }
 

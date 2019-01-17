@@ -197,4 +197,55 @@ public class WhereTest {
             .containsExactlyInAnyOrder("lop", "ripple");
     }
 
+    @Test
+    public void inInteger() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) " +
+                "WHERE n.age IN [29, 27] " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("marko", "vadas");
+    }
+
+    @Test
+    public void inString() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) " +
+                "WHERE n.name IN ['marko', 'vadas'] " +
+                "RETURN n.age"
+        );
+
+        assertThat(results)
+            .extracting("n.age")
+            .containsExactlyInAnyOrder(29L, 27L);
+    }
+
+    @Test
+    public void inSingle() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) " +
+                "WHERE n.age IN [27] " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("vadas");
+    }
+
+    @Test
+    public void notIn() {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) " +
+                "WHERE NOT n.name  IN ['marko', 'vadas'] " +
+                "RETURN n.name"
+        );
+
+        assertThat(results)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("josh", "peter");
+    }
 }
