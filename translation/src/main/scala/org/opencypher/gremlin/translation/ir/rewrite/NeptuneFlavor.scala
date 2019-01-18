@@ -26,6 +26,7 @@ import org.opencypher.gremlin.translation.ir.model.{GremlinStep, _}
 object NeptuneFlavor extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     Seq(
+      injectWorkaround(_),
       limit0Workaround(_),
       multipleLabelsWorkaround(_),
       aggregateWithSameNameWorkaround(_),
@@ -78,6 +79,15 @@ object NeptuneFlavor extends GremlinRewriter {
       case By(expr, None) :: rest         => PropertyT(key, expr) +: expandSub(key, rest)
       case SelectC(Column.values) :: rest => rest
     })(bySteps)
+  }
+
+  private def injectWorkaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    steps match {
+      case Inject(s) :: rest =>
+        Vertex :: Limit(0) :: Inject(s) :: rest
+      case _ =>
+        steps
+    }
   }
 
   private def limit0Workaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {

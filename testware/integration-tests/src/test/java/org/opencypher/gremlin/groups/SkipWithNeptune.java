@@ -35,6 +35,17 @@ public interface SkipWithNeptune {
     }
 
     /**
+     * Unable to start traversal with `.inject` step.
+     * error message : no viable alternative at input 'g.inject'
+     *
+     * @see SpecificsTest#gInjectGremlin()
+     * @see SpecificsTest#gInject()
+     * @see NeptuneFlavor#injectWorkaround(Seq) Workaround
+     */
+    interface gInject extends SkipWithNeptune {
+    }
+
+    /**
      * Count step traversal is not aliased.
      *
      * @see SpecificsTest#countStepIsNotAliasedGremlin()

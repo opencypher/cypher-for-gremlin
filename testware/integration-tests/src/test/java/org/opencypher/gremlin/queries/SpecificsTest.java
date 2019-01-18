@@ -55,7 +55,7 @@ public class SpecificsTest {
     public void return100Elements() throws Exception {
         Client client = gremlinServer.gremlinClient();
 
-        client.submit("g.inject(1).times(100).repeat(addV().property('the_property', 'the_value'))").all().get();
+        client.submit("g.V().limit(0).inject(1).times(100).repeat(addV().property('the_property', 'the_value'))").all().get();
 
         List<Result> results = client.submit("g.V()").all().get();
 
@@ -226,4 +226,30 @@ public class SpecificsTest {
         assertThatThrownBy(() -> client.submit("g.inject(1).math('_ / 0')").all().get())
             .hasMessageContaining("Division by zero");
     }
+
+    /**
+     * @see #gInject()
+     */
+    @Test
+    @Category(SkipWithNeptune.gInject.class)
+    public void gInjectGremlin() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        String test = client.submit("g.inject('test')").one().getString();
+
+        assertThat(test).isEqualTo("test");
+    }
+
+    /**
+     * @see NeptuneFlavor#injectWorkaround(Seq)
+     */
+    @Test
+    public void gInject() throws Exception {
+        List<Map<String, Object>> results = submitAndGet("RETURN 'test' as r");
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly("test");
+    }
+
 }
