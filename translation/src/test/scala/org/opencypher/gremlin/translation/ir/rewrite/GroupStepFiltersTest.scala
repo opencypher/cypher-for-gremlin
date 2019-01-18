@@ -15,13 +15,18 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.structure.T
 import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality.single
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.Tokens.UNNAMED
+import org.opencypher.gremlin.translation.Tokens
+import org.opencypher.gremlin.translation.Tokens.{GENERATED, NULL, UNNAMED}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
+import org.opencypher.gremlin.translation.ir.model.GremlinBinding
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
+
+import scala.collection.JavaConversions._
 
 class GroupStepFiltersTest {
 
@@ -78,6 +83,110 @@ class GroupStepFiltersTest {
       )
   }
 
+  @Test
+  def whereId(): Unit = {
+    assertThat(parse("""
+                       |MATCH (n)
+                       |WHERE id(n) = 1
+                       |RETURN n
+                     """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .removes(
+        __.where(__.select("n").choose(P.neq(Tokens.NULL), __.id()).is(P.neq(Tokens.NULL)).is(P.isEq(1)))
+      )
+      .adds(
+        __.has(T.id.getAccessor, P.isEq(1))
+      )
+  }
+
+  @Test
+  def whereIdIn(): Unit = {
+    assertThat(parse("""
+                       |MATCH (n)
+                       |WHERE id(n) in [1]
+                       |RETURN n
+                     """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .removes(
+        __.where(
+          __.select("n")
+            .choose(P.neq(NULL), __.id())
+            .is(P.neq(NULL))
+            .is(P.within(1.asInstanceOf[AnyRef])))
+      )
+      .adds(__.has(T.id.getAccessor, P.within(1.asInstanceOf[AnyRef])))
+  }
+
+  @Test
+  def whereIdInMultiple(): Unit = {
+    assertThat(parse("""
+                       |MATCH (n)
+                       |WHERE id(n) in [1, 2]
+                       |RETURN n
+                     """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .removes(
+        __.where(
+          __.select("n")
+            .choose(P.neq(NULL), __.id())
+            .is(P.neq(NULL))
+            .is(P.within(1.asInstanceOf[AnyRef], 2.asInstanceOf[AnyRef]))
+        ))
+      .adds(__.has(T.id.getAccessor, P.within(1.asInstanceOf[AnyRef], 2.asInstanceOf[AnyRef])))
+  }
+
+  @Test
+  def whereWithParam(): Unit = {
+    val params = new java.util.HashMap[String, Any](Map("nID" -> 1))
+    assertThat(
+      parse(
+        """
+          |MATCH (n)
+          |WHERE id(n) = {nID}
+          |RETURN n
+        """.stripMargin,
+        params
+      ))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .removes(
+        __.where(
+          __.choose(__.constant(GremlinBinding("nID")), __.constant(GremlinBinding("nID")), __.constant(NULL))
+            .is(P.neq(NULL))
+            .as(GENERATED + 1)
+            .select("n")
+            .choose(P.neq(NULL), __.id())
+            .is(P.neq(NULL))
+            .where(P.isEq(GENERATED + 1))))
+      .adds(__.has(T.id.getAccessor, P.isEq(GremlinBinding("nID"))))
+  }
+
+  @Test
+  def whereWithParams(): Unit = {
+    val params = new java.util.HashMap[String, Any](Map("nID" -> 1))
+    assertThat(
+      parse(
+        """
+                       |MATCH (n)
+                       |WHERE id(n) IN [{nID}]
+                       |RETURN n
+                     """.stripMargin,
+        params
+      ))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .removes(
+        __.where(
+          __.select("n")
+            .choose(P.neq(NULL), __.id())
+            .is(P.neq(NULL))
+            .is(P.within(GremlinBinding("nID"))))
+      )
+      .adds(__.has(T.id.getAccessor, P.within(GremlinBinding("nID"))))
+  }
   @Test
   def multiplePatterns(): Unit = {
     assertThat(parse("""
