@@ -8,7 +8,7 @@ buildscript {
         scalaVersion = '2.11'
         scalaPatchVersion = '12'
         springBootVersion = '1.5.6.RELEASE'
-        tinkerpopVersion = '3.3.4'
+        tinkerpopVersion = '3.4.0'
         githubProject = "opencypher/cypher-for-gremlin"
         tagPrefix = 'v'
         updateFilesOnRelease = []
@@ -54,11 +54,11 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs += ['-Xlint:deprecation,unchecked', '-Werror', '-proc:none']
+        options.compilerArgs += ['-Xlint:unchecked', '-Werror', '-proc:none']
     }
     tasks.withType(ScalaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs += ['-Xlint:deprecation,unchecked', '-Werror', '-proc:none']
+        options.compilerArgs += ['-Xlint:unchecked', '-Werror', '-proc:none']
         scalaCompileOptions.additionalParameters = [
             '-Xfatal-warnings'
         ]

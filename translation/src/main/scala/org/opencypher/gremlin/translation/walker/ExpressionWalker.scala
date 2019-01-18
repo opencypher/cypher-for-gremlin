@@ -17,7 +17,9 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalOptionParent.Pick
-import org.apache.tinkerpop.gremlin.structure.{Column, Vertex}
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.WithOptions.{indexer, map}
+import org.apache.tinkerpop.gremlin.structure.Column.{keys, values}
+import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
@@ -208,7 +210,18 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             walkLocal(expr, maybeAlias)
               .flatMap(emptyToNull(rangeT, context))
           case _ =>
-            asList(expr, fromIdx, toIdx).map(CustomFunction.cypherListSlice())
+            val from = expressionValue(fromIdx, context)
+            val to = expressionValue(toIdx, context)
+            walkLocal(expr, maybeAlias)
+              .index()
+              .`with`(indexer, map)
+              .local(
+                __.unfold()
+                  .where(
+                    __.select(keys).is(p.between(from, to))
+                  )
+                  .select(values)
+                  .fold())
         }
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
@@ -224,7 +237,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "head"             => traversals.head.flatMap(emptyToNull(__.limit(Scope.local, 1), context))
           case "id"               => traversals.head.flatMap(notNull(__.id(), context))
           case "keys" if onEntity => traversals.head.map(__.properties().key().fold())
-          case "keys"             => traversals.head.select(Column.keys)
+          case "keys"             => traversals.head.select(keys)
           case "labels"           => traversals.head.map(__.label().is(p.neq(Vertex.DEFAULT_LABEL)).fold())
           case "length"           => traversals.head.count(Scope.local).math("(_-1)/2")
           case "last"             => traversals.head.flatMap(emptyToNull(__.tail(Scope.local, 1), context))

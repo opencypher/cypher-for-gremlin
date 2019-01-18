@@ -135,6 +135,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> inV();
 
+    GremlinSteps<T, P> index();
+
     GremlinSteps<T, P> inject(Object... injections);
 
     GremlinSteps<T, P> is(P predicate);
@@ -235,7 +237,10 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> values(String... propertyKeys);
 
+
     GremlinSteps<T, P> where(GremlinSteps<T, P> whereTraversal);
 
     GremlinSteps<T, P> where(P predicate);
+
+    GremlinSteps<T, P> with(String name, Object value);
 }
