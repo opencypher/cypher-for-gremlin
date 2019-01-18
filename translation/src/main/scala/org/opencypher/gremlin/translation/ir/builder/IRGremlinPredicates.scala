@@ -46,4 +46,6 @@ class IRGremlinPredicates extends GremlinPredicates[GremlinPredicate] {
   override def isNode: GremlinPredicate = IsNode()
 
   override def isRelationship: GremlinPredicate = IsRelationship()
+
+  override def isString: GremlinPredicate = IsString()
 }

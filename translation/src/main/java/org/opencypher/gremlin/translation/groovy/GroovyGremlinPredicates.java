@@ -92,4 +92,9 @@ public class GroovyGremlinPredicates implements GremlinPredicates<GroovyPredicat
     public GroovyPredicate isRelationship() {
         return new GroovyPredicate("cypherIsRelationship");
     }
+
+    @Override
+    public GroovyPredicate isString() {
+        return new GroovyPredicate("cypherIsString");
+    }
 }

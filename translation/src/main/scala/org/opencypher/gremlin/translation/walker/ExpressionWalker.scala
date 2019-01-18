@@ -100,9 +100,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case LessThanOrEqual(lhs, rhs)    => comparison(lhs, rhs, p.lte)
       case GreaterThan(lhs, rhs)        => comparison(lhs, rhs, p.gt)
       case GreaterThanOrEqual(lhs, rhs) => comparison(lhs, rhs, p.gte)
-      case StartsWith(lhs, rhs)         => comparison(lhs, rhs, p.startsWith)
-      case EndsWith(lhs, rhs)           => comparison(lhs, rhs, p.endsWith)
-      case Contains(lhs, rhs)           => comparison(lhs, rhs, p.contains)
+      case StartsWith(lhs, rhs)         => comparison(lhs, rhs, p.isString, p.startsWith)
+      case EndsWith(lhs, rhs)           => comparison(lhs, rhs, p.isString, p.endsWith)
+      case Contains(lhs, rhs)           => comparison(lhs, rhs, p.isString, p.contains)
 
       case In(lhs, rhs) =>
         membership(lhs, rhs)
@@ -371,6 +371,32 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     val rhsName = context.generateName()
     val traversal = anyMatch(__.where(predicate(rhsName)))
     bothNotNull(lhs, rhs, traversal, rhsName)
+  }
+
+  private def comparison(
+      lhs: Expression,
+      rhs: Expression,
+      typePredicate: P,
+      predicate: String => P): GremlinSteps[T, P] = {
+    val rhsName = context.generateName()
+    val ifTrue = anyMatch(__.where(predicate(rhsName)))
+    val p = context.dsl.predicates()
+
+    val lhsT = walkLocal(lhs)
+    val rhsT = walkLocal(rhs)
+
+    rhsT
+      .as(rhsName)
+      .flatMap(lhsT)
+      .choose(
+        __.or(
+          __.is(p.isEq(NULL)),
+          __.not(__.is(typePredicate)),
+          __.select(rhsName).is(p.isEq(NULL)),
+          __.not(__.select(rhsName).is(typePredicate))),
+        __.constant(NULL),
+        ifTrue
+      )
   }
 
   private def membership(lhs: Expression, rhs: Expression): GremlinSteps[T, P] = {

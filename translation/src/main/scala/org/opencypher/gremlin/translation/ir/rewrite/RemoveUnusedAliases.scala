@@ -76,6 +76,7 @@ object RemoveUnusedAliases extends GremlinRewriter {
       case Contains(value)        => strings(value)
       case IsNode()               => Seq()
       case IsRelationship()       => Seq()
+      case IsString()             => Seq()
     }
   }
 }
