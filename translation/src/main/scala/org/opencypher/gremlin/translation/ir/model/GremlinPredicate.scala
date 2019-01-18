@@ -30,4 +30,5 @@ case class StartsWith(value: Any) extends GremlinPredicate
 case class EndsWith(value: Any) extends GremlinPredicate
 case class Contains(value: Any) extends GremlinPredicate
 case class IsNode() extends GremlinPredicate
+case class IsString() extends GremlinPredicate
 case class IsRelationship() extends GremlinPredicate

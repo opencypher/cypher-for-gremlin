@@ -24,27 +24,18 @@ public class CustomPredicateTest {
     public void startsWith() throws Exception {
         assertThat(CustomPredicate.cypherStartsWith("a").test("abcd")).isTrue();
         assertThat(CustomPredicate.cypherStartsWith("x").test("abcd")).isFalse();
-        assertThat(CustomPredicate.cypherStartsWith("x").test(null)).isFalse();
-        assertThat(CustomPredicate.cypherStartsWith(null).test("abcd")).isFalse();
-        assertThat(CustomPredicate.cypherStartsWith(null).test(null)).isFalse();
     }
 
     @Test
     public void endsWith() throws Exception {
         assertThat(CustomPredicate.cypherEndsWith("d").test("abcd")).isTrue();
         assertThat(CustomPredicate.cypherEndsWith("x").test("abcd")).isFalse();
-        assertThat(CustomPredicate.cypherEndsWith("x").test(null)).isFalse();
-        assertThat(CustomPredicate.cypherEndsWith(null).test("abcd")).isFalse();
-        assertThat(CustomPredicate.cypherEndsWith(null).test(null)).isFalse();
     }
 
     @Test
     public void contains() throws Exception {
         assertThat(CustomPredicate.cypherContains("bc").test("abcd")).isTrue();
         assertThat(CustomPredicate.cypherContains("x").test("abcd")).isFalse();
-        assertThat(CustomPredicate.cypherContains("x").test(null)).isFalse();
-        assertThat(CustomPredicate.cypherContains(null).test("abcd")).isFalse();
-        assertThat(CustomPredicate.cypherContains(null).test(null)).isFalse();
     }
 
 }

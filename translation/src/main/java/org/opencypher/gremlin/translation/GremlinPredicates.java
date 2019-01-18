@@ -55,4 +55,6 @@ public interface GremlinPredicates<P> {
     P isNode();
 
     P isRelationship();
+
+    P isString();
 }

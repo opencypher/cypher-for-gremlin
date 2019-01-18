@@ -90,4 +90,9 @@ public class TraversalGremlinPredicates implements GremlinPredicates<P> {
     public P isRelationship() {
         return CustomPredicate.cypherIsRelationship();
     }
+
+    @Override
+    public P isString() {
+        return CustomPredicate.cypherIsString();
+    }
 }

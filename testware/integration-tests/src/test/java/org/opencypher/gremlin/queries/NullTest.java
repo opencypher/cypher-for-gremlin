@@ -23,6 +23,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class NullTest {
@@ -62,6 +64,36 @@ public class NullTest {
 
         assertThat(results)
             .extracting("a")
+            .containsExactly((Object) null);
+    }
+
+    @Test
+    @Category(SkipExtensions.CustomPredicates.class)
+    public void predicateOnNull() {
+        submitAndGet("CREATE (a)");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (a)\n" +
+                "WHERE a.name CONTAINS 'b'\n" +
+                "RETURN count(a) as cnt"
+        );
+
+        assertThat(results)
+            .extracting("cnt")
+            .containsExactly(0L);
+    }
+
+    @Test
+    @Category(SkipExtensions.CustomPredicates.class)
+    public void nullOnIncompatibleTypes() {
+        submitAndGet(" CREATE ({val: 1})");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) RETURN 'a' STARTS WITH n.val as r"
+        );
+
+        assertThat(results)
+            .extracting("r")
             .containsExactly((Object) null);
     }
 }

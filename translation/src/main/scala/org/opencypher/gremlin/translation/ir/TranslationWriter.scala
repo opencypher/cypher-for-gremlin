@@ -271,6 +271,7 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
       case Contains(value)        => p.contains(writeValue(value))
       case IsNode()               => p.isNode
       case IsRelationship()       => p.isRelationship
+      case IsString()             => p.isString
     }
   }
 

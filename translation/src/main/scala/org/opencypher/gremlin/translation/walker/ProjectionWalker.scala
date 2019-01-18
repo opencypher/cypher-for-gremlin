@@ -59,6 +59,8 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   case object Expression extends ReturnFunctionType
   case object Pivot extends ReturnFunctionType
 
+  private val p = context.dsl.predicates()
+
   def walk(
       distinct: Boolean,
       items: Seq[ReturnItem],
@@ -212,7 +214,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     expression match {
       case _: Add | _: ContainerIndex | _: CountStar | _: Divide | _: FunctionInvocation | _: ListLiteral | _: Literal |
           _: MapExpression | _: Modulo | _: Multiply | _: Null | _: Parameter | _: PatternComprehension | _: Pow |
-          _: Property | _: Subtract | _: Variable =>
+          _: Property | _: Subtract | _: Variable | _: StartsWith | _: Contains | _: EndsWith =>
         false
       case _ =>
         true
@@ -279,7 +281,6 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       subTraversal: GremlinSteps[T, P],
       variable: String,
       expression: Expression): GremlinSteps[T, P] = {
-    val p = context.dsl.predicates()
 
     lazy val finalizeNode =
       __.valueMap(true)
@@ -334,8 +335,6 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
   }
 
   private def aggregation(alias: String, expression: Expression): (ReturnFunctionType, GremlinSteps[T, P]) = {
-    val p = context.dsl.predicates()
-
     expression match {
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>
         if (args.flatMap(n => n +: n.subExpressions).exists {
