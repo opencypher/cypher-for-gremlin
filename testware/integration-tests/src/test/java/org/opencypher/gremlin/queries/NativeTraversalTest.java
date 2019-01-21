@@ -443,7 +443,7 @@ public class NativeTraversalTest {
     @Category(SkipExtensions.CustomFunctions.class)
     public void math() throws Exception {
         String cypher = "MATCH (n:Person {firstName: 'Erlend'}) " +
-            "RETURN toInteger(sqrt(abs(1 + (2 - (3 * (4 / (5 ^ ((n.born - 1990) % 3)))))))) AS result";
+            "RETURN toInteger(sqrt(abs(1 + (2 - (round(3.0) * (4 / (5 ^ ((n.born - 1990) % 3)))))))) AS result";
 
         List<Map<String, Object>> cypherResults = submitAndGet(cypher);
 

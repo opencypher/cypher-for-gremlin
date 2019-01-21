@@ -142,6 +142,10 @@ public final class CustomFunctions {
         };
     }
 
+    public static Function<Traverser,Object> cypherRound() {
+        return cypherFunction(a -> (Math.round((Double) a.get(0))), Double.class);
+    }
+
     public static Function<Traverser, Object> cypherProperties() {
         return traverser -> {
             Object argument = traverser.get();
@@ -436,6 +440,10 @@ public final class CustomFunctions {
 
             return func.apply(args);
         };
+    }
+
+    public static Function<Traverser,Object> cypherTrim() {
+        return cypherFunction(a -> ((String) a.get(0)).trim(), String.class);
     }
 
     public static Function<Traverser, Object> cypherToUpper() {
