@@ -382,16 +382,41 @@ public class FunctionTest {
 
     @Test
     @Category(SkipExtensions.CustomFunctions.class)
+    public void trim() {
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH \" word \" as m RETURN " +
+                "m," +
+                "trim(m) as t");
+
+        assertThat(results)
+            .extracting("m", "t")
+            .containsExactlyInAnyOrder(tuple(" word ", "word"));
+    }
+
+    @Test
+    @Category(SkipExtensions.CustomFunctions.class)
+    public void round() {
+        List<Map<String, Object>> results = submitAndGet(
+            "RETURN round(1.6) as r");
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactlyInAnyOrder(2L);
+    }
+
+    @Test
+    @Category(SkipExtensions.CustomFunctions.class)
     public void nullInStringFunctions() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (m {name: 'marko'}) RETURN " +
                 "upper(m.notExisting) as u," +
                 "lower(m.notExisting) as l," +
-                "reverse(m.notExisting) as r");
+                "reverse(m.notExisting) as r," +
+                "trim(m.notExisting) as t");
 
         assertThat(results)
-            .extracting("u", "l", "r")
-            .containsExactlyInAnyOrder(tuple(null, null, null));
+            .extracting("u", "l", "r", "t")
+            .containsExactlyInAnyOrder(tuple(null, null, null, null));
     }
 
     @Test
