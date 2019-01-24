@@ -35,7 +35,8 @@ object CosmosDbFlavor extends GremlinRewriter {
       removeFromTo(_),
       replaceSelectValues(_),
       replaceSelectValues(_),
-      stringIds(_)
+      stringIds(_),
+      neqOnDiff(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -123,6 +124,14 @@ object CosmosDbFlavor extends GremlinRewriter {
         PropertyVC(single, "id", "" + value) :: rest
       case PropertyV("id", value) :: rest =>
         PropertyV("id", "" + value) :: rest
+    })(steps)
+  }
+
+  // g.V().constant(1).not(is(eq('a')))
+  private def neqOnDiff(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Is(Neq(value)) :: rest =>
+        Not(Is(Eq(value)) :: Nil) :: rest
     })(steps)
   }
 }

@@ -40,6 +40,7 @@ private class UnwindWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
     val Unwind(expression, Variable(varName)) = node
     expression match {
       case Null() =>
+        context.markFirstStatement()
         g.inject(Collections.emptyList).unfold().as(varName)
       case _: Expression =>
         ensureFirstStatement(g, context)

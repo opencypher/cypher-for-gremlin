@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.groups;
 
+import org.opencypher.gremlin.queries.SpecificsTest;
+
 /**
  * Tests that are skipped because of Cosmos DB specifics. Refer to categories for more details.
  */
@@ -66,10 +68,7 @@ public interface SkipWithCosmosDB {
     }
 
     /**
-      * Combination of `group()` and `choose()` behavior is different from reference implementation. Is it supported?
-      *  - Query `g.V().as('n').select('n').group().by(choose(hasLabel('person'), constant(true), constant(false))).by("name")` on [Modern Graph](https://tinkerpop.apache.org/docs/current/reference/#intro):
-      *  - TinkerGraph returns: `[false:[lop,ripple],true:[josh,peter,marko,vadas]]`
-      *  - Cosmos DB returns: `[true:[marko,vadas,lop,josh,ripple,peter]]`
+     *  @see SpecificsTest#choose()
      */
     interface GroupChoose extends SkipWithCosmosDB {
     }
@@ -78,6 +77,17 @@ public interface SkipWithCosmosDB {
      * g.inject(1).is(neq('a'))
      */
     interface IsNeqOnDifferentTypes extends SkipWithCosmosDB {
+    }
+
+    interface ValuesDoesNotWorkInSomeCases extends SkipWithCosmosDB {
+
+    }
+
+    /**
+     * https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin
+     */
+    interface NoKnownWayToThrowRuntimeException extends SkipWithCosmosDB {
+
     }
 
 

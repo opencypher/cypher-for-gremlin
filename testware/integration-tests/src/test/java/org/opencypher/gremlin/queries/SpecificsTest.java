@@ -55,6 +55,7 @@ public class SpecificsTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Truncate4096.class)
     public void return100Elements() throws Exception {
         Client client = gremlinServer.gremlinClient();
 
@@ -112,7 +113,7 @@ public class SpecificsTest {
     }
 
     @Test
-    @Category(SkipWithJanusGraph.ChangePropertyType.class)
+    @Category({SkipWithJanusGraph.ChangePropertyType.class, SkipWithCosmosDB.ValuesDoesNotWorkInSomeCases.class})
     public void setAndGetEdgeProperty() throws Exception {
         Client client = gremlinServer.gremlinClient();
 
@@ -272,4 +273,19 @@ public class SpecificsTest {
             .containsExactly("test");
     }
 
+    @Test
+    @Category(SkipWithCosmosDB.GroupChoose.class)
+    public void choose() throws Exception {
+
+        Client client = gremlinServer.gremlinClient();
+
+        client.submit("g.addV('software').addV('person')").all().get();
+        List<Result> results = client.submit("g.V().project('software')" +
+            ".by(choose(__.hasLabel('software'), __.constant(true), __.constant(false)))").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .extracting("software")
+            .containsExactly(true, false);
+    }
 }

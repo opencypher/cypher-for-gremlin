@@ -256,6 +256,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.GroupChoose.class)
     public void labelPredicate() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) " +

@@ -54,6 +54,20 @@ class CosmosDbFlavorTest {
   }
 
   @Test
+  def edgeValues(): Unit = {
+    assertThat(parse("""
+        |MATCH ()-[r:REL]->()
+        |SET r.name = 'neo4j'
+        |RETURN r.name
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(__.values("name"))
+      .adds(__.properties().hasKey("name").value())
+      .debug()
+  }
+
+  @Test
   def range(): Unit = {
     assertThat(parse("""
         |UNWIND range(1, 3) AS i
