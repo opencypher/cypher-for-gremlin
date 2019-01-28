@@ -47,10 +47,10 @@ object NoCustomFunctions extends GremlinPostCondition {
       case WhereP(predicate) :: _         => predicate
     })(steps)
       .flatMap({
-        case _: StartsWith => Some("cypherStarsWith")
-        case _: EndsWith   => Some("cypherEndsWith")
-        case _: Contains   => Some("cypherContains")
-        case _             => None
+        case _: IsNode         => Some("cypherIsNode")
+        case _: IsString       => Some("cypherIsString")
+        case _: IsRelationship => Some("cypherIsRelationship")
+        case _                 => None
       })
 
     functions ++ predicates

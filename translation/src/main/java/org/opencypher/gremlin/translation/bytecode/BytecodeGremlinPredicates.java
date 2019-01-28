@@ -18,6 +18,7 @@ package org.opencypher.gremlin.translation.bytecode;
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode.Binding;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.TextP;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.traversal.CustomPredicate;
 
@@ -70,17 +71,17 @@ public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
 
     @Override
     public P startsWith(Object value) {
-        return CustomPredicate.cypherStartsWith(inlineParameter(value));
+        return TextP.startingWith(inlineParameter(value).toString());
     }
 
     @Override
     public P endsWith(Object value) {
-        return CustomPredicate.cypherEndsWith(inlineParameter(value));
+        return TextP.endingWith(inlineParameter(value).toString());
     }
 
     @Override
     public P contains(Object value) {
-        return CustomPredicate.cypherContains(inlineParameter(value));
+        return TextP.containing(inlineParameter(value).toString());
     }
 
     @Override
