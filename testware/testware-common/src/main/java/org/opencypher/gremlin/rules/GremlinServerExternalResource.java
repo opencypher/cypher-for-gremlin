@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
 import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
 import org.assertj.core.util.Strings;
 import org.junit.rules.ExternalResource;
@@ -88,7 +89,7 @@ public class GremlinServerExternalResource extends ExternalResource {
             gremlinServer = serverSupplier.get();
             gremlinServer.start();
             int port = gremlinServer.getPort();
-            gremlinClient = GremlinClientFactory.create(port);
+            gremlinClient = GremlinClientFactory.create(port, new GraphBinaryMessageSerializerV1());
         }
 
         return gremlinClient;
