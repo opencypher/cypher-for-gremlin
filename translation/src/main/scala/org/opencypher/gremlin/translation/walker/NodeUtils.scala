@@ -44,35 +44,42 @@ object NodeUtils {
     traversalValueToJava(node, context, parameterHandler).asInstanceOf[R]
   }
 
-  def traversalValueToJava[T, P](
+  def traversalValueToJava[T, P](value: Any, context: WalkerContext[T, P], parameterHandler: String => AnyRef): AnyRef =
+    traversalValueOption(value, context, parameterHandler) match {
+      case Some(javaValue) => javaValue
+      case None =>
+        context.unsupported("value expression", value)
+    }
+
+  def traversalValueOption[T, P](
       value: Any,
       context: WalkerContext[T, P],
-      parameterHandler: String => AnyRef): AnyRef = {
+      parameterHandler: String => AnyRef): Option[AnyRef] = {
     value match {
       case Variable(varName) =>
-        varName
+        Some(varName)
       case Parameter(name, _) =>
-        parameterHandler(name)
+        Some(parameterHandler(name))
       case Null() =>
-        Tokens.NULL
+        Some(Tokens.NULL)
       case ListComprehension(_, Parameter(name, _)) =>
-        parameterHandler(name)
+        Some(parameterHandler(name))
       case l: Literal =>
-        l.value
+        Some(l.value)
       case ListLiteral(expressions) =>
-        traversalValueToJava(expressions, context, parameterHandler)
+        Some(traversalValueToJava(expressions, context, parameterHandler))
       case MapExpression(items) =>
-        traversalValueToJava(items.toMap, context, parameterHandler)
+        Some(traversalValueToJava(items.toMap, context, parameterHandler))
       case FunctionInvocation(_, _, _, Seq(args)) =>
-        expressionValue(args, context)
+        Some(expressionValue(args, context))
       case seq: Seq[_] =>
         val mappedSeq = seq.map(traversalValueToJava(_, context, parameterHandler))
-        new util.ArrayList(mappedSeq.asJava)
+        Some(new util.ArrayList(mappedSeq.asJava))
       case map: Map[_, _] =>
         val mappedMap = map.mapValues(traversalValueToJava(_, context, parameterHandler))
-        new util.LinkedHashMap[Any, Any](mappedMap.asJava)
+        Some(new util.LinkedHashMap[Any, Any](mappedMap.asJava))
       case _ =>
-        context.unsupported("value expression", value)
+        None
     }
   }
 

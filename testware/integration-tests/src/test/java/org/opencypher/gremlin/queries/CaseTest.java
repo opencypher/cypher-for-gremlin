@@ -21,6 +21,7 @@ import static org.assertj.core.groups.Tuple.tuple;
 
 import java.util.List;
 import java.util.Map;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
@@ -30,6 +31,11 @@ public class CaseTest {
 
     @ClassRule
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
+
+    @Before
+    public void setUp() throws Exception {
+        TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
+    }
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
@@ -230,5 +236,58 @@ public class CaseTest {
             .containsExactlyInAnyOrder(32L);
     }
 
+    @Test
+    public void expressionsInSimpleCase() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:person) RETURN \n" +
+                "CASE split(n.name, 'a')[0]\n" +
+                "   WHEN 'm' THEN 1\n" +
+                "   WHEN 'v' THEN 2\n" +
+                "   ELSE NULL\n" +
+                "END as r"
 
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactlyInAnyOrder(1L, 2L, null, null);
+    }
+
+    @Test
+    public void expressionsInSimpleCaseForm() throws Exception {
+        submitAndGet("CREATE (:test {name: 'a_a'}), (:test {name: 'a_b'}), (:test {name: 'a_c'})");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n:test)\n" +
+                "RETURN \n" +
+                "  CASE split(n.name, '_')[0] \n" +
+                "    WHEN split(n.name, '_')[1] THEN n.name\n" +
+                "    ELSE NULL\n" +
+                "  END as r\n"
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactlyInAnyOrder("a_a", null, null);
+    }
+
+    @Test
+    public void expressionsInSimpleCaseFormInWhere() throws Exception {
+        submitAndGet("CREATE (:test {name: 'a_a'}), (:test {name: 'a_b'}), (:test {name: 'a_c'})");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n)\n" +
+                "WHERE \n" +
+                "  CASE split(n.name, '_')[0] \n" +
+                "    WHEN split(n.name, '_')[1] THEN n.name\n" +
+                "    ELSE NULL\n" +
+                "  END\n" +
+                "IS NOT NULL\n" +
+                "RETURN n.name as r"
+        );
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactlyInAnyOrder("a_a");
+    }
 }
