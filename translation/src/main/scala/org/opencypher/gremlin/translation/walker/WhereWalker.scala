@@ -29,7 +29,6 @@ import org.opencypher.v9_0.util.symbols._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.util.Try
 
 /**
   * AST walker that handles translation
@@ -165,7 +164,7 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
   }
 
   private def walkVargPredicate(lhs: Expression, rhs: Expression, predicate: Seq[AnyRef] => P): GremlinSteps[T, P] = {
-    val value = Try(expressionValue(rhs, context)).getOrElse(null)
+    val value = traversalValueOption(rhs, context, context.parameter).orNull
     (value, rhs) match {
       case (list: java.lang.Iterable[_], _: ListLiteral) =>
         val lhsT = walkExpression(lhs)

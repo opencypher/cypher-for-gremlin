@@ -603,9 +603,15 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       choose.option(Pick.none, defaultValue)
     }
 
+    val tokensContainsExpressions =
+      alternatives.map(a => traversalValueOption(a._2, context, context.parameter)).contains(None)
+
     maybeExpr match {
-      case Some(expr) =>
+      case Some(expr) if !tokensContainsExpressions =>
         optionChoose(expr)
+      case Some(expr) =>
+        val name = context.generateName()
+        __.flatMap(walkLocal(expr)).as(name).flatMap(nestedChoose(__.where(p.isEq(name))))
       case None =>
         nestedChoose(__.is(p.isEq(true)))
     }
