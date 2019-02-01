@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Scope.local
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
@@ -356,15 +357,15 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
         fnName.toLowerCase match {
           case "avg" =>
-            (Aggregation, traversal.mean())
+            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.unfold().mean(), __.constant(NULL)))
           case "collect" =>
             (Aggregation, traversal.fold())
           case "count" =>
             (Aggregation, traversal.count())
           case "max" =>
-            (Aggregation, traversal.max())
+            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.unfold().max(), __.constant(NULL)))
           case "min" =>
-            (Aggregation, traversal.min())
+            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.unfold().min(), __.constant(NULL)))
           case "percentilecont" =>
             (Aggregation, aggregateWithArguments(args, alias).map(CustomFunction.cypherPercentileCont()))
           case "percentiledisc" =>
