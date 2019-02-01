@@ -37,8 +37,26 @@ public interface SkipWithCosmosDB {
     }
 
     /**
+     * by(__.choose(__.identity()).
+     *         option(13, __.constant('integer')).
+     *         option(3.14d, __.constant('float')).
+     *         option('bingo', __.constant('string')).
+     *         option(true, __.constant('boolean')).
+     *         option('  cypher.null', __.constant('null')).
+     *         option(['a'], __.constant('collection')).
+     *         option(none, __.constant('  cypher.null')))
+     */
+    interface NoNoneToken extends SkipWithCosmosDB {
+    }
+
+    /**
      */
     interface Truncate4096 extends SkipWithCosmosDB {
+    }
+
+    /**
+     */
+    interface MaxRequest extends SkipWithCosmosDB {
     }
 
     /**
@@ -70,7 +88,7 @@ public interface SkipWithCosmosDB {
     /**
      *  @see SpecificsTest#choose()
      */
-    interface GroupChoose extends SkipWithCosmosDB {
+    interface Choose extends SkipWithCosmosDB {
     }
 
     /**

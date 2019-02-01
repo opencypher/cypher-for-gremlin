@@ -24,6 +24,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -42,6 +44,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
     public void simpleFormNumericMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) RETURN " +
@@ -59,6 +62,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
     public void simpleFormStringMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:software) RETURN\n" +
@@ -74,6 +78,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
     public void simpleFormPartialMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) RETURN " +
@@ -88,6 +93,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void predicateMatch() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) RETURN " +
@@ -104,6 +110,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void orderWhenMatching2Predicates() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) RETURN\n" +
@@ -119,6 +126,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
     public void simpleFormMatchUnexpectedNulls() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) RETURN " +
@@ -133,6 +141,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
     public void simpleMatchDifferentTypes() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "UNWIND [13, 3.14, 'bingo', true, null, ['a']] AS n RETURN CASE n " +
@@ -151,6 +160,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
     public void simpleReturnDifferentTypes() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) RETURN " +
@@ -170,6 +180,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void returnDifferentTypes() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) RETURN " +
@@ -189,6 +200,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoMath.class)
     public void labelPredicatesWithAggregationProjection() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) " +
@@ -205,6 +217,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void caseInWhere() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) WHERE " +
@@ -221,6 +234,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
     public void simpleCaseInWhere() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) WHERE " +

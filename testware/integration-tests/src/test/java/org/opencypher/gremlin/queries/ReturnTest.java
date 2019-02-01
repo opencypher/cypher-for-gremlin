@@ -256,7 +256,7 @@ public class ReturnTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.GroupChoose.class)
+    @Category(SkipWithCosmosDB.Choose.class)
     public void labelPredicate() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) " +
@@ -462,6 +462,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void returnCoalesce() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (a) " +

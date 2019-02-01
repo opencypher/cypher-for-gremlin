@@ -274,7 +274,7 @@ public class SpecificsTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.GroupChoose.class)
+    @Category(SkipWithCosmosDB.Choose.class)
     public void choose() throws Exception {
 
         Client client = gremlinServer.gremlinClient();

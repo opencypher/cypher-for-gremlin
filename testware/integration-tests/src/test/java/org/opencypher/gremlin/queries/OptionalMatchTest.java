@@ -94,6 +94,7 @@ public class OptionalMatchTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void nullProperties() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (p:person) " +
@@ -106,6 +107,7 @@ public class OptionalMatchTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void nullVertices() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (p:person) " +

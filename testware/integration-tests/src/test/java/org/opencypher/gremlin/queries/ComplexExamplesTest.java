@@ -337,6 +337,7 @@ public class ComplexExamplesTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void doubleWithMerge() throws Exception {
         submitAndGet("CREATE ({id: 0})");
         List<Map<String, Object>> results = submitAndGet(
