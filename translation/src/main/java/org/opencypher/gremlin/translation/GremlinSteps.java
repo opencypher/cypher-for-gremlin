@@ -161,9 +161,15 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> max();
 
+    GremlinSteps<T, P> max(Scope scope);
+
     GremlinSteps<T, P> mean();
 
+    GremlinSteps<T, P> mean(Scope scope);
+
     GremlinSteps<T, P> min();
+
+    GremlinSteps<T, P> min(Scope scope);
 
     GremlinSteps<T, P> not(GremlinSteps<T, P> notTraversal);
 

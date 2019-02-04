@@ -85,8 +85,6 @@ public final class ReturnNormalizer {
             return ((BigDecimal) value).doubleValue();
         } else if (Tokens.NULL.equals(value)) {
             return null;
-        } else if (value instanceof Double && Double.isNaN((double) value)) {
-            return null;
         } else if (value instanceof Traverser) {
             return normalize(((Traverser) value).get());
         }

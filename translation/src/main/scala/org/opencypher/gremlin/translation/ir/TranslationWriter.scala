@@ -184,10 +184,16 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.math(expression)
         case Max =>
           g.max()
+        case MaxS(scope) =>
+          g.max(scope)
         case Mean =>
           g.mean()
+        case MeanS(scope) =>
+          g.mean(scope)
         case Min =>
           g.min()
+        case MinS(scope) =>
+          g.min(scope)
         case Not(notTraversal) =>
           g.not(writeLocalSteps(notTraversal))
         case OptionT(pickToken, optionalTraversal) =>

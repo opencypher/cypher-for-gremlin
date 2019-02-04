@@ -357,15 +357,15 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
         fnName.toLowerCase match {
           case "avg" =>
-            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.unfold().mean(), __.constant(NULL)))
+            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.mean(local), __.constant(NULL)))
           case "collect" =>
             (Aggregation, traversal.fold())
           case "count" =>
             (Aggregation, traversal.count())
           case "max" =>
-            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.unfold().max(), __.constant(NULL)))
+            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.max(local), __.constant(NULL)))
           case "min" =>
-            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.unfold().min(), __.constant(NULL)))
+            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.min(local), __.constant(NULL)))
           case "percentilecont" =>
             (Aggregation, aggregateWithArguments(args, alias).map(CustomFunction.cypherPercentileCont()))
           case "percentiledisc" =>

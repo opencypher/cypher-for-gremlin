@@ -241,9 +241,15 @@ case class Math(expression: String) extends GremlinStep
 
 case object Max extends GremlinStep
 
+case class MaxS(scope: Scope) extends GremlinStep
+
 case object Mean extends GremlinStep
 
+case class MeanS(scope: Scope) extends GremlinStep
+
 case object Min extends GremlinStep
+
+case class MinS(scope: Scope) extends GremlinStep
 
 case class Not(notTraversal: Seq[GremlinStep]) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {

@@ -379,14 +379,32 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> max(Scope scope) {
+        g.append(chain("max", scope));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> mean() {
         g.append(chain("mean"));
         return this;
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> mean(Scope scope) {
+        g.append(chain("mean", scope));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> min() {
         g.append(chain("min"));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> min(Scope scope) {
+        g.append(chain("min", scope));
         return this;
     }
 

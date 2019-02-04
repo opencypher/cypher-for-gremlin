@@ -316,13 +316,28 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def max(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += MaxS(scope)
+    this
+  }
+
   override def mean(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Mean
     this
   }
 
+  override def mean(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += MeanS(scope)
+    this
+  }
+
   override def min(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Min
+    this
+  }
+
+  override def min(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += MinS(scope)
     this
   }
 

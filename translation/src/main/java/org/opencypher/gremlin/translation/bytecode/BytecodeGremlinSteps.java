@@ -371,14 +371,32 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> max(Scope scope) {
+        bytecode.addStep(Symbols.max, scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> mean() {
         bytecode.addStep(Symbols.mean);
         return this;
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> mean(Scope scope) {
+        bytecode.addStep(Symbols.mean, scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> min() {
         bytecode.addStep(Symbols.min);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<Bytecode, P> min(Scope scope) {
+        bytecode.addStep(Symbols.min, scope);
         return this;
     }
 
