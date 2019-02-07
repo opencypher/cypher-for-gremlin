@@ -48,6 +48,7 @@ import org.apache.tinkerpop.gremlin.jsr223.AbstractGremlinPlugin;
 import org.apache.tinkerpop.gremlin.jsr223.DefaultImportCustomizer;
 import org.apache.tinkerpop.gremlin.jsr223.ImportCustomizer;
 import org.apache.tinkerpop.gremlin.jsr223.console.ConsoleCustomizer;
+import org.opencypher.gremlin.client.CypherTraversalSource;
 
 /**
  * Gremlin Console Plugin that allows to send Cypher queries from Gremlin Console to Gremlin Server.
@@ -85,7 +86,9 @@ public abstract class CypherPlugin extends AbstractGremlinPlugin {
             SerTokens.class,
             DriverRemoteConnection.class,
             DriverRemoteTraversal.class,
-            DriverRemoteTraversalSideEffects.class).create();
+            DriverRemoteTraversalSideEffects.class,
+            CypherTraversalSource.class
+        ).create();
 
     CypherPlugin(String name, ConsoleCustomizer customizer) {
         super(name, imports, customizer);

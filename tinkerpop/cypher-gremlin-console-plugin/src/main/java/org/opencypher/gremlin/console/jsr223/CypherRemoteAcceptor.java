@@ -31,12 +31,10 @@ import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.jsr223.console.GremlinShellEnvironment;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteAcceptor;
 import org.apache.tinkerpop.gremlin.jsr223.console.RemoteException;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 /**
  * A {@link RemoteAcceptor} that takes a Cypher query from the console
@@ -84,38 +82,11 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
             return builder.build();
         }
         String translatorType = args.get(translatorTypeIndex);
-        switch (translatorType) {
-            case "cosmosdb":
-                return builder
-                    .build(TranslatorFlavor.cosmosDb());
-            case "cosmosdb+extensions":
-                return builder
-                    .enableCypherExtensions()
-                    .build(TranslatorFlavor.cosmosDb());
-            case "neptune":
-                return builder
-                    .inlineParameters()
-                    .enableMultipleLabels()
-                    .build(TranslatorFlavor.neptune());
-            case "neptune+extensions":
-                return builder
-                    .inlineParameters()
-                    .enableMultipleLabels()
-                    .enableCypherExtensions()
-                    .build(TranslatorFlavor.neptune());
-            case "gremlin":
-                return builder
-                    .build(TranslatorFlavor.gremlinServer());
-            case "gremlin+extensions":
-                return builder
-                    .enableCypherExtensions()
-                    .build(TranslatorFlavor.gremlinServer());
-            case "":
-                return builder.build(TranslatorFlavor.gremlinServer());
-            default:
-                throw new IllegalArgumentException("Unknown translator type: " + translatorType);
-        }
+
+        return builder.build(translatorType);
     }
+
+
 
     @Override
     public Object configure(List<String> args) throws RemoteException {

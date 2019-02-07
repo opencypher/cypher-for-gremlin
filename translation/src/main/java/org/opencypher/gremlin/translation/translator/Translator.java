@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.translator;
 
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
@@ -101,6 +102,13 @@ public final class Translator<T, P> {
      */
     public boolean isEnabled(TranslatorFeature feature) {
         return features.contains(feature);
+    }
+
+    /**
+     * todo
+     */
+    public Set<TranslatorFeature> features() {
+        return Collections.unmodifiableSet(features);
     }
 
     /**
@@ -268,7 +276,7 @@ public final class Translator<T, P> {
          * @return translator
          */
         public Translator<T, P> build() {
-            return build(null);
+            return build((TranslatorFlavor) null);
         }
 
         /**
@@ -285,6 +293,45 @@ public final class Translator<T, P> {
                 features,
                 getFlavor(flavor, features)
             );
+        }
+
+        /**
+         * todo
+         */
+        public Translator<T, P> build(String translatorType) {
+            TranslatorFlavor flavor;
+
+            if ("cosmosdb".equals(translatorType)) {
+                flavor = TranslatorFlavor.cosmosDb();
+            } else if ("cosmosdb+extensions".equals(translatorType)) {
+                enableCypherExtensions();
+                flavor = TranslatorFlavor.cosmosDb();
+            } else if ("neptune".equals(translatorType)) {
+                flavor = TranslatorFlavor.neptune();
+                inlineParameters();
+                enableMultipleLabels();
+            } else if ("neptune+extensions".equals(translatorType)) {
+                flavor = TranslatorFlavor.neptune();
+                inlineParameters();
+                enableMultipleLabels();
+                enableCypherExtensions();
+            } else if ("gremlin".equals(translatorType)) {
+                flavor = TranslatorFlavor.gremlinServer();
+            } else if ("gremlin+extensions".equals(translatorType)) {
+                enableCypherExtensions();
+                flavor = TranslatorFlavor.gremlinServer();
+            } else if ("".equals(translatorType)) {
+                flavor = TranslatorFlavor.gremlinServer();
+            } else {
+                throw new IllegalArgumentException("Unknown translator type: " + translatorType);
+            }
+
+            return build(flavor);
+        }
+
+        protected FlavorBuilder<T, P> inlineParameters() {
+            bindings = new TraversalGremlinBindings();
+            return this;
         }
 
         private TranslatorFlavor getFlavor(TranslatorFlavor flavor, Set<TranslatorFeature> features) {
@@ -313,8 +360,7 @@ public final class Translator<T, P> {
          * @return builder for translator
          */
         public FlavorBuilder<T, P> inlineParameters() {
-            bindings = new TraversalGremlinBindings();
-            return this;
+            return super.inlineParameters();
         }
     }
 }

@@ -151,6 +151,36 @@ public class GremlinConsoleTest {
             .contains(PERSON_NAMES_RESULT);
     }
 
+    @Test
+    public void remoteCypherTraversalSource() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval("g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('" + driverRemoteConfiguration() + "')");
+        assertThat(remoteConnect).contains("==>cyphertraversalsource[emptygraph[empty], standard]");
+
+        String queryResult = eval("g.cypher('" + PERSON_NAMES_QUERY + "')");
+        assertThat(queryResult).contains(PERSON_NAMES_RESULT);
+    }
+
+    /**
+     * @see org.opencypher.gremlin.translation.ir.rewrite.CosmosDbFlavor#rewriteValues
+     */
+    @Test
+    public void remoteCypherTraversalSourceFlavor() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval("g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('" + driverRemoteConfiguration() + "')");
+        assertThat(remoteConnect).contains("==>cyphertraversalsource[emptygraph[empty], standard]");
+
+        String queryResult = eval("g.cypher('" + PERSON_NAMES_QUERY + "', 'cosmosdb')");
+
+        assertThat(queryResult)
+            .contains("properties(), hasKey(name)")
+            .doesNotContain("[values(name)]");
+    }
+
     private void waitForPrompt() {
         Awaitility.await()
             .atMost(10, SECONDS)
@@ -174,6 +204,17 @@ public class GremlinConsoleTest {
     private String remoteConfiguration() throws Exception {
         File file = tempFolder.newFile("local-gremlin-server.yaml");
         String configuration = "hosts: [localhost]\nport: " + server.getPort() + "\n";
+        Files.asCharSink(file, UTF_8).write(configuration);
+        return file.getAbsolutePath();
+    }
+
+    private String driverRemoteConfiguration() throws Exception {
+        String clusterFile = remoteConfiguration();
+        String configuration = "gremlin.remote.remoteConnectionClass=org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection\n" +
+        "gremlin.remote.driver.clusterFile=" + clusterFile +
+        "\ngremlin.remote.driver.sourceName=g";
+
+        File file = tempFolder.newFile("remote-graph.properties");
         Files.asCharSink(file, UTF_8).write(configuration);
         return file.getAbsolutePath();
     }
