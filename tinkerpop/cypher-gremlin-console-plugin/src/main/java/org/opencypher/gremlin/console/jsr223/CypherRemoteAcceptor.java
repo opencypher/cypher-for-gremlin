@@ -80,10 +80,10 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
         Translator.ParametrizedFlavorBuilder<String, GroovyPredicate> builder = Translator.builder().gremlinGroovy();
         if (translatorTypeIndex >= args.size()) {
             return builder.build();
+        } else {
+            String translatorType = args.get(translatorTypeIndex);
+            return builder.build(translatorType);
         }
-        String translatorType = args.get(translatorTypeIndex);
-
-        return builder.build(translatorType);
     }
 
 

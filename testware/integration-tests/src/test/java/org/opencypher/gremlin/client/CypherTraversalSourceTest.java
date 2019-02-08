@@ -45,15 +45,14 @@ public class CypherTraversalSourceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void returnNulls() {
-        GraphTraversal<Map<String, Object>, Map<String, Object>> traversal = g
+        GraphTraversal<Map<String, Object>, Object> traversal = g
             .cypher("MATCH (n:software) RETURN n.age as age")
             .select("age");
 
-        List results = traversal.toList();
+        List<Object> results = traversal.toList();
 
-        assertThat(results) //todo types
+        assertThat(results)
             .containsExactlyInAnyOrder(Tokens.NULL, Tokens.NULL);
     }
 

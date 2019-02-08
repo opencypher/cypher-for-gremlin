@@ -31,7 +31,6 @@ import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,36 +85,19 @@ public class GremlinServerExternalResource extends ExternalResource {
 
     private CypherGremlinClient configuredCypherGremlinClient() {
         String translate = emptyToNull(System.getProperty(TOKEN_TRANSLATE));
-        String clientName = Optional.ofNullable(translate).orElse("traversal");
-        switch (clientName) {
-            case "traversal":
-                return CypherGremlinClient.plugin(gremlinClient);
-            case "gremlin":
-                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
+        String clientName = Optional.ofNullable(translate).orElse("traversal+extensions");
+        if ("traversal+extensions".equals(clientName)) {
+            return CypherGremlinClient.plugin(gremlinClient);
+        } else if ("bytecode+extensions".equals(clientName)) {
+            return CypherGremlinClient.bytecode(gremlinClient.alias("g"), () -> Translator.builder()
+                .bytecode()
+                .enableCypherExtensions()
+                .build());
+        } else {
+            return CypherGremlinClient.translating(gremlinClient,
+                () -> Translator.builder()
                     .gremlinGroovy()
-                    .enableCypherExtensions()
-                    .build());
-            case "vanilla":
-                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
-                    .gremlinGroovy()
-                    .build());
-            case "bytecode":
-                return CypherGremlinClient.bytecode(gremlinClient.alias("g"), () -> Translator.builder()
-                    .bytecode()
-                    .enableCypherExtensions()
-                    .build());
-            case "cosmosdb":
-                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
-                    .gremlinGroovy()
-                    .build(TranslatorFlavor.cosmosDb()));
-            case "neptune":
-                return CypherGremlinClient.translating(gremlinClient, () -> Translator.builder()
-                    .gremlinGroovy()
-                    .inlineParameters()
-                    .enableMultipleLabels()
-                    .build(TranslatorFlavor.neptune()));
-            default:
-                throw new IllegalArgumentException("Unknown name: " + clientName);
+                    .build(clientName));
         }
     }
 

@@ -15,6 +15,10 @@
  */
 package org.opencypher.gremlin.translation.translator;
 
+
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+
 /**
  * Translator features are additional behaviors that can be allowed in translation.
  * These need to be enabled individually when creating a {@link Translator}.
@@ -33,7 +37,8 @@ public enum TranslatorFeature {
     MULTIPLE_LABELS,
 
     /**
-     * todo
+     * Return Gremlin graph elements (e.g {@link Vertex}, {@link Edge}) instead of normalizing elements to a map of
+     * tokens and properties (as by default).
      */
-    DONT_FINALIZE_ELEMENTS
+    RETURN_GREMLIN_ELEMENTS
 }

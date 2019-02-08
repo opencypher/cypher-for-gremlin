@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.client;
 
-import static org.opencypher.gremlin.translation.translator.TranslatorFeature.DONT_FINALIZE_ELEMENTS;
+import static org.opencypher.gremlin.translation.translator.TranslatorFeature.RETURN_GREMLIN_ELEMENTS;
 
 import java.util.Collections;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class CypherTraversalSource extends GraphTraversalSource {
 
         Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
             .traversal(g)
-            .enable(DONT_FINALIZE_ELEMENTS)
+            .enable(RETURN_GREMLIN_ELEMENTS)
             .build(flavor);
 
         GraphTraversal traversal = ast.buildTranslation(traversalTranslator);

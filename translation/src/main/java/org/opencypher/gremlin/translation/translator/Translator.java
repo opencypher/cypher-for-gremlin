@@ -105,7 +105,9 @@ public final class Translator<T, P> {
     }
 
     /**
-     * todo
+     * Returns set of translator features
+     *
+     * @return set of {@link TranslatorFeature}
      */
     public Set<TranslatorFeature> features() {
         return Collections.unmodifiableSet(features);
@@ -296,34 +298,43 @@ public final class Translator<T, P> {
         }
 
         /**
-         * todo
+         * <p>Builds a {@link Translator} from string definition. Recommended usage is for parsing user input. Consider
+         * using builder API for all other cases.</p>
+         *
+         * <p>Valid parameters are:
+         * <ul>
+         * <li><code>cosmosdb</code></li>
+         * <li><code>cosmosdb+extensions</code></li>
+         * <li><code>neptune</code></li>
+         * <li><code>neptune+extensions</code></li>
+         * <li><code>gremlin</code></li>
+         * <li><code>gremlin+extensions</code></li>
+         * </ul>
+         * </p>
+         *
+         *
+         * @param translatorType string definition
+         * @return translator
          */
         public Translator<T, P> build(String translatorType) {
             TranslatorFlavor flavor;
 
-            if ("cosmosdb".equals(translatorType)) {
+            if (translatorType.startsWith("cosmosdb")) {
                 flavor = TranslatorFlavor.cosmosDb();
-            } else if ("cosmosdb+extensions".equals(translatorType)) {
-                enableCypherExtensions();
-                flavor = TranslatorFlavor.cosmosDb();
-            } else if ("neptune".equals(translatorType)) {
+            } else if (translatorType.startsWith("neptune")) {
                 flavor = TranslatorFlavor.neptune();
                 inlineParameters();
                 enableMultipleLabels();
-            } else if ("neptune+extensions".equals(translatorType)) {
-                flavor = TranslatorFlavor.neptune();
-                inlineParameters();
-                enableMultipleLabels();
-                enableCypherExtensions();
-            } else if ("gremlin".equals(translatorType)) {
-                flavor = TranslatorFlavor.gremlinServer();
-            } else if ("gremlin+extensions".equals(translatorType)) {
-                enableCypherExtensions();
-                flavor = TranslatorFlavor.gremlinServer();
-            } else if ("".equals(translatorType)) {
+            } else if (translatorType.startsWith("gremlin")
+                || translatorType.startsWith("vanilla")
+                || translatorType.isEmpty()) {
                 flavor = TranslatorFlavor.gremlinServer();
             } else {
                 throw new IllegalArgumentException("Unknown translator type: " + translatorType);
+            }
+
+            if (translatorType.endsWith("+extensions")) {
+                enableCypherExtensions();
             }
 
             return build(flavor);
