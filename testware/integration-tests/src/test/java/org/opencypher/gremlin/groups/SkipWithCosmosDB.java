@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.groups;
 
+import org.opencypher.gremlin.queries.LiteralTest;
 import org.opencypher.gremlin.queries.SpecificsTest;
 
 /**
@@ -89,6 +90,26 @@ public interface SkipWithCosmosDB {
      *  @see SpecificsTest#choose()
      */
     interface Choose extends SkipWithCosmosDB {
+    }
+
+    /**
+     *  @see SpecificsTest#negativeRange()
+     */
+    interface NegativeRange extends SkipWithCosmosDB {
+    }
+
+    /**
+     *  @see SpecificsTest#signIsLost() ()
+     */
+    interface SignIsLost extends SkipWithCosmosDB {
+    }
+
+    /**
+     * `[:]` is not recognized as empty map
+     *
+     * @see LiteralTest#returnEmptyMap()
+     */
+    interface EmptyMap extends SkipWithCosmosDB {
     }
 
     /**

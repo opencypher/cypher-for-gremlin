@@ -33,6 +33,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.groups.SkipWithNeptune;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.groovy.StringTranslationUtils;
@@ -90,6 +91,7 @@ public class LiteralTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.SignIsLost.class)
     public void with() {
         String literals = literalMap.values().stream()
             .map(StringTranslationUtils::toLiteral)
@@ -105,6 +107,7 @@ public class LiteralTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.SignIsLost.class)
     public void unwind() {
         String literals = literalMap.values().stream()
             .map(StringTranslationUtils::toLiteral)
@@ -120,6 +123,7 @@ public class LiteralTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.SignIsLost.class)
     public void returnList() {
         String literals = literalMap.values().stream()
             .map(StringTranslationUtils::toLiteral)
@@ -134,6 +138,7 @@ public class LiteralTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.SignIsLost.class)
     public void returnAs() {
         String returnItems = literalMap.entrySet().stream()
             .map(e -> toLiteral(e.getValue()) + " AS " + e.getKey())
@@ -147,7 +152,7 @@ public class LiteralTest {
     }
 
     @Test
-    @Category(SkipWithNeptune.EmptyMap.class)
+    @Category({SkipWithNeptune.EmptyMap.class, SkipWithCosmosDB.EmptyMap.class})
     public void returnEmptyMap() {
         List<Map<String, Object>> results = submitAndGet(
             "RETURN {} AS map"

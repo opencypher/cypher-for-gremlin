@@ -288,4 +288,29 @@ public class SpecificsTest {
             .extracting("software")
             .containsExactly(true, false);
     }
+
+    @Test
+    @Category(SkipWithCosmosDB.NegativeRange.class)
+    public void negativeRange() throws Exception {
+
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit("g.inject(1).inject(2).inject(3).range(1, -1)").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly(2, 1);
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.SignIsLost.class)
+    public void signIsLost() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit("g.inject(-1000)").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly(-1000);
+    }
 }

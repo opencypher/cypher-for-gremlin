@@ -276,6 +276,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.IsNeqOnDifferentTypes.class)
     public void labelPredicateCount() throws Exception {
         String cypher = "MATCH (n)\n" +
             "RETURN (n:person) AS person, count(*) AS count";

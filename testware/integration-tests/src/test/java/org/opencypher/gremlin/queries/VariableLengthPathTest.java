@@ -70,6 +70,7 @@ public class VariableLengthPathTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void fixedLengthPath() throws Exception {
         String cypher = "MATCH (:person {name: 'josh'})-[r*1..1]->(s:software) " +
             "RETURN r, s.name AS software";
