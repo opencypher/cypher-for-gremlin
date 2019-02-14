@@ -199,6 +199,7 @@ public class MergeTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void vertexOn() throws Exception {
         String query = "MERGE (a:lbl {prop3: 'value'}) " +
             "ON MATCH SET a.action = 'on match' " +

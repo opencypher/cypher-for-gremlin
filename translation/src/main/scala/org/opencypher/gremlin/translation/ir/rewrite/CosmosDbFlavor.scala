@@ -17,7 +17,6 @@ package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.structure.Column
-import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
 import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
@@ -60,19 +59,10 @@ object CosmosDbFlavor extends GremlinRewriter {
   /**
     * g.inject(1).project('a').project('b').unfold().select(values).select('a') - not work
     * g.inject(1).project('a').project('b').select(values).unfold().select('a') - works
-    *
     */
   private def replaceSelectValues(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
       case Unfold :: SelectC(Column.values) :: rest => SelectC(Column.values) :: Unfold :: rest
-    })(steps)
-  }
-
-  //todo this ain't working
-  private def singlePropertyNotSupported(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
-    replace({
-      case PropertyVC(Cardinality.single, key, value) :: rest => PropertyV(key, value) :: rest
-      case PropertyTC(Cardinality.single, key, value) :: rest => PropertyT(key, value) :: rest
     })(steps)
   }
 
@@ -124,10 +114,13 @@ object CosmosDbFlavor extends GremlinRewriter {
         PropertyVC(single, "id", "" + value) :: rest
       case PropertyV("id", value) :: rest =>
         PropertyV("id", "" + value) :: rest
+      case PropertyT("id", Constant(value) :: Nil) :: rest =>
+        PropertyT("id", Constant("" + value) :: Nil) :: rest
+      case PropertyTC(single, "id", Constant(value) :: Nil) :: rest =>
+        PropertyTC(single, "id", Constant("" + value) :: Nil) :: rest
     })(steps)
   }
 
-  // g.V().constant(1).not(is(eq('a')))
   private def neqOnDiff(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
       case Is(Neq(value)) :: rest =>

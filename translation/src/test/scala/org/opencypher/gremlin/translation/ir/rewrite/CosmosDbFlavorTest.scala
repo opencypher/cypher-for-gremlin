@@ -79,7 +79,7 @@ class CosmosDbFlavorTest {
         __.repeat(__.sideEffect(__.loops().is(P.gte(1)).aggregate("  GENERATED1")))
           .until(__.loops().is(P.gt(3)))
       )
-      .adds(__.inject(objects(1, 2, 3): _*))
+      .adds(__.inject(objects(3, 2, 1): _*))
   }
 
   @Test
@@ -101,7 +101,7 @@ class CosmosDbFlavorTest {
                 .aggregate("  GENERATED1")))
           .until(__.loops().is(P.gt(5)))
       )
-      .adds(__.inject(objects(1, 3, 5): _*))
+      .adds(__.inject(objects(5, 3, 1): _*))
   }
 
   @Test

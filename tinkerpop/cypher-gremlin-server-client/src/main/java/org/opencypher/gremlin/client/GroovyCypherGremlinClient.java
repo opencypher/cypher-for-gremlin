@@ -58,14 +58,25 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
     @Override
     public CypherResultSet submit(String cypher, Map<String, ?> parameters) {
         Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
-        CypherAst ast = CypherAst.parse(cypher, normalizedParameters);
+        CypherAst ast;
+
+        try {
+            ast = CypherAst.parse(cypher, normalizedParameters);
+        } catch (Exception e) {
+            return exceptional(e);
+        }
 
         if (ast.getOptions().contains(EXPLAIN)) {
             return explain(ast);
         }
 
         Translator<String, GroovyPredicate> translator = translatorSupplier.get();
-        String gremlin = ast.buildTranslation(translator);
+        String gremlin;
+        try {
+            gremlin = ast.buildTranslation(translator);
+        } catch (Exception e) {
+            return exceptional(e);
+        }
 
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
 
@@ -73,7 +84,7 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
             List<Result> resultSet = client.submit(gremlin, normalizedParameters).all().get();
             return new CypherResultSet(resultSet.iterator(), returnNormalizer::normalize);
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            return exceptional(new RuntimeException(e));
         }
     }
 

@@ -17,88 +17,109 @@ package org.opencypher.gremlin.groups;
 
 import org.opencypher.gremlin.queries.LiteralTest;
 import org.opencypher.gremlin.queries.SpecificsTest;
+import org.opencypher.gremlin.translation.ir.rewrite.CosmosDbFlavor;
+import org.opencypher.gremlin.translation.ir.rewrite.CustomFunctionFallback;
 
 /**
  * Tests that are skipped because of Cosmos DB specifics. Refer to categories for more details.
  */
 public interface SkipWithCosmosDB {
     /**
+     * from() and to() modulators are not supported for path() step
+     *
+     * @see SpecificsTest#pathFromToNotSupported()
+     * @see CosmosDbFlavor#removeFromTo
      */
     interface PathFromToNotSupported extends SkipWithCosmosDB {
     }
 
     /**
+     * min() and max() on not existing values causes "is not a valid number" exception
+     *
+     * @see SpecificsTest#minMaxBugs()
      */
     interface MinMaxBugs extends SkipWithCosmosDB {
     }
 
     /**
+     * No <a href="http://tinkerpop.apache.org/docs/current/reference/#math-step">Math</a> Step
+     *
+     * @see SpecificsTest#noMath()
      */
     interface NoMath extends SkipWithCosmosDB {
     }
 
     /**
-     * by(__.choose(__.identity()).
-     *         option(13, __.constant('integer')).
-     *         option(3.14d, __.constant('float')).
-     *         option('bingo', __.constant('string')).
-     *         option(true, __.constant('boolean')).
-     *         option('  cypher.null', __.constant('null')).
-     *         option(['a'], __.constant('collection')).
-     *         option(none, __.constant('  cypher.null')))
+     * No <a href="http://tinkerpop.apache.org/docs/current/reference/#choose-step">none</a> token
+     *
+     * @see SpecificsTest#noNoneToken()
      */
     interface NoNoneToken extends SkipWithCosmosDB {
     }
 
     /**
+     * Response chunks truncated to 4096 bytes on Azure server side.
+     * Large responses are unparseable because of invalid JSON
+     *
+     * @see SpecificsTest#return100Elements()
      */
     interface Truncate4096 extends SkipWithCosmosDB {
     }
 
     /**
-     */
-    interface MaxRequest extends SkipWithCosmosDB {
-    }
-
-    /**
-     * g.inject(1).as('i').addV().property('value', select('i'))
+     * Traversal in property not supported
+     *
+     * @see SpecificsTest#traversalInProperty()
      */
     interface TraversalInProperty extends SkipWithCosmosDB {
     }
 
     /**
+     * No <a href="http://tinkerpop.apache.org/docs/current/reference/#loops-step">Loops</a> Step which is required for
+     * range implementation. Workaround is applied in rewriter {@link CosmosDbFlavor#rewriteRange}, which doesn't cover
+     * all cases.
+     *
+     * @see CosmosDbFlavor#rewriteRange
+     * @see SpecificsTest#loopsStep()
      */
-    interface RangeWithExpression extends SkipWithCosmosDB {
+    interface LoopsStepNotSupported extends SkipWithCosmosDB {
     }
 
     /**
-     * Inner traversals are not supported
-     * https://github.com/Azure/azure-documentdb-dotnet/issues/316
+     * Inner traversals are not <a href="https://github.com/Azure/azure-documentdb-dotnet/issues/316">supported</a>
+     *
+     * @see SpecificsTest#innerTraversals()
      */
     interface InnerTraversals extends SkipWithCosmosDB {
     }
 
     /**
-     - `g.inject(1).as('x').select('x')` returns `1`
-     - `g.inject(1).as('x').select('x').as('x').select('x')` returns `[1,1]`
-     - `g.inject(1).as('x').select('x').as('x').select('x').as('x').select('x')` returns `[1,1,[1,1]]`
+     * Inconsistent behaviour on realiasing items
+     *
+     * @see SpecificsTest#realiasingCreatesCollection()
      */
     interface RealiasingCreatesCollection extends SkipWithCosmosDB {
     }
 
     /**
-     *  @see SpecificsTest#choose()
+     * Inconsistent behaviour of <a href="http://tinkerpop.apache.org/docs/current/reference/#choose-step">choose step</a>
+     *
+     * @see SpecificsTest#choose()
      */
     interface Choose extends SkipWithCosmosDB {
     }
 
     /**
+     * Range with negative values has different behaviour with reference implementation
+     *
      *  @see SpecificsTest#negativeRange()
      */
     interface NegativeRange extends SkipWithCosmosDB {
     }
 
     /**
+     * Sign is lost on negative values
+     *
      *  @see SpecificsTest#signIsLost() ()
      */
     interface SignIsLost extends SkipWithCosmosDB {
@@ -113,21 +134,28 @@ public interface SkipWithCosmosDB {
     }
 
     /**
-     * g.inject(1).is(neq('a'))
+     * `neq` predicate does not work on different types
+     *
+     * @see SpecificsTest#neqOnDifferentTypes()
+     * @see CosmosDbFlavor#neqOnDiff
      */
     interface IsNeqOnDifferentTypes extends SkipWithCosmosDB {
     }
 
+    /**
+     * Inconsistent behaviour of <a href="http://tinkerpop.apache.org/docs/current/reference/#_values_step">values step</a>
+     *
+     * @see SpecificsTest#setAndGetEdgeProperty()
+     */
     interface ValuesDoesNotWorkInSomeCases extends SkipWithCosmosDB {
-
     }
 
     /**
-     * https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin
+     * Cypher for Gremlin uses workaround {@link CustomFunctionFallback} to
+     * <a href="https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin">throw error in Gremlin</a>
+     * Workaround is not applicable in Cosmos DB
      */
     interface NoKnownWayToThrowRuntimeException extends SkipWithCosmosDB {
 
     }
-
-
 }

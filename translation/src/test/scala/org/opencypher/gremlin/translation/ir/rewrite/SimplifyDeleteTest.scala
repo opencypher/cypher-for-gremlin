@@ -62,27 +62,8 @@ class SimplifyDeleteTest {
   @Test
   def detachDelete(): Unit = {
     assertThat(parse("MATCH (n) DETACH DELETE n"))
-      .withFlavor(flavor)
-      .rewritingWith(SimplifyDelete)
-      .removes(
-        __.sideEffect(__.limit(0).aggregate(DELETE))
-      )
-      .removes(
-        __.sideEffect(__.limit(0).aggregate(DETACH_DELETE))
-      )
-      .removes(
-        __.cap(DELETE)
-          .unfold()
-          .dedup()
-          .is(P.neq(Tokens.NULL))
-      )
-      .keeps(
-        __.cap(DETACH_DELETE)
-          .unfold()
-          .dedup()
-          .is(P.neq(Tokens.NULL))
-          .drop()
-      )
+      .withFlavor(flavor.extend(SimplifyDelete :: Nil))
+      .contains(__.V().drop())
   }
 
   @Test

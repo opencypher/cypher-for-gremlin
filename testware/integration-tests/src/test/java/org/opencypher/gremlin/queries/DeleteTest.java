@@ -176,6 +176,7 @@ public class DeleteTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void detachDeleteFromAList() throws Exception {
         List<Map<String, Object>> beforeDelete = submitAndGet(
             "MATCH (n) RETURN count(*)"

@@ -479,6 +479,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.LoopsStepNotSupported.class)
     public void returnRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "RETURN range(1, 5) AS r"

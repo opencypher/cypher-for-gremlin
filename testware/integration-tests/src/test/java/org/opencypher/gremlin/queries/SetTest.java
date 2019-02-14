@@ -104,6 +104,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void removeVertexProperty2() {
         submitAndGet("CREATE (n:A {property1: 'prop', property2: 'prop', property3: 'prop'})");
 
@@ -166,6 +167,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void setParameter() {
         submitAndGet("CREATE (n:person {loc: 'uk'})");
 
@@ -185,6 +187,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.class)
     public void addPropertiesWithMapParameter() {
         submitAndGet("CREATE (n:person {loc: 'uk'})");
 

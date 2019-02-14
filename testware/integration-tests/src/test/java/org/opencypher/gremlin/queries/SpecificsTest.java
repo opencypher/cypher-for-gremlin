@@ -274,6 +274,49 @@ public class SpecificsTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.PathFromToNotSupported.class)
+    public void pathFromToNotSupported() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit(
+            "g.inject(1).constant(2).as('start').constant(3).as('stop')." +
+                "path().from('start').to('stop').unfold()")
+            .all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly(2, 3);
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.MinMaxBugs.class)
+    public void minMaxBugs() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit(
+            "g.V().hasLabel('notExisting').min()")
+            .all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly(Double.NaN);
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.TraversalInProperty.class)
+    public void traversalInProperty() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit(
+            "g.addV().property('value', constant(1)).values('value')")
+            .all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly(1);
+    }
+
+    @Test
     @Category(SkipWithCosmosDB.Choose.class)
     public void choose() throws Exception {
 
@@ -287,6 +330,32 @@ public class SpecificsTest {
             .extracting(Result::getObject)
             .extracting("software")
             .containsExactly(true, false);
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.NoMath.class)
+    public void noMath() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit("g.V().inject(2).math('_ + 2')").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly(4.0);
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
+    public void noNoneToken() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit("g.addV().choose(constant(3))" +
+            ".option(2, __.constant('two'))" +
+            ".option(none, __.constant('default'))").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly("default");
     }
 
     @Test
@@ -312,5 +381,56 @@ public class SpecificsTest {
         assertThat(results)
             .extracting(Result::getObject)
             .containsExactly(-1000);
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.InnerTraversals.class)
+    public void innerTraversals() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit(" g.addV('new').V().label()").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly("new");
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.RealiasingCreatesCollection.class)
+    public void realiasingCreatesCollection() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        String one = client.submit("g.inject('a').as('x').select('x')").one().getString();
+        String two = client.submit("g.inject('a').as('x').select('x').as('x').select('x')").one().getString();
+        String three = client.submit("g.inject('a').as('x').select('x').as('x').select('x').as('x').select('x')").one().getString();
+
+        assertThat(one)
+            .isEqualTo(two)
+            .isEqualTo(three)
+            .isEqualTo("a");
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.IsNeqOnDifferentTypes.class)
+    public void neqOnDifferentTypes() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit("g.inject(1).is(neq('a'))").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly(1);
+    }
+
+    @Test
+    @Category(SkipWithCosmosDB.LoopsStepNotSupported.class)
+    public void loopsStep() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        List<Result> results = client.submit("g.addV('test').until(loops().is(lte(3))).repeat(identity()).label()").all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly("test");
     }
 }

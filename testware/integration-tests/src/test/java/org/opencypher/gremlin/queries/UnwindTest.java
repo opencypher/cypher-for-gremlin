@@ -86,7 +86,7 @@ public class UnwindTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.MaxRequest.class)
+    @Category(SkipWithCosmosDB.LoopsStepNotSupported.class)
     public void injectLargeRange() {
         List<Map<String, Object>> results = submitAndGet(
             "UNWIND range(10001, 20000) AS i " +

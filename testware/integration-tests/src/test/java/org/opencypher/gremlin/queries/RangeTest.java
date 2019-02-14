@@ -31,7 +31,7 @@ import org.opencypher.gremlin.groups.SkipWithJanusGraph;
 import org.opencypher.gremlin.groups.SkipWithNeptune;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
-@Category(SkipWithCosmosDB.RangeWithExpression.class)
+@Category(SkipWithCosmosDB.LoopsStepNotSupported.class)
 public class RangeTest {
 
     @ClassRule
