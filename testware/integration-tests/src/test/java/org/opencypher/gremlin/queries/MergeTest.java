@@ -27,6 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class MergeTest {
@@ -198,6 +199,7 @@ public class MergeTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void vertexOn() throws Exception {
         String query = "MERGE (a:lbl {prop3: 'value'}) " +
             "ON MATCH SET a.action = 'on match' " +
@@ -244,6 +246,7 @@ public class MergeTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.TraversalInProperty.class)
     public void withMerge() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH 42 AS i " +

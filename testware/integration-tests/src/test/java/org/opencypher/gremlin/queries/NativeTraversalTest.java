@@ -32,6 +32,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipExtensions;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -134,6 +135,7 @@ public class NativeTraversalTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.MinMaxBugs.class)
     public void nullOnMin() throws Exception {
         submitAndGet("MATCH (n) DETACH DELETE n");
 
@@ -222,6 +224,7 @@ public class NativeTraversalTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    @Category(SkipWithCosmosDB.MinMaxBugs.class)
     public void onePivotThreeAggregations() throws Exception {
         String[] columnNames = {"n.lastName", "c1", "c2", "c3"};
 
@@ -252,6 +255,7 @@ public class NativeTraversalTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    @Category(SkipWithCosmosDB.MinMaxBugs.class)
     public void threePivotsThreeAggregations() throws Exception {
         String[] columnNames = {"p1", "p2", "p3", "c1", "c2", "c3"};
 
@@ -379,6 +383,7 @@ public class NativeTraversalTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.IsNeqOnDifferentTypes.class)
     public void labelPredicate() throws Exception {
         String[] columnNames = {"isPerson", "count"};
         String cypher = "MATCH (n)\n" +

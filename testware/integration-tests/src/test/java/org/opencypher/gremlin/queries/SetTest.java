@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
 import org.opencypher.gremlin.groups.SkipExtensions;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.groups.SkipWithJanusGraph;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
@@ -103,6 +104,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void removeVertexProperty2() {
         submitAndGet("CREATE (n:A {property1: 'prop', property2: 'prop', property3: 'prop'})");
 
@@ -165,6 +167,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void setParameter() {
         submitAndGet("CREATE (n:person {loc: 'uk'})");
 
@@ -184,6 +187,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.class)
     public void addPropertiesWithMapParameter() {
         submitAndGet("CREATE (n:person {loc: 'uk'})");
 
@@ -218,6 +222,7 @@ public class SetTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.TraversalInProperty.class)
     public void setPropertyToAnExpression() {
         submitAndGet("CREATE (:A {bar: 2})");
         submitAndGet("CREATE (:B {bar: 3})");

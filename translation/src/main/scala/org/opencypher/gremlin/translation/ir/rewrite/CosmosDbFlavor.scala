@@ -16,7 +16,8 @@
 package org.opencypher.gremlin.translation.ir.rewrite
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
-import org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality
+import org.apache.tinkerpop.gremlin.structure.Column
+import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 
@@ -30,7 +31,11 @@ object CosmosDbFlavor extends GremlinRewriter {
       rewriteRange(_),
       rewriteChoose(_),
       rewriteSkip(_),
-      stringIds(_)
+      removeFromTo(_),
+      replaceSelectValues(_),
+      replaceSelectValues(_),
+      stringIds(_),
+      neqOnDiff(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -42,25 +47,50 @@ object CosmosDbFlavor extends GremlinRewriter {
     })(steps)
   }
 
+  private def removeFromTo(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Path :: From(_) :: To(_) :: rest       => Path :: rest
+      case Path :: From(_) :: rest                => Path :: rest
+      case SimplePath :: From(_) :: To(_) :: rest => SimplePath :: rest
+      case SimplePath :: From(_) :: rest          => SimplePath :: rest
+    })(steps)
+  }
+
+  /**
+    * g.inject(1).project('a').project('b').unfold().select(values).select('a') - not work
+    * g.inject(1).project('a').project('b').select(values).unfold().select('a') - works
+    */
+  private def replaceSelectValues(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Unfold :: SelectC(Column.values) :: rest => SelectC(Column.values) :: Unfold :: rest
+    })(steps)
+  }
+
   val rangeStepExpression = "\\(_ - [0-9]+\\) \\% ([0-9]+)".r
 
   private def rewriteRange(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    def range(aggregation: Seq[GremlinStep], untilTraversal: Seq[GremlinStep], rest: List[GremlinStep]) = {
+      (aggregation, untilTraversal) match {
+        case (Loops :: Is(Gte(start: Long)) :: Aggregate(_) :: Nil, Loops :: Is(Gt(end: Long)) :: Nil) =>
+          val range = (start until (end + 1)).reverse
+          Inject(range: _*) :: rest
+        case (
+            Loops :: Is(Gte(start: Long)) :: WhereT(Math(expr) :: Is(_) :: Nil) :: Aggregate(_) :: Nil,
+            Loops :: Is(Gt(end: Long)) :: Nil) =>
+          val step = expr match {
+            case rangeStepExpression(s) => s.toLong
+          }
+          val range = (start until (end + 1) by step).reverse
+          Inject(range: _*) :: rest
+        case _ => throw new IllegalArgumentException("Ranges with expressions are not supported in Cosmos Db")
+      }
+    }
+
     replace({
       case Repeat(SideEffect(aggregation) :: Nil) :: Until(untilTraversal) :: SelectK(_) :: rest =>
-        (aggregation, untilTraversal) match {
-          case (Loops :: Is(Gte(start: Long)) :: Aggregate(_) :: Nil, Loops :: Is(Gt(end: Long)) :: Nil) =>
-            val range = start until (end + 1)
-            Inject(range: _*) :: rest
-          case (
-              Loops :: Is(Gte(start: Long)) :: WhereT(Math(expr) :: Is(_) :: Nil) :: Aggregate(_) :: Nil,
-              Loops :: Is(Gt(end: Long)) :: Nil) =>
-            val step = expr match {
-              case rangeStepExpression(s) => s.toLong
-            }
-            val range = start until (end + 1) by step
-            Inject(range: _*) :: rest
-          case _ => throw new IllegalArgumentException("Ranges with expressions are not supported in Cosmos Db")
-        }
+        range(aggregation, untilTraversal, rest)
+      case Inject(Tokens.START) :: Repeat(SideEffect(aggregation) :: Nil) :: Until(untilTraversal) :: SelectK(_) :: rest =>
+        range(aggregation, untilTraversal, rest)
     })(steps)
   }
 
@@ -80,10 +110,21 @@ object CosmosDbFlavor extends GremlinRewriter {
 
   private def stringIds(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
-      case PropertyVC(Cardinality.single, "id", value) :: rest =>
-        PropertyVC(Cardinality.single, "id", "" + value) :: rest
-      case PropertyTC(Cardinality.single, "id", Constant(value) :: Nil) :: rest =>
-        PropertyTC(Cardinality.single, "id", Constant("" + value) :: Nil) :: rest
+      case PropertyVC(single, "id", value) :: rest =>
+        PropertyVC(single, "id", "" + value) :: rest
+      case PropertyV("id", value) :: rest =>
+        PropertyV("id", "" + value) :: rest
+      case PropertyT("id", Constant(value) :: Nil) :: rest =>
+        PropertyT("id", Constant("" + value) :: Nil) :: rest
+      case PropertyTC(single, "id", Constant(value) :: Nil) :: rest =>
+        PropertyTC(single, "id", Constant("" + value) :: Nil) :: rest
+    })(steps)
+  }
+
+  private def neqOnDiff(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Is(Neq(value)) :: rest =>
+        Not(Is(Eq(value)) :: Nil) :: rest
     })(steps)
   }
 }

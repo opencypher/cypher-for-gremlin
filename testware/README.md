@@ -21,4 +21,8 @@ To run tests on an external Gremlin Server use the `configPath` parameter, for e
 #### Run Integration Tests on AWS Neptune
 
 * Setup port forwarding or run inside VPC
-* Run `gradle :testware:integration-test-suites:suite --tests "org.opencypher.gremlin.suites.NeptuneSuite" -DconfigPath=/path/to/neptune-client.yaml -Dtranslate=neptune`  
+* Run `gradle :testware:integration-test-suites:suite --tests "org.opencypher.gremlin.suites.NeptuneSuite" -DconfigPath=/path/to/neptune-client.yaml -Dtranslate=neptune`
+
+#### Run Integration Tests on CosmosDB
+
+* Run `gradle :testware:integration-test-suites:suite --tests "org.opencypher.gremlin.suites.CosmosDBSuite" -DconfigPath=/path/to/cosmosdb-client.yaml -Dtranslate=cosmosdb`  

@@ -31,6 +31,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipExtensions;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 
 public class ListSliceTest {
@@ -64,6 +65,7 @@ public class ListSliceTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NegativeRange.class)
     public void listRangeImplicitEnd() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH [1, 2, 3] AS list " +

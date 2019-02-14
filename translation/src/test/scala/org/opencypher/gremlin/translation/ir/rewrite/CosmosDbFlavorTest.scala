@@ -54,6 +54,20 @@ class CosmosDbFlavorTest {
   }
 
   @Test
+  def edgeValues(): Unit = {
+    assertThat(parse("""
+        |MATCH ()-[r:REL]->()
+        |SET r.name = 'neo4j'
+        |RETURN r.name
+      """.stripMargin))
+      .withFlavor(flavor)
+      .rewritingWith(CosmosDbFlavor)
+      .removes(__.values("name"))
+      .adds(__.properties().hasKey("name").value())
+      .debug()
+  }
+
+  @Test
   def range(): Unit = {
     assertThat(parse("""
         |UNWIND range(1, 3) AS i
@@ -65,7 +79,7 @@ class CosmosDbFlavorTest {
         __.repeat(__.sideEffect(__.loops().is(P.gte(1)).aggregate("  GENERATED1")))
           .until(__.loops().is(P.gt(3)))
       )
-      .adds(__.inject(objects(1, 2, 3): _*))
+      .adds(__.inject(objects(3, 2, 1): _*))
   }
 
   @Test
@@ -87,7 +101,7 @@ class CosmosDbFlavorTest {
                 .aggregate("  GENERATED1")))
           .until(__.loops().is(P.gt(5)))
       )
-      .adds(__.inject(objects(1, 3, 5): _*))
+      .adds(__.inject(objects(5, 3, 1): _*))
   }
 
   @Test

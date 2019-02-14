@@ -25,6 +25,8 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.test.TestCommons.ModernGraph;
@@ -73,6 +75,7 @@ public class OptionalMatchTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Truncate4096.class)
     public void allPaths() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "OPTIONAL MATCH p = ()-->() RETURN p"
@@ -91,6 +94,7 @@ public class OptionalMatchTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void nullProperties() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (p:person) " +
@@ -103,6 +107,7 @@ public class OptionalMatchTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void nullVertices() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (p:person) " +
@@ -141,6 +146,7 @@ public class OptionalMatchTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Truncate4096.class)
     public void allNullMatches() {
         List<Map<String, Object>> results = submitAndGet(
             "OPTIONAL MATCH (a:NotThere) " +

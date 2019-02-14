@@ -29,6 +29,8 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.test.TestCommons.ModernGraph;
@@ -50,6 +52,7 @@ public class VariableLengthPathTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Truncate4096.class)
     public void variableLengthPath() throws Exception {
         String cypher = "MATCH (p:person {name: 'marko'}) " +
             "MATCH (p)-[r*1..2]->(s:software) " +
@@ -67,6 +70,7 @@ public class VariableLengthPathTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void fixedLengthPath() throws Exception {
         String cypher = "MATCH (:person {name: 'josh'})-[r*1..1]->(s:software) " +
             "RETURN r, s.name AS software";
@@ -206,6 +210,7 @@ public class VariableLengthPathTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Truncate4096.class)
     public void multipleVarLengthRelationships() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH p = (a {name: 'marko'})-[:knows*0..1]->(b)-[:created*0..1]->(c)\n" +

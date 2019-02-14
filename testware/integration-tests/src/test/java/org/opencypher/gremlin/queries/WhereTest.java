@@ -24,6 +24,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipExtensions;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -133,6 +134,7 @@ public class WhereTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.NoMath.class)
     public void pathLength() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH p = (n)-[r:knows]->(m) " +

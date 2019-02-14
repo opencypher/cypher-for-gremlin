@@ -38,6 +38,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipCollectionsInProperties;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 
@@ -329,6 +330,7 @@ public class CreateTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.TraversalInProperty.class)
     public void withCreate() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "WITH 42 AS i " +
@@ -342,6 +344,7 @@ public class CreateTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.TraversalInProperty.class)
     public void unwindCreate() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "UNWIND [3, 7, 11] AS i " +
@@ -355,6 +358,7 @@ public class CreateTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.TraversalInProperty.class)
     public void unwindRangeCreate() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "UNWIND range(3, 7) AS i " +
@@ -368,6 +372,7 @@ public class CreateTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.TraversalInProperty.class)
     public void unwindRangeStepCreate() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "UNWIND range(3, 12, 4) AS i " +

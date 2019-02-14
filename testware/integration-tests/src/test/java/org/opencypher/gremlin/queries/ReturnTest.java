@@ -31,6 +31,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipExtensions;
+import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.test.TestCommons.ModernGraph;
@@ -255,6 +256,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void labelPredicate() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n) " +
@@ -274,6 +276,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.IsNeqOnDifferentTypes.class)
     public void labelPredicateCount() throws Exception {
         String cypher = "MATCH (n)\n" +
             "RETURN (n:person) AS person, count(*) AS count";
@@ -404,6 +407,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.MinMaxBugs.class)
     public void returnMaxMin() throws Exception {
         String cypher = "MATCH (n:person) " +
             "RETURN max(n.age), min(n.age)";
@@ -419,6 +423,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.MinMaxBugs.class)
     public void returnNullMaxMin() throws Exception {
         String cypher = "MATCH (n:DoesNotExist) " +
             "RETURN max(n.age), min(n.age)";
@@ -434,6 +439,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.MinMaxBugs.class)
     public void returnMaxMinWithNull() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "UNWIND [1, null, 3] AS i " +
@@ -457,6 +463,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.Choose.class)
     public void returnCoalesce() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (a) " +
@@ -472,6 +479,7 @@ public class ReturnTest {
     }
 
     @Test
+    @Category(SkipWithCosmosDB.LoopsStepNotSupported.class)
     public void returnRange() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "RETURN range(1, 5) AS r"
