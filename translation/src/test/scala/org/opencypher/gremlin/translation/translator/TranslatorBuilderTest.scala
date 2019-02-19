@@ -53,7 +53,7 @@ class TranslatorBuilderTest {
 
   @Test
   def cosmosDbExtensions(): Unit = {
-    val dslBuilder = createBuilder.build("cosmosdb+extensions")
+    val dslBuilder = createBuilder.build("cosmosdb+cfog_server_extensions")
 
     val steps = parse("MATCH (n) RETURN toupper(n.name)")
       .buildTranslation(dslBuilder)
@@ -92,7 +92,7 @@ class TranslatorBuilderTest {
 
   @Test
   def neptuneExtensions(): Unit = {
-    val dslBuilder = createBuilder.build("neptune+extensions")
+    val dslBuilder = createBuilder.build("neptune+cfog_server_extensions")
 
     val steps = parse("MATCH (n) WHERE toupper(n.age)=$age RETURN count(n)", Map("age" -> 25).asJava)
       .buildTranslation(dslBuilder)
@@ -184,7 +184,7 @@ class TranslatorBuilderTest {
 
   @Test
   def gremlinExtensions(): Unit = {
-    val dslBuilder = createBuilder.build("gremlin+extensions")
+    val dslBuilder = createBuilder.build("gremlin+cfog_server_extensions")
 
     val steps = parse("MATCH (n) RETURN toupper(n.name)")
       .buildTranslation(dslBuilder)

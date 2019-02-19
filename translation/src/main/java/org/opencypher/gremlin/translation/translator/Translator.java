@@ -304,14 +304,13 @@ public final class Translator<T, P> {
          * <p>Valid parameters are:
          * <ul>
          * <li><code>cosmosdb</code></li>
-         * <li><code>cosmosdb+extensions</code></li>
+         * <li><code>cosmosdb+cfog_server_extensions</code></li>
          * <li><code>neptune</code></li>
-         * <li><code>neptune+extensions</code></li>
+         * <li><code>neptune+cfog_server_extensions</code></li>
          * <li><code>gremlin</code></li>
-         * <li><code>gremlin+extensions</code></li>
+         * <li><code>gremlin+cfog_server_extensions</code></li>
          * </ul>
          * </p>
-         *
          *
          * @param translatorType string definition
          * @return translator
@@ -333,7 +332,7 @@ public final class Translator<T, P> {
                 throw new IllegalArgumentException("Unknown translator type: " + translatorType);
             }
 
-            if (translatorType.endsWith("+extensions")) {
+            if (translatorType.endsWith("+cfog_server_extensions")) {
                 enableCypherExtensions();
             }
 

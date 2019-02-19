@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.remote.RemoteConnection;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -31,6 +32,12 @@ import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
 
+/**
+ * A {@link TraversalSource} implementation that spawns {@link CypherTraversalSource} instances.
+ *
+ * CypherTraversalSource has {@link #cypher(String)} step that allows to start traversal with Cypher query (which will be
+ * translated to Gremlin) then continue with other Gremlin steps
+ */
 public class CypherTraversalSource extends GraphTraversalSource {
     public CypherTraversalSource(Graph graph, TraversalStrategies traversalStrategies) {
         super(graph, traversalStrategies);
@@ -40,18 +47,48 @@ public class CypherTraversalSource extends GraphTraversalSource {
         super(graph);
     }
 
+    /**
+     * Translate Cypher query to Gremlin and get the result set as a {@link GraphTraversal}.
+     *
+     * @param cypher the Cypher query to execute
+     * @return a fluent Gremlin traversal
+     */
     public GraphTraversal<Map<String, Object>, Map<String, Object>> cypher(final String cypher) {
         return cypher(cypher, Collections.emptyMap(), "");
     }
 
+    /**
+     * Translate Cypher query to Gremlin with flavor and get the result set as a {@link GraphTraversal}.
+     *
+     * @param cypher the Cypher query to execute
+     * @param flavor flavor of translation
+     * @return a fluent Gremlin traversal
+     * @see Translator.FlavorBuilder#build(java.lang.String)
+     */
     public GraphTraversal<Map<String, Object>, Map<String, Object>> cypher(final String cypher, String flavor) {
         return cypher(cypher, Collections.emptyMap(), flavor);
     }
 
+    /**
+     * Translate Cypher query with provided parameters and get the result set as a {@link GraphTraversal}.
+     *
+     * @param cypher the Cypher query to execute
+     * @param params the parameters of the Cypher query
+     * @return a fluent Gremlin traversal
+     */
     public GraphTraversal<Map<String, Object>, Map<String, Object>> cypher(final String cypher, final Map<String, Object> params) {
         return cypher(cypher, params, "");
     }
 
+    /**
+     * Translate Cypher query to Gremlin with flavor and provided parameters and get the result set as a {@link GraphTraversal}.
+     *
+     * @param cypher the Cypher query to execute
+     * @param params the parameters of the Cypher query
+     * @param flavor flavor of translation
+     * @return a fluent Gremlin traversal
+     * @see Translator.FlavorBuilder#build(java.lang.String)     *
+     */
     @SuppressWarnings("unchecked")
     public GraphTraversal<Map<String, Object>, Map<String, Object>> cypher(final String cypher, final Map<String, Object> params, String flavor) {
         DefaultGraphTraversal g = new DefaultGraphTraversal(this.clone());
@@ -68,16 +105,25 @@ public class CypherTraversalSource extends GraphTraversalSource {
         return traversal;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CypherTraversalSource withRemote(final Configuration conf) {
         return (CypherTraversalSource) super.withRemote(conf);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CypherTraversalSource withRemote(final String configFile) throws Exception {
         return (CypherTraversalSource) super.withRemote(configFile);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CypherTraversalSource withRemote(final RemoteConnection connection) {
         return (CypherTraversalSource) super.withRemote(connection);

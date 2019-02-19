@@ -119,6 +119,41 @@ gremlin> :plugin use opencypher.gremlin
 gremlin> :remote connect opencypher.gremlin conf/remote-objects.yaml translate cosmosdb
 ==>Configured <instance>.graphs.azure.com/<ip>:<port>
  ```
+ 
+### Combining Cypher and Gremlin
+
+Using [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
+its possible to combine Cypher in Gremlin in single query. It has `cypher` step that allows to start traversal with Cypher 
+query (which will be translated to Gremlin) then continue traversal with other Gremlin steps. Note that `cypher` step returns list of maps, corresponding to rows and columns.
+To continue traversal with other Gremlin steps, use [select step](http://tinkerpop.apache.org/docs/current/reference/#select-step).
+
+```
+gremlin> :plugin use opencypher.gremlin
+==>opencypher.gremlin activated
+==>cyphertraversalsource[emptygraph[empty], standard]
+gremlin> g.cypher('MATCH (p:person) RETURN p.name AS name')
+==>[name:marko]
+==>[name:vadas]
+==>[name:josh]
+==>[name:peter]
+```
+
+This approach can be used for remote databases using [withRemote](http://tinkerpop.apache.org/docs/current/reference/#connecting-gremlin-server)
+Translation could be adapted for specific Gremlin implementation by passing [Flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors)
+
+```
+gremlin> :plugin use opencypher.gremlin
+==>opencypher.gremlin activated
+gremlin> g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('remote-graph.properties')"
+==>cyphertraversalsource[emptygraph[empty], standard]
+gremlin> g.cypher('MATCH (p:person) RETURN p.name AS name', 'cosmosdb')
+==>[name:marko]
+==>[name:vadas]
+==>[name:josh]
+==>[name:peter]
+```
+
+Note that Cypher query may return null values, represented by [string](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).
 
 ## Troubleshooting
 
