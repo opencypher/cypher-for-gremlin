@@ -28,13 +28,16 @@ import java.util.stream.Stream;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
+import org.opencypher.gremlin.client.CypherTraversalSource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
@@ -173,6 +176,50 @@ public class CypherGremlinServerClientSnippets {
         assertThat(results)
             .extracting("p.name")
             .containsExactly("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
+    public void cypherTraversalSource() {
+        TinkerGraph graph = TinkerFactory.createModern();
+
+        // freshReadmeSnippet: cypherTraversalSource
+        CypherTraversalSource g = graph.traversal(CypherTraversalSource.class);
+
+        GraphTraversal<Map<String, Object>, String> query = g
+            .cypher("MATCH (n) RETURN n")
+            .select("n")
+            .outE()
+            .label()
+            .dedup();
+        // freshReadmeSnippet: cypherTraversalSource
+
+        List<String> results = query.toList();
+
+        assertThat(results)
+            .containsExactlyInAnyOrder("knows", "created");
+    }
+
+    @Test
+    public void cypherTraversalSourceWithRemote() throws Throwable {
+        String PATH_TO_REMOTE_PROPERTIES = gremlinServer.driverRemoteConfiguration();
+
+        // freshReadmeSnippet: cypherTraversalWithRemote
+        CypherTraversalSource g = EmptyGraph.instance()
+            .traversal(CypherTraversalSource.class)
+            .withRemote(PATH_TO_REMOTE_PROPERTIES);
+
+        GraphTraversal<Map<String, Object>, String> traversal = g
+            .cypher("MATCH (n) RETURN n", "cosmosdb")
+            .select("n")
+            .outE()
+            .label()
+            .dedup();
+        // freshReadmeSnippet: cypherTraversalWithRemote
+
+        List<String> results = traversal.toList();
+
+        assertThat(results)
+            .containsExactlyInAnyOrder("created", "knows");
     }
 
 

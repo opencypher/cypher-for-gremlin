@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.translator;
 
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
@@ -101,6 +102,15 @@ public final class Translator<T, P> {
      */
     public boolean isEnabled(TranslatorFeature feature) {
         return features.contains(feature);
+    }
+
+    /**
+     * Returns set of translator features
+     *
+     * @return set of {@link TranslatorFeature}
+     */
+    public Set<TranslatorFeature> features() {
+        return Collections.unmodifiableSet(features);
     }
 
     /**
@@ -268,7 +278,7 @@ public final class Translator<T, P> {
          * @return translator
          */
         public Translator<T, P> build() {
-            return build(null);
+            return build((TranslatorFlavor) null);
         }
 
         /**
@@ -285,6 +295,53 @@ public final class Translator<T, P> {
                 features,
                 getFlavor(flavor, features)
             );
+        }
+
+        /**
+         * <p>Builds a {@link Translator} from string definition. Recommended usage is for parsing user input. Consider
+         * using builder API for all other cases.</p>
+         *
+         * <p>Valid parameters are:
+         * <ul>
+         * <li><code>cosmosdb</code></li>
+         * <li><code>cosmosdb+cfog_server_extensions</code></li>
+         * <li><code>neptune</code></li>
+         * <li><code>neptune+cfog_server_extensions</code></li>
+         * <li><code>gremlin</code></li>
+         * <li><code>gremlin+cfog_server_extensions</code></li>
+         * </ul>
+         * </p>
+         *
+         * @param translatorType string definition
+         * @return translator
+         */
+        public Translator<T, P> build(String translatorType) {
+            TranslatorFlavor flavor;
+
+            if (translatorType.startsWith("cosmosdb")) {
+                flavor = TranslatorFlavor.cosmosDb();
+            } else if (translatorType.startsWith("neptune")) {
+                flavor = TranslatorFlavor.neptune();
+                inlineParameters();
+                enableMultipleLabels();
+            } else if (translatorType.startsWith("gremlin")
+                || translatorType.startsWith("vanilla")
+                || translatorType.isEmpty()) {
+                flavor = TranslatorFlavor.gremlinServer();
+            } else {
+                throw new IllegalArgumentException("Unknown translator type: " + translatorType);
+            }
+
+            if (translatorType.endsWith("+cfog_server_extensions")) {
+                enableCypherExtensions();
+            }
+
+            return build(flavor);
+        }
+
+        protected FlavorBuilder<T, P> inlineParameters() {
+            bindings = new TraversalGremlinBindings();
+            return this;
         }
 
         private TranslatorFlavor getFlavor(TranslatorFlavor flavor, Set<TranslatorFeature> features) {
@@ -313,8 +370,7 @@ public final class Translator<T, P> {
          * @return builder for translator
          */
         public FlavorBuilder<T, P> inlineParameters() {
-            bindings = new TraversalGremlinBindings();
-            return this;
+            return super.inlineParameters();
         }
     }
 }

@@ -4,7 +4,7 @@ By default, tests are executed on an embedded TinkerGraph with Gremlin Server Cy
 
 To run tests with different client configurations use the `translate` parameter, for example:
 
-    ./gradlew :testware:integration-tests:build -Dtranslate=gremlin
+    ./gradlew :testware:integration-tests:build -Dtranslate=gremlin+cfog_server_extensions
     
 To run tests on an external Gremlin Server use the `configPath` parameter, for example:    
     

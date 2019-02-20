@@ -15,13 +15,10 @@
  */
 package org.opencypher.gremlin.console;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opencypher.gremlin.console.jsr223.CypherGremlinPlugin.NAME;
 
-import com.google.common.io.Files;
-import java.io.File;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.Before;
@@ -29,7 +26,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
-import org.junit.rules.TemporaryFolder;
 import org.opencypher.gremlin.rules.GremlinConsoleExternalResource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
@@ -59,8 +55,7 @@ public class GremlinConsoleTest {
     @Rule
     public final SystemOutRule systemOut = new SystemOutRule().enableLog();
 
-    @Rule
-    public final TemporaryFolder tempFolder = new TemporaryFolder();
+
 
     @Before
     public void before() {
@@ -79,7 +74,7 @@ public class GremlinConsoleTest {
         String usePlugin = eval(":plugin use " + NAME);
         assertThat(usePlugin).contains("==>" + NAME + " activated");
 
-        String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration());
+        String remoteConnect = eval(":remote connect " + NAME + " " + server.remoteConfiguration());
         assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
 
         String queryResult = eval(":> " + PERSON_NAMES_QUERY);
@@ -94,7 +89,7 @@ public class GremlinConsoleTest {
         String usePlugin = eval(":plugin use " + NAME);
         assertThat(usePlugin).contains("==>" + NAME + " activated");
 
-        String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration() + " translate");
+        String remoteConnect = eval(":remote connect " + NAME + " " + server.remoteConfiguration() + " translate");
         assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
 
         String queryResult = eval(":> " + PERSON_NAMES_QUERY);
@@ -108,7 +103,7 @@ public class GremlinConsoleTest {
         String usePlugin = eval(":plugin use " + NAME);
         assertThat(usePlugin).contains("==>" + NAME + " activated");
 
-        String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration());
+        String remoteConnect = eval(":remote connect " + NAME + " " + server.remoteConfiguration());
         assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
 
         String remoteConsole = eval(":remote console");
@@ -130,7 +125,7 @@ public class GremlinConsoleTest {
         assertThat(usePlugin)
             .contains("==>" + NAME + " activated");
 
-        String remoteConnect = eval(":remote connect " + NAME + " " + remoteConfiguration());
+        String remoteConnect = eval(":remote connect " + NAME + " " + server.remoteConfiguration());
         assertThat(remoteConnect)
             .contains("==>Configured localhost/127.0.0.1:" + server.getPort());
 
@@ -149,6 +144,36 @@ public class GremlinConsoleTest {
         String personGraphResult = eval(":> MATCH (p:person) RETURN p.name AS name");
         assertThat(personGraphResult)
             .contains(PERSON_NAMES_RESULT);
+    }
+
+    @Test
+    public void remoteCypherTraversalSource() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval("g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('" + server.driverRemoteConfiguration() + "')");
+        assertThat(remoteConnect).contains("==>cyphertraversalsource[emptygraph[empty], standard]");
+
+        String queryResult = eval("g.cypher('" + PERSON_NAMES_QUERY + "')");
+        assertThat(queryResult).contains(PERSON_NAMES_RESULT);
+    }
+
+    /**
+     * @see org.opencypher.gremlin.translation.ir.rewrite.CosmosDbFlavor#rewriteValues
+     */
+    @Test
+    public void remoteCypherTraversalSourceFlavor() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval("g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('" + server.driverRemoteConfiguration() + "')");
+        assertThat(remoteConnect).contains("==>cyphertraversalsource[emptygraph[empty], standard]");
+
+        String queryResult = eval("g.cypher('" + PERSON_NAMES_QUERY + "', 'cosmosdb')");
+
+        assertThat(queryResult)
+            .contains("properties(), hasKey(name)")
+            .doesNotContain("[values(name)]");
     }
 
     private void waitForPrompt() {
@@ -171,10 +196,4 @@ public class GremlinConsoleTest {
             .replaceAll("\u001B\\[m", "");
     }
 
-    private String remoteConfiguration() throws Exception {
-        File file = tempFolder.newFile("local-gremlin-server.yaml");
-        String configuration = "hosts: [localhost]\nport: " + server.getPort() + "\n";
-        Files.asCharSink(file, UTF_8).write(configuration);
-        return file.getAbsolutePath();
-    }
 }

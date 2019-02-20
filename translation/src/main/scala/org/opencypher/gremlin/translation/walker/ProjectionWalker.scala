@@ -20,6 +20,7 @@ import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
+import org.opencypher.gremlin.translation.translator.TranslatorFeature.RETURN_GREMLIN_ELEMENTS
 import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
@@ -255,7 +256,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         case _                   => false
     })
 
-    if (needsFinalization) {
+    if (needsFinalization && !context.dsl.isEnabled(RETURN_GREMLIN_ELEMENTS)) {
       g.project(aliasToExpression.map(_._1): _*)
       for ((alias, expression) <- aliasToExpression) {
         g.by(finalizeValue(__.select(alias), alias, expression))

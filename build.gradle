@@ -256,7 +256,7 @@ project(':testware:integration-tests') {
     }
 
     task('testGremlinGroovyTranslation', type: Test) {
-        systemProperty 'translate', 'gremlin'
+        systemProperty 'translate', 'gremlin+cfog_server_extensions'
 
         if (project.hasProperty('ci')) {
             testLogging.showStandardStreams = true
@@ -272,7 +272,7 @@ project(':testware:integration-tests') {
     check.dependsOn testGremlinGroovyTranslation
 
     task('testBytecodeTranslation', type: Test) {
-        systemProperty 'translate', 'bytecode'
+        systemProperty 'translate', 'bytecode+cfog_server_extensions'
 
         if (project.hasProperty('ci')) {
             testLogging.showStandardStreams = true

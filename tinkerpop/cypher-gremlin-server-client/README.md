@@ -118,3 +118,46 @@ Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12
 ## Neo4j driver-like API
 
 If you want to use a Neo4j driver-like API, take a look at the [Cypher Gremlin Neo4j Driver](../cypher-gremlin-neo4j-driver).
+
+## Cypher Traversal Source
+
+With [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
+its possible to combine Cypher and Gremlin in single query. Traversal can start with `cypher` step that allows to run Cypher 
+query (which will be translated to Gremlin) then continue traversal using other Gremlin steps. Note that `cypher` step returns list of maps, corresponding to rows and named columns.
+To continue traversal with other Gremlin steps, use [select step](http://tinkerpop.apache.org/docs/current/reference/#select-step):
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#cypherTraversalSource) -->
+```java
+CypherTraversalSource g = graph.traversal(CypherTraversalSource.class);
+
+GraphTraversal<Map<String, Object>, String> query = g
+    .cypher("MATCH (n) RETURN n")
+    .select("n")
+    .outE()
+    .label()
+    .dedup();
+```
+
+This approach can be used for remote databases using [withRemote](http://tinkerpop.apache.org/docs/current/reference/#connecting-gremlin-server).
+Translation could be adapted for specific Gremlin implementation by passing [Flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors)
+or enabling [Cypher for Gremlin extensions](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#cypher-extensions):
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#cypherTraversalWithRemote) -->
+```java
+CypherTraversalSource g = EmptyGraph.instance()
+    .traversal(CypherTraversalSource.class)
+    .withRemote(PATH_TO_REMOTE_PROPERTIES);
+
+GraphTraversal<Map<String, Object>, String> traversal = g
+    .cypher("MATCH (n) RETURN n", "cosmosdb")
+    .select("n")
+    .outE()
+    .label()
+    .dedup();
+```
+
+Note that Cypher query may return null values, represented by [string constant](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).
+
+ 
+
+
