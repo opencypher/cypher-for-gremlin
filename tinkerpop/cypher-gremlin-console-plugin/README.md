@@ -122,24 +122,26 @@ gremlin> :remote connect opencypher.gremlin conf/remote-objects.yaml translate c
  
 ### Combining Cypher and Gremlin
 
-Using [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
-its possible to combine Cypher in Gremlin in single query. It has `cypher` step that allows to start traversal with Cypher 
-query (which will be translated to Gremlin) then continue traversal with other Gremlin steps. Note that `cypher` step returns list of maps, corresponding to rows and columns.
-To continue traversal with other Gremlin steps, use [select step](http://tinkerpop.apache.org/docs/current/reference/#select-step).
+With [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
+its possible to combine Cypher and Gremlin in single query. Traversal can start with `cypher` step that allows to run Cypher 
+query (which will be translated to Gremlin) then continue traversal using other Gremlin steps. Note that `cypher` step returns list of maps, corresponding to rows and named columns.
+To continue traversal with other Gremlin steps, use [select step](http://tinkerpop.apache.org/docs/current/reference/#select-step):
 
 ```
 gremlin> :plugin use opencypher.gremlin
 ==>opencypher.gremlin activated
-==>cyphertraversalsource[emptygraph[empty], standard]
-gremlin> g.cypher('MATCH (p:person) RETURN p.name AS name')
-==>[name:marko]
-==>[name:vadas]
-==>[name:josh]
-==>[name:peter]
+gremlin> graph = TinkerFactory.createModern();
+==>tinkergraph[vertices:6 edges:6]
+gremlin> g = graph.traversal(CypherTraversalSource.class)
+==>cyphertraversalsource[tinkergraph[vertices:6 edges:6], standard]
+gremlin> g.cypher('MATCH (p:person) RETURN p').select("p").outE().label().dedup()
+==>created
+==>knows
 ```
 
-This approach can be used for remote databases using [withRemote](http://tinkerpop.apache.org/docs/current/reference/#connecting-gremlin-server)
+This approach can be used for remote databases using [withRemote](http://tinkerpop.apache.org/docs/current/reference/#connecting-gremlin-server).
 Translation could be adapted for specific Gremlin implementation by passing [Flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors)
+or enabling [Cypher for Gremlin extensions](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#cypher-extensions):
 
 ```
 gremlin> :plugin use opencypher.gremlin
@@ -153,7 +155,7 @@ gremlin> g.cypher('MATCH (p:person) RETURN p.name AS name', 'cosmosdb')
 ==>[name:peter]
 ```
 
-Note that Cypher query may return null values, represented by [string](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).
+Note that Cypher query may return null values, represented by [string constant](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).   
 
 ## Troubleshooting
 

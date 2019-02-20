@@ -203,7 +203,7 @@ public class CypherGremlinServerClientSnippets {
     public void cypherTraversalSourceWithRemote() throws Throwable {
         String PATH_TO_REMOTE_PROPERTIES = gremlinServer.driverRemoteConfiguration();
 
-        // freshReadmeSnippet: cypherTraversalSourceWithRemote
+        // freshReadmeSnippet: cypherTraversalWithRemote
         CypherTraversalSource g = EmptyGraph.instance()
             .traversal(CypherTraversalSource.class)
             .withRemote(PATH_TO_REMOTE_PROPERTIES);
@@ -214,7 +214,7 @@ public class CypherGremlinServerClientSnippets {
             .outE()
             .label()
             .dedup();
-        // freshReadmeSnippet: cypherTraversalSourceWithRemote
+        // freshReadmeSnippet: cypherTraversalWithRemote
 
         List<String> results = traversal.toList();
 
