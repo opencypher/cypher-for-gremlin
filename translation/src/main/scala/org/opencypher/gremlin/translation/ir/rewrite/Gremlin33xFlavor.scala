@@ -15,29 +15,37 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.WithOptions
 import org.opencypher.gremlin.translation.ir.TraversalHelper._
 import org.opencypher.gremlin.translation.ir.model._
 import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
 
 /**
-  * todo
+  * This is a set of rewrites to adapt the translation to TinkerPop 3.3.x.
   */
-object TinkerPop33xFlavor extends GremlinRewriter {
+object Gremlin33xFlavor extends GremlinRewriter {
   override def apply(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     Seq(
-      rewiriteOrder(_)
+      rewriteOrder(_),
+      rewriteValueMap(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
   }
 
-  private def rewiriteOrder(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+  private def rewriteOrder(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
     replace({
       case By(traversal, Some(org.apache.tinkerpop.gremlin.process.traversal.Order.asc)) :: rest =>
         By(traversal, Some(DeprecatedOrderAccessor.incr)) :: rest
       case By(traversal, Some(org.apache.tinkerpop.gremlin.process.traversal.Order.desc)) :: rest =>
         By(traversal, Some(DeprecatedOrderAccessor.decr)) :: rest
+    })(steps)
+  }
 
+  private def rewriteValueMap(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case ValueMap :: WithK(WithOptions.tokens) :: rest =>
+        ValueMap(true) :: rest
     })(steps)
   }
 }

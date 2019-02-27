@@ -17,8 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Scope
 import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalOptionParent.Pick
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.WithOptions.{indexer, map}
-import org.apache.tinkerpop.gremlin.structure.Column.{keys, values}
+import org.apache.tinkerpop.gremlin.structure.Column.keys
 import org.apache.tinkerpop.gremlin.structure.Vertex
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
@@ -210,18 +209,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
             walkLocal(expr, maybeAlias)
               .flatMap(emptyToNull(rangeT, context))
           case _ =>
-            val from = expressionValue(fromIdx, context)
-            val to = expressionValue(toIdx, context)
-            walkLocal(expr, maybeAlias)
-              .index()
-              .`with`(indexer, map)
-              .local(
-                __.unfold()
-                  .where(
-                    __.select(keys).is(p.between(from, to))
-                  )
-                  .select(values)
-                  .fold())
+            asList(expr, fromIdx, toIdx).map(CustomFunction.cypherListSlice())
         }
 
       case FunctionInvocation(_, FunctionName(fnName), distinct, args) =>

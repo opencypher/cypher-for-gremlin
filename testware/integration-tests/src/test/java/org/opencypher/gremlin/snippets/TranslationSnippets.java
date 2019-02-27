@@ -73,6 +73,19 @@ public class TranslationSnippets {
     }
 
     @Test
+    public void translator33x() throws Exception {
+        // freshReadmeSnippet: translator33x
+        Translator<String, GroovyPredicate> translator = Translator.builder()
+            .gremlinGroovy()
+            .build(TranslatorFlavor.gremlinServer33x());
+        // freshReadmeSnippet: translator33x
+
+        translator.steps().V();
+        String gremlin = translator.translate();
+        assertThat(gremlin).isEqualTo("g.V()");
+    }
+
+    @Test
     public void translatorNeptune() throws Exception {
         // freshReadmeSnippet: neptune
         Translator<String, GroovyPredicate> translator = Translator.builder()

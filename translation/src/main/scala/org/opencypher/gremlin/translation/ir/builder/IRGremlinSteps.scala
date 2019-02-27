@@ -482,6 +482,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def sum(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += SumS(scope)
+    this
+  }
+
   override def tail(scope: Scope, limit: Long): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Tail(scope, limit)
     this
@@ -542,6 +547,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
 
   override def where(predicate: GremlinPredicate): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += WhereP(predicate)
+    this
+  }
+
+  override def `with`(key: String): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += WithK(key)
     this
   }
 

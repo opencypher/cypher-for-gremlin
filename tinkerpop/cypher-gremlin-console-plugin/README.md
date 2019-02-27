@@ -86,7 +86,8 @@ You can also download a pre-configured Gremlin Console distribution from the [re
      ==>Configured localhost/127.0.0.1:8182
      ```
 
-     Where flavor is one of: `gremlin` (default), `neptune`, or `cosmosdb`.
+     Where [flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors) is one of:
+     `gremlin` (default), `gremlin33x` (for Gremlin Servers with TinkerPop <3.4.0), `neptune`, or `cosmosdb`.
      This enables Cypher to Gremlin translation in the Console plugin when submitting queries.
 
 1. Submit Cypher queries using the `:>` command:

@@ -551,6 +551,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> sum(Scope scope) {
+        bytecode.addStep(Symbols.sum, scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> tail(Scope scope, long limit) {
         bytecode.addStep(Symbols.tail, scope, limit);
         return this;
@@ -625,6 +631,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     @Override
     public GremlinSteps<Bytecode, P> with(String name, Object value) {
         bytecode.addStep(Symbols.with, name, value);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<Bytecode, P> with(String key) {
+        bytecode.addStep(Symbols.with, key);
         return this;
     }
 

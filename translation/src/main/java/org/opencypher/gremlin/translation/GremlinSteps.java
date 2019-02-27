@@ -222,6 +222,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> sum();
 
+    GremlinSteps<T, P> sum(Scope scope);
+
     GremlinSteps<T, P> tail(Scope scope, long limit);
 
     GremlinSteps<T, P> times(int maxLoops);
@@ -243,10 +245,11 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> values(String... propertyKeys);
 
-
     GremlinSteps<T, P> where(GremlinSteps<T, P> whereTraversal);
 
     GremlinSteps<T, P> where(P predicate);
+
+    GremlinSteps<T, P> with(String key);
 
     GremlinSteps<T, P> with(String name, Object value);
 }

@@ -20,7 +20,7 @@ import org.opencypher.gremlin.translation.ir.model._
 
 /**
   * This post-condition verifies that custom functions are not used.
-  * Such translation will not work in environments without the Cypher plugin.
+  * Such translation will not work in environments w<ithout the Cypher plugin.
   */
 object NoCustomFunctions extends GremlinPostCondition {
   override def apply(steps: Seq[GremlinStep]): Option[String] = {
@@ -41,17 +41,17 @@ object NoCustomFunctions extends GremlinPostCondition {
     })(steps)
 
     val predicates = extract({
+      case ChooseP2(predicate, _) :: _    => predicate
       case ChooseP3(predicate, _, _) :: _ => predicate
       case HasP(_, predicate) :: _        => predicate
       case Is(predicate) :: _             => predicate
       case WhereP(predicate) :: _         => predicate
-    })(steps)
-      .flatMap({
-        case _: IsNode         => Some("cypherIsNode")
-        case _: IsString       => Some("cypherIsString")
-        case _: IsRelationship => Some("cypherIsRelationship")
-        case _                 => None
-      })
+    })(steps).flatMap({
+      case _: IsNode         => Some("cypherIsNode")
+      case _: IsString       => Some("cypherIsString")
+      case _: IsRelationship => Some("cypherIsRelationship")
+      case _                 => None
+    })
 
     functions ++ predicates
   }

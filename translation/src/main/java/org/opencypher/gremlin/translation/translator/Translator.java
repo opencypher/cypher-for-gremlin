@@ -311,6 +311,8 @@ public final class Translator<T, P> {
          * <li><code>neptune+cfog_server_extensions</code></li>
          * <li><code>gremlin</code></li>
          * <li><code>gremlin+cfog_server_extensions</code></li>
+         * <li><code>gremlin</code></li>
+         * <li><code>gremlin+cfog_server_extensions</code></li>
          * </ul>
          *
          * @param translatorType string definition
@@ -325,6 +327,8 @@ public final class Translator<T, P> {
                 flavor = TranslatorFlavor.neptune();
                 inlineParameters();
                 enableMultipleLabels();
+            } else if (translatorType.startsWith("gremlin33x")) {
+                flavor = TranslatorFlavor.gremlinServer33x();
             } else if (translatorType.startsWith("gremlin")
                 || translatorType.startsWith("vanilla")
                 || translatorType.isEmpty()) {

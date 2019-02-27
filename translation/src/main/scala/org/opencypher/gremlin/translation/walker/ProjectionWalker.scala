@@ -17,6 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.process.traversal.Scope.local
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.WithOptions
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
@@ -285,11 +286,11 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       expression: Expression): GremlinSteps[T, P] = {
 
     lazy val finalizeNode =
-      __.valueMap(true)
+      __.valueMap().`with`(WithOptions.tokens)
 
     lazy val finalizeRelationship =
       __.project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
-        .by(__.valueMap(true))
+        .by(__.valueMap().`with`(WithOptions.tokens))
         .by(__.inV().id())
         .by(__.outV().id())
 
@@ -308,7 +309,8 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         .by(
           __.unfold()
             .is(p.neq(START))
-            .valueMap(true)
+            .valueMap()
+            .`with`(WithOptions.tokens)
             .fold())
 
     def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] =
@@ -357,21 +359,21 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
         fnName.toLowerCase match {
           case "avg" =>
-            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.mean(local), __.constant(NULL)))
+            (Aggregation, traversal.fold().coalesce(__.mean(local), __.constant(NULL)))
           case "collect" =>
             (Aggregation, traversal.fold())
           case "count" =>
             (Aggregation, traversal.count())
           case "max" =>
-            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.max(local), __.constant(NULL)))
+            (Aggregation, traversal.fold().coalesce(__.max(local), __.constant(NULL)))
           case "min" =>
-            (Aggregation, traversal.fold().choose(__.count(local).is(p.gt(0)), __.min(local), __.constant(NULL)))
+            (Aggregation, traversal.fold().coalesce(__.min(local), __.constant(NULL)))
           case "percentilecont" =>
             (Aggregation, aggregateWithArguments(args, alias).map(CustomFunction.cypherPercentileCont()))
           case "percentiledisc" =>
             (Aggregation, aggregateWithArguments(args, alias).map(CustomFunction.cypherPercentileDisc()))
           case "sum" =>
-            (Aggregation, traversal.sum())
+            (Aggregation, traversal.fold().coalesce(__.sum(local), __.constant(NULL)))
           case _ =>
             throw new SyntaxException(s"Unknown function '$fnName'")
         }

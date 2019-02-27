@@ -365,6 +365,8 @@ case class Skip(skip: Long) extends GremlinStep
 
 case object Sum extends GremlinStep
 
+case class SumS(scope: Scope) extends GremlinStep
+
 case class Times(maxLoops: Int) extends GremlinStep
 
 case class Tail(scope: Scope, limit: Long) extends GremlinStep
@@ -412,5 +414,7 @@ case class WhereT(whereTraversal: Seq[GremlinStep]) extends GremlinStep {
 }
 
 case class WhereP(predicate: GremlinPredicate) extends GremlinStep
+
+case class WithK(key: String) extends GremlinStep
 
 case class With(name: String, value: Object) extends GremlinStep

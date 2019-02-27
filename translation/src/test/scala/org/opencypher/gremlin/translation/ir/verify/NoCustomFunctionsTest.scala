@@ -30,15 +30,22 @@ class NoCustomFunctionsTest {
   )
 
   @Test
-  def functionsAndPredicates(): Unit = {
-    val ast = CypherAst.parse("""
-                                |MATCH p =(a)-->(b)-->(c)
-                                |RETURN nodes(p), toString(1)
-    """.stripMargin)
+  def predicates(): Unit = {
+    val ast = CypherAst.parse("""MATCH (u:User)
+                                |WITH {key: u} AS nodes
+                                |DELETE nodes.key""".stripMargin)
     val translator = Translator.builder.gremlinGroovy.build(flavor)
 
     assertThatThrownBy(() => ast.buildTranslation(translator))
-    //.hasMessageContaining("cypherIsNode, cypherToString")
-      .hasMessageContaining("cypherToString") //todo
+      .hasMessageContaining("cypherIsNode")
+  }
+
+  @Test
+  def functions(): Unit = {
+    val ast = CypherAst.parse("RETURN toString(1)")
+    val translator = Translator.builder.gremlinGroovy.build(flavor)
+
+    assertThatThrownBy(() => ast.buildTranslation(translator))
+      .hasMessageContaining("cypherToString")
   }
 }

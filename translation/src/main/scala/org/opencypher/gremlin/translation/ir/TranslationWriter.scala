@@ -244,6 +244,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.skip(skip)
         case Sum =>
           g.sum()
+        case SumS(scope) =>
+          g.sum(scope)
         case Tail(scope, limit) =>
           g.tail(scope, limit)
         case Times(maxLoops) =>
@@ -268,6 +270,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.where(writeLocalSteps(whereTraversal))
         case WhereP(predicate) =>
           g.where(writePredicate(predicate))
+        case WithK(name) =>
+          g.`with`(name)
         case With(name, value) =>
           g.`with`(name, value)
       }

@@ -28,13 +28,13 @@ import java.util.stream.Stream;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
@@ -52,11 +52,11 @@ public class CypherGremlinServerClientSnippets {
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     @Test
-    @Ignore //todo
     public void gremlinStyle() throws Exception {
         BaseConfiguration configuration = new BaseConfiguration();
         configuration.setProperty("port", gremlinServer.getPort());
         configuration.setProperty("hosts", singletonList("localhost"));
+        configuration.setProperty("serializer.className", GraphBinaryMessageSerializerV1.class.getName());
 
         // freshReadmeSnippet: gremlinStyle
         Cluster cluster = Cluster.open(configuration);

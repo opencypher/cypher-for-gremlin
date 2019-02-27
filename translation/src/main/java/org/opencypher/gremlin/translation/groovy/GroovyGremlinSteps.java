@@ -560,6 +560,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> sum(Scope scope) {
+        g.append(chain("sum", scope));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> tail(Scope scope, long limit) {
         g.append(chain("tail", scope, limit));
         return this;
@@ -629,6 +635,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @Override
     public GremlinSteps<String, GroovyPredicate> where(GroovyPredicate predicate) {
         g.append(chain("where", predicate));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> with(String key) {
+        g.append(chain("with", key));
         return this;
     }
 

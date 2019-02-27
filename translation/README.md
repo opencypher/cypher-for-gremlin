@@ -61,6 +61,19 @@ Translator<Bytecode, P> translator = Translator.builder()
     .build();
 ```
 
+### Connecting to TinkerPop <3.4.0
+
+Note that by default, translation targets TinkerPop 3.4.0 and uses steps and predicates that are unavailable in earlier 
+Gremlin versions, for example [With Step](http://tinkerpop.apache.org/docs/current/reference/#with-step) and [startingWith](http://tinkerpop.apache.org/docs/current/reference/#a-note-on-predicates).
+To provide translation suitable for these environments (for example until JanusGraph 0.4.0 is [released](https://github.com/JanusGraph/janusgraph/issues/1364)) use `gremlinServer33x` [flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors)
+
+<!-- [freshReadmeSource](../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/TranslationSnippets.java#translator33x) -->
+```java
+Translator<String, GroovyPredicate> translator = Translator.builder()
+    .gremlinGroovy()
+    .build(TranslatorFlavor.gremlinServer33x());
+```
+
 ### Amazon Neptune
 
 A translator for Amazon Neptune can be configured like so:

@@ -34,7 +34,7 @@ sealed case class TranslatorFlavor private[translation] (
 object TranslatorFlavor {
 
   /**
-    * todo
+    * A translator flavor that is suitable for Gremlin Server with TinkerPop 3.4.x.
     */
   val gremlinServer34x: TranslatorFlavor = TranslatorFlavor(
     rewriters = Seq(
@@ -68,11 +68,11 @@ object TranslatorFlavor {
   val gremlinServer: TranslatorFlavor = gremlinServer34x
 
   /**
-    * todo
+    * A translator flavor that is suitable for Gremlin Server with TinkerPop 3.3.x.
     */
   val gremlinServer33x: TranslatorFlavor = gremlinServer.extend(
     rewriters = Seq(
-      TinkerPop33xFlavor
+      Gremlin33xFlavor
     ),
     postConditions = Nil
   )

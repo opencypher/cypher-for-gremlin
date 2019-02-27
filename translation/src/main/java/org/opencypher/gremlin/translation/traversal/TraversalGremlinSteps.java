@@ -597,6 +597,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> sum(Scope scope) {
+        g.sum(scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> tail(Scope scope, long limit) {
         g.tail(scope, limit);
         return this;
@@ -666,6 +672,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> where(P predicate) {
         g.where(predicate);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> with(String key) {
+        g.with(key);
         return this;
     }
 
