@@ -47,6 +47,10 @@ public class CypherTraversalSource extends GraphTraversalSource {
         super(graph);
     }
 
+    public CypherTraversalSource(RemoteConnection connection) {
+        super(connection);
+    }
+
     /**
      * Translate Cypher query to Gremlin and get the result set as a {@link GraphTraversal}.
      *
@@ -109,6 +113,7 @@ public class CypherTraversalSource extends GraphTraversalSource {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings( "deprecation" )
     public CypherTraversalSource withRemote(final Configuration conf) {
         return (CypherTraversalSource) super.withRemote(conf);
     }
@@ -117,6 +122,7 @@ public class CypherTraversalSource extends GraphTraversalSource {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings( "deprecation" )
     public CypherTraversalSource withRemote(final String configFile) throws Exception {
         return (CypherTraversalSource) super.withRemote(configFile);
     }
@@ -125,6 +131,7 @@ public class CypherTraversalSource extends GraphTraversalSource {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings( "deprecation" )
     public CypherTraversalSource withRemote(final RemoteConnection connection) {
         return (CypherTraversalSource) super.withRemote(connection);
     }

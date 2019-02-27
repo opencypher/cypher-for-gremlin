@@ -151,7 +151,7 @@ public class GremlinConsoleTest {
         String usePlugin = eval(":plugin use " + NAME);
         assertThat(usePlugin).contains("==>" + NAME + " activated");
 
-        String remoteConnect = eval("g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('" + server.driverRemoteConfiguration() + "')");
+        String remoteConnect = eval("g = AnonymousTraversalSource.traversal(CypherTraversalSource.class).traversal(CypherTraversalSource.class).withRemote('" + server.driverRemoteConfiguration() + "')");
         assertThat(remoteConnect).contains("==>cyphertraversalsource[emptygraph[empty], standard]");
 
         String queryResult = eval("g.cypher('" + PERSON_NAMES_QUERY + "')");

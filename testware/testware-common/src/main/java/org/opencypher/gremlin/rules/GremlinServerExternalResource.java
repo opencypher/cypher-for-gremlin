@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
-import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
 import org.apache.tinkerpop.gremlin.util.function.ThrowingConsumer;
 import org.assertj.core.util.Strings;
 import org.junit.rules.ExternalResource;
@@ -89,7 +88,7 @@ public class GremlinServerExternalResource extends ExternalResource {
             gremlinServer = serverSupplier.get();
             gremlinServer.start();
             int port = gremlinServer.getPort();
-            gremlinClient = GremlinClientFactory.create(port, new GraphBinaryMessageSerializerV1());
+            gremlinClient = GremlinClientFactory.create(port);
         }
 
         return gremlinClient;
@@ -140,7 +139,7 @@ public class GremlinServerExternalResource extends ExternalResource {
 
     public String remoteConfiguration() throws Exception {
         File file = tempFolder.newFile();
-        String configuration = "hosts: [localhost]\nport: " + getPort() + "\n";
+        String configuration = "hosts: [localhost]\nport: " + getPort() + "\nserializer: { className: org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1}";
         Files.asCharSink(file, UTF_8).write(configuration);
         return file.getAbsolutePath();
     }

@@ -17,6 +17,7 @@ package org.opencypher.gremlin.neo4j.driver;
 
 import java.net.URI;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.neo4j.driver.v1.Driver;
 
@@ -85,6 +86,7 @@ public class GremlinDatabase {
     public static Driver driver(URI uri, Config config) {
         Cluster cluster = Cluster.build()
             .addContactPoint(uri.getHost())
+            .serializer(new GraphBinaryMessageSerializerV1())
             .port(uri.getPort())
             .create();
 

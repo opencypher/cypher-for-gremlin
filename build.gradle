@@ -54,11 +54,11 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs += ['-Xlint:unchecked', '-Werror', '-proc:none']
+        options.compilerArgs += ['-Xlint:deprecation,unchecked', '-Werror', '-proc:none']
     }
     tasks.withType(ScalaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs += ['-Xlint:unchecked', '-Werror', '-proc:none']
+        options.compilerArgs += ['-Xlint:deprecation,unchecked', '-Werror', '-proc:none']
         scalaCompileOptions.additionalParameters = [
             '-Xfatal-warnings'
         ]

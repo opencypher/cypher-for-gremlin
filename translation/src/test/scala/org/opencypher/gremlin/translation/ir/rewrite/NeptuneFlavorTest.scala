@@ -26,7 +26,7 @@ import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{dec
 
 class NeptuneFlavorTest {
 
-  private val flavor = TranslatorFlavor.gremlinServer
+  private val flavor = TranslatorFlavor.gremlinServer33x
 
   @Test
   def limit0Workaround(): Unit = {

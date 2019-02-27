@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Order
 import org.apache.tinkerpop.gremlin.process.traversal.Scope.local
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.GremlinSteps
@@ -22,7 +23,6 @@ import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.translator.TranslatorFeature.RETURN_GREMLIN_ELEMENTS
-import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
@@ -389,9 +389,9 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     for (sortItem <- sortItems) {
       val order = sortItem match {
         case _: AscSortItem =>
-          DeprecatedOrderAccessor.incr
+          Order.asc
         case _: DescSortItem =>
-          DeprecatedOrderAccessor.decr
+          Order.desc
       }
       val sortExpression = walkLocal(sortItem.expression, None)
       g.by(sortExpression, order)

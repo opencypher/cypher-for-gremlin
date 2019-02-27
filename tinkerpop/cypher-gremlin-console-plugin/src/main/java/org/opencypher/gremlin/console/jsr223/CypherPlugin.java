@@ -34,7 +34,6 @@ import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection;
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteTraversal;
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteTraversalSideEffects;
 import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0;
-import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV2d0;
 import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0;
 import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV2d0;
 import org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0;
@@ -74,7 +73,6 @@ public abstract class CypherPlugin extends AbstractGremlinPlugin {
             ResponseStatus.class,
             ResponseStatusCode.class,
             GraphSONMessageSerializerGremlinV1d0.class,
-            GraphSONMessageSerializerGremlinV2d0.class,
             GraphSONMessageSerializerV1d0.class,
             GraphSONMessageSerializerV2d0.class,
             GryoMessageSerializerV1d0.class,

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.neo4j.driver.v1.Driver;
@@ -58,6 +59,7 @@ public class GremlinNeo4jDriverTest {
     public void multipleRows() {
         Cluster cluster = Cluster.build()
             .addContactPoints("localhost")
+            .serializer(new GraphBinaryMessageSerializerV1())
             .port(server.getPort())
             .create();
 

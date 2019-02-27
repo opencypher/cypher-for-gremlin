@@ -34,13 +34,9 @@ sealed case class TranslatorFlavor private[translation] (
 object TranslatorFlavor {
 
   /**
-    * A translator flavor that is suitable
-    * for a fully-compliant Gremlin Server or a compatible graph database
-    * with Cypher for Gremlin plugin.
-    *
-    * This is the default flavor.
+    * todo
     */
-  val gremlinServer: TranslatorFlavor = TranslatorFlavor(
+  val gremlinServer34x: TranslatorFlavor = TranslatorFlavor(
     rewriters = Seq(
       InlineFlatMapTraversal,
       SimplifyPropertySetters,
@@ -63,9 +59,28 @@ object TranslatorFlavor {
   )
 
   /**
+    * A translator flavor that is suitable
+    * for a fully-compliant Gremlin Server or a compatible graph database
+    * with Cypher for Gremlin plugin.
+    *
+    * This is the default flavor.
+    */
+  val gremlinServer: TranslatorFlavor = gremlinServer34x
+
+  /**
+    * todo
+    */
+  val gremlinServer33x: TranslatorFlavor = gremlinServer.extend(
+    rewriters = Seq(
+      TinkerPop33xFlavor
+    ),
+    postConditions = Nil
+  )
+
+  /**
     * A translator flavor that is suitable for Cosmos DB.
     */
-  val cosmosDb: TranslatorFlavor = gremlinServer.extend(
+  val cosmosDb: TranslatorFlavor = gremlinServer33x.extend(
     rewriters = Seq(
       CosmosDbFlavor
     ),
@@ -75,7 +90,7 @@ object TranslatorFlavor {
   /**
     * A translator flavor that is suitable for AWS Neptune.
     */
-  val neptune: TranslatorFlavor = gremlinServer.extend(
+  val neptune: TranslatorFlavor = gremlinServer33x.extend(
     rewriters = Seq(
       NeptuneFlavor
     ),
