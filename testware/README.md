@@ -25,4 +25,9 @@ To run tests on an external Gremlin Server use the `configPath` parameter, for e
 
 #### Run Integration Tests on CosmosDB
 
-* Run `gradle :testware:integration-test-suites:suite --tests "org.opencypher.gremlin.suites.CosmosDBSuite" -DconfigPath=/path/to/cosmosdb-client.yaml -Dtranslate=cosmosdb`  
+* Run `gradle :testware:integration-test-suites:suite --tests "org.opencypher.gremlin.suites.CosmosDBSuite" -DconfigPath=/path/to/cosmosdb-client.yaml -Dtranslate=cosmosdb`
+
+#### Run Integration Tests on Neo4j
+* Setup  and install [Gremlin Server Cypher Plugin](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-server-plugin)
+* Run `gradle :testware:integration-test-suites:suite --tests "org.opencypher.gremlin.suites.ExtensionsSuite" -DconfigPath=/path/to/neo4j-client.yaml`
+  
