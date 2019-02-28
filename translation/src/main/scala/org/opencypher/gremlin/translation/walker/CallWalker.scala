@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ * Copyright (c) 2018-2019 "Neo4j, Inc." [https://neo4j.com]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.walker
 
-import org.opencypher.gremlin.extension.CypherProcedures
 import org.opencypher.gremlin.extension.CypherProcedures.procedureName
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.context.WalkerContext
