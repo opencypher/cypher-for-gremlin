@@ -23,6 +23,7 @@ import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.INVALID_RANGE
 import org.opencypher.gremlin.translation.exception.{ArgumentException, SyntaxException}
+import org.opencypher.gremlin.translation.ir.{GremlinParser, TranslationWriter}
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.expressions._
@@ -247,6 +248,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "tofloat"          => traversals.head.map(CustomFunction.cypherToFloat())
           case "tointeger"        => traversals.head.map(CustomFunction.cypherToInteger())
           case "tostring"         => traversals.head.map(CustomFunction.cypherToString())
+          case "gremlin"          => injectGremlin(args)
           case _ =>
             throw new SyntaxException(s"Unknown function '$fnName'")
         }
@@ -615,5 +617,15 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case None =>
         nestedChoose(__.is(p.isEq(true)))
     }
+  }
+
+  def injectGremlin(args: Seq[Expression]): GremlinSteps[T, P] = {
+    val steps = g.start()
+
+    val gremlin = inlineExpressionValue(args.head, context, classOf[String])
+    val ir = GremlinParser.parse(gremlin)
+    TranslationWriter.write(ir, steps, context.dsl, Map[String, Any]())
+
+    g.start().map(steps)
   }
 }

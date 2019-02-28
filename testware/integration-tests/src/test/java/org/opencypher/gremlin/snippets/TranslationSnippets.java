@@ -29,6 +29,7 @@ import org.opencypher.gremlin.translation.groovy.GroovyGremlinPredicates;
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFeature;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class TranslationSnippets {
@@ -111,6 +112,21 @@ public class TranslationSnippets {
             )
             .build();
         // freshReadmeSnippet: custom
+    }
+
+    @Test
+    public void translatorEnableExperimental() throws Exception {
+        // freshReadmeSnippet: enableExperimentalGremlin
+        Translator<String, GroovyPredicate> translator = Translator.builder()
+            .gremlinGroovy()
+            .enableCypherExtensions()
+            .enable(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION)
+            .build();
+        // freshReadmeSnippet: enableExperimentalGremlin
+
+        translator.steps().V();
+        String gremlin = translator.translate();
+        assertThat(gremlin).isEqualTo("g.V()");
     }
 
 

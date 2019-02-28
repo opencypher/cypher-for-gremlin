@@ -40,5 +40,11 @@ public enum TranslatorFeature {
      * Return Gremlin graph elements (e.g {@link Vertex}, {@link Edge}) instead of normalizing elements to a map of
      * tokens and properties (as by default).
      */
-    RETURN_GREMLIN_ELEMENTS
+    RETURN_GREMLIN_ELEMENTS,
+
+    /**
+     * Return Gremlin graph elements (e.g {@link Vertex}, {@link Edge}) instead of normalizing elements to a map of
+     * tokens and properties (as by default).
+     */
+    EXPERIMENTAL_GREMLIN_FUNCTION
 }
