@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
+import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -148,6 +149,28 @@ public interface CypherGremlinClient extends Closeable {
      */
     static CypherGremlinClient inMemory(GraphTraversalSource gts) {
         return new InMemoryCypherGremlinClient(gts);
+    }
+
+    /**
+     * Creates a {@link CypherGremlinClient} that can send Cypher queries
+     * to any Gremlin Server or a compatible graph database as Gremlin-Groovy.
+     * <p>
+     * Cypher to Gremlin translation is done on the client's thread,
+     * before sending the query to Gremlin Server.
+     * <p>
+     * Difference with {@link #translating(Client, TranslatorFlavor)} is that on request client retrieves and stores
+     * the entire result stream. See {@link ResultSet#all()}.
+     * <p>
+     * This is not optimal for large result sets as the results will be held in memory at once.
+     * Use only for compatibility reasons.
+     *
+     * @see #translating(Client, TranslatorFlavor)
+     * @param client Gremlin client
+     * @param flavor translation flavor
+     * @return Cypher-enabled client
+     */
+    static CypherGremlinClient retrieving(Client client, TranslatorFlavor flavor) {
+        return new SyncGroovyCypherGremlinClient(client, () -> Translator.builder().gremlinGroovy().build(flavor));
     }
 
     /**

@@ -35,6 +35,7 @@ import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,6 +103,8 @@ public class GremlinServerExternalResource extends ExternalResource {
                 .bytecode()
                 .enableCypherExtensions()
                 .build());
+        } else if ("cosmosdb".equals(clientName)) {
+            return CypherGremlinClient.retrieving(gremlinClient, TranslatorFlavor.cosmosDb());
         } else {
             return CypherGremlinClient.translating(gremlinClient,
                 () -> Translator.builder()

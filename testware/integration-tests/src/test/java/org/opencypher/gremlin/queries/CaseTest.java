@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
@@ -251,6 +252,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipExtensions.CustomFunctions.class)
     public void expressionsInSimpleCase() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (n:person) RETURN \n" +
@@ -268,6 +270,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipExtensions.CustomFunctions.class)
     public void expressionsInSimpleCaseForm() throws Exception {
         submitAndGet("CREATE (:test {name: 'a_a'}), (:test {name: 'a_b'}), (:test {name: 'a_c'})");
 
@@ -286,6 +289,7 @@ public class CaseTest {
     }
 
     @Test
+    @Category(SkipExtensions.CustomFunctions.class)
     public void expressionsInSimpleCaseFormInWhere() throws Exception {
         submitAndGet("CREATE (:test {name: 'a_a'}), (:test {name: 'a_b'}), (:test {name: 'a_c'})");
 

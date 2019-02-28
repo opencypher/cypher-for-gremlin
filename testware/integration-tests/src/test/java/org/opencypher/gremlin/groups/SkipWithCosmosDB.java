@@ -145,7 +145,7 @@ public interface SkipWithCosmosDB {
     /**
      * Inconsistent behaviour of <a href="http://tinkerpop.apache.org/docs/current/reference/#_values_step">values step</a>
      *
-     * @see SpecificsTest#setAndGetEdgeProperty()
+     * @see SpecificsTest#setAndGetProperty()
      */
     interface ValuesDoesNotWorkInSomeCases extends SkipWithCosmosDB {
     }

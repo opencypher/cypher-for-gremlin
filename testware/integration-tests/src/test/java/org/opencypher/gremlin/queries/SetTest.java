@@ -116,7 +116,7 @@ public class SetTest {
     }
 
     @Test
-    @Category(SkipWithJanusGraph.SetAndGetEdgeProperty.class)
+    @Category(SkipWithJanusGraph.SetAndGetProperty.class)
     public void setEdgeProperty() {
         submitAndGet("CREATE ()-[:REL]->()");
 
@@ -129,7 +129,7 @@ public class SetTest {
     }
 
     @Test
-    @Category(SkipWithJanusGraph.SetAndGetEdgeProperty.class)
+    @Category(SkipWithJanusGraph.SetAndGetProperty.class)
     public void setEdgeProperty2() {
         submitAndGet("CREATE (n)-[r:REL]->(m)");
 

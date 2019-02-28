@@ -15,28 +15,29 @@
  */
 package org.opencypher.gremlin.client;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-import static org.opencypher.gremlin.client.CommonResultSets.exceptional;
 import static org.opencypher.gremlin.client.CommonResultSets.explain;
 import static org.opencypher.gremlin.translation.StatementOption.EXPLAIN;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
-import org.apache.tinkerpop.gremlin.driver.ResultSet;
+import org.apache.tinkerpop.gremlin.driver.Result;
 import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
 
-final class GroovyCypherGremlinClient implements CypherGremlinClient {
+final class SyncGroovyCypherGremlinClient implements CypherGremlinClient {
 
     private final Client client;
     private final Supplier<Translator<String, GroovyPredicate>> translatorSupplier;
 
-    GroovyCypherGremlinClient(Client client, Supplier<Translator<String, GroovyPredicate>> translatorSupplier) {
+    SyncGroovyCypherGremlinClient(Client client, Supplier<Translator<String, GroovyPredicate>> translatorSupplier) {
         this.client = client;
         this.translatorSupplier = translatorSupplier;
     }
@@ -47,31 +48,34 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
+    public CypherResultSet submit(String cypher) {
+        return submit(cypher, new HashMap<>());
+    }
+
+    @Override
+    public CypherResultSet submit(String cypher, Map<String, ?> parameters) {
         Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
-        CypherAst ast;
-        try {
-            ast = CypherAst.parse(cypher, normalizedParameters);
-        } catch (Exception e) {
-            return completedFuture(exceptional(e));
-        }
+        CypherAst ast = CypherAst.parse(cypher, normalizedParameters);
 
         if (ast.getOptions().contains(EXPLAIN)) {
-            return completedFuture(explain(ast));
+            return explain(ast);
         }
 
         Translator<String, GroovyPredicate> translator = translatorSupplier.get();
-        String gremlin;
-        try {
-            gremlin = ast.buildTranslation(translator);
-        } catch (Exception e) {
-            return completedFuture(exceptional(e));
-        }
+        String gremlin = ast.buildTranslation(translator);
 
-        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, normalizedParameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
-        return resultSetFuture
-            .thenApply(ResultSet::iterator)
-            .thenApply(resultIterator -> new CypherResultSet(resultIterator, returnNormalizer::normalize));
+
+        try {
+            List<Result> resultSet = client.submit(gremlin, normalizedParameters).all().get();
+            return new CypherResultSet(resultSet.iterator(), returnNormalizer::normalize);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
+        throw new IllegalStateException("Not supported");
     }
 }
