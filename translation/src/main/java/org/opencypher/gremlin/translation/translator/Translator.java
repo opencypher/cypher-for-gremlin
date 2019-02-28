@@ -98,6 +98,7 @@ public final class Translator<T, P> {
     /**
      * Returns true if a given feature is enabled in this translator.
      *
+     * @param feature the feature
      * @return true, if the feature is enabled, false otherwise
      */
     public boolean isEnabled(TranslatorFeature feature) {
@@ -243,6 +244,7 @@ public final class Translator<T, P> {
         /**
          * Enables a feature in the {@link Translator} that's being built.
          *
+         * @param feature the feature
          * @return builder for translator
          */
         public FlavorBuilder<T, P> enable(TranslatorFeature feature) {
@@ -310,7 +312,6 @@ public final class Translator<T, P> {
          * <li><code>gremlin</code></li>
          * <li><code>gremlin+cfog_server_extensions</code></li>
          * </ul>
-         * </p>
          *
          * @param translatorType string definition
          * @return translator
