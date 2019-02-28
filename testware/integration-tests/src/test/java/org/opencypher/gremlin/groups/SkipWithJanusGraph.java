@@ -34,9 +34,9 @@ public interface SkipWithJanusGraph {
     /**
      * Unable to get edge property just after setting it.
      *
-     * @see SpecificsTest#setAndGetEdgeProperty()
+     * @see SpecificsTest#setAndGetProperty()
      */
-    interface SetAndGetEdgeProperty extends SkipWithJanusGraph {
+    interface SetAndGetProperty extends SkipWithJanusGraph {
     }
 
     /**

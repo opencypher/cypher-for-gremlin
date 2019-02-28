@@ -151,7 +151,7 @@ public class CypherGremlinServerClientSnippets {
         Client gremlinClient = newGremlinClient();
 
         // freshReadmeSnippet: cosmosdb
-        CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+        CypherGremlinClient cypherGremlinClient = CypherGremlinClient.retrieving(
             gremlinClient,
             TranslatorFlavor.cosmosDb()
         );

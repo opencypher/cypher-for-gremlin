@@ -114,7 +114,7 @@ public class SpecificsTest {
 
     @Test
     @Category({SkipWithJanusGraph.ChangePropertyType.class, SkipWithCosmosDB.ValuesDoesNotWorkInSomeCases.class})
-    public void setAndGetEdgeProperty() throws Exception {
+    public void setAndGetProperty() throws Exception {
         Client client = gremlinServer.gremlinClient();
 
         Long count = client.submit("g.addV().as('n').addV().as('m').addE('REL').from('n').to('m').count()").one().getLong();
@@ -303,7 +303,7 @@ public class SpecificsTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.TraversalInProperty.class)
+    @Category({SkipWithCosmosDB.TraversalInProperty.class, SkipWithJanusGraph.SetAndGetProperty.class})
     public void traversalInProperty() throws Exception {
         Client client = gremlinServer.gremlinClient();
 
@@ -329,7 +329,7 @@ public class SpecificsTest {
         assertThat(results)
             .extracting(Result::getObject)
             .extracting("software")
-            .containsExactly(true, false);
+            .contains(true, false);
     }
 
     @Test
@@ -433,4 +433,30 @@ public class SpecificsTest {
             .extracting(Result::getObject)
             .containsExactly("test");
     }
+
+    @Test
+    @Category({SkipWithCosmosDB.InnerTraversals.class, SkipWithNeptune.MatchInnerTraversals.class})
+    public void matchInnerTraversals() throws Exception {
+        Client client = gremlinServer.gremlinClient();
+
+        client.submit("g.addV('person').property('name','marko').as('marko')" +
+            ".addV('person').property('name','vadas').as('vadas')" +
+            ".addV('software').property('name','lop').as('lop')" +
+            ".addE('knows').from('marko').to('vadas')" +
+            ".addE('created').from('marko').to('lop')").all().get();
+
+
+        List<Result> results = client.submit(
+            "g.V().as('a').has('name', eq('marko'))" +
+                ".V().as('b').has('name', eq('vadas'))" +
+                ".select('a').outE().as('r').inV().as('  GENERATED3')" +
+                ".where(__.select('  GENERATED3').where(eq('b')))" +
+                ".label()")
+            .all().get();
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .containsExactly("person");
+    }
+
 }

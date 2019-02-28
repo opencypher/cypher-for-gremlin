@@ -80,4 +80,12 @@ public interface SkipWithNeptune {
      */
     interface EmptyMap extends SkipWithNeptune {
     }
+
+    /**
+     * Matching two inner traversals has different behaviour with reference implementation
+     *
+     * @see SpecificsTest#matchInnerTraversals()
+     */
+    interface MatchInnerTraversals extends SkipWithNeptune {
+    }
 }

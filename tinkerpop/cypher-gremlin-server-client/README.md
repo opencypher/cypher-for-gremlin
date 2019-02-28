@@ -78,7 +78,7 @@ A translating client for Azure Cosmos DB can be configured like so:
 
 <!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#cosmosdb) -->
 ```java
-CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+CypherGremlinClient cypherGremlinClient = CypherGremlinClient.retrieving(
     gremlinClient,
     TranslatorFlavor.cosmosDb()
 );

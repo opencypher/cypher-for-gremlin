@@ -25,6 +25,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipWithCosmosDB;
+import org.opencypher.gremlin.groups.SkipWithNeptune;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
@@ -237,7 +238,7 @@ public class WithTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.InnerTraversals.class)
+    @Category({SkipWithCosmosDB.InnerTraversals.class, SkipWithNeptune.MatchInnerTraversals.class})
     public void onlyAliasesInWithAreBound() {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (unbound:person {name: 'marko'})-[:created]->(bound:software {name: 'lop'})" +

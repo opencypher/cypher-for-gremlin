@@ -26,6 +26,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipWithJanusGraph;
+import org.opencypher.gremlin.groups.SkipWithNeptune;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.test.TestCommons.ModernGraph;
@@ -176,6 +177,7 @@ public class MatchTest {
     }
 
     @Test
+    @Category(SkipWithNeptune.MatchInnerTraversals.class)
     public void nodesSeparatelyFromRelationship() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
             "MATCH (a {name: 'marko'}), (b {name: 'vadas'}) " +
