@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ * Copyright (c) 2018-2019 "Neo4j, Inc." [https://neo4j.com]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
 import scala.collection.JavaConverters._
-import scala.io.Source
 
 object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
   val TIME_OUT_SECONDS = 10

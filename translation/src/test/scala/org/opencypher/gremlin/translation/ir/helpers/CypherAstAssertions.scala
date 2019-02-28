@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ * Copyright (c) 2018-2019 "Neo4j, Inc." [https://neo4j.com]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package org.opencypher.gremlin.translation.ir.helpers
 
-import org.opencypher.gremlin.translation.CypherAst
 import org.assertj.core.api.Assertions
+import org.opencypher.gremlin.translation.CypherAst
 
 object CypherAstAssertions {
   def assertThat(actual: CypherAst) = new CypherAstAssert(actual)

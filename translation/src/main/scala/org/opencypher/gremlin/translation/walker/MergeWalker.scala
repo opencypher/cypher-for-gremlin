@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ * Copyright (c) 2018-2019 "Neo4j, Inc." [https://neo4j.com]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package org.opencypher.gremlin.translation.walker
 
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.context.WalkerContext
-import org.opencypher.gremlin.translation.walker.NodeUtils.{getPathTraversalAliases, _}
+import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions._
 import org.opencypher.v9_0.util.InputPosition.NONE

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ * Copyright (c) 2018-2019 "Neo4j, Inc." [https://neo4j.com]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
-import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens.NULL
@@ -23,7 +22,6 @@ import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.ir.model.Vertex
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
-import org.opencypher.gremlin.traversal.ProcedureContext
 
 class SimplifyRenamedAliasesTest {
 

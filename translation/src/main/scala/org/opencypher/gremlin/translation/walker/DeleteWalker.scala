@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ * Copyright (c) 2018-2019 "Neo4j, Inc." [https://neo4j.com]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.CypherExceptions.DELETE_CONNECTED_NODE
 import org.opencypher.gremlin.translation.walker.NodeUtils.runtimeValidation
 import org.opencypher.gremlin.translation.{GremlinSteps, Tokens}
-import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions.{Expression, Variable}
 import org.opencypher.v9_0.util.symbols.{AnyType, NodeType, PathType, RelationshipType}
