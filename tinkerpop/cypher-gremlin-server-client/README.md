@@ -14,7 +14,7 @@ To add a dependency using Maven:
 <dependency>
     <groupId>org.opencypher.gremlin</groupId>
     <artifactId>cypher-gremlin-server-client</artifactId>
-    <version>0.9.12</version>
+    <version>0.9.13</version>
 </dependency>
 ```
 
@@ -22,7 +22,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.12'
+  compile 'org.opencypher.gremlin:cypher-gremlin-server-client:0.9.13'
 }
 ```
 
@@ -113,7 +113,7 @@ String cypher = "MATCH (p:person) WHERE p.age > 25 RETURN p.name";
 List<Map<String, Object>> results = cypherGremlinClient.submit(cypher).all();
 ```
 
-Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/org/opencypher/gremlin/client/package-summary.html) for more information.
+Consult the [Javadoc](https://opencypher.github.io/cypher-for-gremlin/api/0.9.13/java/org/opencypher/gremlin/client/package-summary.html) for more information.
 
 ## Neo4j driver-like API
 
@@ -121,7 +121,7 @@ If you want to use a Neo4j driver-like API, take a look at the [Cypher Gremlin N
 
 ## Cypher Traversal Source
 
-With [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
+With [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/0.9.13/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
 its possible to combine Cypher and Gremlin in single query. Traversal can start with `cypher` step that allows to run Cypher 
 query (which will be translated to Gremlin) then continue traversal using other Gremlin steps. Note that `cypher` step returns list of maps, corresponding to rows and named columns.
 To continue traversal with other Gremlin steps, use [select step](http://tinkerpop.apache.org/docs/current/reference/#select-step):
@@ -156,7 +156,7 @@ GraphTraversal<Map<String, Object>, String> traversal = g
     .dedup();
 ```
 
-Note that Cypher query may return null values, represented by [string constant](https://opencypher.github.io/cypher-for-gremlin/api/0.9.12/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).
+Note that Cypher query may return null values, represented by [string constant](https://opencypher.github.io/cypher-for-gremlin/api/0.9.13/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).
 
  
 
