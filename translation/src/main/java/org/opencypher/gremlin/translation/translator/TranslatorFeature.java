@@ -43,8 +43,7 @@ public enum TranslatorFeature {
     RETURN_GREMLIN_ELEMENTS,
 
     /**
-     * Return Gremlin graph elements (e.g {@link Vertex}, {@link Edge}) instead of normalizing elements to a map of
-     * tokens and properties (as by default).
+     * Enables experimental `gremlin` Cypher function that allows including Gremlin steps in translated query
      */
     EXPERIMENTAL_GREMLIN_FUNCTION
 }

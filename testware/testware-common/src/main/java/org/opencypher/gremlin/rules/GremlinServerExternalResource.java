@@ -35,6 +35,7 @@ import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFeature;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,13 +96,14 @@ public class GremlinServerExternalResource extends ExternalResource {
 
     private CypherGremlinClient configuredCypherGremlinClient() {
         String translate = emptyToNull(System.getProperty(TOKEN_TRANSLATE));
-        String clientName = Optional.ofNullable(translate).orElse("traversal+cfog_server_extensions");
-        if ("traversal+cfog_server_extensions".equals(clientName)) {
+        String clientName = Optional.ofNullable(translate).orElse("traversal+cfog_server_extensions+experimental_gremlin_function");
+        if ("traversal+cfog_server_extensions+experimental_gremlin_function".equals(clientName)) {
             return CypherGremlinClient.plugin(gremlinClient);
-        } else if ("bytecode+cfog_server_extensions".equals(clientName)) {
+        } else if ("bytecode+cfog_server_extensions+experimental_gremlin_function".equals(clientName)) {
             return CypherGremlinClient.bytecode(gremlinClient.alias("g"), () -> Translator.builder()
                 .bytecode()
                 .enableCypherExtensions()
+                .enable(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION)
                 .build());
         } else if ("cosmosdb".equals(clientName)) {
             return CypherGremlinClient.retrieving(gremlinClient, TranslatorFlavor.cosmosDb());

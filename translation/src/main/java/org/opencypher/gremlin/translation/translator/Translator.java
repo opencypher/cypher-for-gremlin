@@ -333,8 +333,12 @@ public final class Translator<T, P> {
                 throw new IllegalArgumentException("Unknown translator type: " + translatorType);
             }
 
-            if (translatorType.endsWith("+cfog_server_extensions")) {
+            if (translatorType.contains("+cfog_server_extensions")) {
                 enableCypherExtensions();
+            }
+
+            if (translatorType.contains("+experimental_gremlin_function")) {
+                features.add(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION);
             }
 
             return build(flavor);

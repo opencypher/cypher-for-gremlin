@@ -208,7 +208,7 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
 
     @Override
     public GremlinSteps<Bytecode, P> emit(GremlinSteps<Bytecode, P> traversal) {
-        bytecode.addStep(Symbols.emit, traversal);
+        bytecode.addStep(Symbols.emit, traversal.current());
         return this;
     }
 

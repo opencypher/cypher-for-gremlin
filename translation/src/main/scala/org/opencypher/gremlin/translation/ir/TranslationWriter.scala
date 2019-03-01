@@ -53,17 +53,19 @@ object TranslationWriter {
   )
 
   def write[T, P](ir: Seq[GremlinStep], translator: Translator[T, P], parameters: Map[String, Any]): T = {
-    write(ir, translator.steps(), translator, parameters)
+    for ((feature, postCondition) <- postConditions if !translator.isEnabled(feature);
+         msg <- postCondition(ir)) throw new SyntaxException(msg)
+
+    val generator = new TranslationWriter(translator, parameters)
+    generator.writeSteps(ir, translator.steps())
+    translator.translate()
   }
 
-  def write[T, P](
+  def writeTo[T, P](
       ir: Seq[GremlinStep],
       to: GremlinSteps[T, P],
       translator: Translator[T, P],
       parameters: Map[String, Any]): T = {
-    for ((feature, postCondition) <- postConditions if !translator.isEnabled(feature);
-         msg <- postCondition(ir)) throw new SyntaxException(msg)
-
     val generator = new TranslationWriter(translator, parameters)
     generator.writeSteps(ir, to)
     translator.translate()

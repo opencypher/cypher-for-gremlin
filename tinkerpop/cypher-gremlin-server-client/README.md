@@ -158,6 +158,25 @@ GraphTraversal<Map<String, Object>, String> traversal = g
 
 Note that Cypher query may return null values, represented by [string constant](https://opencypher.github.io/cypher-for-gremlin/api/0.9.13/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).
 
- 
+## Gremlin function
+
+Experimental `gremlin` Cypher function that allows including Gremlin steps in translated query. Note that currently
+function is supported only for client-side translation, and should be enabled explicitly.
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#enableExperimentalGremlin) -->
+```java
+CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+    gremlinClient,
+    () -> Translator.builder()
+        .gremlinGroovy()
+        .enableCypherExtensions()
+        .enable(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION)
+        .build()
+);
+
+List<Map<String, Object>> results = cypherGremlinClient.submit(
+    "MATCH (n:person {name: 'marko'}) " +
+        "RETURN gremlin(\"select('n').outE().label()\") as r").all();
+```
 
 

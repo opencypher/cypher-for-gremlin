@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 "Neo4j, Inc." [https://neo4j.com]
+ * Copyright (c) 2018-2019 "Neo4j, Inc." [https://neo4j.com]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,19 @@ import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
+import org.opencypher.gremlin.groups.SkipWithPlugin;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 
+/**
+ * Currently experimental `gremlin` function is supported only for client-side translation, and should be enabled explicitly.
+ * Run this test with `-Dtranslate=gremlin+cfog_server_extensions+experimental_gremlin_function` or
+ * `-Dtranslate=bytecode+cfog_server_extensions+experimental_gremlin_function`
+ */
+@Category(SkipWithPlugin.class)
 public class GremlinFunctionTest {
 
     @ClassRule
@@ -46,17 +54,6 @@ public class GremlinFunctionTest {
         assertThat(results)
             .extracting("r")
             .containsExactlyInAnyOrder("created");
-    }
-
-    @Test
-    public void testGremlinFunctionInWhere() {
-        List<Map<String, Object>> results = submitAndGet(
-            "MATCH (n:person) WHERE gremlin(\"select('n').outE()\") RETURN n.name as r"
-        );
-
-        assertThat(results)
-            .extracting("r")
-            .containsExactlyInAnyOrder("marko", "josh", "peter");
     }
 
     @Test
@@ -82,9 +79,6 @@ public class GremlinFunctionTest {
             .containsExactlyInAnyOrder(tuple(1L, 2L));
     }
 
-    //todo test update
-
-
     @Test
     public void gremlinAsParameter() {
         CypherGremlinClient client = gremlinServer.cypherGremlinClient();
@@ -101,7 +95,6 @@ public class GremlinFunctionTest {
     }
 
     @Test
-    //todo slides
     public void dontOverwriteValues() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH 1 as a, gremlin(\"constant(2).as('a')\") as b " +
@@ -111,17 +104,6 @@ public class GremlinFunctionTest {
         assertThat(results)
             .extracting("a", "b")
             .containsExactlyInAnyOrder(tuple(1L, 2L));
-    }
-
-    //cap step
-
-    //todo
-    @Test
-    public void returnTree() {
-        List<Map<String, Object>> results = submitAndGet(
-            "MATCH (root {name:'marko'})" +
-                "RETURN gremlin(\"select('root').outE().inV().barrier().as('tree').by(values('name')).by(label())\") YIELD tree RETURN tree"
-        );
     }
 
     @Test

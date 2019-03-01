@@ -41,6 +41,7 @@ import org.opencypher.gremlin.client.CypherTraversalSource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
+import org.opencypher.gremlin.translation.translator.TranslatorFeature;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class CypherGremlinServerClientSnippets {
@@ -220,6 +221,30 @@ public class CypherGremlinServerClientSnippets {
 
         assertThat(results)
             .containsExactlyInAnyOrder("created", "knows");
+    }
+
+    @Test
+    public void translatorEnableExperimental() throws Exception {
+        Client gremlinClient = newGremlinClient();
+
+        // freshReadmeSnippet: enableExperimentalGremlin
+        CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
+            gremlinClient,
+            () -> Translator.builder()
+                .gremlinGroovy()
+                .enableCypherExtensions()
+                .enable(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION)
+                .build()
+        );
+
+        List<Map<String, Object>> results = cypherGremlinClient.submit(
+            "MATCH (n:person {name: 'marko'}) " +
+                "RETURN gremlin(\"select('n').outE().label()\") as r").all();
+        // freshReadmeSnippet: enableExperimentalGremlin
+
+        assertThat(results)
+            .extracting("r")
+            .containsExactly("created");
     }
 
 
