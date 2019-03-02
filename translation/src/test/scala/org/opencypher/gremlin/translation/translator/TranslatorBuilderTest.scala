@@ -120,7 +120,7 @@ class TranslatorBuilderTest {
       () =>
         parse("RETURN gremlin('g.V()')")
           .buildTranslation(dslBuilder))
-      .hasMessageContaining("You need to enable `gremlin` function explicitly")
+      .hasMessageContaining("needs to be explicitly enabled")
 
     val steps = parse("MATCH (n) RETURN n.name")
       .buildTranslation(dslBuilder)

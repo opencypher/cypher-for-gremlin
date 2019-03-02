@@ -622,7 +622,9 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
   def injectGremlin(args: Seq[Expression]): GremlinSteps[T, P] = {
     if (!context.dsl.isEnabled(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION)) {
-      context.unsupported("You need to enable `gremlin` function explicitly!", args)
+      context.unsupported(
+        "`gremlin` function. `TranslatorFeature#EXPERIMENTAL_GREMLIN_FUNCTION` needs to be explicitly enabled.",
+        args.head)
     }
 
     val steps = g.start()
