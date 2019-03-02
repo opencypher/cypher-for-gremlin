@@ -113,7 +113,6 @@ public class TranslationSnippets {
         // freshReadmeSnippet: custom
     }
 
-
     private class MyGremlinSteps extends GroovyGremlinSteps {
     }
 

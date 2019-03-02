@@ -16,3 +16,7 @@ The [translation module](../../translation) relies on these extensions to produc
 The easiest way to use this module is by installing the [Gremlin Server Cypher plugin](../cypher-gremlin-server-plugin) on the target Gremlin Server. The plugin includes all of the extensions and registers them on the Server.
 
 Alternatively, add [CustomPredicate.java](src/main/java/org/opencypher/gremlin/traversal/CustomPredicate.java) and [CustomFunctions.java](src/main/java/org/opencypher/gremlin/traversal/CustomFunctions.java) to Gremlin Groovy script engine.
+
+## Include Gremlin in Cypher query
+
+See [gremlin function](../cypher-gremlin-server-client#gremlin-function)

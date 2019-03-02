@@ -82,6 +82,9 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> choose(GremlinSteps<T, P> choiceTraversal);
 
     GremlinSteps<T, P> choose(GremlinSteps<T, P> traversalPredicate,
+                              GremlinSteps<T, P> trueChoice);
+
+    GremlinSteps<T, P> choose(GremlinSteps<T, P> traversalPredicate,
                               GremlinSteps<T, P> trueChoice,
                               GremlinSteps<T, P> falseChoice);
 
@@ -103,6 +106,8 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> drop();
 
     GremlinSteps<T, P> emit();
+
+    GremlinSteps<T, P> emit(GremlinSteps<T, P> traversal);
 
     GremlinSteps<T, P> flatMap(GremlinSteps<T, P> traversal);
 

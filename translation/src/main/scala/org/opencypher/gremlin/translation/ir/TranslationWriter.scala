@@ -60,6 +60,16 @@ object TranslationWriter {
     generator.writeSteps(ir, translator.steps())
     translator.translate()
   }
+
+  def writeTo[T, P](
+      ir: Seq[GremlinStep],
+      to: GremlinSteps[T, P],
+      translator: Translator[T, P],
+      parameters: Map[String, Any]): T = {
+    val generator = new TranslationWriter(translator, parameters)
+    generator.writeSteps(ir, to)
+    translator.translate()
+  }
 }
 
 sealed class TranslationWriter[T, P] private (translator: Translator[T, P], parameters: Map[String, Any]) {
@@ -98,6 +108,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.cap(sideEffectKey)
         case ChooseT1(choiceTraversal) =>
           g.choose(writeLocalSteps(choiceTraversal))
+        case ChooseT2(choiceTraversal, trueChoice) =>
+          g.choose(writeLocalSteps(choiceTraversal), writeLocalSteps(trueChoice))
         case ChooseT3(traversalPredicate, trueChoice, falseChoice) =>
           g.choose(writeLocalSteps(traversalPredicate), writeLocalSteps(trueChoice), writeLocalSteps(falseChoice))
         case ChooseP2(predicate, trueChoice) =>
@@ -118,6 +130,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.drop()
         case Emit =>
           g.emit()
+        case EmitT(traversal) =>
+          g.emit(writeLocalSteps(traversal))
         case FlatMapT(traversal) =>
           g.flatMap(writeLocalSteps(traversal))
         case Fold =>

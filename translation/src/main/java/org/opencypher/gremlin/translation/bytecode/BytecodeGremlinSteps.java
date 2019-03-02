@@ -136,6 +136,14 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
 
     @Override
     public GremlinSteps<Bytecode, P> choose(GremlinSteps<Bytecode, P> traversalPredicate,
+                                            GremlinSteps<Bytecode, P> trueChoice) {
+        bytecode.addStep(Symbols.choose, traversalPredicate.current(), trueChoice.current());
+        return this;
+    }
+
+
+    @Override
+    public GremlinSteps<Bytecode, P> choose(GremlinSteps<Bytecode, P> traversalPredicate,
                                             GremlinSteps<Bytecode, P> trueChoice,
                                             GremlinSteps<Bytecode, P> falseChoice) {
         bytecode.addStep(Symbols.choose, traversalPredicate.current(), trueChoice.current(), falseChoice.current());
@@ -195,6 +203,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     @Override
     public GremlinSteps<Bytecode, P> emit() {
         bytecode.addStep(Symbols.emit);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<Bytecode, P> emit(GremlinSteps<Bytecode, P> traversal) {
+        bytecode.addStep(Symbols.emit, traversal.current());
         return this;
     }
 

@@ -116,6 +116,12 @@ class TranslatorBuilderTest {
           .buildTranslation(dslBuilder))
       .hasMessageContaining("Custom functions and predicates are not supported: cypherToUpper")
 
+    assertThatThrownBy(
+      () =>
+        parse("RETURN gremlin('g.V()')")
+          .buildTranslation(dslBuilder))
+      .hasMessageContaining("needs to be explicitly enabled")
+
     val steps = parse("MATCH (n) RETURN n.name")
       .buildTranslation(dslBuilder)
 
@@ -193,6 +199,21 @@ class TranslatorBuilderTest {
     assertThat(dslBuilder.isEnabled(TranslatorFeature.CYPHER_EXTENSIONS)).isTrue
     assertThat(dslBuilder.isEnabled(TranslatorFeature.MULTIPLE_LABELS)).isFalse
     assertThat(dslBuilder.isEnabled(TranslatorFeature.RETURN_GREMLIN_ELEMENTS)).isFalse
+  }
+
+  @Test
+  def gremlinFunction(): Unit = {
+    val dslBuilder = createBuilder.build("gremlin+experimental_gremlin_function")
+
+    val steps = parse("RETURN gremlin(\"g.V().hasLabel(\'inject\')\")")
+      .buildTranslation(dslBuilder)
+
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION)).isTrue
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.CYPHER_EXTENSIONS)).isFalse
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.MULTIPLE_LABELS)).isFalse
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.RETURN_GREMLIN_ELEMENTS)).isFalse
+
+    assertContains(steps, __.V().hasLabel("inject"))
   }
 
   private def createBuilder = {

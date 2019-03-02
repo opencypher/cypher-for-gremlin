@@ -116,6 +116,7 @@ project(':translation') {
 
         compile "org.scala-lang:scala-library:${scalaVersion}.${scalaPatchVersion}"
         compile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
+        compile "com.lihaoyi:fastparse_${scalaVersion}:2.0.4"
         compile("org.opencypher:front-end-${cypherVersion}:${cypherFrontendVersion}") {
             exclude group: 'org.scalatest'
             exclude group: 'org.scalacheck'
@@ -252,11 +253,15 @@ project(':testware:integration-tests') {
             useJUnit {
                 excludeCategories System.getProperty('excludeCategories').split(",")
             }
+        } else {
+            useJUnit {
+                excludeCategories 'org.opencypher.gremlin.groups.SkipWithPlugin'
+            }
         }
     }
 
     task('testGremlinGroovyTranslation', type: Test) {
-        systemProperty 'translate', 'gremlin+cfog_server_extensions'
+        systemProperty 'translate', 'gremlin+cfog_server_extensions+experimental_gremlin_function'
 
         if (project.hasProperty('ci')) {
             testLogging.showStandardStreams = true
@@ -272,7 +277,7 @@ project(':testware:integration-tests') {
     check.dependsOn testGremlinGroovyTranslation
 
     task('testBytecodeTranslation', type: Test) {
-        systemProperty 'translate', 'bytecode+cfog_server_extensions'
+        systemProperty 'translate', 'bytecode+cfog_server_extensions+experimental_gremlin_function'
 
         if (project.hasProperty('ci')) {
             testLogging.showStandardStreams = true

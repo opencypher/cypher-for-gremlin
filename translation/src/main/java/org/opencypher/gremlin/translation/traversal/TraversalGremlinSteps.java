@@ -171,6 +171,13 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
 
     @Override
     public GremlinSteps<GraphTraversal, P> choose(final GremlinSteps<GraphTraversal, P> traversalPredicate,
+                                                  GremlinSteps<GraphTraversal, P> trueChoice) {
+        g.choose(traversalPredicate.current(), trueChoice.current());
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> choose(final GremlinSteps<GraphTraversal, P> traversalPredicate,
                                                   GremlinSteps<GraphTraversal, P> trueChoice,
                                                   GremlinSteps<GraphTraversal, P> falseChoice) {
         g.choose(traversalPredicate.current(), trueChoice.current(), falseChoice.current());
@@ -230,6 +237,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> emit() {
         g.emit();
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> emit(GremlinSteps<GraphTraversal, P> traversal) {
+        g.emit(traversal.current());
         return this;
     }
 

@@ -91,6 +91,16 @@ case class ChooseT1(choiceTraversal: Seq[GremlinStep]) extends GremlinStep {
   }
 }
 
+case class ChooseT2(choiceTraversal: Seq[GremlinStep], trueChoice: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    ChooseT2(f(choiceTraversal), f(trueChoice))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(op(z, choiceTraversal), trueChoice)
+  }
+}
+
 case class ChooseT3(traversalPredicate: Seq[GremlinStep], trueChoice: Seq[GremlinStep], falseChoice: Seq[GremlinStep])
     extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
@@ -144,6 +154,16 @@ case class Dedup(dedupLabels: String*) extends GremlinStep
 case object Drop extends GremlinStep
 
 case object Emit extends GremlinStep
+
+case class EmitT(traversal: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    EmitT(f(traversal))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(z, traversal)
+  }
+}
 
 case class FlatMapT(traversal: Seq[GremlinStep]) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
