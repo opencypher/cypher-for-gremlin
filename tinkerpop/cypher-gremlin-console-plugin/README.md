@@ -147,7 +147,7 @@ or enabling [Cypher for Gremlin extensions](https://github.com/opencypher/cypher
 ```
 gremlin> :plugin use opencypher.gremlin
 ==>opencypher.gremlin activated
-gremlin> g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('remote-graph.properties')"
+gremlin> g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('conf/remote-graph.properties')"
 ==>cyphertraversalsource[emptygraph[empty], standard]
 gremlin> g.cypher('MATCH (p:person) RETURN p.name AS name', 'cosmosdb')
 ==>[name:marko]
