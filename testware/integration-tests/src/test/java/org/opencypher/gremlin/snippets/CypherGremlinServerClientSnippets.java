@@ -220,7 +220,7 @@ public class CypherGremlinServerClientSnippets {
 
     @Test
     public void translatorEnableExperimental() throws Exception {
-        Client gremlinClient = newGremlinClient();
+        Client gremlinClient = GremlinClientFactory.create(gremlinServer.getPort());
 
         // freshReadmeSnippet: enableExperimentalGremlin
         CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(

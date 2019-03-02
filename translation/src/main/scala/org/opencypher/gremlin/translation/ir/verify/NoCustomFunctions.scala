@@ -20,7 +20,7 @@ import org.opencypher.gremlin.translation.ir.model._
 
 /**
   * This post-condition verifies that custom functions are not used.
-  * Such translation will not work in environments w<ithout the Cypher plugin.
+  * Such translation will not work in environments without the Cypher plugin.
   */
 object NoCustomFunctions extends GremlinPostCondition {
   override def apply(steps: Seq[GremlinStep]): Option[String] = {
