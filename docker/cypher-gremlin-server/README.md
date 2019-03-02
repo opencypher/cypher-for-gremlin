@@ -1,10 +1,10 @@
 # Cypher for Gremlin Server with TinkerGraph - Docker
 
-Docker image for Gremlin Server 3.3.4 (TinkerGraph) with [Gremlin Server Cypher Plugin](../../tinkerpop/cypher-gremlin-server-plugin) installed.
+Docker image for Gremlin Server 3.4.0 (TinkerGraph) with [Gremlin Server Cypher Plugin](../../tinkerpop/cypher-gremlin-server-plugin) installed.
 
 ## Usage
 
-1. `docker run -it --rm -p 8182:8182 --name=cypher-gremlin-server cypher-for-gremlin/cypher-gremlin-server`
+1. Build and run image
 2. Connect using [Gremlin Console](../cypher-gremlin-console), [Cypher Client](../../tinkerpop/cypher-gremlin-server-client) or [Cypher Gremlin Neo4j Driver](../../tinkerpop/cypher-gremlin-neo4j-driver)
 
 ## Development

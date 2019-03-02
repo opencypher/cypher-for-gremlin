@@ -1,4 +1,4 @@
-FROM tinkerpop/gremlin-console:3.3.4
+FROM tinkerpop/gremlin-console:3.4.0
 
 COPY libs/ conf/
 COPY plugins.txt ext/
