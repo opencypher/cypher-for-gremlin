@@ -139,7 +139,7 @@ public class GremlinServerExternalResource extends ExternalResource {
 
     public String remoteConfiguration() throws Exception {
         File file = tempFolder.newFile();
-        String configuration = "hosts: [localhost]\nport: " + getPort() + "\n";
+        String configuration = "hosts: [localhost]\nport: " + getPort() + "\nserializer: { className: org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1}";
         Files.asCharSink(file, UTF_8).write(configuration);
         return file.getAbsolutePath();
     }

@@ -292,6 +292,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> index() {
+        g.append(chain("index"));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> inV() {
         g.append(chain("inV"));
         return this;
@@ -373,14 +379,32 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> max(Scope scope) {
+        g.append(chain("max", scope));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> mean() {
         g.append(chain("mean"));
         return this;
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> mean(Scope scope) {
+        g.append(chain("mean", scope));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> min() {
         g.append(chain("min"));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> min(Scope scope) {
+        g.append(chain("min", scope));
         return this;
     }
 
@@ -536,6 +560,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> sum(Scope scope) {
+        g.append(chain("sum", scope));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> tail(Scope scope, long limit) {
         g.append(chain("tail", scope, limit));
         return this;
@@ -605,6 +635,18 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     @Override
     public GremlinSteps<String, GroovyPredicate> where(GroovyPredicate predicate) {
         g.append(chain("where", predicate));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> with(String key) {
+        g.append(chain("with", key));
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<String, GroovyPredicate> with(String name, Object value) {
+        g.append(chain("with", name, value));
         return this;
     }
 

@@ -28,7 +28,7 @@ public final class GremlinClientFactory {
     }
 
     public static Client create(int port) {
-        return create(port, Serializers.GRYO_V3D0.simpleInstance());
+        return create(port, Serializers.GRAPHBINARY_V1D0.simpleInstance());
     }
 
     public static Client create(int port, MessageSerializer serializer) {

@@ -70,17 +70,17 @@ public class GroovyGremlinPredicates implements GremlinPredicates<GroovyPredicat
 
     @Override
     public GroovyPredicate startsWith(Object value) {
-        return new GroovyPredicate("cypherStartsWith", value);
+        return new GroovyPredicate("startingWith", value);
     }
 
     @Override
     public GroovyPredicate endsWith(Object value) {
-        return new GroovyPredicate("cypherEndsWith", value);
+        return new GroovyPredicate("endingWith", value);
     }
 
     @Override
     public GroovyPredicate contains(Object value) {
-        return new GroovyPredicate("cypherContains", value);
+        return new GroovyPredicate("containing", value);
     }
 
     @Override

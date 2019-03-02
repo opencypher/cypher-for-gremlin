@@ -99,6 +99,22 @@ public class GremlinConsoleTest {
     }
 
     @Test
+    public void remoteTranslatingCypher33x() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval(":remote connect " + NAME + " " + server.remoteConfiguration() + " translate gremlin33x");
+        assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
+
+        String queryResult = eval(":> " + PERSON_NAMES_QUERY + " ORDER BY p.name");
+        assertThat(queryResult)
+            .doesNotContain("CypherOpProcessor")
+            .doesNotContain("asc")
+            .contains("incr")
+            .contains(PERSON_NAMES_RESULT);
+    }
+
+    @Test
     public void remoteConsole() throws Exception {
         String usePlugin = eval(":plugin use " + NAME);
         assertThat(usePlugin).contains("==>" + NAME + " activated");
@@ -151,7 +167,7 @@ public class GremlinConsoleTest {
         String usePlugin = eval(":plugin use " + NAME);
         assertThat(usePlugin).contains("==>" + NAME + " activated");
 
-        String remoteConnect = eval("g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('" + server.driverRemoteConfiguration() + "')");
+        String remoteConnect = eval("g = AnonymousTraversalSource.traversal(CypherTraversalSource.class).traversal(CypherTraversalSource.class).withRemote('" + server.driverRemoteConfiguration() + "')");
         assertThat(remoteConnect).contains("==>cyphertraversalsource[emptygraph[empty], standard]");
 
         String queryResult = eval("g.cypher('" + PERSON_NAMES_QUERY + "')");

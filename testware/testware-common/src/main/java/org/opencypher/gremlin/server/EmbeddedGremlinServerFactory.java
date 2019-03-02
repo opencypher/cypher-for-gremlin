@@ -17,7 +17,7 @@ package org.opencypher.gremlin.server;
 
 import static java.util.Collections.singletonList;
 
-import org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0;
 
 
@@ -34,7 +34,7 @@ public final class EmbeddedGremlinServerFactory {
             .port(port)
             .propertiesPath("graph","../testware-common/src/main/resources/tinkergraph-empty.properties")
             .scriptPath("../testware-common/src/main/resources/generate-empty.groovy")
-            .serializer(GryoMessageSerializerV3d0.class, singletonList(TinkerIoRegistryV3d0.class))
+            .serializer(GraphBinaryMessageSerializerV1.class, singletonList(TinkerIoRegistryV3d0.class))
             .build();
     }
 
@@ -44,7 +44,7 @@ public final class EmbeddedGremlinServerFactory {
             .propertiesPath("graph","../testware-common/src/main/resources/tinkergraph-empty.properties")
             .propertiesPath("graph2","../testware-common/src/main/resources/tinkergraph-empty.properties")
             .scriptPath("../testware-common/src/main/resources/generate-multiple.groovy")
-            .serializer(GryoMessageSerializerV3d0.class, singletonList(TinkerIoRegistryV3d0.class))
+            .serializer(GraphBinaryMessageSerializerV1.class, singletonList(TinkerIoRegistryV3d0.class))
             .build();
     }
 }

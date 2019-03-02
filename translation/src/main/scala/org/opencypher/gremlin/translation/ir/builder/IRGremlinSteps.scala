@@ -249,6 +249,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def index(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += Index
+    this
+  }
+
   override def inject(injections: AnyRef*): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Inject(injections: _*)
     this
@@ -311,13 +316,28 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def max(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += MaxS(scope)
+    this
+  }
+
   override def mean(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Mean
     this
   }
 
+  override def mean(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += MeanS(scope)
+    this
+  }
+
   override def min(): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Min
+    this
+  }
+
+  override def min(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += MinS(scope)
     this
   }
 
@@ -462,6 +482,11 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
     this
   }
 
+  override def sum(scope: Scope): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += SumS(scope)
+    this
+  }
+
   override def tail(scope: Scope, limit: Long): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += Tail(scope, limit)
     this
@@ -522,6 +547,16 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
 
   override def where(predicate: GremlinPredicate): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
     buf += WhereP(predicate)
+    this
+  }
+
+  override def `with`(key: String): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += WithK(key)
+    this
+  }
+
+  override def `with`(name: String, value: Object): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += With(name, value)
     this
   }
 }

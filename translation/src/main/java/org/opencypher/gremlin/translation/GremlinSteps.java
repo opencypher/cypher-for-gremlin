@@ -135,6 +135,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> inV();
 
+    GremlinSteps<T, P> index();
+
     GremlinSteps<T, P> inject(Object... injections);
 
     GremlinSteps<T, P> is(P predicate);
@@ -159,9 +161,15 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> max();
 
+    GremlinSteps<T, P> max(Scope scope);
+
     GremlinSteps<T, P> mean();
 
+    GremlinSteps<T, P> mean(Scope scope);
+
     GremlinSteps<T, P> min();
+
+    GremlinSteps<T, P> min(Scope scope);
 
     GremlinSteps<T, P> not(GremlinSteps<T, P> notTraversal);
 
@@ -214,6 +222,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> sum();
 
+    GremlinSteps<T, P> sum(Scope scope);
+
     GremlinSteps<T, P> tail(Scope scope, long limit);
 
     GremlinSteps<T, P> times(int maxLoops);
@@ -238,4 +248,8 @@ public interface GremlinSteps<T, P> {
     GremlinSteps<T, P> where(GremlinSteps<T, P> whereTraversal);
 
     GremlinSteps<T, P> where(P predicate);
+
+    GremlinSteps<T, P> with(String key);
+
+    GremlinSteps<T, P> with(String name, Object value);
 }

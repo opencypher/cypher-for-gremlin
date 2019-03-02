@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.translation.ir.rewrite
 
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.WithOptions
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens._
@@ -41,8 +42,8 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.choose(P.neq(NULL), __.valueMap(true))))
-      .adds(__.by(__.valueMap(true)))
+      .removes(__.by(__.choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens))))
+      .adds(__.by(__.valueMap().`with`(WithOptions.tokens)))
   }
 
   @Test
@@ -53,10 +54,10 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true))))
-      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true))))
-      .adds(__.by(__.select("n").valueMap(true)))
-      .adds(__.by(__.select("m").valueMap(true)))
+      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens))))
+      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens))))
+      .adds(__.by(__.select("n").valueMap().`with`(WithOptions.tokens)))
+      .adds(__.by(__.select("m").valueMap().`with`(WithOptions.tokens)))
   }
 
   @Test
@@ -67,7 +68,7 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .keeps(__.choose(P.neq(NULL), __.valueMap(true)))
+      .keeps(__.choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens)))
   }
 
   @Test
@@ -77,7 +78,7 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .keeps(__.choose(P.neq(NULL), __.valueMap(true)))
+      .keeps(__.choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens)))
   }
 
   @Test
@@ -87,8 +88,8 @@ class RemoveUselessNullChecksTest {
         |RETURN n, m
       """.stripMargin))
       .withFlavor(flavor)
-      .keeps(__.select("n").choose(P.neq(NULL), __.valueMap(true)))
-      .keeps(__.select("m").choose(P.neq(NULL), __.valueMap(true)))
+      .keeps(__.select("n").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens)))
+      .keeps(__.select("m").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens)))
   }
 
   @Test
@@ -97,7 +98,7 @@ class RemoveUselessNullChecksTest {
         |OPTIONAL MATCH (n:notExisting) WITH (n) as m RETURN m
       """.stripMargin))
       .withFlavor(flavor)
-      .contains(__.choose(P.neq(NULL), __.valueMap(true)))
+      .contains(__.choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens)))
   }
 
   @Test
@@ -107,26 +108,27 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true))))
+      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens))))
       .removes(
         __.by(
           __.select("r")
             .choose(
               P.neq("  cypher.null"),
               __.project("  cypher.element", "  cypher.inv", "  cypher.outv")
-                .by(__.valueMap(true))
+                .by(__.valueMap().`with`(WithOptions.tokens))
                 .by(__.inV().id())
-                .by(__.outV().id()))))
-      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true))))
-      .adds(__.by(__.select("n").valueMap(true)))
+                .by(__.outV().id())
+            )))
+      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens))))
+      .adds(__.by(__.select("n").valueMap().`with`(WithOptions.tokens)))
       .adds(
         __.by(
           __.select("r")
             .project("  cypher.element", "  cypher.inv", "  cypher.outv")
-            .by(__.valueMap(true))
+            .by(__.valueMap().`with`(WithOptions.tokens))
             .by(__.inV().id())
             .by(__.outV().id())))
-      .adds(__.by(__.select("m").valueMap(true)))
+      .adds(__.by(__.select("m").valueMap().`with`(WithOptions.tokens)))
   }
 
   @Test
@@ -136,25 +138,26 @@ class RemoveUselessNullChecksTest {
       """.stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveUselessNullChecks)
-      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap(true))))
+      .removes(__.by(__.select("n").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens))))
       .removes(
         __.by(
           __.select("r")
             .choose(
               P.neq("  cypher.null"),
               __.project("  cypher.element", "  cypher.inv", "  cypher.outv")
-                .by(__.valueMap(true))
+                .by(__.valueMap().`with`(WithOptions.tokens))
                 .by(__.inV().id())
-                .by(__.outV().id()))))
-      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap(true))))
-      .adds(__.by(__.select("n").valueMap(true)))
+                .by(__.outV().id())
+            )))
+      .removes(__.by(__.select("m").choose(P.neq(NULL), __.valueMap().`with`(WithOptions.tokens))))
+      .adds(__.by(__.select("n").valueMap().`with`(WithOptions.tokens)))
       .adds(
         __.by(
           __.select("r")
             .project("  cypher.element", "  cypher.inv", "  cypher.outv")
-            .by(__.valueMap(true))
+            .by(__.valueMap().`with`(WithOptions.tokens))
             .by(__.inV().id())
             .by(__.outV().id())))
-      .adds(__.by(__.select("m").valueMap(true)))
+      .adds(__.by(__.select("m").valueMap().`with`(WithOptions.tokens)))
   }
 }

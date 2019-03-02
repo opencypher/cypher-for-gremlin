@@ -28,9 +28,10 @@ import java.util.stream.Stream;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
+import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.ClassRule;
@@ -38,6 +39,7 @@ import org.junit.Test;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
 import org.opencypher.gremlin.client.CypherTraversalSource;
+import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
@@ -54,6 +56,7 @@ public class CypherGremlinServerClientSnippets {
         BaseConfiguration configuration = new BaseConfiguration();
         configuration.setProperty("port", gremlinServer.getPort());
         configuration.setProperty("hosts", singletonList("localhost"));
+        configuration.setProperty("serializer.className", GraphBinaryMessageSerializerV1.class.getName());
 
         // freshReadmeSnippet: gremlinStyle
         Cluster cluster = Cluster.open(configuration);
@@ -106,7 +109,7 @@ public class CypherGremlinServerClientSnippets {
 
     @Test
     public void translating() {
-        Client gremlinClient = newGremlinClient();
+        Client gremlinClient = GremlinClientFactory.create(gremlinServer.getPort());
 
         // freshReadmeSnippet: translating
         CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(gremlinClient);
@@ -118,17 +121,9 @@ public class CypherGremlinServerClientSnippets {
             .containsExactly("marko", "vadas", "josh", "peter");
     }
 
-    private Client newGremlinClient() {
-        BaseConfiguration configuration = new BaseConfiguration();
-        configuration.setProperty("port", gremlinServer.getPort());
-        configuration.setProperty("hosts", singletonList("localhost"));
-        Cluster cluster = Cluster.open(configuration);
-        return cluster.connect();
-    }
-
     @Test
     public void neptune() {
-        Client gremlinClient = newGremlinClient();
+        Client gremlinClient = GremlinClientFactory.create(gremlinServer.getPort());
 
         // freshReadmeSnippet: neptune
         CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(
@@ -149,7 +144,7 @@ public class CypherGremlinServerClientSnippets {
 
     @Test
     public void cosmosDb() {
-        Client gremlinClient = newGremlinClient();
+        Client gremlinClient = GremlinClientFactory.create(gremlinServer.getPort());
 
         // freshReadmeSnippet: cosmosdb
         CypherGremlinClient cypherGremlinClient = CypherGremlinClient.retrieving(
@@ -205,7 +200,7 @@ public class CypherGremlinServerClientSnippets {
         String PATH_TO_REMOTE_PROPERTIES = gremlinServer.driverRemoteConfiguration();
 
         // freshReadmeSnippet: cypherTraversalWithRemote
-        CypherTraversalSource g = EmptyGraph.instance()
+        CypherTraversalSource g = AnonymousTraversalSource
             .traversal(CypherTraversalSource.class)
             .withRemote(PATH_TO_REMOTE_PROPERTIES);
 
@@ -225,7 +220,7 @@ public class CypherGremlinServerClientSnippets {
 
     @Test
     public void translatorEnableExperimental() throws Exception {
-        Client gremlinClient = newGremlinClient();
+        Client gremlinClient = GremlinClientFactory.create(gremlinServer.getPort());
 
         // freshReadmeSnippet: enableExperimentalGremlin
         CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(

@@ -22,11 +22,10 @@ import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
-import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
 
 class NeptuneFlavorTest {
 
-  private val flavor = TranslatorFlavor.gremlinServer
+  private val flavor = TranslatorFlavor.gremlinServer33x
 
   @Test
   def limit0Workaround(): Unit = {
@@ -107,29 +106,5 @@ class NeptuneFlavorTest {
       .withFlavor(neptuneFlavor)
       .contains(__.aggregate(Tokens.PATH_EDGE + "p"))
       .doesNotContain(__.sideEffect(__.aggregate(Tokens.PATH_EDGE + "p")))
-  }
-
-  @Test
-  def incrInOrder(): Unit = {
-    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name"))
-      .withFlavor(flavor)
-      .rewritingWith(NeptuneFlavor)
-      .contains(
-        __.by(
-          __.select("n")
-            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
-          incr))
-  }
-
-  @Test
-  def decrInOrder(): Unit = {
-    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name DESC"))
-      .withFlavor(flavor)
-      .rewritingWith(NeptuneFlavor)
-      .contains(
-        __.by(
-          __.select("n")
-            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
-          decr))
   }
 }

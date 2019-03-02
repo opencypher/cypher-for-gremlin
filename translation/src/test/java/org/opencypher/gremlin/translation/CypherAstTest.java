@@ -195,12 +195,11 @@ public class CypherAstTest {
         CypherAst ast = CypherAst.parse(
             "MATCH (n:N) " +
                 "WITH n.p AS s " +
-                "WHERE s STARTS WITH 'x' AND s ENDS WITH 'x' AND s CONTAINS 'x' " +
                 "RETURN toString(s)"
         );
         Translator<String, GroovyPredicate> translator = Translator.builder().gremlinGroovy().build();
 
         assertThatThrownBy(() -> ast.buildTranslation(translator))
-            .hasMessageContaining("cypherContains, cypherEndsWith, cypherStarsWith, cypherToString");
+            .hasMessageContaining("cypherToString");
     }
 }

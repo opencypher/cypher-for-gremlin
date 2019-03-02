@@ -291,6 +291,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> index() {
+        bytecode.addStep(Symbols.index);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> inject(Object... injections) {
         bytecode.addStep(Symbols.inject, (Object[]) injections);
         return this;
@@ -365,14 +371,32 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> max(Scope scope) {
+        bytecode.addStep(Symbols.max, scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> mean() {
         bytecode.addStep(Symbols.mean);
         return this;
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> mean(Scope scope) {
+        bytecode.addStep(Symbols.mean, scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> min() {
         bytecode.addStep(Symbols.min);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<Bytecode, P> min(Scope scope) {
+        bytecode.addStep(Symbols.min, scope);
         return this;
     }
 
@@ -527,6 +551,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> sum(Scope scope) {
+        bytecode.addStep(Symbols.sum, scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> tail(Scope scope, long limit) {
         bytecode.addStep(Symbols.tail, scope, limit);
         return this;
@@ -595,6 +625,18 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     @Override
     public GremlinSteps<Bytecode, P> where(P predicate) {
         bytecode.addStep(Symbols.where, predicate);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<Bytecode, P> with(String name, Object value) {
+        bytecode.addStep(Symbols.with, name, value);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<Bytecode, P> with(String key) {
+        bytecode.addStep(Symbols.with, key);
         return this;
     }
 

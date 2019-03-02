@@ -15,13 +15,15 @@
  */
 package org.opencypher.gremlin.translation.walker
 
+import org.apache.tinkerpop.gremlin.process.traversal.Order
+import org.apache.tinkerpop.gremlin.process.traversal.Scope.local
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.WithOptions
 import org.apache.tinkerpop.gremlin.structure.Column
 import org.opencypher.gremlin.translation.GremlinSteps
 import org.opencypher.gremlin.translation.Tokens._
 import org.opencypher.gremlin.translation.context.WalkerContext
 import org.opencypher.gremlin.translation.exception.SyntaxException
 import org.opencypher.gremlin.translation.translator.TranslatorFeature.RETURN_GREMLIN_ELEMENTS
-import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
 import org.opencypher.gremlin.translation.walker.NodeUtils._
 import org.opencypher.gremlin.traversal.CustomFunction
 import org.opencypher.v9_0.ast._
@@ -284,11 +286,11 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       expression: Expression): GremlinSteps[T, P] = {
 
     lazy val finalizeNode =
-      __.valueMap(true)
+      __.valueMap().`with`(WithOptions.tokens)
 
     lazy val finalizeRelationship =
       __.project(PROJECTION_ELEMENT, PROJECTION_INV, PROJECTION_OUTV)
-        .by(__.valueMap(true))
+        .by(__.valueMap().`with`(WithOptions.tokens))
         .by(__.inV().id())
         .by(__.outV().id())
 
@@ -307,7 +309,8 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
         .by(
           __.unfold()
             .is(p.neq(START))
-            .valueMap(true)
+            .valueMap()
+            .`with`(WithOptions.tokens)
             .fold())
 
     def notNull(traversal: GremlinSteps[T, P]): GremlinSteps[T, P] =
@@ -356,21 +359,21 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
 
         fnName.toLowerCase match {
           case "avg" =>
-            (Aggregation, traversal.mean())
+            (Aggregation, traversal.fold().coalesce(__.mean(local), __.constant(NULL)))
           case "collect" =>
             (Aggregation, traversal.fold())
           case "count" =>
             (Aggregation, traversal.count())
           case "max" =>
-            (Aggregation, traversal.max())
+            (Aggregation, traversal.fold().coalesce(__.max(local), __.constant(NULL)))
           case "min" =>
-            (Aggregation, traversal.min())
+            (Aggregation, traversal.fold().coalesce(__.min(local), __.constant(NULL)))
           case "percentilecont" =>
             (Aggregation, aggregateWithArguments(args, alias).map(CustomFunction.cypherPercentileCont()))
           case "percentiledisc" =>
             (Aggregation, aggregateWithArguments(args, alias).map(CustomFunction.cypherPercentileDisc()))
           case "sum" =>
-            (Aggregation, traversal.sum())
+            (Aggregation, traversal.fold().coalesce(__.sum(local), __.constant(NULL)))
           case _ =>
             throw new SyntaxException(s"Unknown function '$fnName'")
         }
@@ -388,9 +391,9 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     for (sortItem <- sortItems) {
       val order = sortItem match {
         case _: AscSortItem =>
-          DeprecatedOrderAccessor.incr
+          Order.asc
         case _: DescSortItem =>
-          DeprecatedOrderAccessor.decr
+          Order.desc
       }
       val sortExpression = walkLocal(sortItem.expression, None)
       g.by(sortExpression, order)

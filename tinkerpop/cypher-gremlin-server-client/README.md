@@ -144,7 +144,7 @@ or enabling [Cypher for Gremlin extensions](https://github.com/opencypher/cypher
 
 <!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#cypherTraversalWithRemote) -->
 ```java
-CypherTraversalSource g = EmptyGraph.instance()
+CypherTraversalSource g = AnonymousTraversalSource
     .traversal(CypherTraversalSource.class)
     .withRemote(PATH_TO_REMOTE_PROPERTIES);
 

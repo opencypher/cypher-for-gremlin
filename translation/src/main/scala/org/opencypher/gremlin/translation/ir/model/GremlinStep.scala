@@ -199,6 +199,8 @@ case class InE(edgeLabels: String*) extends GremlinStep
 
 case object InV extends GremlinStep
 
+case object Index extends GremlinStep
+
 case class Inject(injections: Any*) extends GremlinStep
 
 case class Is(predicate: GremlinPredicate) extends GremlinStep
@@ -239,9 +241,15 @@ case class Math(expression: String) extends GremlinStep
 
 case object Max extends GremlinStep
 
+case class MaxS(scope: Scope) extends GremlinStep
+
 case object Mean extends GremlinStep
 
+case class MeanS(scope: Scope) extends GremlinStep
+
 case object Min extends GremlinStep
+
+case class MinS(scope: Scope) extends GremlinStep
 
 case class Not(notTraversal: Seq[GremlinStep]) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
@@ -357,6 +365,8 @@ case class Skip(skip: Long) extends GremlinStep
 
 case object Sum extends GremlinStep
 
+case class SumS(scope: Scope) extends GremlinStep
+
 case class Times(maxLoops: Int) extends GremlinStep
 
 case class Tail(scope: Scope, limit: Long) extends GremlinStep
@@ -404,3 +414,7 @@ case class WhereT(whereTraversal: Seq[GremlinStep]) extends GremlinStep {
 }
 
 case class WhereP(predicate: GremlinPredicate) extends GremlinStep
+
+case class WithK(key: String) extends GremlinStep
+
+case class With(name: String, value: Object) extends GremlinStep

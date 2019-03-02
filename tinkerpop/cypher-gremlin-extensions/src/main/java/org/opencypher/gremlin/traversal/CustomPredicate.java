@@ -22,27 +22,6 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 
 public enum CustomPredicate implements BiPredicate<Object, Object> {
-    cypherStartsWith {
-        @Override
-        public boolean test(Object a, Object b) {
-            return a.toString().startsWith(b.toString());
-        }
-    },
-
-    cypherEndsWith {
-        @Override
-        public boolean test(Object a, Object b) {
-            return a.toString().endsWith(b.toString());
-        }
-    },
-
-    cypherContains {
-        @Override
-        public boolean test(Object a, Object b) {
-            return a.toString().contains(b.toString());
-        }
-    },
-
     cypherIsNode {
         @Override
         public boolean test(Object a, Object b) {
@@ -63,18 +42,6 @@ public enum CustomPredicate implements BiPredicate<Object, Object> {
             return a instanceof String;
         }
     };
-
-    public static P<Object> cypherStartsWith(final Object prefix) {
-        return new P<>(CustomPredicate.cypherStartsWith, prefix);
-    }
-
-    public static P<Object> cypherEndsWith(final Object suffix) {
-        return new P<>(CustomPredicate.cypherEndsWith, suffix);
-    }
-
-    public static P<Object> cypherContains(final Object sequence) {
-        return new P<>(CustomPredicate.cypherContains, sequence);
-    }
 
     public static P<Object> cypherIsNode() {
         return new P<>(CustomPredicate.cypherIsNode, null);

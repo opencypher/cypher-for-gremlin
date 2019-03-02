@@ -24,6 +24,7 @@ import org.opencypher.gremlin.translation.ir.helpers.JavaHelpers.assertThatThrow
 import org.opencypher.gremlin.translation.ir.helpers.TraversalAssertions
 import org.opencypher.gremlin.translation.ir.model.{GremlinPredicate, GremlinStep}
 import org.opencypher.gremlin.translation.ir.rewrite.{CosmosDbFlavor, CustomFunctionFallback, NeptuneFlavor}
+import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
 import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.JavaConverters._
@@ -125,6 +126,26 @@ class TranslatorBuilderTest {
     val steps = parse("MATCH (n) RETURN n.name")
       .buildTranslation(dslBuilder)
 
+    assertThat(dslBuilder.flavor().rewriters.contains(CustomFunctionFallback)).isTrue
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.CYPHER_EXTENSIONS)).isFalse
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.MULTIPLE_LABELS)).isFalse
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.RETURN_GREMLIN_ELEMENTS)).isFalse
+  }
+
+  @Test
+  def gremlin33x(): Unit = {
+    val dslBuilder = createBuilder.build("gremlin33x")
+
+    assertThatThrownBy(
+      () =>
+        parse("RETURN toupper('test')")
+          .buildTranslation(dslBuilder))
+      .hasMessageContaining("Custom functions and predicates are not supported: cypherToUpper")
+
+    val steps = parse("MATCH (n) RETURN n.name ORDER BY n.name")
+      .buildTranslation(dslBuilder)
+
+    assertContains(steps, __.by(__.select("n.name"), DeprecatedOrderAccessor.incr))
     assertThat(dslBuilder.flavor().rewriters.contains(CustomFunctionFallback)).isTrue
     assertThat(dslBuilder.isEnabled(TranslatorFeature.CYPHER_EXTENSIONS)).isFalse
     assertThat(dslBuilder.isEnabled(TranslatorFeature.MULTIPLE_LABELS)).isFalse

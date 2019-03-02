@@ -294,12 +294,12 @@ public class SpecificsTest {
         Client client = gremlinServer.gremlinClient();
 
         List<Result> results = client.submit(
-            "g.V().hasLabel('notExisting').min()")
+            "g.V().hasLabel('notExisting').fold().coalesce(max(local), constant('NaN'))")
             .all().get();
 
         assertThat(results)
-            .extracting(Result::getObject)
-            .containsExactly(Double.NaN);
+            .extracting(Result::getString)
+            .containsExactly("NaN");
     }
 
     @Test

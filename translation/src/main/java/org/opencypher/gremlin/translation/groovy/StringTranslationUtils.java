@@ -76,7 +76,12 @@ public final class StringTranslationUtils {
     }
 
     private static String toStringLiteral(String agrument) {
-        return "'" + agrument.replaceAll("(['\\\\])", "\\\\$1") + "'";
+        String s = agrument.replaceAll("(['\\\\])", "\\\\$1");
+        if (s.contains("\n")) {
+            return "\"\"\"" + s + "\"\"\"";
+        } else {
+            return "'" + s + "'";
+        }
     }
 
 }

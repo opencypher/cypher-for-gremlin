@@ -158,6 +158,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.inE(edgeLabels: _*)
         case InV =>
           g.inV()
+        case Index =>
+          g.index()
         case Inject(injections @ _*) =>
           g.inject(injections.map(writeValue): _*)
         case Is(predicate) =>
@@ -182,10 +184,16 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.math(expression)
         case Max =>
           g.max()
+        case MaxS(scope) =>
+          g.max(scope)
         case Mean =>
           g.mean()
+        case MeanS(scope) =>
+          g.mean(scope)
         case Min =>
           g.min()
+        case MinS(scope) =>
+          g.min(scope)
         case Not(notTraversal) =>
           g.not(writeLocalSteps(notTraversal))
         case OptionT(pickToken, optionalTraversal) =>
@@ -236,6 +244,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.skip(skip)
         case Sum =>
           g.sum()
+        case SumS(scope) =>
+          g.sum(scope)
         case Tail(scope, limit) =>
           g.tail(scope, limit)
         case Times(maxLoops) =>
@@ -260,6 +270,10 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.where(writeLocalSteps(whereTraversal))
         case WhereP(predicate) =>
           g.where(writePredicate(predicate))
+        case WithK(name) =>
+          g.`with`(name)
+        case With(name, value) =>
+          g.`with`(name, value)
       }
     }
     g

@@ -329,6 +329,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> index() {
+        g.index();
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> inject(Object... injections) {
         g.inject(injections);
         return this;
@@ -400,6 +406,13 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
         return this;
     }
 
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> max(Scope scope) {
+        g.max(scope);
+        return this;
+    }
+
     @Override
     public GremlinSteps<GraphTraversal, P> mean() {
         g.mean();
@@ -407,8 +420,20 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> mean(Scope scope) {
+        g.mean(scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> min() {
         g.min();
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> min(Scope scope) {
+        g.min(scope);
         return this;
     }
 
@@ -572,6 +597,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> sum(Scope scope) {
+        g.sum(scope);
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> tail(Scope scope, long limit) {
         g.tail(scope, limit);
         return this;
@@ -614,6 +645,7 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    @SuppressWarnings( "deprecation" )
     public GremlinSteps<GraphTraversal, P> valueMap(boolean includeTokens) {
         g.valueMap(includeTokens);
         return this;
@@ -640,6 +672,18 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     @Override
     public GremlinSteps<GraphTraversal, P> where(P predicate) {
         g.where(predicate);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> with(String key) {
+        g.with(key);
+        return this;
+    }
+
+    @Override
+    public GremlinSteps<GraphTraversal, P> with(String name, Object value) {
+        g.with(name, value);
         return this;
     }
 

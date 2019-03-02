@@ -16,6 +16,7 @@
 package org.opencypher.gremlin.translation.traversal;
 
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.TextP;
 import org.opencypher.gremlin.translation.GremlinPredicates;
 import org.opencypher.gremlin.traversal.CustomPredicate;
 
@@ -68,17 +69,17 @@ public class TraversalGremlinPredicates implements GremlinPredicates<P> {
 
     @Override
     public P startsWith(Object value) {
-        return CustomPredicate.cypherStartsWith(value);
+        return TextP.startingWith(value.toString());
     }
 
     @Override
     public P endsWith(Object value) {
-        return CustomPredicate.cypherEndsWith(value);
+        return TextP.endingWith(value.toString());
     }
 
     @Override
     public P contains(Object value) {
-        return CustomPredicate.cypherContains(value);
+        return TextP.containing(value.toString());
     }
 
     @Override

@@ -21,20 +21,19 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.ThrowableAssert
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
-import org.opencypher.gremlin.translation.Tokens.NULL
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.ir.helpers.JavaHelpers.objects
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
-import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor.{decr, incr}
 
 class CosmosDbFlavorTest {
 
   val flavor = new TranslatorFlavor(
     rewriters = Seq(
       InlineFlatMapTraversal,
-      RemoveUselessSteps
+      RemoveUselessSteps,
+      Gremlin33xFlavor
     ),
     postConditions = Nil
   )
@@ -111,30 +110,6 @@ class CosmosDbFlavorTest {
         parse("WITH ['a', 'b', 'c'] AS a RETURN range(1, size(a) - 1) as r")
           .translate(flavor.extend(Seq(CosmosDbFlavor)))
     }).hasMessageContaining("Ranges with expressions are not supported")
-  }
-
-  @Test
-  def incrInOrder(): Unit = {
-    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name"))
-      .withFlavor(flavor)
-      .rewritingWith(NeptuneFlavor)
-      .contains(
-        __.by(
-          __.select("n")
-            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
-          incr))
-  }
-
-  @Test
-  def decrInOrder(): Unit = {
-    assertThat(parse("MATCH (n) RETURN n ORDER BY n.name DESC"))
-      .withFlavor(flavor)
-      .rewritingWith(NeptuneFlavor)
-      .contains(
-        __.by(
-          __.select("n")
-            .choose(P.neq(NULL), __.choose(__.values("name"), __.values("name"), __.constant("  cypher.null"))),
-          decr))
   }
 
   @Test
