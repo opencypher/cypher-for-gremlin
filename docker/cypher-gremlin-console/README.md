@@ -4,7 +4,7 @@ Docker image for Gremlin Console 3.4.0 with [Gremlin Console Cypher plugin](../.
 
 ## Usage
 
-1. Build and run image 
+1. Build and run image or `docker run --rm -it -e JAVA_OPTIONS="-Dplugins=v3d3" --net="host" --name=cypher-gremlin-console neueda/cypher-gremlin-console`
 2. Console history contains examples (press `↑` or `Ctrl+R`)
   - For client side translation append `translate gremlin`, `translate neptune`, `translate cosmosdb` to `:remote connect` command 
   - For server side translation connect to [Gremlin Server with Gremlin Server Cypher Plugin](../cypher-gremlin-server) 
