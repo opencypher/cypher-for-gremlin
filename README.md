@@ -9,18 +9,11 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 <img src="https://drive.google.com/uc?export=view&id=1HPxZrNkJxrmnd8BlB8YQqX5-pc9TWKUn" width="600" />
 
-The toolkit is composed of:
-
-- [translation](translation): Cypher to Gremlin translation library for Java
-- [tinkerpop/cypher-gremlin-extensions](tinkerpop/cypher-gremlin-extensions): Cypher-specific custom functions and predicates for Gremlin
-- [tinkerpop/cypher-gremlin-server-plugin](tinkerpop/cypher-gremlin-server-plugin): Gremlin Server plugin that enables Cypher query processing (also includes Cypher extensions above)
-- [tinkerpop/cypher-gremlin-console-plugin](tinkerpop/cypher-gremlin-console-plugin): Gremlin Console plugin that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server
-- [tinkerpop/cypher-gremlin-server-client](tinkerpop/cypher-gremlin-server-client): Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
-- [tinkerpop/cypher-gremlin-neo4j-driver](tinkerpop/cypher-gremlin-neo4j-driver): Neo4j Java API wrapper for users familiar with Neo4j
-
 ## Highlights
 
 ### Gremlin Console
+
+[Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server:
 
 <img src="https://drive.google.com/uc?export=view&id=1vncDfbO8o9Ef060SFOBmlQpt4v7etGrJ" />
 
@@ -29,6 +22,17 @@ The toolkit is composed of:
 1. Run [Docker images](docker)
 2. Start experimenting with Cypher for Gremlin with the [Gremlin Console Cypher plugin](tinkerpop/cypher-gremlin-console-plugin). Follow the link for installation and usage instructions.
 3. For API usage take a look at the [Cypher for Gremlin Demo](https://github.com/neueda/cypher-for-gremlin-demo) project.
+
+## Toolkit
+
+The toolkit is composed of:
+
+- [translation](translation): Cypher to Gremlin translation library for Java
+- [tinkerpop/cypher-gremlin-extensions](tinkerpop/cypher-gremlin-extensions): Cypher-specific custom functions and predicates for Gremlin
+- [tinkerpop/cypher-gremlin-server-plugin](tinkerpop/cypher-gremlin-server-plugin): Gremlin Server plugin that enables Cypher query processing (also includes Cypher extensions above)
+- [tinkerpop/cypher-gremlin-console-plugin](tinkerpop/cypher-gremlin-console-plugin): Gremlin Console plugin that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server
+- [tinkerpop/cypher-gremlin-server-client](tinkerpop/cypher-gremlin-server-client): Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
+- [tinkerpop/cypher-gremlin-neo4j-driver](tinkerpop/cypher-gremlin-neo4j-driver): Neo4j Java API wrapper for users familiar with Neo4j
 
 ## Language Support
 
@@ -58,7 +62,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 * For more details refer to [list of scenarios](../../wiki/Non-translatable-queries) in Cypher TCK without known translation to Gremlin.
 
-### Implementation
+# Implementation
 
 The translation process uses a reasonably sophisticated and flexible approach. Cypher query is parsed by the [openCypher Frontend](https://github.com/opencypher/front-end) and translated to an [internal representation](translation/src/main/scala/org/opencypher/gremlin/translation/ir/model) by the Cypher for Gremlin. The internal representation is transformed by a set of [rewriters](translation/src/main/scala/org/opencypher/gremlin/translation/ir/rewrite) to adapt the query for system specifics of different Gremlin implementations (JanusGraph, Cosmos DB, AWS Neptune), then converted to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode).
 
