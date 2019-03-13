@@ -5,6 +5,8 @@
 
 Cypher for Gremlin is a toolkit for users of [Apache TinkerPop™](https://tinkerpop.apache.org/) that allows querying Gremlin databases with [Cypher](https://neo4j.com/docs/developer-manual/current/cypher/), the industry's most widely used [property graph](https://github.com/opencypher/openCypher/blob/master/docs/property-graph-model.adoc) query language defined and maintained by the [openCypher](http://www.opencypher.org) project.
 
+Cypher query is translated to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode):
+
 <img src="https://drive.google.com/uc?export=view&id=1HPxZrNkJxrmnd8BlB8YQqX5-pc9TWKUn" width="600" />
 
 The toolkit is composed of:
@@ -17,6 +19,8 @@ The toolkit is composed of:
 - [tinkerpop/cypher-gremlin-neo4j-driver](tinkerpop/cypher-gremlin-neo4j-driver): Neo4j Java API wrapper for users familiar with Neo4j
 
 ## Highlights
+
+### Gremlin Console
 
 <img src="https://drive.google.com/uc?export=view&id=1vncDfbO8o9Ef060SFOBmlQpt4v7etGrJ" />
 
@@ -36,8 +40,11 @@ With Cypher for Gremlin you can use the following Cypher language features:
 - `CREATE`, `MERGE`, `SET`, `REMOVE`, and `DETACH DELETE`
 - `CASE` expressions
 - `UNION` operations
+- See latest [TCK Report](https://opencypher.github.io/cypher-for-gremlin/test-reports/1.0.0/cucumber-html-reports/overview-features.html) for a detailed overview of language coverage.
 
-It is not guaranteed that all instances and combinations of the listed features will work. However, the produced translation covers around 75% of the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) and an additional 15% on Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions). Note that latest TCK M11 covers [Temporal types and functions](https://github.com/opencypher/openCypher/commit/e4b3b7540b506ed2755f0a8116a3f465a5bd9ad9#diff-c26e3fb690fe2673a8f456add0fb3ec8) support of which is currently not implemented in Cypher for Gremlin. Coverage of TCK M10 on TinkerGraph:
+It is not guaranteed that all instances and combinations of the listed features will work. However, in addition to integration tests, correctness of translation is verified by the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) (TCK). The TCK is an openCypher artifact and contains a comprehensive set of test scenarios validating different features of the Cypher language. In its current version, Cypher for Gremlin covers 75% of the TCK M10 and an additional 15% with [Cypher extensions](tinkerpop/cypher-gremlin-extensions) installed on the corresponding Gremlin Server. 
+
+Coverage of TCK M10 on TinkerGraph:
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
 
@@ -51,7 +58,9 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 * For more details refer to [list of scenarios](../../wiki/Non-translatable-queries) in Cypher TCK without known translation to Gremlin.
 
-See the current [TCK report](testware/tck) for a detailed overview of language coverage.
+### Implementation
+
+The translation process uses a reasonably sophisticated and flexible approach. Cypher query is parsed by the [openCypher Frontend](https://github.com/opencypher/front-end) and translated to an [internal representation](translation/src/main/scala/org/opencypher/gremlin/translation/ir/model) by the Cypher for Gremlin. The internal representation is transformed by a set of [rewriters](translation/src/main/scala/org/opencypher/gremlin/translation/ir/rewrite) to adapt the query for system specifics of different Gremlin implementations (JanusGraph, Cosmos DB, AWS Neptune), then converted to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode).
 
 ## Related
 
