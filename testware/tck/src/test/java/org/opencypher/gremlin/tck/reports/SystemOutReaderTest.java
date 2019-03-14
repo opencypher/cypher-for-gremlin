@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.tck.reports.tools;
+package org.opencypher.gremlin.tck.reports;
 
-import cucumber.api.TestCase;
-import cucumber.api.TestStep;
-import gherkin.events.PickleEvent;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-public class CucumberEventFactory {
+import org.junit.Test;
 
-    @SuppressWarnings("deprecation")
-    public static TestCase testCase(List<TestStep> steps, PickleEvent event){
-        return new TestCase(steps, event, false);
+public class SystemOutReaderTest {
+    @Test
+    public void testTee() throws Exception {
+        SystemOutReader output = new SystemOutReader();
+        System.out.println("test1");
+        System.out.println("test2");
+        String out1 = output.clear();
+        System.out.println("test3");
+        String out2 = output.clear();
+        output.close();
+        System.out.println("test4");
+
+        assertEquals(out1, "test1\ntest2\n");
+        assertEquals(out2, "test3\n");
     }
 }

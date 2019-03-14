@@ -26,7 +26,7 @@ import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertT
 import org.opencypher.gremlin.translation.ir.model.GremlinBinding
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 class GroupStepFiltersTest {
 
@@ -140,7 +140,7 @@ class GroupStepFiltersTest {
 
   @Test
   def whereWithParam(): Unit = {
-    val params = new java.util.HashMap[String, Any](Map("nID" -> 1))
+    val params = new java.util.HashMap[String, Any](Map("nID" -> 1).asJava)
     assertThat(
       parse(
         """
@@ -166,7 +166,7 @@ class GroupStepFiltersTest {
 
   @Test
   def whereWithParams(): Unit = {
-    val params = new java.util.HashMap[String, Any](Map("nID" -> 1))
+    val params = new java.util.HashMap[String, Any](Map("nID" -> 1).asJava)
     assertThat(
       parse(
         """
