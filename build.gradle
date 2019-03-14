@@ -4,11 +4,12 @@ buildscript {
         guavaVersion = '22.0'
         junitVersion = '4.12'
         cypherVersion = '9.0'
-        cypherFrontendVersion = '9.0.20181012'
-        scalaVersion = '2.11'
-        scalaPatchVersion = '12'
+        cypherFrontendVersion = '9.0.20190305'
+        scalaVersion = '2.12'
+        scalaPatchVersion = '7'
         springBootVersion = '1.5.6.RELEASE'
         tinkerpopVersion = '3.4.0'
+        tckVersion = '1.0.0-M13'
         githubProject = "opencypher/cypher-for-gremlin"
         tagPrefix = 'v'
         updateFilesOnRelease = []
@@ -375,7 +376,7 @@ project(':testware:tck') {
         testCompile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
         testCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
-        testCompile 'com.github.opencypher.openCypher:tck-api:48fb78cd7f'
+        testCompile "org.opencypher:tck-api_${scalaVersion}:${tckVersion}"
         testCompile 'io.cucumber:cucumber-core:2.4.0'
         testCompile 'net.masterthought:cucumber-reporting:3.16.0'
         testCompile 'org.freemarker:freemarker:2.3.23'

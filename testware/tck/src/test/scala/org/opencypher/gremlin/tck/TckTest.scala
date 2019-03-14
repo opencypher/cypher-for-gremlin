@@ -83,6 +83,7 @@ class TckTest {
     val ignore = Option(ignoreFile).filter(!_.isEmpty).map(readIgnore).getOrElse(Seq())
 
     val scenarios = CypherTCK.allTckScenarios
+      .filter(s => !isTemporal(s))
       .filter(s => !ignore.contains((s.featureName, s.name)))
       .filter(s => Set(null, "", s.name).contains(scenarioName))
       .filter(s => Set(null, "", s.featureName).contains(featureName))
@@ -99,6 +100,10 @@ class TckTest {
       DynamicTest.dynamicTest(name, executable)
     }
     dynamicTests.asJavaCollection
+  }
+
+  private def isTemporal(s: Scenario) = {
+    s.featureName.startsWith("Temporal") || s.featureName == "DurationBetweenAcceptance"
   }
 
   private def readIgnore(path: String): Seq[(String, String)] = {

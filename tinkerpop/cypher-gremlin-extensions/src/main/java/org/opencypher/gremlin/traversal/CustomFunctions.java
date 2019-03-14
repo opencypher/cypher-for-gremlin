@@ -222,7 +222,7 @@ public final class CustomFunctions {
             Object from = args.get(1);
             Object to = args.get(2);
 
-            if (container == Tokens.NULL) {
+            if (container == Tokens.NULL || from == Tokens.NULL || to == Tokens.NULL) {
                 return Tokens.NULL;
             }
 

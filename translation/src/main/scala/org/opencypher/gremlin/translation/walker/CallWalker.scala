@@ -116,6 +116,8 @@ private class CallWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, 
             (result, alias)
           case ProcedureResultItem(None, Variable(result)) =>
             (result, result)
+          case n =>
+            context.unsupported("result", n)
         }
     }.getOrElse(Seq())
   }

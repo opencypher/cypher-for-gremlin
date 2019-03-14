@@ -22,10 +22,8 @@ import org.opencypher.gremlin.translation.walker.NodeUtils.setProperty
 import org.opencypher.v9_0.ast._
 import org.opencypher.v9_0.expressions.SemanticDirection.INCOMING
 import org.opencypher.v9_0.expressions._
-import org.opencypher.v9_0.util.ASTNode
 import org.opencypher.v9_0.util.symbols.{CypherType, NodeType, RelationshipType}
-
-import scala.collection.mutable
+import org.opencypher.v9_0.util.{ASTNode, InputPosition}
 
 /**
   * AST walker that handles translation
@@ -40,7 +38,6 @@ object CreateWalker {
 }
 
 private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
-  private val nodeHistory = new mutable.Stack[String]
 
   def walk(patternParts: Seq[PatternPart]): Unit = {
     context.markFirstStatement()
@@ -63,8 +60,11 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
     flattenRelationshipChain(patternElement).foreach {
       case n: NodePattern =>
         walkNodePattern(n)
-      case n: RelationshipPattern =>
-        walkRelationshipPattern(n)
+      case RelationshipChain(
+          NodePattern(Some(Variable(n1Name)), _, _, _),
+          relationship,
+          NodePattern(Some(Variable(n2Name)), _, _, _)) =>
+        walkRelationshipPattern(n1Name, relationship, n2Name)
       case n =>
         context.unsupported("create pattern", n)
     }
@@ -73,8 +73,6 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
   private def walkNodePattern(nodePattern: NodePattern): Unit = {
     nodePattern match {
       case NodePattern(Some(Variable(name)), labels, propertiesOption, _) =>
-        nodeHistory.push(name)
-
         context.alias(name) match {
           case Some(_) =>
             validateDeclaredNode(name, labels, propertiesOption)
@@ -96,14 +94,13 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
     }
   }
 
-  private def walkRelationshipPattern(relationshipPattern: RelationshipPattern): Unit = {
+  private def walkRelationshipPattern(
+      n1Name: String,
+      relationshipPattern: RelationshipPattern,
+      n2Name: String): Unit = {
     relationshipPattern match {
       case RelationshipPattern(_, Nil, _, _, _, _, _) => // Ignored
       case RelationshipPattern(Some(Variable(rName)), types, _, propertiesOption, direction, _, _) =>
-        val n2Name = nodeHistory.pop
-        val n1Name = nodeHistory.pop
-        nodeHistory.push(n2Name)
-
         val typeNames = types.map {
           case RelTypeName(relName) => relName
         }
@@ -141,11 +138,16 @@ private class CreateWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T
 
   private def flattenRelationshipChain(acc: Vector[ASTNode], node: ASTNode): Vector[ASTNode] = {
     node match {
-      case RelationshipChain(left, relationship, right) =>
+      case RelationshipChain(left @ RelationshipChain(_, _, leftLastNode), relationship, right) =>
         acc ++
           flattenRelationshipChain(Vector(), left) ++
-          flattenRelationshipChain(Vector(), right) ++
-          Vector(relationship)
+          flattenRelationshipChain(Vector(), right) :+
+          RelationshipChain(leftLastNode, relationship, right)(InputPosition.NONE)
+      case relationship @ RelationshipChain(left, _, right) =>
+        acc ++
+          flattenRelationshipChain(Vector(), left) ++
+          flattenRelationshipChain(Vector(), right) :+
+          relationship
       case n =>
         acc :+ n
     }

@@ -22,17 +22,16 @@ import cucumber.api._
 import cucumber.api.event._
 import cucumber.api.formatter.Formatter
 import cucumber.runner.{EventBus, PickleTestStep, TimeService}
-import cucumber.runtime.formatter.PluginFactory
 import cucumber.runtime._
+import cucumber.runtime.formatter.PluginFactory
 import gherkin.events.PickleEvent
 import gherkin.pickles.PickleStep
 import org.junit.jupiter.api.extension.{AfterAllCallback, BeforeAllCallback, ExtensionContext}
-import org.opencypher.gremlin.tck.reports.tools.{CucumberEventFactory, SystemOutReader}
 import org.opencypher.tools.tck.api.events.TCKEvents
 import org.opencypher.tools.tck.api.events.TCKEvents.StepResult
 import org.opencypher.tools.tck.api.{Measure, SideEffects, Step}
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 /** Generates Cucumber test report for TCK scenarios.
   *
@@ -52,13 +51,13 @@ import scala.collection.JavaConversions._
   *
   * }</pre>
   */
-class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
+class CucumberReportAdapter extends BeforeAllCallback with AfterAllCallback {
 
   private val DefaultReportFilePath = "cucumber.json"
   private val DefaultReportFormat = "json"
 
-  private val featureUri = scala.collection.mutable.Map[String, String]()
-  private val stepTimestamp = scala.collection.mutable.Map[String, Long]()
+  private val featureUri = collection.mutable.Map[String, String]()
+  private val stepTimestamp = collection.mutable.Map[String, Long]()
   private val stepUri = ""
 
   private val bus = new EventBus(TimeService.SYSTEM)
@@ -155,7 +154,9 @@ class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
   }
 
   private def mapTestSteps(steps: util.List[PickleStep]): util.List[TestStep] = {
-    for (step <- steps) yield new PickleTestStep(stepUri, step, definitionMatch).asInstanceOf[TestStep]
+    steps.asScala
+      .map(new PickleTestStep(stepUri, _, definitionMatch).asInstanceOf[TestStep])
+      .asJava
   }
 
   private def definitionMatch = {
@@ -175,19 +176,17 @@ class CucumberReportAdapter() extends BeforeAllCallback with AfterAllCallback {
   }
 
   private def configureCucumberPlugins(): Unit = {
-    val plugins = new RuntimeOptions(seqAsJavaList(List.empty[String])).getPlugins
+    val plugins = new RuntimeOptions(new util.ArrayList[String]).getPlugins
 
     if (Env.INSTANCE.get("cucumber.options") == null) {
       val formatter = new PluginFactory().create(s"$DefaultReportFormat:$DefaultReportFilePath").asInstanceOf[Formatter]
-      plugins += formatter
+      plugins.add(formatter)
     }
 
-    for (plugin <- plugins) {
-      plugin match {
-        case listener: EventListener =>
-          listener.setEventPublisher(bus)
-        case _ =>
-      }
+    plugins.asScala.foreach {
+      case listener: EventListener =>
+        listener.setEventPublisher(bus)
+      case _ =>
     }
   }
 
