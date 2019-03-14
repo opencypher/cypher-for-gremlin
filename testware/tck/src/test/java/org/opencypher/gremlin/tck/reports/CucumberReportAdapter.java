@@ -15,10 +15,9 @@
  */
 package org.opencypher.gremlin.tck.reports;
 
-import cucumber.api.Plugin;
+import cucumber.api.PickleStepTestStep;
 import cucumber.api.Result;
 import cucumber.api.TestCase;
-import cucumber.api.TestStep;
 import cucumber.api.event.EventListener;
 import cucumber.api.event.TestCaseStarted;
 import cucumber.api.event.TestRunFinished;
@@ -27,27 +26,20 @@ import cucumber.api.event.TestSourceRead;
 import cucumber.api.event.TestStepFinished;
 import cucumber.api.event.TestStepStarted;
 import cucumber.api.event.WriteEvent;
-import cucumber.runner.EventBus;
-import cucumber.runner.PickleTestStep;
-import cucumber.runner.TimeService;
+import cucumber.runner.CanonicalOrderEventPublisher;
 import cucumber.runtime.Env;
-import cucumber.runtime.RuntimeOptions;
-import cucumber.runtime.UndefinedStepDefinitionMatch;
 import cucumber.runtime.formatter.PluginFactory;
-import gherkin.events.PickleEvent;
 import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleStep;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.opencypher.gremlin.tck.reports.model.TCKTestCase;
+import org.opencypher.gremlin.tck.reports.model.TCKTestStep;
 import org.opencypher.tools.tck.api.CypherValueRecords;
 import org.opencypher.tools.tck.api.ExecutionFailed;
 import org.opencypher.tools.tck.api.Measure;
@@ -79,89 +71,82 @@ import scala.util.Either;
  * }</pre>
  */
 public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallback {
-
     private final String DEFAULT_REPORT_FILE_PATH = "cucumber.json";
     private final String DEFAULT_REPORT_FORMAT = "json";
 
     private Map<String, String> featureUri = new HashMap<>();
     private Map<String, Long> stepTimestamp = new HashMap<>();
+    private TestCase currentTestCase;
 
-    private EventBus bus = new EventBus(TimeService.SYSTEM);
+    private CanonicalOrderEventPublisher bus = new CanonicalOrderEventPublisher();
     private SystemOutReader output = new SystemOutReader();
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        configureCucumberPlugins();
+        String cucumberOptions = Env.INSTANCE.get("cucumber.options", DEFAULT_REPORT_FORMAT + ":" + DEFAULT_REPORT_FILE_PATH);
+
+        PluginFactory pluginFactory = new PluginFactory();
+        EventListener json = (EventListener) pluginFactory.create(cucumberOptions);
+        json.setEventPublisher(bus);
 
         TCKEvents.feature().subscribe(adapt(featureEvent()));
         TCKEvents.scenario().subscribe(adapt(scenarioEvent()));
         TCKEvents.stepStarted().subscribe(adapt(stepStartedEvent()));
         TCKEvents.stepFinished().subscribe(adapt(stepFinishedEvent()));
 
-        bus.send(new TestRunStarted(bus.getTime()));
+        bus.handle(new TestRunStarted(getTime()));
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
-        bus.send(new TestRunFinished(bus.getTime()));
+        bus.handle(new TestRunFinished(getTime()));
         output.close();
-    }
-
-    private Consumer<TCKEvents.StepFinished> stepFinishedEvent() {
-        return event -> {
-            Step step = event.step();
-            if (shouldReport(step)) {
-                Long timeNow = bus.getTime();
-                logOutput(step, timeNow);
-                Long duration = timeNow - stepTimestamp.get(event.correlationId());
-                Result.Type status = getStatus(event.result());
-                PickleTestStep testStep = getTestStep(step.source());
-                Result result = new Result(status, duration, errorOrNull(event.result()));
-                TestStepFinished cucumberEvent = new TestStepFinished(timeNow, testStep, result);
-                bus.send(cucumberEvent);
-            } else {
-                output.clear();
-            }
-        };
-    }
-
-    private Consumer<TCKEvents.StepStarted> stepStartedEvent() {
-        return event -> {
-            Long startedAt = bus.getTime();
-            stepTimestamp.put(event.correlationId(), startedAt);
-            Step step = event.step();
-            if (shouldReport(step)) {
-                TestStepStarted cucumberEvent = new TestStepStarted(startedAt, getTestStep(step.source()));
-                bus.send(cucumberEvent);
-            }
-        };
-    }
-
-    @SuppressWarnings("deprecation")
-    private Consumer<Scenario> scenarioEvent() {
-        return scenario -> {
-            Pickle pickle = scenario.source();
-            List<TestStep> steps = pickle.getSteps()
-                .stream()
-                .map(this::getTestStep)
-                .map(TestStep.class::cast)
-                .collect(Collectors.toList());
-            TestCase testCase = new TestCase(steps, new PickleEvent(featureUri.get(scenario.featureName()), pickle), false);
-            bus.send(new TestCaseStarted(bus.getTime(), testCase));
-        };
     }
 
     private Consumer<TCKEvents.FeatureRead> featureEvent() {
         return feature -> {
             String uri = shortenUri(feature.uri());
             featureUri.put(feature.name(), uri);
-            bus.send(new TestSourceRead(bus.getTime(), uri, feature.source()));
+            bus.handle(new TestSourceRead(getTime(), uri, feature.source()));
         };
     }
 
-    private PickleTestStep getTestStep(PickleStep source) {
-        UndefinedStepDefinitionMatch definition = new UndefinedStepDefinitionMatch(source);
-        return new PickleTestStep("n/a", source, definition);
+    private Consumer<Scenario> scenarioEvent() {
+        return scenario -> {
+            Pickle pickle = scenario.source();
+            currentTestCase = new TCKTestCase(pickle);
+            bus.handle(new TestCaseStarted(getTime(), currentTestCase));
+        };
+    }
+
+    private Consumer<TCKEvents.StepStarted> stepStartedEvent() {
+        return event -> {
+            Long startedAt = getTime();
+            stepTimestamp.put(event.correlationId(), startedAt);
+            Step step = event.step();
+            if (shouldReport(step)) {
+                TestStepStarted cucumberEvent = new TestStepStarted(startedAt, currentTestCase, new TCKTestStep(step.source()));
+                bus.handle(cucumberEvent);
+            }
+        };
+    }
+
+    private Consumer<TCKEvents.StepFinished> stepFinishedEvent() {
+        return event -> {
+            Step step = event.step();
+            if (shouldReport(step)) {
+                Long timeNow = getTime();
+                logOutput(step, timeNow);
+                Long duration = timeNow - stepTimestamp.get(event.correlationId());
+                Result.Type status = getStatus(event.result());
+                PickleStepTestStep testStep = new TCKTestStep(step.source());
+                Result result = new Result(status, duration, errorOrNull(event.result()));
+                TestStepFinished cucumberEvent = new TestStepFinished(timeNow, currentTestCase, testStep, result);
+                bus.handle(cucumberEvent);
+            } else {
+                output.clear();
+            }
+        };
     }
 
     private String shortenUri(String uri) {
@@ -186,27 +171,12 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
         }
 
         if (!log.isEmpty()) {
-            bus.send(new WriteEvent(timeNow, log));
+            bus.handle(new WriteEvent(timeNow, currentTestCase, log));
         }
     }
 
     private boolean shouldReport(Step step) {
         return !(step instanceof Measure);
-    }
-
-    private void configureCucumberPlugins() {
-        List<Plugin> plugins = new RuntimeOptions(new ArrayList<>()).getPlugins();
-
-        if (Env.INSTANCE.get("cucumber.options") == null) {
-            Plugin formatter = new PluginFactory().create(DEFAULT_REPORT_FORMAT + ":" + DEFAULT_REPORT_FILE_PATH);
-            plugins.add(formatter);
-        }
-
-        plugins
-            .stream()
-            .filter(p -> p instanceof EventListener)
-            .map(EventListener.class::cast)
-            .forEach(plugin -> plugin.setEventPublisher(bus));
     }
 
     private <T> AbstractFunction1<T, BoxedUnit> adapt(Consumer<T> procedure) {
@@ -217,5 +187,9 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
                 return BoxedUnit.UNIT;
             }
         };
+    }
+
+    private Long getTime() {
+        return System.currentTimeMillis();
     }
 }
