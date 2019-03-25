@@ -9,7 +9,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 <img src="https://drive.google.com/uc?export=view&id=1HPxZrNkJxrmnd8BlB8YQqX5-pc9TWKUn" width="600" />
 
-# Table of Contents
+## Table of Contents
 
 * [Highlights](#highlights)
 * [Quick Start](#quick-start)
@@ -29,6 +29,22 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 [Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server:
 
 <img src="https://drive.google.com/uc?export=view&id=1vncDfbO8o9Ef060SFOBmlQpt4v7etGrJ" />
+
+### Gremlin Server Client
+
+Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
+
+### Gremlin Neo4j Driver
+
+Neo4j Java API wrapper for users familiar with Neo4j
+
+### Gremlin Server Plugin
+
+Gremlin Server plugin that enables Cypher query processing. For example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript):
+
+
+
+ 
 
 ## Quick Start
 
