@@ -9,7 +9,8 @@ Included in the plugin:
 
 ## Prerequisites
 
-- [Gremlin Server](https://tinkerpop.apache.org/) based on TinkerPop 3.3.0+ or a compatible graph database  
+- [Gremlin Server](https://tinkerpop.apache.org/) based on TinkerPop 3.4.0+ or a compatible graph database
+  - For 3.2.0+ compatibility use [0.9.13](https://github.com/opencypher/cypher-for-gremlin/releases/tag/v0.9.13)
 - Ability to install Gremlin Server plugins
 
 ## Installation
@@ -29,7 +30,7 @@ The plugin and its dependencies can be automatically downloaded and installed in
 * For TinkerPop 3.2.x (including JanusGraph):
   - Run `bin/gremlin-server.sh` with `-i` switch and supply the Maven coordinates of the plugin:
   ```sh
-  bin/gremlin-server.sh -i org.opencypher.gremlin cypher-gremlin-server-plugin 1.0.0
+  bin/gremlin-server.sh -i org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.13
   ...
   ```
   
@@ -55,4 +56,4 @@ Run the following commands from project root.
 
 ## Troubleshooting
 
-- Make sure that Gremlin Server or the database you are using is based on TinkerPop 3.3.0 or later.
+- Make sure that Gremlin Server or the database you are using is based on TinkerPop 3.4.0 or later.

@@ -9,6 +9,19 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 <img src="https://drive.google.com/uc?export=view&id=1HPxZrNkJxrmnd8BlB8YQqX5-pc9TWKUn" width="600" />
 
+# Table of Contents
+
+* [Highlights](#highlights)
+* [Quick Start](#quick-start)
+* [Toolkit](#toolkit)
+* [Language Support](#language-support)
+* [Implementation](#implementation)
+* [Related](#related)
+* [Development](#development)
+* [How to contribute](#how-to-contribute)
+* [License](#license)
+* [Copyright](#copyright)
+
 ## Highlights
 
 ### Gremlin Console
@@ -62,7 +75,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 * For more details refer to [list of scenarios](../../wiki/Non-translatable-queries) in Cypher TCK without known translation to Gremlin.
 
-# Implementation
+## Implementation
 
 The translation process uses a reasonably sophisticated and flexible approach. Cypher query is parsed by the [openCypher Frontend](https://github.com/opencypher/front-end) and translated to an [internal representation](translation/src/main/scala/org/opencypher/gremlin/translation/ir/model) by the Cypher for Gremlin. The internal representation is transformed by a set of [rewriters](translation/src/main/scala/org/opencypher/gremlin/translation/ir/rewrite) to adapt the query for system specifics of different Gremlin implementations (JanusGraph, Cosmos DB, AWS Neptune), then converted to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode).
 

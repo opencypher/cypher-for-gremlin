@@ -8,7 +8,7 @@ The plugin can work with any Gremlin Server and perform translation to Gremlin i
 
 ## Prerequisites
 
-- [Gremlin Console](https://tinkerpop.apache.org/)
+- [Gremlin Console](https://tinkerpop.apache.org/) 3.4.0+ (see [Troubleshooting](#troubleshooting))
 - A running [Gremlin Server](https://tinkerpop.apache.org/) or a compatible graph database
 
 ## Installation
@@ -98,6 +98,12 @@ You can also download a pre-configured Gremlin Console distribution from the [re
    ==>josh
    ==>peter
    ```
+   
+1. See translation using `:> EXPLAIN` command:
+  ```
+  gremlin> :> EXPLAIN MATCH (p:person) RETURN p
+  ==>[translation:g.V().hasLabel('person').project('p').by(__.valueMap().with('~tinkerpop.valueMap.tokens')),options:[EXPLAIN]]  
+  ```
 
 ### Amazon Neptune
 
@@ -162,3 +168,7 @@ Note that Cypher query may return null values, represented by [string constant](
 
 * Executing a Cypher query causes an error: `java.lang.ClassCastException: java.lang.String cannot be cast to java.util.Map`.
   - Make sure that Gremlin Console has `org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0` serializer with `serializeResultToString` disabled.
+* Executing a Cypher query causes an error: `java.lang.NoClassDefFoundError:`.
+  - Upgrade Gremlin Console to TinkerPop 3.4.0+, or use earlier (TinkerPop 3.3.x) version of [Cypher for Gremlin 0.9.13](https://github.com/opencypher/cypher-for-gremlin/releases/tag/v0.9.13)   
+* After installation, plugin does not appear in `:plugin list`
+  - Cypher for Gremlin requires Gremlin Console 3.3.0+ (See #254)
