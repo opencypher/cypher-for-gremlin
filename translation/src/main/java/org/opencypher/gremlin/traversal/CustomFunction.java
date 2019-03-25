@@ -170,6 +170,13 @@ public class CustomFunction {
         );
     }
 
+    public static CustomFunction cypherReplace() {
+        return new CustomFunction(
+            "cypherReplace",
+            CustomFunctions.cypherReplace()
+        );
+    }
+
     public static CustomFunction cypherCopyProperties() {
         return new CustomFunction(
             "cypherCopyProperties",

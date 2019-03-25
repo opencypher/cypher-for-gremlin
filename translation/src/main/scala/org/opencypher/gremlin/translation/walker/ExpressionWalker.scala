@@ -233,6 +233,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
           case "properties"       => traversals.head.flatMap(properties(args))
           case "range"            => range(args)
           case "relationships"    => traversals.head.flatMap(filterElements(args, includeNodes = false))
+          case "replace"          => asList(args(0), args(1), args(2)).map(CustomFunction.cypherReplace())
           case "size"             => traversals.head.flatMap(size(args))
           case "startnode"        => traversals.head.flatMap(notNull(__.outV(), context))
           case "round"            => traversals.head.map(CustomFunction.cypherRound())
