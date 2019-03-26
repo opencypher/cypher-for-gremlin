@@ -32,15 +32,15 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ### Gremlin Server Client
 
-Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
+[Gremlin Server client](tinkerpop/cypher-gremlin-server-client) wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
 
 ### Gremlin Neo4j Driver
 
-Neo4j Java API wrapper for users familiar with Neo4j
+[Neo4j Java API wrapper](tinkerpop/cypher-gremlin-neo4j-driver) for users familiar with Neo4j
 
 ### Gremlin Server Plugin
 
-Gremlin Server plugin that enables Cypher query processing. For example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript):
+[Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin) that enables Cypher query processing. For example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript):
 
 
 
