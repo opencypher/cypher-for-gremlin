@@ -385,6 +385,29 @@ public class FunctionTest {
 
     @Test
     @Category(SkipExtensions.CustomFunctions.class)
+    public void stringReplace() {
+        assertThatThrownBy(() -> submitAndGet("RETURN replace(1, 'a', 'b')"))
+                                .hasMessageContaining("expected String but was Integer");
+        assertThatThrownBy(() -> submitAndGet("RETURN replace('a', 1,  'b')"))
+                                .hasMessageContaining("expected String but was Integer");
+        assertThatThrownBy(() -> submitAndGet("RETURN replace('a', 'b', 1)"))
+                                .hasMessageContaining("expected String but was Integer");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "WITH 'word' as m RETURN " +
+                "replace(m, 'o', 'a') as a," +
+                "replace(m, 'rd', 'rk') as b," +
+                "replace(null, 'o', 'a') as c," +
+                "replace(m, null, 'a') as d," +
+                "replace(m, 'o', null) as e");
+
+        assertThat(results)
+            .extracting("a", "b", "c", "d", "e")
+            .containsExactlyInAnyOrder(tuple("ward", "work", null, null, null));
+    }
+
+    @Test
+    @Category(SkipExtensions.CustomFunctions.class)
     public void trim() {
         List<Map<String, Object>> results = submitAndGet(
             "WITH \" word \" as m RETURN " +
