@@ -36,7 +36,19 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ### Gremlin Neo4j Driver
 
-[Neo4j Java API wrapper](tinkerpop/cypher-gremlin-neo4j-driver) for users familiar with Neo4j
+[Neo4j Java API wrapper](tinkerpop/cypher-gremlin-neo4j-driver) for users familiar with Neo4j:
+
+<!-- [freshReadmeSource](testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#demo) -->
+```java
+Driver driver = GremlinDatabase.driver(uri);
+
+try (Session session = driver.session()) {
+    StatementResult result = session.run("MATCH (n) RETURN count(n) as count");
+    int n = result.single().get("count").asInt();
+
+    assertThat(n).isEqualTo(0); // 0
+}
+```
 
 ### Gremlin Server Plugin
 

@@ -42,6 +42,22 @@ public class CypherGremlinNeo4jDriverSnippets {
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
 
     @Test
+    public void demo() throws Exception {
+        String uri = "//localhost:" + gremlinServer.getPort();
+
+        // freshReadmeSnippet: demo
+        Driver driver = GremlinDatabase.driver(uri);
+
+        try (Session session = driver.session()) {
+            StatementResult result = session.run("MATCH (n) RETURN count(n) as count");
+            int n = result.single().get("count").asInt();
+
+            assertThat(n).isEqualTo(0); // 0
+        }
+        // freshReadmeSnippet: demo
+    }
+
+    @Test
     public void createDriver() throws Exception {
         String pathToGremlinConfiguration = "../../tinkerpop/cypher-gremlin-server-plugin/src/main/resources/local-gremlin-server.yaml";
 
