@@ -458,6 +458,12 @@ public final class CustomFunctions {
         return cypherFunction(a -> asList(((String) a.get(0)).split((String) a.get(1))), String.class, String.class);
     }
 
+    public static Function<Traverser, Object> cypherReplace() {
+        return cypherFunction(a ->
+                ((String) a.get(0)).replace((String) a.get(1), (String) a.get(2)),
+            String.class, String.class, String.class);
+    }
+
     public static Function<Traverser, Object> cypherCopyProperties() {
         return traverser -> {
             List args = cast(traverser.get(), List.class);
