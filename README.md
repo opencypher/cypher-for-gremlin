@@ -11,6 +11,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ## Table of Contents
 
+* [Overview](#overview)
 * [Highlights](#highlights)
 * [Quick Start](#quick-start)
 * [Toolkit](#toolkit)
@@ -22,9 +23,11 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 * [License](#license)
 * [Copyright](#copyright)
 
-## Highlights
+## Overview
 
 <img src="https://drive.google.com/uc?export=view&id=1CGd27HFNSHv0lu1QDiQwHm5unl9icwmD" />
+
+## Highlights
 
 ### Gremlin Console
 
