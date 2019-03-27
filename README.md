@@ -32,7 +32,28 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ### Gremlin Server Client
 
-[Gremlin Server client](tinkerpop/cypher-gremlin-server-client) wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
+[Gremlin Server client](tinkerpop/cypher-gremlin-server-client) wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server or translate Cypher queries to Gremlin on client side, and send translated query to servers.
+
+<!-- [freshReadmeSource](testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#demo) -->
+```java
+String cypher = "MATCH (p:person) WHERE p.age > 25 RETURN p.name";
+
+Cluster cluster = Cluster.open(configuration);
+Client gremlinClient = cluster.connect();
+
+// Server has Gremlin Server plugin installed
+// Send Cypher to server
+CypherGremlinClient cypherGremlinClient = CypherGremlinClient.plugin(gremlinClient);
+List<Map<String, Object>> cypherResults = cypherGremlinClient.submit(cypher).all();
+
+// Client side translation
+// Send Gremlin to server
+CypherGremlinClient translatingGremlinClient = CypherGremlinClient.translating(gremlinClient);
+List<Map<String, Object>> gremlinResults = translatingGremlinClient.submit(cypher).all();
+
+assertThat(cypherResults).isEqualTo(gremlinResults);
+
+```
 
 ### Gremlin Neo4j Driver
 
@@ -52,11 +73,19 @@ try (Session session = driver.session()) {
 
 ### Gremlin Server Plugin
 
-[Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin) that enables Cypher query processing. For example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript):
+[Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin) that enables Cypher query processing on Gremlin Server. For example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript) 2.7.0 by setting `processor` to `cypher`:
 
+```js
+// npm install gremlin@2.7.0
 
+const gremlin = require('gremlin');
 
- 
+const client = gremlin.createClient(8182, "localhost", {processor: `"cypher"`})
+
+client.execute('RETURN 1', (err, results) => {
+    console.log(results)
+});
+```
 
 ## Quick Start
 
