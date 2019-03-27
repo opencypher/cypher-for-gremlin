@@ -25,7 +25,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ## Overview
 
-<img src="https://drive.google.com/uc?export=view&id=1CGd27HFNSHv0lu1QDiQwHm5unl9icwmD" />
+<img src="https://drive.google.com/uc?export=view&id=1jSZH9sJtm4sBu8ZoAaEdb7CLXzRWdUlq" />
 
 ## Highlights
 
