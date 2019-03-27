@@ -15,14 +15,16 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 * [Quick Start](#quick-start)
 * [Toolkit](#toolkit)
 * [Language Support](#language-support)
-* [Implementation](#implementation)
 * [Related](#related)
+* [Implementation](#implementation)
 * [Development](#development)
 * [How to contribute](#how-to-contribute)
 * [License](#license)
 * [Copyright](#copyright)
 
 ## Highlights
+
+<img src="https://drive.google.com/uc?export=view&id=1CGd27HFNSHv0lu1QDiQwHm5unl9icwmD" width="600" />
 
 ### Gremlin Console
 
@@ -132,15 +134,15 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 * Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
 * For more details refer to [list of scenarios](../../wiki/Non-translatable-queries) in Cypher TCK without known translation to Gremlin.
 
+## Related
+
+* [Gizmo](https://github.com/rebar-cloud/gizmo) is a Web UI that makes it easy to interact with TinkerPop graph databases such as AWS Neptune and Azure CosmosDB with the Cypher query language. Uses [Cypher Gremlin Neo4j Driver](tinkerpop/cypher-gremlin-neo4j-driver) for translation.
+
 ## Implementation
 
 <img src="https://drive.google.com/uc?export=view&id=1-7jcZiVaNBfP1-6S9eFemu_NhazIBnqG" />
 
 The translation process uses a reasonably sophisticated and flexible approach. Cypher query is parsed by the [openCypher Frontend](https://github.com/opencypher/front-end) and translated to an [internal representation](translation/src/main/scala/org/opencypher/gremlin/translation/ir/model) by the Cypher for Gremlin. The internal representation is transformed by a set of [rewriters](translation/src/main/scala/org/opencypher/gremlin/translation/ir/rewrite) to adapt the query for system specifics of different Gremlin implementations (JanusGraph, Cosmos DB, AWS Neptune), then converted to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode).
-
-## Related
-
-* [Gizmo](https://github.com/rebar-cloud/gizmo) is a Web UI that makes it easy to interact with TinkerPop graph databases such as AWS Neptune and Azure CosmosDB with the Cypher query language. Uses [Cypher Gremlin Neo4j Driver](tinkerpop/cypher-gremlin-neo4j-driver) for translation.
 
 ## Development
 
