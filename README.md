@@ -37,7 +37,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ### Gremlin Server Client
 
-[Gremlin Server client](tinkerpop/cypher-gremlin-server-client) wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server or translate Cypher queries to Gremlin on client side, and send translated query to servers.
+[Gremlin Server client](tinkerpop/cypher-gremlin-server-client) wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server or translate Cypher queries to Gremlin on client side, and send translated query to servers:
 
 <!-- [freshReadmeSource](testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#demo) -->
 ```java
@@ -62,7 +62,7 @@ assertThat(cypherResults).isEqualTo(gremlinResults);
 
 ### Gremlin Neo4j Driver
 
-[Neo4j Java API wrapper](tinkerpop/cypher-gremlin-neo4j-driver) for users familiar with Neo4j:
+[Implementation of Neo4j API interfaces](tinkerpop/cypher-gremlin-neo4j-driver) for users familiar with Neo4j:
 
 <!-- [freshReadmeSource](testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinNeo4jDriverSnippets.java#demo) -->
 ```java
@@ -85,9 +85,9 @@ try (Session session = driver.session()) {
 
 const gremlin = require('gremlin');
 
-const client = gremlin.createClient(8182, "localhost", {processor: `"cypher"`})
+const client = gremlin.createClient(8182, "localhost", {processor: "cypher"})
 
-client.execute('RETURN 1', (err, results) => {
+client.execute('MATCH (n) RETURN count(n)', (err, results) => {
     console.log(results)
 });
 ```
