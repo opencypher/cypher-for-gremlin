@@ -22,9 +22,11 @@ import java.util.List;
 
 public class TCKTestStep implements PickleStepTestStep {
     private PickleStep step;
+    private String uri;
 
-    public TCKTestStep(PickleStep step) {
+    public TCKTestStep(PickleStep step, String uri) {
         this.step = step;
+        this.uri = uri;
     }
 
     @Override
@@ -34,12 +36,12 @@ public class TCKTestStep implements PickleStepTestStep {
 
     @Override
     public String getStepLocation() {
-        return "n/a" + ":" + Integer.toString(getStepLine());
+        return uri + ":" + getStepLine();
     }
 
     @Override
     public int getStepLine() {
-        return step.getLocations().get(step.getLocations().size() - 1).getLine();
+        return step.getLocations().get(0).getLine();
     }
 
     @Override
@@ -64,6 +66,6 @@ public class TCKTestStep implements PickleStepTestStep {
 
     @Override
     public String getCodeLocation() {
-        return null;
+        return "";
     }
 }

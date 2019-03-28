@@ -49,7 +49,6 @@ public class OpenCypherTckReport {
 
         // optional configuration
         Configuration configuration = new Configuration(reportOutputDirectory, "cypher-for-gremlin");
-        configuration.setParallelTesting(false);
         configuration.setRunWithJenkins(false);
         configuration.setBuildNumber(System.getProperty("projectVersion"));
 

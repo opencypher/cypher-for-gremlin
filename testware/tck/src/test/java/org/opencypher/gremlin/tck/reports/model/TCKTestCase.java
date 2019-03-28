@@ -23,20 +23,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TCKTestCase implements TestCase {
-    private int line = 0;
-    private String name;
-    private String designation = "";
-    private String uri = "";
-    private List<TestStep> testSteps;
-    private List<PickleTag> tags;
+    private final int line;
+    private final String name;
+    private final String designation = "";
+    private final String uri;
+    private final List<TestStep> testSteps;
+    private final List<PickleTag> tags;
 
-    public TCKTestCase(Pickle pickle) {
-        name = pickle.getName();
-        testSteps = pickle.getSteps()
+    public TCKTestCase(Pickle pickle, String uri) {
+        this.name = pickle.getName();
+        this.testSteps = pickle.getSteps()
             .stream()
-            .map(TCKTestStep::new)
+            .map(step -> new TCKTestStep(step, uri))
             .collect(Collectors.toList());
-        tags = pickle.getTags();
+        this.tags = pickle.getTags();
+        this.uri = uri;
+        this.line  = pickle.getLocations().get(0).getLine();
     }
 
     @Override
