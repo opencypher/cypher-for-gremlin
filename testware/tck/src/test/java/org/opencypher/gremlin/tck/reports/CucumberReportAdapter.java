@@ -18,6 +18,7 @@ package org.opencypher.gremlin.tck.reports;
 import cucumber.api.PickleStepTestStep;
 import cucumber.api.Result;
 import cucumber.api.TestCase;
+import cucumber.api.TestStep;
 import cucumber.api.event.EventListener;
 import cucumber.api.event.TestCaseStarted;
 import cucumber.api.event.TestRunFinished;
@@ -29,11 +30,13 @@ import cucumber.api.event.WriteEvent;
 import cucumber.runner.CanonicalOrderEventPublisher;
 import cucumber.runtime.RuntimeOptions;
 import cucumber.runtime.formatter.PluginFactory;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import gherkin.pickles.Pickle;
+import gherkin.pickles.PickleLocation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -94,38 +97,44 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
         TCKEvents.stepStarted().subscribe(adapt(stepStartedEvent()));
         TCKEvents.stepFinished().subscribe(adapt(stepFinishedEvent()));
 
-        bus.handle(new TestRunStarted(getTime()));
+        bus.handle(new TestRunStarted(time()));
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
-        bus.handle(new TestRunFinished(getTime()));
+        bus.handle(new TestRunFinished(time()));
         output.close();
     }
 
     private Consumer<TCKEvents.FeatureRead> featureReadEvent() {
         return feature -> {
-            String uri = shortenUri(feature.uri());
-            featureNameToUri.put(feature.name(), uri);
-            bus.handle(new TestSourceRead(getTime(), uri, feature.source()));
+            featureNameToUri.put(feature.name(), feature.uri());
+            bus.handle(new TestSourceRead(time(), feature.uri(), feature.source()));
         };
     }
 
     private Consumer<Scenario> scenarioStartedEvent() {
         return scenario -> {
-            String featureName = featureNameToUri.get(scenario.featureName());
-            currentTestCase = new TCKTestCase(scenario.source(), featureName);
-            bus.handle(new TestCaseStarted(getTime(), currentTestCase));
+            String featureUri = featureNameToUri.get(scenario.featureName());
+            Pickle pickle = scenario.source();
+            List<TestStep> steps = pickle.getSteps()
+                .stream()
+                .map(step -> new TCKTestStep(step, featureUri, outlineLocation(step.getLocations())))
+                .collect(Collectors.toList());
+            int line = outlineLocation(pickle.getLocations());
+            currentTestCase = new TCKTestCase(pickle, steps, featureUri, line);
+            bus.handle(new TestCaseStarted(time(), currentTestCase));
         };
     }
 
     private Consumer<TCKEvents.StepStarted> stepStartedEvent() {
         return event -> {
-            Long startedAt = getTime();
+            Long startedAt = time();
             stepTimestamp.put(event.correlationId(), startedAt);
             Step step = event.step();
             if (shouldReport(step)) {
-                TCKTestStep testStep = new TCKTestStep(step.source(), currentTestCase.getUri());
+                int line = outlineLocation(step.source().getLocations());
+                TCKTestStep testStep = new TCKTestStep(step.source(), currentTestCase.getUri(), line);
                 TestStepStarted cucumberEvent = new TestStepStarted(startedAt, currentTestCase, testStep);
                 bus.handle(cucumberEvent);
             }
@@ -136,11 +145,12 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
         return event -> {
             Step step = event.step();
             if (shouldReport(step)) {
-                Long timeNow = getTime();
+                Long timeNow = time();
                 logOutput(step, timeNow);
                 Long duration = timeNow - stepTimestamp.get(event.correlationId());
                 Result.Type status = getStatus(event.result());
-                PickleStepTestStep testStep = new TCKTestStep(step.source(), currentTestCase.getUri());
+                int line = outlineLocation(step.source().getLocations());
+                PickleStepTestStep testStep = new TCKTestStep(step.source(), currentTestCase.getUri(), line);
                 Result result = new Result(status, duration, errorOrNull(event.result()));
                 TestStepFinished cucumberEvent = new TestStepFinished(timeNow, currentTestCase, testStep, result);
                 bus.handle(cucumberEvent);
@@ -150,24 +160,11 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
         };
     }
 
-    private String shortenUri(String uri) {
-        Path path = Paths.get(uri);
-        return path.getParent().getFileName() + "/" + path.getFileName();
-    }
-
-    private Result.Type getStatus(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
-        return result.isRight() ? Result.Type.PASSED : Result.Type.FAILED;
-    }
-
-    private Throwable errorOrNull(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
-        return result.isLeft() ? result.left().get() : null;
-    }
-
     private void logOutput(Step step, Long timeNow) {
         String log = output.clear();
 
         if (step instanceof SideEffects) {
-            SideEffects sideEffects = SideEffects.class.cast(step);
+            SideEffects sideEffects = (SideEffects) step;
             log = log + sideEffects.expected();
         }
 
@@ -190,7 +187,19 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
         };
     }
 
-    private Long getTime() {
+    private Result.Type getStatus(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
+        return result.isRight() ? Result.Type.PASSED : Result.Type.FAILED;
+    }
+
+    private Throwable errorOrNull(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
+        return result.isLeft() ? result.left().get() : null;
+    }
+
+    private Long time() {
         return System.currentTimeMillis();
+    }
+
+    private int outlineLocation(List<PickleLocation> locations) {
+        return locations.get(locations.size() - 1).getLine();
     }
 }

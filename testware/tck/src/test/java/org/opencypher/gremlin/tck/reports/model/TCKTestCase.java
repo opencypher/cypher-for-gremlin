@@ -20,25 +20,20 @@ import cucumber.api.TestStep;
 import gherkin.pickles.Pickle;
 import gherkin.pickles.PickleTag;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TCKTestCase implements TestCase {
     private final int line;
     private final String name;
-    private final String designation = "";
     private final String uri;
     private final List<TestStep> testSteps;
     private final List<PickleTag> tags;
 
-    public TCKTestCase(Pickle pickle, String uri) {
+    public TCKTestCase(Pickle pickle, List<TestStep> testSteps, String uri, int line) {
         this.name = pickle.getName();
-        this.testSteps = pickle.getSteps()
-            .stream()
-            .map(step -> new TCKTestStep(step, uri))
-            .collect(Collectors.toList());
+        this.testSteps = testSteps;
         this.tags = pickle.getTags();
         this.uri = uri;
-        this.line  = pickle.getLocations().get(0).getLine();
+        this.line  = line;
     }
 
     @Override
@@ -53,7 +48,7 @@ public class TCKTestCase implements TestCase {
 
     @Override
     public String getScenarioDesignation() {
-        return designation;
+        return "";
     }
 
     @Override
