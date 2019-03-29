@@ -15,7 +15,7 @@
  */
 package org.opencypher.gremlin.tck.reports;
 
-import cucumber.api.Plugin;
+import cucumber.api.PickleStepTestStep;
 import cucumber.api.Result;
 import cucumber.api.TestCase;
 import cucumber.api.TestStep;
@@ -27,19 +27,11 @@ import cucumber.api.event.TestSourceRead;
 import cucumber.api.event.TestStepFinished;
 import cucumber.api.event.TestStepStarted;
 import cucumber.api.event.WriteEvent;
-import cucumber.runner.EventBus;
-import cucumber.runner.PickleTestStep;
-import cucumber.runner.TimeService;
-import cucumber.runtime.Env;
+import cucumber.runner.CanonicalOrderEventPublisher;
 import cucumber.runtime.RuntimeOptions;
-import cucumber.runtime.UndefinedStepDefinitionMatch;
 import cucumber.runtime.formatter.PluginFactory;
-import gherkin.events.PickleEvent;
 import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleStep;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import gherkin.pickles.PickleLocation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +40,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.opencypher.gremlin.tck.reports.model.TCKTestCase;
+import org.opencypher.gremlin.tck.reports.model.TCKTestStep;
 import org.opencypher.tools.tck.api.CypherValueRecords;
 import org.opencypher.tools.tck.api.ExecutionFailed;
 import org.opencypher.tools.tck.api.Measure;
@@ -79,134 +73,108 @@ import scala.util.Either;
  * }</pre>
  */
 public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallback {
+    private final String DEFAULT_FORMATTER_PLUGIN = "json:cucumber.json";
 
-    private final String DEFAULT_REPORT_FILE_PATH = "cucumber.json";
-    private final String DEFAULT_REPORT_FORMAT = "json";
+    private final CanonicalOrderEventPublisher bus = new CanonicalOrderEventPublisher();
+    private final SystemOutReader output = new SystemOutReader();
 
-    private Map<String, String> featureUri = new HashMap<>();
-    private Map<String, Long> stepTimestamp = new HashMap<>();
+    private final Map<String, String> featureNameToUri = new HashMap<>();
+    private final Map<String, Long> stepTimestamp = new HashMap<>();
 
-    private EventBus bus = new EventBus(TimeService.SYSTEM);
-    private SystemOutReader output = new SystemOutReader();
+    private TestCase currentTestCase;
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        configureCucumberPlugins();
+        RuntimeOptions options = new RuntimeOptions("");
+        String cucumberOptions = options.getPluginFormatterNames().stream().findFirst().orElse(DEFAULT_FORMATTER_PLUGIN);
 
-        TCKEvents.feature().subscribe(adapt(featureEvent()));
-        TCKEvents.scenario().subscribe(adapt(scenarioEvent()));
+        PluginFactory pluginFactory = new PluginFactory();
+        EventListener json = (EventListener) pluginFactory.create(cucumberOptions);
+        json.setEventPublisher(bus);
+
+        TCKEvents.feature().subscribe(adapt(featureReadEvent()));
+        TCKEvents.scenario().subscribe(adapt(scenarioStartedEvent()));
         TCKEvents.stepStarted().subscribe(adapt(stepStartedEvent()));
         TCKEvents.stepFinished().subscribe(adapt(stepFinishedEvent()));
 
-        bus.send(new TestRunStarted(bus.getTime()));
+        bus.handle(new TestRunStarted(time()));
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
-        bus.send(new TestRunFinished(bus.getTime()));
+        bus.handle(new TestRunFinished(time()));
         output.close();
+    }
+
+    private Consumer<TCKEvents.FeatureRead> featureReadEvent() {
+        return feature -> {
+            featureNameToUri.put(feature.name(), feature.uri());
+            bus.handle(new TestSourceRead(time(), feature.uri(), feature.source()));
+        };
+    }
+
+    private Consumer<Scenario> scenarioStartedEvent() {
+        return scenario -> {
+            String featureUri = featureNameToUri.get(scenario.featureName());
+            Pickle pickle = scenario.source();
+            List<TestStep> steps = pickle.getSteps()
+                .stream()
+                .map(step -> new TCKTestStep(step, featureUri, outlineLocation(step.getLocations())))
+                .collect(Collectors.toList());
+            int line = outlineLocation(pickle.getLocations());
+            currentTestCase = new TCKTestCase(pickle, steps, featureUri, line);
+            bus.handle(new TestCaseStarted(time(), currentTestCase));
+        };
+    }
+
+    private Consumer<TCKEvents.StepStarted> stepStartedEvent() {
+        return event -> {
+            Long startedAt = time();
+            stepTimestamp.put(event.correlationId(), startedAt);
+            Step step = event.step();
+            if (shouldReport(step)) {
+                int line = outlineLocation(step.source().getLocations());
+                TCKTestStep testStep = new TCKTestStep(step.source(), currentTestCase.getUri(), line);
+                TestStepStarted cucumberEvent = new TestStepStarted(startedAt, currentTestCase, testStep);
+                bus.handle(cucumberEvent);
+            }
+        };
     }
 
     private Consumer<TCKEvents.StepFinished> stepFinishedEvent() {
         return event -> {
             Step step = event.step();
             if (shouldReport(step)) {
-                Long timeNow = bus.getTime();
+                Long timeNow = time();
                 logOutput(step, timeNow);
                 Long duration = timeNow - stepTimestamp.get(event.correlationId());
                 Result.Type status = getStatus(event.result());
-                PickleTestStep testStep = getTestStep(step.source());
+                int line = outlineLocation(step.source().getLocations());
+                PickleStepTestStep testStep = new TCKTestStep(step.source(), currentTestCase.getUri(), line);
                 Result result = new Result(status, duration, errorOrNull(event.result()));
-                TestStepFinished cucumberEvent = new TestStepFinished(timeNow, testStep, result);
-                bus.send(cucumberEvent);
+                TestStepFinished cucumberEvent = new TestStepFinished(timeNow, currentTestCase, testStep, result);
+                bus.handle(cucumberEvent);
             } else {
                 output.clear();
             }
         };
     }
 
-    private Consumer<TCKEvents.StepStarted> stepStartedEvent() {
-        return event -> {
-            Long startedAt = bus.getTime();
-            stepTimestamp.put(event.correlationId(), startedAt);
-            Step step = event.step();
-            if (shouldReport(step)) {
-                TestStepStarted cucumberEvent = new TestStepStarted(startedAt, getTestStep(step.source()));
-                bus.send(cucumberEvent);
-            }
-        };
-    }
-
-    @SuppressWarnings("deprecation")
-    private Consumer<Scenario> scenarioEvent() {
-        return scenario -> {
-            Pickle pickle = scenario.source();
-            List<TestStep> steps = pickle.getSteps()
-                .stream()
-                .map(this::getTestStep)
-                .map(TestStep.class::cast)
-                .collect(Collectors.toList());
-            TestCase testCase = new TestCase(steps, new PickleEvent(featureUri.get(scenario.featureName()), pickle), false);
-            bus.send(new TestCaseStarted(bus.getTime(), testCase));
-        };
-    }
-
-    private Consumer<TCKEvents.FeatureRead> featureEvent() {
-        return feature -> {
-            String uri = shortenUri(feature.uri());
-            featureUri.put(feature.name(), uri);
-            bus.send(new TestSourceRead(bus.getTime(), uri, feature.source()));
-        };
-    }
-
-    private PickleTestStep getTestStep(PickleStep source) {
-        UndefinedStepDefinitionMatch definition = new UndefinedStepDefinitionMatch(source);
-        return new PickleTestStep("n/a", source, definition);
-    }
-
-    private String shortenUri(String uri) {
-        Path path = Paths.get(uri);
-        return path.getParent().getFileName() + "/" + path.getFileName();
-    }
-
-    private Result.Type getStatus(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
-        return result.isRight() ? Result.Type.PASSED : Result.Type.FAILED;
-    }
-
-    private Throwable errorOrNull(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
-        return result.isLeft() ? result.left().get() : null;
-    }
-
     private void logOutput(Step step, Long timeNow) {
         String log = output.clear();
 
         if (step instanceof SideEffects) {
-            SideEffects sideEffects = SideEffects.class.cast(step);
+            SideEffects sideEffects = (SideEffects) step;
             log = log + sideEffects.expected();
         }
 
         if (!log.isEmpty()) {
-            bus.send(new WriteEvent(timeNow, log));
+            bus.handle(new WriteEvent(timeNow, currentTestCase, log));
         }
     }
 
     private boolean shouldReport(Step step) {
         return !(step instanceof Measure);
-    }
-
-    private void configureCucumberPlugins() {
-        List<Plugin> plugins = new RuntimeOptions(new ArrayList<>()).getPlugins();
-
-        if (Env.INSTANCE.get("cucumber.options") == null) {
-            Plugin formatter = new PluginFactory().create(DEFAULT_REPORT_FORMAT + ":" + DEFAULT_REPORT_FILE_PATH);
-            plugins.add(formatter);
-        }
-
-        plugins
-            .stream()
-            .filter(p -> p instanceof EventListener)
-            .map(EventListener.class::cast)
-            .forEach(plugin -> plugin.setEventPublisher(bus));
     }
 
     private <T> AbstractFunction1<T, BoxedUnit> adapt(Consumer<T> procedure) {
@@ -217,5 +185,21 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
                 return BoxedUnit.UNIT;
             }
         };
+    }
+
+    private Result.Type getStatus(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
+        return result.isRight() ? Result.Type.PASSED : Result.Type.FAILED;
+    }
+
+    private Throwable errorOrNull(Either<Throwable, Either<ExecutionFailed, CypherValueRecords>> result) {
+        return result.isLeft() ? result.left().get() : null;
+    }
+
+    private Long time() {
+        return System.currentTimeMillis();
+    }
+
+    private int outlineLocation(List<PickleLocation> locations) {
+        return locations.get(locations.size() - 1).getLine();
     }
 }
