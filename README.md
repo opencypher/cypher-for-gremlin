@@ -116,26 +116,23 @@ With Cypher for Gremlin you can use the following Cypher language features:
 - `MATCH` and `OPTIONAL MATCH` with most of the [pattern-matching](https://neo4j.com/docs/developer-manual/current/cypher/syntax/patterns/) syntax, except for variable-length patterns
 - `WHERE`, `ORDER BY`, `SKIP`, and `LIMIT` sub-clauses
 - `RETURN`, `WITH`, and `UNWIND` projections, including basic support for list and path comprehensions
-- `CREATE`, `MERGE`, `SET`, `REMOVE`, and `DETACH DELETE`
+- `CREATE`, `MERGE`, `SET`, `REMOVE`, and `(DETACH) DELETE`
 - `CASE` expressions
-- `UNION` operations
+- `UNION (ALL)` operations
+- `CALL` procedures
+
+It is not guaranteed that all instances and combinations of the listed features will work. However, in addition to [integration tests](integration-tests), correctness of translation is verified by the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) (TCK). The TCK is an openCypher artifact and contains a comprehensive set of test scenarios validating different features of the Cypher language.
+
+Coverage of TCK M13 ([excluding Temporal Types](tinkerpop/cypher-gremlin-extensions#temporal-types)) on TinkerGraph:
+
+- 75% of the scenarios are supported with common Gremlin steps
+- Additional 15% with [extensions](tinkerpop/cypher-gremlin-extensions) to Gremlin to enable full support for Cypher functionality
 - See latest [TCK Report](https://opencypher.github.io/cypher-for-gremlin/test-reports/1.0.0/cucumber-html-reports/overview-features.html) for a detailed overview of language coverage.
-
-It is not guaranteed that all instances and combinations of the listed features will work. However, in addition to integration tests, correctness of translation is verified by the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) (TCK). The TCK is an openCypher artifact and contains a comprehensive set of test scenarios validating different features of the Cypher language. In its current version, Cypher for Gremlin covers 75% of the TCK M10 and an additional 15% with [Cypher extensions](tinkerpop/cypher-gremlin-extensions) installed on the corresponding Gremlin Server. 
-
-Coverage of TCK M10 on TinkerGraph:
+- To see feature support on different platforms (Neptune, JanusGraph, Cosmos DB), refer to [Gremlin implementations documentation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations).
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
 
-To see feature support on different platforms (Neptune, JanusGraph, Cosmos DB), refer to [Gremlin implementations documentation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations).
-
 You are very welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
-
-### Major Limitations
-
-* Some functionality is exclusive to Gremlin Servers with [Cypher extensions](tinkerpop/cypher-gremlin-extensions), commonly provided by the [Cypher Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin).
-* Modification of labels is not supported, because [labels are immutable in Gremlin](https://tinkerpop.apache.org/docs/current/reference/#_multi_label).
-* For more details refer to [list of scenarios](../../wiki/Non-translatable-queries) in Cypher TCK without known translation to Gremlin.
 
 ## Related
 
