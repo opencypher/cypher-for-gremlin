@@ -31,7 +31,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ### Gremlin Console
 
-[Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server:
+[Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server (click to play):
 
 <img src="https://drive.google.com/uc?export=view&id=1vncDfbO8o9Ef060SFOBmlQpt4v7etGrJ" />
 
@@ -113,7 +113,7 @@ The toolkit is composed of:
 
 With Cypher for Gremlin you can use the following Cypher language features:
 
-- `MATCH` and `OPTIONAL MATCH` with most of the [pattern-matching](https://neo4j.com/docs/developer-manual/current/cypher/syntax/patterns/) syntax, except for variable-length patterns
+- `MATCH` and `OPTIONAL MATCH`
 - `WHERE`, `ORDER BY`, `SKIP`, and `LIMIT` sub-clauses
 - `RETURN`, `WITH`, and `UNWIND` projections, including basic support for list and path comprehensions
 - `CREATE`, `MERGE`, `SET`, `REMOVE`, and `(DETACH) DELETE`

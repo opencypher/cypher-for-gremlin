@@ -1,18 +1,21 @@
 # Cypher and Gremlin differences
 
-This page describes differences in Cypher and Gremlin, most of which could be addressed by [installing Gremlin Extensions for Cypher Support](#gremlin-cypherextensions).
-   
+This page describes differences in Cypher and Gremlin, most of which could be addressed by [installing Gremlin Extensions for Cypher Support](#extensions).
+
+* [75% of the TCK scenarios](../../README.md#language-support) are supported with translation to common Gremlin steps     
 * Enabling fuller Cypher support
-  * [Gremlin Extensions for Cypher Support](#gremlin-cypher-extensions)
-  * [Translation workarounds]()
+  * [Gremlin Extensions for Cypher Support](#extensions)
+  * [Translation Workarounds](#translation-workarounds)
 * Cypher features that cannot be supported  
-  * [Non-translatable queries]()
+  * [Non-translatable queries](#non-translatable-queries)
   
 You are very welcome to [suggest](https://github.com/opencypher/cypher-for-gremlin/issues) better translation or workaround.
 
+<span id="extensions">
+  
 ## Extensions to Gremlin to enable full support for Cypher functionality
 
-Some functionality is exclusive to Gremlin Servers with Gremlin Extensions for Cypher Support, commonly provided by the [Cypher Gremlin Server plugin](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-server-plugin). For example, [functions](https://github.com/opencypher/cypher-for-gremlin/blob/master/tinkerpop/cypher-gremlin-extensions/src/main/java/org/opencypher/gremlin/traversal/CustomFunctions.java#L42) and [predicates](https://github.com/opencypher/cypher-for-gremlin/blob/master/tinkerpop/cypher-gremlin-extensions/src/main/java/org/opencypher/gremlin/traversal/CustomPredicate.java#L24) that are not available in Gremlin. Note that translation does not use lambdas, as it is [considered bad practice](http://tinkerpop.apache.org/docs/current/reference/#a-note-on-lambdas).
+Some functionality is exclusive to Gremlin Servers with Gremlin Extensions for Cypher Support, commonly provided by the [Cypher Gremlin Server plugin](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-server-plugin). For example, [functions](https://github.com/opencypher/cypher-for-gremlin/blob/master/tinkerpop/cypher-gremlin-extensions/src/main/java/org/opencypher/gremlin/traversal/CustomFunctions.java#L42) and [predicates](https://github.com/opencypher/cypher-for-gremlin/blob/master/tinkerpop/cypher-gremlin-extensions/src/main/java/org/opencypher/gremlin/traversal/CustomPredicate.java#L24) that are not available in Gremlin. Note that with or without extensions, translation does not use lambdas, as it is [considered bad practice](http://tinkerpop.apache.org/docs/current/reference/#a-note-on-lambdas).
 
 For examples, search for [tests](https://github.com/opencypher/cypher-for-gremlin/tree/master/testware/integration-tests/src/test/java/org/opencypher/gremlin/queries) with category `org.opencypher.gremlin.groups.SkipExtensions`.
 
@@ -26,7 +29,7 @@ Alternatively, add [CustomPredicate.java](src/main/java/org/opencypher/gremlin/t
 
 ### Usage
 
-If extensions are installed on target server and translation happens on client side, extensions should be explicitly enabled on client so resulting query can use it. For example:
+If extensions are installed on a target server and translation happens on the client side, extensions should be explicitly enabled on the client so the resulting query can use it. For example:
 
 * Java API:
     ```java
@@ -40,17 +43,19 @@ If extensions are installed on target server and translation happens on client s
     :remote connect opencypher.gremlin conf/remote-objects.yaml translate gremlin+cfog_server_extensions
     ```
 
-**⚠ Note** To include Gremlin in Cypher query See [Gremlin Function](../cypher-gremlin-server-client#gremlin-function)    
+**⚠ Note** To include Gremlin in Cypher query see [Gremlin Function](../cypher-gremlin-server-client#gremlin-function).    
 ### Custom Functions
 
-* Type Conversion [functions](https://neo4j.com/docs/cypher-manual/current/functions/scalar/): toString, toBoolean, toInteger, toFloat
-* [String functions](https://neo4j.com/docs/cypher-manual/current/functions/string/): reverse, substring, trim, toUpper, toLower...
-* Precentile functions: [percentileCont](https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-percentilecont), [percentileDisc](https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-percentiledisc)
+Functions that are present in Cypher but not in Gremlin:
+
+* Type Conversion [functions](https://neo4j.com/docs/cypher-manual/current/functions/scalar/): `toString`, `toBoolean`, `toInteger`, `toFloat`
+* [String functions](https://neo4j.com/docs/cypher-manual/current/functions/string/): `reverse`, `substring`, `trim`, `toUpper`, `toLower`...
+* Percentile functions: [percentileCont](https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-percentilecont), [percentileDisc](https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-percentiledisc)
 * [round](https://neo4j.com/docs/cypher-manual/current/functions/mathematical-numeric/#functions-round) function
 
 ### Queries that require type information
 
-There are no functions or predicates to get type of object in Gremlin. However depending on type of object, steps required to achieve certain functionality might be different. For example for accessing element by index:
+There are no functions or predicates to get the type of object in Gremlin. However, depending on the type of object, steps required to achieve certain functionality might be different. For example, when accessing an element by index:
 
 ```cypher
 WITH $p AS unknown
@@ -64,7 +69,7 @@ Because `p` and `k` are non constant values (parameters) type is unknown to pars
 * `range(Scope.local, $k, $k + 1)` for lists
 * `constant(null)` if `k` or `p` are null
 
-As Gremlin will throw exception if step does not match object type, custom functions are used for unknown type when:
+As Gremlin will throw an exception if the step does not match object type, custom functions are used for the unknown type when:
 
 * Accessing element by index
 * [properties function](https://neo4j.com/docs/cypher-manual/current/functions/scalar/#functions-properties)
@@ -72,21 +77,21 @@ As Gremlin will throw exception if step does not match object type, custom funct
 
 If neither type information and extensions are not available, CfoG relies on "best guess" approach.
 
-#### Plus operator
+### Plus operator
 
 In Cypher, plus operator works with numbers, strings and arrays:
 
 ```cypher
-RETURN 1 + 2 // 3
-RETURN 'a' + 'b' // "ab"
-RETURN [1, 2]+[3,4] // [1, 2, 3, 4]
-RETURN [1, 2]+3 // [1, 2, 3]
+RETURN 1 + 2; // 3
+RETURN 'a' + 'b'; // "ab"
+RETURN [1, 2]+[3,4]; // [1, 2, 3, 4]
+RETURN [1, 2]+3; // [1, 2, 3]
 ```
 
-In Gremlin different implementations required for each type:
+In Gremlin different steps are required for each type:
 
 * [Math](http://tinkerpop.apache.org/docs/current/reference/#math-step) step for numbers
-* `.union(select('list1').unfold(), select('list2').unfold()).fold())` for lists
+* `.union(select('list1').unfold(), select('list2').unfold()).fold())` for collections
 * String concatenation is not supported in Gremlin
 
 If type information is unknown (or on string concatenation) - custom function is used. If Gremlin Extensions for Cypher Support are not installed, translation falls back to number operator.
@@ -97,9 +102,9 @@ If type information is unknown (or on string concatenation) - custom function is
 MATCH (n:FROM)-[r]->(m:TO) SET m=n RETURN m
 ```
 
-Gremlin [AddProperty step](http://tinkerpop.apache.org/docs/current/reference/#addproperty-step) only allows setting single value, where name property name is constant. It is unknown how to copy all properties from one element to another.
+Gremlin [AddProperty step](http://tinkerpop.apache.org/docs/current/reference/#addproperty-step) only allows setting a single value, where the property name is constant. It is unknown how to copy all properties from one element to another.
 
-## Workarounds
+## Translation Workarounds
 
 ### Null handling
 
@@ -113,20 +118,43 @@ Gremlin [AddProperty step](http://tinkerpop.apache.org/docs/current/reference/#a
   ```
 * `null` value produces NullPointerException `g.inject(null)` 
 * To represent Cypher `null` value, string token `"  cypher.null"` is used
-* To produce `null` values `.choose(traversal, traversal, "  cypher.null"`
-* Null guards added to translation `choose("  cypher.null", traversal)`
+* To produce `null` values: `.choose(traversal, traversal, "  cypher.null")`
+* Null guards added to translation: `choose("  cypher.null", traversal)`
 
 ### Throwing exception
 
-There's no [known way](https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin) to throw custom exception from Gremlin traversal. To achieve runtime validation (for example deleting nodes that still have relationships) custom function is used.
+There's no [known way](https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin) to throw custom an exception from Gremlin traversal. To achieve runtime validation (for example deleting nodes that still have relationships) custom function is used.
 
+### Variable length paths
 
-### Variable length path
+There's no known simple way to implement variable length path matching in Gremlin. Currently it is implemented using [Repeat Step](http://tinkerpop.apache.org/docs/current/reference/#repeat-step). For example, in Cypher query matching all related nodes with type software, one or two hops away:
 
-todo
+```cypher
+MATCH (p {id: 1})-[r*1..2]->(s:software) 
+RETURN r, s.name AS software
+```
 
+following Gremlin snippet is used to traverse path:
 
-## Untranslatable queries
+```groovy
+g.V().has(id, 1).
+        as('  cypher.path.start').
+        emit().
+        repeat(outE().as('r').inV()).
+        until(path().
+                from('  cypher.path.start').
+                count(local).
+                is(gte(5))).
+        where(path().
+                from('  cypher.path.start').
+                count(local).
+                is(between(3, 6))).
+        hasLabel('software').
+        as('s')
+        // ...
+```
+
+## Non-translatable queries
 
 These are queries and [TCK scenarios](https://github.com/opencypher/cypher-for-gremlin/tree/master/testware/tck) in Cypher TCK without known translation to Gremlin. You are very welcome to [suggest](https://github.com/opencypher/cypher-for-gremlin/issues) translation or workaround.
 
@@ -185,20 +213,18 @@ Following TCK scenarios rely on that feature:
 
 ### Temporal Types
 
-* There is no format for Temporal Types in Gremlin, so each [implementation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations) need to support storing
-* Property access
-  - Custom functions for `containerIndex`
-* Arithmetics
-  - Custom functions for `+` `-`
-* Comparison
-  - Property type is unknown
-  - Custom predicates for all comparisons!
+There is no common support of Temporal Types in Gremlin, so each [implementation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations) may handle it differently. It is possible to use `java.util.Date` to represent this in JanusGraph and inmemory TinkerGraph. However, it would require lots of custom code for:
 
-todo
+* Creation and parsing of Temporal Types
+* Property access
+* Arithmetics
+* Comparison
+  - Custom predicates for all comparisons to account Temporal Types
+* Additional functions like `truncate`
 
 ### Filtering elements
 
-On return Gremlin elements are normalized depending on element type. In cases when element [type is unknown](#queries-that-require-type-information), normalization is not possible.
+On return Gremlin elements are normalized depending on element type. When element [type is unknown](#queries-that-require-type-information), normalization is not possible.
 
 ```
 MATCH (n)-[r]->(m)
@@ -212,7 +238,7 @@ Following TCK scenarios rely on that feature:
 
 ### Path equality
 
-In Cypher direction of traversed relationship is not significant for path equality. Path comparison works different in Gremlin and considers direction.
+In Cypher direction of the traversed relationship is not significant for path equality. Path comparison works different in Gremlin and considers direction.
 
 Following TCK scenarios rely on that feature:
 
@@ -220,7 +246,7 @@ Following TCK scenarios rely on that feature:
 
 ### Creating big ranges
 
-Current implementation of numeric `range` in Cypher for Gremlin timeouts when creating big range (over 10000 elements):
+Current implementation of numeric `range` in Cypher for Gremlin timeouts when creating a big range (over 10000 elements):
 
 ```groovy
 // range(1000000, 2000000)
