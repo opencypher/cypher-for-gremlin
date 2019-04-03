@@ -103,8 +103,8 @@ client.execute('MATCH (n) RETURN count(n)', (err, results) => {
 The toolkit is composed of:
 
 - [translation](translation): Cypher to Gremlin translation library for Java
-- [tinkerpop/cypher-gremlin-extensions](tinkerpop/cypher-gremlin-extensions): Cypher-specific custom functions and predicates for Gremlin
-- [tinkerpop/cypher-gremlin-server-plugin](tinkerpop/cypher-gremlin-server-plugin): Gremlin Server plugin that enables Cypher query processing (also includes Cypher extensions above)
+- [tinkerpop/cypher-gremlin-extensions](tinkerpop/cypher-gremlin-extensions): Extensions to Gremlin to enable full support for Cypher functionality
+- [tinkerpop/cypher-gremlin-server-plugin](tinkerpop/cypher-gremlin-server-plugin): Gremlin Server plugin that enables Cypher query processing (also includes extensions above)
 - [tinkerpop/cypher-gremlin-console-plugin](tinkerpop/cypher-gremlin-console-plugin): Gremlin Console plugin that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server
 - [tinkerpop/cypher-gremlin-server-client](tinkerpop/cypher-gremlin-server-client): Gremlin Server client wrapper that can send Cypher queries to a Cypher-enabled Gremlin Server
 - [tinkerpop/cypher-gremlin-neo4j-driver](tinkerpop/cypher-gremlin-neo4j-driver): Neo4j Java API wrapper for users familiar with Neo4j
@@ -121,13 +121,13 @@ With Cypher for Gremlin you can use the following Cypher language features:
 - `UNION (ALL)` operations
 - `CALL` procedures
 
-It is not guaranteed that all instances and combinations of the listed features will work. However, in addition to [integration tests](integration-tests), correctness of translation is verified by the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) (TCK). The TCK is an openCypher artifact and contains a comprehensive set of test scenarios validating different features of the Cypher language.
+It is not guaranteed that all instances and combinations of the listed features will work. However, in addition to [integration tests](testware), correctness of translation is verified by the [Cypher Technology Compatibility Kit](https://github.com/opencypher/openCypher/tree/master/tck) (TCK). The TCK is an openCypher artifact and contains a comprehensive set of test scenarios validating different features of the Cypher language.
 
 Coverage of TCK M13 ([excluding Temporal Types](tinkerpop/cypher-gremlin-extensions#temporal-types)) on TinkerGraph:
 
 - 75% of the scenarios are supported with common Gremlin steps
 - Additional 15% with [extensions](tinkerpop/cypher-gremlin-extensions) to Gremlin to enable full support for Cypher functionality
-- See latest [TCK Report](https://opencypher.github.io/cypher-for-gremlin/test-reports/1.0.0/cucumber-html-reports/overview-features.html) for a detailed overview of language coverage.
+- See [latest TCK Report](https://opencypher.github.io/cypher-for-gremlin/test-reports/1.0.0/cucumber-html-reports/overview-features.html) for a detailed overview of language coverage.
 - To see feature support on different platforms (Neptune, JanusGraph, Cosmos DB), refer to [Gremlin implementations documentation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations).
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">

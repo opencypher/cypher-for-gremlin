@@ -5,7 +5,7 @@
 Included in the plugin:
 
 - [`OpProcessor`](https://tinkerpop.apache.org/docs/current/reference/#opprocessor-configurations) implementation for Gremlin Server that translates Cypher queries to [`GraphTraversal`](https://tinkerpop.apache.org/docs/current/reference/#traversal)
-- [Cypher extensions](../cypher-gremlin-extensions) for Gremlin in the form of custom functions and predicates
+- [Gremlin Extensions for Cypher](../cypher-gremlin-extensions) for Gremlin in the form of custom functions and predicates
 
 ## Prerequisites
 

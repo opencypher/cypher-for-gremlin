@@ -148,7 +148,7 @@ gremlin> g.cypher('MATCH (p:person) RETURN p').select("p").outE().label().dedup(
 
 This approach can be used for remote databases using [withRemote](http://tinkerpop.apache.org/docs/current/reference/#connecting-gremlin-server).
 Translation could be adapted for specific Gremlin implementation by passing [Flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors)
-or enabling [Cypher for Gremlin extensions](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#cypher-extensions):
+or enabling [Gremlin Extensions for Cypher](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#cypher-extensions):
 
 ```
 gremlin> :plugin use opencypher.gremlin
