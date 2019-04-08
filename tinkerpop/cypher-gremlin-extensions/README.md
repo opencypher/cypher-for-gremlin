@@ -108,7 +108,7 @@ Gremlin [AddProperty step](http://tinkerpop.apache.org/docs/current/reference/#a
 
 ### Null handling
 
-* Gremlin has no concept of `nulls`
+* Gremlin has no concept of `null`
   ```groovy
   g.V().has('name', 'lop').values('notExising')
   // empty results
@@ -119,15 +119,15 @@ Gremlin [AddProperty step](http://tinkerpop.apache.org/docs/current/reference/#a
 * `null` value produces NullPointerException `g.inject(null)` 
 * To represent Cypher `null` value, string token `"  cypher.null"` is used
 * To produce `null` values: `.choose(traversal, traversal, "  cypher.null")`
-* Null guards added to translation: `choose("  cypher.null", traversal)`
+* Null guards are added to translation: `choose("  cypher.null", traversal)`
 
 ### Throwing exception
 
-There's no [known way](https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin) to throw custom an exception from Gremlin traversal. To achieve runtime validation (for example deleting nodes that still have relationships) custom function is used.
+There is no [known way](https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin) to throw custom an exception from Gremlin traversal. To achieve runtime validation (for example deleting nodes that still have relationships) custom function is used.
 
 ### Variable length paths
 
-There's no known simple way to implement variable length path matching in Gremlin. Currently it is implemented using [Repeat Step](http://tinkerpop.apache.org/docs/current/reference/#repeat-step). For example, in Cypher query matching all related nodes with type software, one or two hops away:
+There is no known simple way to implement variable length path matching in Gremlin. Currently it is implemented using [Repeat Step](http://tinkerpop.apache.org/docs/current/reference/#repeat-step). For example, in to match all related nodes with type software, one or two hops away:
 
 ```cypher
 MATCH (p {id: 1})-[r*1..2]->(s:software) 
@@ -166,7 +166,7 @@ TinkerPop3 Documentation documentation [states](https://tinkerpop.apache.org/doc
 
 In Cypher it is [possible](https://neo4j.com/docs/developer-manual/current/cypher/clauses/set/#set-set-a-label-on-a-node) to modify label on a node.
 
-Following TCK scenarios rely on that feature:
+Following TCK scenarios rely on thact feature:
 
 * LabelsAcceptance,"Adding a single label"
 * LabelsAcceptance,"Ignore space before colon"
