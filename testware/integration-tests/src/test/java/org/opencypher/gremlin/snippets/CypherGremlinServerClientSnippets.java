@@ -52,6 +52,38 @@ public class CypherGremlinServerClientSnippets {
     public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
 
     @Test
+    public void demo() throws Exception {
+        BaseConfiguration configuration = new BaseConfiguration();
+        configuration.setProperty("port", gremlinServer.getPort());
+        configuration.setProperty("hosts", singletonList("localhost"));
+        configuration.setProperty("serializer.className", GraphBinaryMessageSerializerV1.class.getName());
+
+        // freshReadmeSnippet: demo
+        String cypher = "MATCH (p:person) WHERE p.age > 25 RETURN p.name";
+
+        Cluster cluster = Cluster.open(configuration);
+        Client gremlinClient = cluster.connect();
+
+        // Server has Gremlin Server plugin installed
+        // Send Cypher to server
+        CypherGremlinClient cypherGremlinClient = CypherGremlinClient.plugin(gremlinClient);
+        List<Map<String, Object>> cypherResults = cypherGremlinClient.submit(cypher).all();
+
+        // Client side translation
+        // Send Gremlin to server
+        CypherGremlinClient translatingGremlinClient = CypherGremlinClient.translating(gremlinClient);
+        List<Map<String, Object>> gremlinResults = translatingGremlinClient.submit(cypher).all();
+
+        assertThat(cypherResults).isEqualTo(gremlinResults);
+
+        // freshReadmeSnippet: demo
+
+        assertThat(gremlinResults)
+            .extracting("p.name")
+            .containsExactly("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
     public void gremlinStyle() throws Exception {
         BaseConfiguration configuration = new BaseConfiguration();
         configuration.setProperty("port", gremlinServer.getPort());

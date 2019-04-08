@@ -2,8 +2,8 @@
 
 PWD = $(shell pwd)
 
-PROJECT_VERSION ?= 0.9.1
-TINKERPOP_VERSION ?= 3.3.1
+PROJECT_VERSION ?= 1.0.0
+TINKERPOP_VERSION ?= 3.4.0
 
 PROJECT = $(PWD)/../..
 SUBPROJECT = $(PROJECT)/tinkerpop/cypher-gremlin-console-plugin
