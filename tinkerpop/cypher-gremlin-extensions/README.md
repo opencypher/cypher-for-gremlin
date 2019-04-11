@@ -1,6 +1,6 @@
 # Cypher and Gremlin differences
 
-This page describes differences in Cypher and Gremlin, most of which could be addressed by [installing Gremlin Extensions for Cypher Support](#extensions).
+This page describes differences between Cypher and Gremlin, most of which could be addressed by [installing Gremlin Extensions for Cypher Support](#extensions).
 
 * [75% of the TCK scenarios](../../README.md#language-support) are supported with translation to common Gremlin steps     
 * Enabling fuller Cypher support
@@ -55,7 +55,7 @@ Functions that are present in Cypher but not in Gremlin:
 
 ### Queries that require type information
 
-There are no functions or predicates to get the type of object in Gremlin. However, depending on the type of object, steps required to achieve certain functionality might be different. For example, when accessing an element by index:
+There are no functions or predicates to get the type of object in Gremlin. However, depending on the type of object, Gremlin steps required to achieve certain functionality might be different. For example, when accessing an element by index:
 
 ```cypher
 WITH $p AS unknown
@@ -224,7 +224,7 @@ There is no common support of Temporal Types in Gremlin, so each [implementation
 
 ### Filtering elements
 
-On return Gremlin elements are normalized depending on element type. When element [type is unknown](#queries-that-require-type-information), normalization is not possible.
+In query translated by Cypher for Gremlin return elements are normalized depending on element type. When element [type is unknown](#queries-that-require-type-information), normalization is not possible.
 
 ```
 MATCH (n)-[r]->(m)
