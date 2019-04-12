@@ -94,7 +94,7 @@ client.execute('MATCH (n) RETURN count(n)', (err, results) => {
 
 ### Gremlin-Python
 
-Example connect using [Gremlin-Python](http://tinkerpop.apache.org/docs/current/reference/#gremlin-python) by creating custom `RequestMessage`
+Example connect using [Gremlin-Python](http://tinkerpop.apache.org/docs/current/reference/#gremlin-python) by creating custom `RequestMessage`:
 
 <!-- [freshReadmeSource](../../testware/integration-tests/src/test/resources/snippets/gremlin-python.py) -->
 ```python
@@ -118,9 +118,18 @@ print(result_set.all().result())
 
 ### Gremlin.Net
 
-Example connect using [Gremlin-Python](http://tinkerpop.apache.org/docs/current/reference/#gremlin-DotNet)
+Example connect using [Gremlin.Net](http://tinkerpop.apache.org/docs/current/reference/#gremlin-DotNet) by creating custom `RequestMessage`:
 
-todo
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/resources/snippets/gremlin-dotnet.cs) -->
+```csharp
+var client = new GremlinClient(new GremlinServer(GremlinServerHostname, GremlinServerPort));
+var requestMessage = RequestMessage.Build(Tokens.OpsEval)
+                .AddArgument(Tokens.ArgsGremlin, "RETURN 2")
+                .Processor("cypher")
+                .Create();
+var result = await client.SubmitAsync<object>(requestMessage);
+
+```
    
 
 ## Troubleshooting

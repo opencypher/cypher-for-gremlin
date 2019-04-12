@@ -94,7 +94,7 @@ client.execute('MATCH (n) RETURN count(n)', (err, results) => {
 
 ```
 
-See examples for [Gremlin-Java](tinkerpop/cypher-gremlin-server-plugin#gremlin-java), [Gremlin-Python](tinkerpop/cypher-gremlin-server-plugin#gremlin-python) and [Gremlin.Net](tinkerpop/cypher-gremlin-server-plugin#gremlin.net)
+See examples for [Gremlin-Java](tinkerpop/cypher-gremlin-server-plugin#gremlin-java), [Gremlin-Python](tinkerpop/cypher-gremlin-server-plugin#gremlin-python) and [Gremlin.Net](tinkerpop/cypher-gremlin-server-plugin#gremlinnet)
 
 ## Quick Start
 
