@@ -96,7 +96,7 @@ client.execute(cypherQuery, (err, results) => {
 
 ```
 
-See examples for [Gremlin-Java](tinkerpop/cypher-gremlin-server-plugin#gremlin-java), [Gremlin-Python](tinkerpop/cypher-gremlin-server-plugin#gremlin-python) and [Gremlin.Net](tinkerpop/cypher-gremlin-server-plugin#gremlinnet)
+See examples for [Gremlin-Java](tinkerpop/cypher-gremlin-server-plugin#gremlin-javagremlin-groovy), [Gremlin-Groovy](tinkerpop/cypher-gremlin-server-plugin#gremlin-javagremlin-groovy), [Gremlin-Python](tinkerpop/cypher-gremlin-server-plugin#gremlin-python) and [Gremlin.Net](tinkerpop/cypher-gremlin-server-plugin#gremlinnet)
 
 ## Quick Start
 

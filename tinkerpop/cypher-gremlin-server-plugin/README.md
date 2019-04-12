@@ -56,7 +56,7 @@ Run the following commands from project root.
    
 ## Usage
 
-### Gremlin-Java
+### Gremlin-Java/Gremlin-Groovy
 
 Recommended way is to use [Cypher Client for Gremlin Server](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-server-client),
 however it is possible to send Cypher using [Gremlin Client](http://tinkerpop.apache.org/docs/current/reference/#gremlin-java) by creating custom `RequestMessage`:
