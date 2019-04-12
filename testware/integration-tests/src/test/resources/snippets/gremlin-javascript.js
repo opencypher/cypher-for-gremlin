@@ -4,6 +4,8 @@ const gremlin = require('gremlin');
 
 const client = gremlin.createClient(8182, "localhost", {processor: "cypher"})
 
-client.execute('MATCH (n) RETURN count(n)', (err, results) => {
+const cypherQuery = 'MATCH (n) RETURN n.name'
+
+client.execute(cypherQuery, (err, results) => {
     console.log(results)
 });

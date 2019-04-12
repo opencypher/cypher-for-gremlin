@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.driver.Result;
+import org.apache.tinkerpop.gremlin.driver.ResultSet;
 import org.apache.tinkerpop.gremlin.driver.Tokens;
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
@@ -287,14 +289,18 @@ public class CypherGremlinServerClientSnippets {
         Cluster cluster = Cluster.open(configuration);
         Client client = cluster.connect();
 
+        String cypherQuery = "MATCH (n) RETURN n.name";
         RequestMessage request = RequestMessage.build(Tokens.OPS_EVAL)
             .processor("cypher")
-            .add(Tokens.ARGS_GREMLIN, "MATCH (n) RETURN count(n)")
+            .add(Tokens.ARGS_GREMLIN, cypherQuery)
             .create();
 
-        client.submitAsync(request);
+        ResultSet results = client.submitAsync(request).get();
         // freshReadmeSnippet: gremlinClient
+
+        assertThat(results)
+            .extracting(Result::getObject)
+            .extracting("n.name")
+            .containsExactlyInAnyOrder("marko", "vadas", "lop", "josh", "ripple", "peter");
     }
-
-
 }
