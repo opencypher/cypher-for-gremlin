@@ -53,6 +53,84 @@ Run the following commands from project root.
    ```
    [INFO] OpLoader - Adding the cypher OpProcessor.
    ```
+   
+## Usage
+
+### Gremlin-Java
+
+Recommended way is to use [Cypher Client for Gremlin Server](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-server-client),
+however it is possible to send Cypher using [Gremlin Client](http://tinkerpop.apache.org/docs/current/reference/#gremlin-java) by creating custom `RequestMessage`:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#gremlinClient) -->
+```java
+Cluster cluster = Cluster.open(configuration);
+Client client = cluster.connect();
+
+String cypherQuery = "MATCH (n) RETURN n.name";
+RequestMessage request = RequestMessage.build(Tokens.OPS_EVAL)
+    .processor("cypher")
+    .add(Tokens.ARGS_GREMLIN, cypherQuery)
+    .create();
+
+ResultSet results = client.submitAsync(request).get();
+```
+
+### Gremlin-Javascript
+
+Example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript) 2.7.0 by setting `processor` to `cypher`:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/resources/snippets/gremlin-javascript.js) -->
+```js
+// npm install gremlin@2.7.0
+
+const gremlin = require('gremlin');
+
+const client = gremlin.createClient(8182, "localhost", {processor: "cypher"})
+
+const cypherQuery = 'MATCH (n) RETURN n.name'
+
+client.execute(cypherQuery, (err, results) => {
+    console.log(results)
+});
+
+```
+
+### Gremlin-Python
+
+Example connect using [Gremlin-Python](http://tinkerpop.apache.org/docs/current/reference/#gremlin-python) by creating custom `RequestMessage`:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/resources/snippets/gremlin-python.py#example) -->
+```python
+from gremlin_python.driver.client import Client
+from gremlin_python.driver.serializer import GraphSONMessageSerializer
+from gremlin_python.driver.request import RequestMessage
+
+serializer = GraphSONMessageSerializer()
+# workarond to avoid exception on any serializer other than `standard` or `traversal`:
+serializer.cypher = serializer.standard
+
+client = Client('ws://localhost:8182/gremlin', 'g', message_serializer=serializer)
+
+cypherQuery = 'MATCH (n) RETURN n.name'
+message = RequestMessage('cypher', 'eval', {'gremlin': cypherQuery})
+results = client.submit(message).all().result()
+```
+
+### Gremlin.Net
+
+Example connect using [Gremlin.Net](http://tinkerpop.apache.org/docs/current/reference/#gremlin-DotNet) by creating custom `RequestMessage`:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/resources/snippets/gremlin-dotnet.cs#example) -->
+```csharp
+var client = new GremlinClient(new GremlinServer("localhost", 8182));
+var cypherQuery = "MATCH (n) RETURN n.name";
+var requestMessage = RequestMessage.Build(Tokens.OpsEval)
+                .AddArgument(Tokens.ArgsGremlin, cypherQuery)
+                .Processor("cypher")
+                .Create();
+var result = await client.SubmitAsync<Dictionary<object, object>>(requestMessage);
+```
+   
 
 ## Troubleshooting
 

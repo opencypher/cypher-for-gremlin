@@ -80,6 +80,7 @@ try (Session session = driver.session()) {
 
 [Gremlin Server plugin](tinkerpop/cypher-gremlin-server-plugin) that enables Cypher query processing on Gremlin Server. For example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript) 2.7.0 by setting `processor` to `cypher`:
 
+<!-- [freshReadmeSource](testware/integration-tests/src/test/resources/snippets/gremlin-javascript.js) -->
 ```js
 // npm install gremlin@2.7.0
 
@@ -87,10 +88,15 @@ const gremlin = require('gremlin');
 
 const client = gremlin.createClient(8182, "localhost", {processor: "cypher"})
 
-client.execute('MATCH (n) RETURN count(n)', (err, results) => {
+const cypherQuery = 'MATCH (n) RETURN n.name'
+
+client.execute(cypherQuery, (err, results) => {
     console.log(results)
 });
+
 ```
+
+See examples for [Gremlin-Java](tinkerpop/cypher-gremlin-server-plugin#gremlin-java), [Gremlin-Python](tinkerpop/cypher-gremlin-server-plugin#gremlin-python) and [Gremlin.Net](tinkerpop/cypher-gremlin-server-plugin#gremlinnet)
 
 ## Quick Start
 
