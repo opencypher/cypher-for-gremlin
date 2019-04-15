@@ -1,0 +1,63 @@
+         \,,/
+         (o o)
+-----oOOo-(3)-oOOo-----
+plugin activated: tinkerpop.server
+plugin activated: tinkerpop.utilities
+plugin activated: tinkerpop.tinkergraph
+gremlin> :install org.opencypher.gremlin cypher-gremlin-console-plugin 1.0.0
+ cypher-gremlin-console-plugin, 1.0.0] - restart the console to use [opencypher.gremlin]
+gremlin> :plugin use opencypher.gremlin
+==>opencypher.gremlin activated
+gremlin> // Test Gremlin connection
+==>true
+gremlin> :remote connect tinkerpop.server conf/janusgraph.yaml
+==>Configured localhost/127.0.0.1:8182
+gremlin> :> g.V().groupCount().by(label()).unfold()
+==>Star=6
+==>StarSystem=3
+==>Planet=10
+gremlin> // Connect to Cypher for Gremlin Server Plugin
+==>true
+gremlin> :remote connect opencypher.gremlin conf/janusgraph.yaml
+==>Configured localhost/127.0.0.1:8182
+gremlin> :> MATCH (n) RETURN labels(n)[0] as label, count(n) as count
+==>[label:Star,count:6]
+==>[label:StarSystem,count:3]
+==>[label:Planet,count:10]
+rbit.au < 3.3 RETURN p AS planetbit:ORBITS]->(:Star {name: 'Sun'}) WHERE 2.3 < o
+==>[planet:[_type:node,name:Ceres,_id:4096,_label:Planet]]
+ 2.3 < orbit.au < 3.3 RETURN p AS planetbit:ORBITS]->(:Star {name: 'Sun'}) WHERE
+==>[translation:g.V().as('p').hasLabel('Planet').outE('ORBITS').has('au', gt(2.3d)).has('au', lt(3.3d)).inV().hasLabel('Star').has('name', eq('Sun')).select('p').project('planet').by(__.valueMap(true)),options:[EXPLAIN]]
+nt(p) AS planetsH (p:Planet)-[*2]->(ss:StarSystem) RETURN ss.name AS system, cou
+==>[system:Solar System,planets:9]
+==>[system:Alpha Centauri,planets:1]
+gremlin> complexQuery = """
+......1>     MATCH (sun:Star {name: 'Sirius A'})-[*1..2]-(sys:StarSystem)
+......2>     OPTIONAL MATCH (p:Planet)-[:ORBITS]->(s:Star)-[:MEMBER_OF]->(sys)
+......3>     WHERE s.type IN ['K', 'G', 'B', 'F', 'O', 'A', 'M']
+......4>     WITH sys.name AS system, p.name AS planet
+......5>     ORDER BY planet
+......6>     RETURN system, collect(planet) AS planets
+......7> """
+ 'G', 'B', 'F', 'O', 'A', 'M']
+    WITH sys.name AS system, p.name AS planet
+    ORDER BY planet
+    RETURN system, collect(planet) AS planets
+
+gremlin> :> @complexQuery
+==>[system:Sirius,planets:[]]
+==>[system:Solar System,planets:[Ceres,Earth,Jupiter,Mars,Mercury,Neptune,Saturn,Uranus,Venus]]
+==>[system:Alpha Centauri,planets:[Proxima Centauri b]]
+gremlin> // Client-side translation
+==>true
+gremlin> :remote connect opencypher.gremlin conf/neptune.yaml translate neptune
+==>Configured stas.cdg7wy6xrah2.us-east-2.neptune.amazonaws.com/172.31.10.133:8182
+rbit.au < 3.3 RETURN p AS planetbit:ORBITS]->(:Star {name: 'Sun'}) WHERE 2.3 < o
+==>[planet:[_type:node,name:Ceres,_id:ecb4b95f-9847-0982-a8a8-5bb34374b285,_label:Planet]]
+gremlin> // Combining Cypher and Gremlin
+==>true
+mote('conf/remote-graph.properties')raversal(CypherTraversalSource.class).withRe
+==>cyphertraversalsource[emptygraph[empty], standard]
+)remlin> g.cypher('MATCH (p:Planet) RETURN p').select("p").outE().label().dedup(
+==>ORBITS
+gremlin>

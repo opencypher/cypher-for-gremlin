@@ -31,7 +31,8 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ### Gremlin Console
 
-[Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries or communication with a Cypher-enabled Gremlin Server (click to play):
+[Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries 
+or communication with a Cypher-enabled Gremlin Server (click to play/[view source](testware/integration-tests/src/test/resources/snippets/console-demo.out)):
 
 <img src="https://drive.google.com/uc?export=view&id=1vncDfbO8o9Ef060SFOBmlQpt4v7etGrJ" />
 
@@ -97,6 +98,24 @@ client.execute(cypherQuery, (err, results) => {
 ```
 
 See examples for [Gremlin-Java](tinkerpop/cypher-gremlin-server-plugin#gremlin-javagremlin-groovy), [Gremlin-Groovy](tinkerpop/cypher-gremlin-server-plugin#gremlin-javagremlin-groovy), [Gremlin-Python](tinkerpop/cypher-gremlin-server-plugin#gremlin-python) and [Gremlin.Net](tinkerpop/cypher-gremlin-server-plugin#gremlinnet)
+
+### Cypher Traversal Source
+
+For [Gremlin Console Plugin](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-console-plugin#combining-cypher-and-gremlin) and [Gremlin Server Client](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-server-client#cypher-traversal-source)
+its possible to combine Cypher and Gremlin in single query. Traversal can start with `cypher` step that allows to run Cypher 
+query (which will be translated to Gremlin and works `withRemote`) then continue traversal using other Gremlin steps:
+
+<!-- [freshReadmeSource](testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#cypherTraversalSource) -->
+```java
+CypherTraversalSource g = graph.traversal(CypherTraversalSource.class);
+
+GraphTraversal<Map<String, Object>, String> query = g
+    .cypher("MATCH (n) RETURN n")
+    .select("n")
+    .outE()
+    .label()
+    .dedup();
+```
 
 ## Quick Start
 
