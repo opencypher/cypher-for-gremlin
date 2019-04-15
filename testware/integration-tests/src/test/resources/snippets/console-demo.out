@@ -24,11 +24,11 @@ gremlin> :> MATCH (n) RETURN labels(n)[0] as label, count(n) as count
 ==>[label:Star,count:6]
 ==>[label:StarSystem,count:3]
 ==>[label:Planet,count:10]
-rbit.au < 3.3 RETURN p AS planetbit:ORBITS]->(:Star {name: 'Sun'}) WHERE 2.3 < o
+gremlin> :> MATCH (p:Planet)-[orbit:ORBITS]->(:Star {name: 'Sun'}) WHERE 2.3 < orbit.au < 3.3 RETURN p AS planet
 ==>[planet:[_type:node,name:Ceres,_id:4096,_label:Planet]]
- 2.3 < orbit.au < 3.3 RETURN p AS planetbit:ORBITS]->(:Star {name: 'Sun'}) WHERE
+gremlin> :> EXPLAIN MATCH (p:Planet)-[orbit:ORBITS]->(:Star {name: 'Sun'}) WHERE 2.3 < orbit.au < 3.3 RETURN p AS planet
 ==>[translation:g.V().as('p').hasLabel('Planet').outE('ORBITS').has('au', gt(2.3d)).has('au', lt(3.3d)).inV().hasLabel('Star').has('name', eq('Sun')).select('p').project('planet').by(__.valueMap(true)),options:[EXPLAIN]]
-nt(p) AS planetsH (p:Planet)-[*2]->(ss:StarSystem) RETURN ss.name AS system, cou
+gremlin> :> MATCH (p:Planet)-[*2]->(ss:StarSystem) RETURN ss.name AS system, count(p) AS planets
 ==>[system:Solar System,planets:9]
 ==>[system:Alpha Centauri,planets:1]
 gremlin> complexQuery = """
@@ -39,7 +39,9 @@ gremlin> complexQuery = """
 ......5>     ORDER BY planet
 ......6>     RETURN system, collect(planet) AS planets
 ......7> """
- 'G', 'B', 'F', 'O', 'A', 'M']
+    MATCH (sun:Star {name: 'Sirius A'})-[*1..2]-(sys:StarSystem)
+    OPTIONAL MATCH (p:Planet)-[:ORBITS]->(s:Star)-[:MEMBER_OF]->(sys)
+    WHERE s.type IN ['K', 'G', 'B', 'F', 'O', 'A', 'M']
     WITH sys.name AS system, p.name AS planet
     ORDER BY planet
     RETURN system, collect(planet) AS planets
@@ -52,12 +54,12 @@ gremlin> // Client-side translation
 ==>true
 gremlin> :remote connect opencypher.gremlin conf/neptune.yaml translate neptune
 ==>Configured stas.cdg7wy6xrah2.us-east-2.neptune.amazonaws.com/172.31.10.133:8182
-rbit.au < 3.3 RETURN p AS planetbit:ORBITS]->(:Star {name: 'Sun'}) WHERE 2.3 < o
+gremlin> :> MATCH (p:Planet)-[orbit:ORBITS]->(:Star {name: 'Sun'}) WHERE 2.3 < orbit.au < 3.3 RETURN p AS planet
 ==>[planet:[_type:node,name:Ceres,_id:ecb4b95f-9847-0982-a8a8-5bb34374b285,_label:Planet]]
 gremlin> // Combining Cypher and Gremlin
 ==>true
-mote('conf/remote-graph.properties')raversal(CypherTraversalSource.class).withRe
+gremlin> g = EmptyGraph.instance().traversal(CypherTraversalSource.class).withRemote('conf/remote-graph.properties')
 ==>cyphertraversalsource[emptygraph[empty], standard]
-)remlin> g.cypher('MATCH (p:Planet) RETURN p').select("p").outE().label().dedup(
+gremlin> g.cypher('MATCH (p:Planet) RETURN p').select("p").outE().label().dedup()
 ==>ORBITS
 gremlin>
