@@ -73,8 +73,6 @@ import scala.util.Either;
  * }</pre>
  */
 public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallback {
-    private final String DEFAULT_FORMATTER_PLUGIN = "json:cucumber.json";
-
     private final CanonicalOrderEventPublisher bus = new CanonicalOrderEventPublisher();
     private final SystemOutReader output = new SystemOutReader();
 
@@ -85,12 +83,7 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        RuntimeOptions options = new RuntimeOptions("");
-        String cucumberOptions = options.getPluginFormatterNames().stream().findFirst().orElse(DEFAULT_FORMATTER_PLUGIN);
-
-        PluginFactory pluginFactory = new PluginFactory();
-        EventListener json = (EventListener) pluginFactory.create(cucumberOptions);
-        json.setEventPublisher(bus);
+        initCucumberPlugins();
 
         TCKEvents.feature().subscribe(adapt(featureReadEvent()));
         TCKEvents.scenario().subscribe(adapt(scenarioStartedEvent()));
@@ -106,6 +99,17 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
         output.close();
     }
 
+    private void initCucumberPlugins() {
+        PluginFactory pluginFactory = new PluginFactory();
+        RuntimeOptions options = new RuntimeOptions("");
+        options.getPluginFormatterNames()
+            .stream()
+            .map(pluginFactory::create)
+            .filter(EventListener.class::isInstance)
+            .map(EventListener.class::cast)
+            .forEach(json -> json.setEventPublisher(bus));
+    }
+
     private Consumer<TCKEvents.FeatureRead> featureReadEvent() {
         return feature -> {
             featureNameToUri.put(feature.name(), feature.uri());
@@ -115,6 +119,7 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
 
     private Consumer<Scenario> scenarioStartedEvent() {
         return scenario -> {
+            Long startedAt = time();
             String featureUri = featureNameToUri.get(scenario.featureName());
             Pickle pickle = scenario.source();
             List<TestStep> steps = pickle.getSteps()
@@ -123,7 +128,7 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
                 .collect(Collectors.toList());
             int line = outlineLocation(pickle.getLocations());
             currentTestCase = new TCKTestCase(pickle, steps, featureUri, line);
-            bus.handle(new TestCaseStarted(time(), currentTestCase));
+            bus.handle(new TestCaseStarted(startedAt, currentTestCase));
         };
     }
 
@@ -143,16 +148,16 @@ public class CucumberReportAdapter implements BeforeAllCallback, AfterAllCallbac
 
     private Consumer<TCKEvents.StepFinished> stepFinishedEvent() {
         return event -> {
+            Long finishedAt = time();
             Step step = event.step();
             if (shouldReport(step)) {
-                Long timeNow = time();
-                logOutput(step, timeNow);
-                Long duration = timeNow - stepTimestamp.get(event.correlationId());
+                logOutput(step, finishedAt);
+                Long duration = finishedAt - stepTimestamp.get(event.correlationId());
                 Result.Type status = getStatus(event.result());
                 int line = outlineLocation(step.source().getLocations());
                 PickleStepTestStep testStep = new TCKTestStep(step.source(), currentTestCase.getUri(), line);
                 Result result = new Result(status, duration, errorOrNull(event.result()));
-                TestStepFinished cucumberEvent = new TestStepFinished(timeNow, currentTestCase, testStep, result);
+                TestStepFinished cucumberEvent = new TestStepFinished(finishedAt, currentTestCase, testStep, result);
                 bus.handle(cucumberEvent);
             } else {
                 output.clear();
