@@ -29,7 +29,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ## Highlights
 
-### Gremlin Console
+### Gremlin Console Plugin
 
 [Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries 
 or communication with a Cypher-enabled Gremlin Server (click to play/[view source](testware/integration-tests/src/test/resources/snippets/console-demo.out)):
