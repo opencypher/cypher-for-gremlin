@@ -3,11 +3,11 @@
 
 # freshReadmeSnippet: example
 from gremlin_python.driver.client import Client
-from gremlin_python.driver.serializer import GraphSONMessageSerializer
 from gremlin_python.driver.request import RequestMessage
+from gremlin_python.driver.serializer import GraphSONMessageSerializer
 
 serializer = GraphSONMessageSerializer()
-# workarond to avoid exception on any serializer other than `standard` or `traversal`:
+# workaround to avoid exception on any opProcessor other than `standard` or `traversal`:
 serializer.cypher = serializer.standard
 
 client = Client('ws://localhost:8182/gremlin', 'g', message_serializer=serializer)
