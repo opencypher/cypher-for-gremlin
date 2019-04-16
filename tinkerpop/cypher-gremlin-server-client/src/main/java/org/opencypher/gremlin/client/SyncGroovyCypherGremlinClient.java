@@ -76,6 +76,7 @@ final class SyncGroovyCypherGremlinClient implements CypherGremlinClient {
 
     @Override
     public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        throw new IllegalStateException("Not supported");
+        CypherResultSet result = submit(cypher, parameters);
+        return CompletableFuture.completedFuture(result);
     }
 }
