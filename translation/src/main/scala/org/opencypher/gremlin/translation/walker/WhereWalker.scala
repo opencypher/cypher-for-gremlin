@@ -143,6 +143,7 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
       case StartsWith(lhs, rhs)         => walkPredicate(lhs, rhs, p.startsWith)
       case EndsWith(lhs, rhs)           => walkPredicate(lhs, rhs, p.endsWith)
       case Contains(lhs, rhs)           => walkPredicate(lhs, rhs, p.contains)
+      case RegexMatch(lhs, rhs)         => walkPredicate(lhs, rhs, p.regexMatch)
       case In(lhs, rhs)                 => walkVargPredicate(lhs, rhs, a => p.within(a: _*))
       case Not(In(lhs, rhs))            => walkVargPredicate(lhs, rhs, a => p.without(a: _*))
 

@@ -106,6 +106,7 @@ private class ExpressionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
       case StartsWith(lhs, rhs)         => comparison(lhs, rhs, p.isString, p.startsWith)
       case EndsWith(lhs, rhs)           => comparison(lhs, rhs, p.isString, p.endsWith)
       case Contains(lhs, rhs)           => comparison(lhs, rhs, p.isString, p.contains)
+      case RegexMatch(lhs, rhs)         => comparison(lhs, rhs, p.isString, p.startsWith)
 
       case In(lhs, rhs) =>
         membership(lhs, rhs)

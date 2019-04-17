@@ -29,6 +29,7 @@ case class Without(values: Any*) extends GremlinPredicate
 case class StartsWith(value: Any) extends GremlinPredicate
 case class EndsWith(value: Any) extends GremlinPredicate
 case class Contains(value: Any) extends GremlinPredicate
+case class RegexMatch(value: Any) extends GremlinPredicate
 case class IsNode() extends GremlinPredicate
 case class IsString() extends GremlinPredicate
 case class IsRelationship() extends GremlinPredicate

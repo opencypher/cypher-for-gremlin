@@ -107,6 +107,7 @@ object RemoveMultipleAliases extends GremlinRewriter {
       case StartsWith(value: String)              => StartsWith(alias(value))
       case EndsWith(value: String)                => EndsWith(alias(value))
       case Contains(value: String)                => Contains(alias(value))
+      case RegexMatch(value: String)              => RegexMatch(alias(value))
       case _                                      => throw new IllegalArgumentException("Unknown predicate " + predicate)
     }
 
