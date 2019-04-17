@@ -278,14 +278,14 @@ public class CaseTest {
             "MATCH (n:test)\n" +
                 "RETURN \n" +
                 "  CASE split(n.name, '_')[0] \n" +
-                "    WHEN split(n.name, '_')[1] THEN n.name\n" +
+                "    WHEN split(n.name, '_')[1] THEN toString(n.name + 'a')\n" +
                 "    ELSE NULL\n" +
                 "  END as r\n"
         );
 
         assertThat(results)
             .extracting("r")
-            .containsExactlyInAnyOrder("a_a", null, null);
+            .containsExactlyInAnyOrder("a_aa", null, null);
     }
 
     @Test

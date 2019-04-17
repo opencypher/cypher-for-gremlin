@@ -70,7 +70,7 @@ object NodeUtils {
         Some(traversalValueToJava(expressions, context, parameterHandler))
       case MapExpression(items) =>
         Some(traversalValueToJava(items.toMap, context, parameterHandler))
-      case FunctionInvocation(_, _, _, Seq(args)) =>
+      case FunctionInvocation(_, _, _, Seq(args)) if !args.isInstanceOf[OperatorExpression] =>
         Some(expressionValue(args, context))
       case seq: Seq[_] =>
         val mappedSeq = seq.map(traversalValueToJava(_, context, parameterHandler))
