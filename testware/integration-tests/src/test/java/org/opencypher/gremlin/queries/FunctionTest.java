@@ -531,4 +531,15 @@ public class FunctionTest {
                         .hasMessageContaining("Expected substring(String, Integer, [Integer]), but got: (29, 1)");
     }
 
+    @Test
+    public void inlineFunctions() {
+        String cypher = "MATCH (n)\n" +
+            "WITH n LIMIT toInteger(toFloat(toString(sqrt(abs(ceil(3.7))))))\n" +
+            "RETURN count(*) AS count";
+        List<Map<String, Object>> results = submitAndGet(cypher);
+
+        assertThat(results)
+            .extracting("count")
+            .containsExactly(2L);
+    }
 }
