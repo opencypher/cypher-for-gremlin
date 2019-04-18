@@ -70,8 +70,8 @@ object NodeUtils {
         Some(traversalValueToJava(expressions, context, parameterHandler))
       case MapExpression(items) =>
         Some(traversalValueToJava(items.toMap, context, parameterHandler))
-      case FunctionInvocation(_, _, _, Seq(args)) =>
-        Some(expressionValue(args, context))
+      case FunctionInvocation(_, FunctionName(fnName), _, Seq(arg)) =>
+        inlineFunction(fnName, traversalValueOption(arg, context, parameterHandler))
       case seq: Seq[_] =>
         val mappedSeq = seq.map(traversalValueToJava(_, context, parameterHandler))
         Some(new util.ArrayList(mappedSeq.asJava))
@@ -80,6 +80,21 @@ object NodeUtils {
         Some(new util.LinkedHashMap[Any, Any](mappedMap.asJava))
       case _ =>
         None
+    }
+  }
+
+  def inlineFunction(name: String, arg: Option[AnyRef]): Option[AnyRef] = {
+    (name, arg) match {
+      case ("abs", Some(n: java.lang.Double))       => Some(Math.abs(n).asInstanceOf[AnyRef])
+      case ("ceil", Some(n: java.lang.Double))      => Some(Math.ceil(n).asInstanceOf[AnyRef])
+      case ("sqrt", Some(n: java.lang.Double))      => Some(Math.sqrt(n).asInstanceOf[AnyRef])
+      case ("toInteger", Some(n: java.lang.Number)) => Some(n.intValue().asInstanceOf[AnyRef])
+      case ("toInteger", Some(n: java.lang.String)) => Some(java.lang.Integer.parseInt(n).asInstanceOf[AnyRef])
+      case ("toFloat", Some(n: java.lang.Number))   => Some(n.floatValue().asInstanceOf[AnyRef])
+      case ("toFloat", Some(n: java.lang.String))   => Some(java.lang.Float.parseFloat(n).asInstanceOf[AnyRef])
+      case ("toString", Some(n))                    => Some(n.toString)
+      case ("toBoolean", Some(n: java.lang.String)) => Some(java.lang.Boolean.valueOf(n).asInstanceOf[AnyRef])
+      case _                                        => None
     }
   }
 
