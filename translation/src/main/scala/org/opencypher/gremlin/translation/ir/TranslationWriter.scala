@@ -297,6 +297,7 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
       case StartsWith(value)      => p.startsWith(writeValue(value))
       case EndsWith(value)        => p.endsWith(writeValue(value))
       case Contains(value)        => p.contains(writeValue(value))
+      case RegexMatch(value)      => p.regexMatch(writeValue(value))
       case IsNode()               => p.isNode
       case IsRelationship()       => p.isRelationship
       case IsString()             => p.isString

@@ -43,6 +43,8 @@ class IRGremlinPredicates extends GremlinPredicates[GremlinPredicate] {
 
   override def contains(value: scala.Any): GremlinPredicate = Contains(value)
 
+  override def regexMatch(value: scala.Any): GremlinPredicate = RegexMatch(value)
+
   override def isNode: GremlinPredicate = IsNode()
 
   override def isRelationship: GremlinPredicate = IsRelationship()

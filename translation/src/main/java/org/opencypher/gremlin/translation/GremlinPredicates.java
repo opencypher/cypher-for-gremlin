@@ -50,6 +50,8 @@ public interface GremlinPredicates<P> {
 
     P endsWith(Object value);
 
+    P regexMatch(Object value);
+
     P contains(Object value);
 
     P isNode();

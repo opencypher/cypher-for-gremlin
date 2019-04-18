@@ -384,6 +384,22 @@ public class FunctionTest {
     }
 
     @Test
+    @Category(SkipExtensions.CustomPredicates.class)
+    public void stringRegex() {
+        testRegex("n.name =~ '.*a.*'", "vadas", "marko");
+        testRegex("n.notExisting =~ '.*a.*'");
+        testRegex("n.name =~ null");
+    }
+
+    private void testRegex(String predicate, Object... expected) {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n) WHERE " + predicate + " RETURN n.name as n");
+        assertThat(results)
+            .extracting("n")
+            .containsExactlyInAnyOrder(expected);
+    }
+
+    @Test
     @Category(SkipExtensions.CustomFunctions.class)
     public void stringReplace() {
         assertThatThrownBy(() -> submitAndGet("RETURN replace(1, 'a', 'b')"))
