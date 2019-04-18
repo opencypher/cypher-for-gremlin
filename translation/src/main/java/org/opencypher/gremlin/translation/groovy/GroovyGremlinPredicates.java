@@ -84,6 +84,11 @@ public class GroovyGremlinPredicates implements GremlinPredicates<GroovyPredicat
     }
 
     @Override
+    public GroovyPredicate regexMatch(Object value) {
+        return new GroovyPredicate("cypherRegex", value);
+    }
+
+    @Override
     public GroovyPredicate isNode() {
         return new GroovyPredicate("cypherIsNode");
     }

@@ -82,6 +82,11 @@ public class TraversalGremlinPredicates implements GremlinPredicates<P> {
     }
 
     @Override
+    public P regexMatch(Object value) {
+        return CustomPredicate.cypherRegex(value);
+    }
+
+    @Override
     public P isNode() {
         return CustomPredicate.cypherIsNode();
     }

@@ -79,6 +79,11 @@ public class BytecodeGremlinPredicates implements GremlinPredicates<P> {
     }
 
     @Override
+    public P regexMatch(Object value) {
+        return CustomPredicate.cypherRegex(inlineParameter(value).toString());
+    }
+
+    @Override
     public P contains(Object value) {
         return CustomPredicate.cypherContains(inlineParameter(value));
     }
