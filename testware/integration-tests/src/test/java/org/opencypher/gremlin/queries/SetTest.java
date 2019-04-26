@@ -26,7 +26,10 @@ import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 import static org.opencypher.gremlin.test.TestCommons.parameterMap;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -292,7 +295,7 @@ public class SetTest {
         submitAndGet("CREATE (:TO {prop1: 'x', prop3: 'y'})");
 
         assertThatThrownBy(() -> submitAndGet("OPTIONAL MATCH (x:NOT_EXISTING) WITH x MATCH (to:TO) SET to=x RETURN to"))
-                        .hasMessageContaining("Expected   cypher.null to be Element");
+            .hasMessageContaining("Expected   cypher.null to be Element");
     }
 
     @Test

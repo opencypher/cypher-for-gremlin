@@ -216,7 +216,7 @@ object NodeUtils {
   }
 
   def toListLiteral(obj: java.lang.Iterable[_]): ListLiteral = {
-    ListLiteral(obj.asScala.map(el => toLiteral(el.asInstanceOf[AnyRef])).toSeq)(InputPosition.NONE)
+    ListLiteral(obj.asScala.map(el => toLiteral(el)).toSeq)(InputPosition.NONE)
   }
 
   def toLiteral(obj: Any): Literal = {
