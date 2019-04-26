@@ -215,6 +215,10 @@ object NodeUtils {
     }
   }
 
+  def toListLiteral(obj: java.lang.Iterable[_]): ListLiteral = {
+    ListLiteral(obj.asScala.map(el => toLiteral(el)).toSeq)(InputPosition.NONE)
+  }
+
   def toLiteral(obj: Any): Literal = {
     obj match {
       case _: java.lang.Integer | _: java.lang.Long =>

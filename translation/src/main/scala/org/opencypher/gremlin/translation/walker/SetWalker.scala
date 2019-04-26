@@ -83,7 +83,8 @@ private class SetWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P
       case p: Parameter =>
         val map = inlineExpressionValue(p, context, classOf[java.util.Map[String, _]])
         map.asScala.map {
-          case (name, value) => (name, toLiteral(value))
+          case (name, value: java.lang.Iterable[_]) => (name, toListLiteral(value))
+          case (name, value)                        => (name, toLiteral(value))
         }.toMap
     }
   }

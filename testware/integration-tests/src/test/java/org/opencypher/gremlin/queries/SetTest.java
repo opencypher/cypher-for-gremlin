@@ -26,6 +26,7 @@ import static org.opencypher.gremlin.test.GremlinExtractors.byElementProperty;
 import static org.opencypher.gremlin.test.TestCommons.parameterMap;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,6 +195,10 @@ public class SetTest {
         Map<Object, Object> props = new HashMap<>();
         props.put("name1", 1);
         props.put("name2", 2);
+        List<String> phones = new ArrayList<>();
+        phones.add("1");
+        phones.add("2");
+        props.put("phones", phones);
 
         String cypher = "MATCH (n:person)" +
             "SET n += {props} " +
@@ -206,7 +211,8 @@ public class SetTest {
             .containsExactly(ImmutableMap.of(
                 "loc", "uk",
                 "name1", 1L,
-                "name2", 2L));
+                "name2", 2L,
+                "phones", phones));
     }
 
     @Test
@@ -289,7 +295,7 @@ public class SetTest {
         submitAndGet("CREATE (:TO {prop1: 'x', prop3: 'y'})");
 
         assertThatThrownBy(() -> submitAndGet("OPTIONAL MATCH (x:NOT_EXISTING) WITH x MATCH (to:TO) SET to=x RETURN to"))
-                        .hasMessageContaining("Expected   cypher.null to be Element");
+            .hasMessageContaining("Expected   cypher.null to be Element");
     }
 
     @Test
