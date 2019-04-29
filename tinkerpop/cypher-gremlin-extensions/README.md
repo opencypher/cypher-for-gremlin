@@ -246,6 +246,8 @@ Following TCK scenarios rely on that feature:
 
 ### Creating big ranges
 
+There is no known simple way to create numeric range in Gremlin ([Range](http://tinkerpop.apache.org/docs/current/reference/#range-step)) step has different use).
+
 Current implementation of numeric `range` in Cypher for Gremlin timeouts when creating a big range (over 10000 elements):
 
 ```groovy
