@@ -102,7 +102,7 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
           walkExpression(expr).flatMap(extractStep(keyName))
         }.getOrElse {
           val key = StringLiteral(keyName)(InputPosition.NONE)
-          asList(expr, key).map(CustomFunction.cypherContainerIndex()).is(p.neq(NULL))
+          asList(expr, key).map(CustomFunction.cypherContainerIndex())
         }
 
       case ContainerIndex(expr, idx) =>
@@ -121,7 +121,7 @@ private class WhereWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
 
       case IsNull(expr) =>
         expr match {
-          case Property(propertyExpr, PropertyKeyName(keyName: String)) =>
+          case Property(propertyExpr, PropertyKeyName(keyName: String)) if isElement(propertyExpr, context) =>
             walkExpression(propertyExpr).hasNot(keyName)
           case _ =>
             walkExpression(expr).is(p.isEq(NULL))
