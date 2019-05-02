@@ -15,7 +15,10 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opencypher.gremlin.test.TestCommons.parameterMap;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,10 @@ public class UnwindTest {
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();
+    }
+
+    private List<Map<String, Object>> submitAndGet(String cypher, Object... parameters) {
+        return gremlinServer.cypherGremlinClient().submit(cypher, parameterMap(parameters)).all();
     }
 
     @Test
@@ -179,4 +186,25 @@ public class UnwindTest {
             .isEmpty();
     }
 
+    @Test
+    public void unwindNestedParams() {
+        Map<String, Map<String, String>> noName = singletonMap("person",
+            singletonMap("lastname", "b")
+        );
+        Map<String, Map<String, String>> withName = singletonMap("person",
+            singletonMap("name", "a")
+        );
+
+        List<Map<String, Object>> results = submitAndGet(
+            "UNWIND {data} as data\n" +
+                "WITH data\n" +
+                "WHERE data.person.name IS NULL\n" +
+                "RETURN data",
+            "data", asList(withName, noName)
+        );
+
+        assertThat(results)
+            .extracting("data")
+            .containsExactly(noName);
+    }
 }
