@@ -125,33 +125,47 @@ Gremlin [AddProperty step](http://tinkerpop.apache.org/docs/current/reference/#a
 
 There is no [known way](https://stackoverflow.com/questions/53734954/how-can-i-return-meaningful-errors-in-gremlin) to throw custom an exception from Gremlin traversal. To achieve runtime validation (for example deleting nodes that still have relationships) custom function is used.
 
-### Variable length paths
+### Variable length paths with loops
 
-There is no known simple way to implement variable length path matching in Gremlin. Currently it is implemented using [Repeat Step](http://tinkerpop.apache.org/docs/current/reference/#repeat-step). For example, in to match all related nodes with type software, one or two hops away:
+Currently is implemented using [`repeat`](http://tinkerpop.apache.org/docs/current/reference/#repeat-step), `emit` and
+`times` step combination, that works in generic cases, but fails when graph contains loops.
+
+For example nodes `a` and `b`, `b` contains self-loop:
 
 ```cypher
-MATCH (p {id: 1})-[r*1..2]->(s:software) 
-RETURN r, s.name AS software
+CREATE (a:a)-[:knows]->(b:b)
+CREATE (b)-[:knows]->(b)
 ```
 
-following Gremlin snippet is used to traverse path:
+To get all paths with length from 1 to 4:
+
+```cypher
+MATCH p = (a:a)-[:knows*1..4]->(b) RETURN p
+```
+
+Expected result is:
+
+```
+["a", "knows", "b"],
+["a", "knows", "b", "knows", "b"]
+```
+
+Current translation (simplified):
 
 ```groovy
-g.V().has(id, 1).
-        as('  cypher.path.start').
-        emit().
-        repeat(outE().as('r').inV()).
-        until(path().
-                from('  cypher.path.start').
-                count(local).
-                is(gte(5))).
-        where(path().
-                from('  cypher.path.start').
-                count(local).
-                is(between(3, 6))).
-        hasLabel('software').
-        as('s')
-        // ...
+g.V().as('a').hasLabel('a').
+        emit(__.loops().is(gte(1))).
+        repeat(__.outE('knows').inV()).
+        times(4)
+```
+
+Result is:
+
+```
+["a", "knows", "b"],
+["a", "knows", "b", "knows", "b"],
+["a", "knows", "b", "knows", "b", "knows", "b"],
+["a", "knows", "b", "knows", "b", "knows", "b", "knows", "b"]
 ```
 
 ## Non-translatable queries

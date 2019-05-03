@@ -25,8 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -42,8 +43,8 @@ public class VariableLengthPathTest {
 
     public static ModernGraph g;
 
-    @BeforeClass
-    public static void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         g = TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
     }
 
@@ -210,6 +211,21 @@ public class VariableLengthPathTest {
     }
 
     @Test
+    public void zeroLengthRelationship() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH p = (a {name: 'marko'})-[:knows*0..1]->(b)\n" +
+                "RETURN p");
+
+        assertThat(results)
+            .extracting("p")
+            .containsExactlyInAnyOrder(
+                newArrayList(g.MARKO),
+                newArrayList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH),
+                newArrayList(g.MARKO, g.MARKO_KNOWS_VADAS, g.VADAS)
+            );
+    }
+
+    @Test
     @Category(SkipWithCosmosDB.Truncate4096.class)
     public void multipleVarLengthRelationships() throws Exception {
         List<Map<String, Object>> results = submitAndGet(
@@ -225,6 +241,29 @@ public class VariableLengthPathTest {
                 newArrayList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH),
                 newArrayList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH, g.JOSH_CREATED_RIPPLE, g.RIPPLE),
                 newArrayList(g.MARKO, g.MARKO_KNOWS_JOSH, g.JOSH, g.JOSH_CREATED_LOP, g.LOP)
+            );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void multipleVarLengthPathInLoops() throws Exception {
+        submitAndGet(TestCommons.DELETE_ALL);
+        submitAndGet("CREATE (a:a)-[:knows]->(b:b)" +
+            "CREATE (b)-[:knows]->(b)");
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH p = (a:a)-[:knows*1..2]->(b) RETURN p");
+
+        assertThat(results)
+            .extracting("p")
+            .extracting(list ->
+                ((List<Map>) list).stream()
+                    .map(e -> e.get(ReturnProperties.LABEL))
+                    .collect(Collectors.toList())
+            )
+            .containsExactlyInAnyOrder(
+                newArrayList("a", "knows", "b"),
+                newArrayList("a", "knows", "b", "knows", "b")
             );
     }
 }

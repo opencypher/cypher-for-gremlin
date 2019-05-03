@@ -67,7 +67,7 @@ class RemoveMultipleAliasesTest {
 
   @Test
   def rewriteVarLengthPath(): Unit = {
-    assertThat(parse("""MATCH p = (n {name: 'A'})-[:KNOWS*1..2]->(x)
+    assertThat(parse("""MATCH p = (n {name: 'A'})-[:KNOWS*1..2]-(x)
         |RETURN p""".stripMargin))
       .withFlavor(flavor)
       .rewritingWith(RemoveMultipleAliases)
@@ -78,7 +78,6 @@ class RemoveMultipleAliasesTest {
       .keeps(__.as("n"))
       .removes(__.from("  cypher.path.start.p"))
       .adds(__.from("n"))
-      .removes(__.as("x").as("  cypher.match.end.p"))
       .keeps(__.as("x"))
   }
 
