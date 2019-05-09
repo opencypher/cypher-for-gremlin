@@ -7,7 +7,7 @@ Cypher for Gremlin is a toolkit for users of [Apache TinkerPop™](https://tinke
 
 Cypher query is translated to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode):
 
-<img src="gh-pages/img/translation.svg?raw=true" width="600" />
+<img src="../gh-pages/img/translation.svg?raw=true" width="600" />
 
 ## Table of Contents
 
@@ -34,7 +34,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 [Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries 
 or communication with a Cypher-enabled Gremlin Server (click to play/[view source](testware/integration-tests/src/test/resources/snippets/console-demo.out)):
 
-<img src="gh-pages/img/console.svg?raw=true" />
+<img src="../gh-pages/img/console.svg?raw=true" />
 
 ### Gremlin Server Client
 
@@ -165,7 +165,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 
 ## Implementation
 
-<img src="gh-pages/img/implementation.svg?raw=true" />
+<img src="../gh-pages/img/implementation.svg?raw=true" />
 
 The translation process uses a reasonably sophisticated and flexible approach. Cypher query is parsed by the [openCypher Frontend](https://github.com/opencypher/front-end) and translated to an [internal representation](translation/src/main/scala/org/opencypher/gremlin/translation/ir/model) by the Cypher for Gremlin. The internal representation is transformed by a set of [rewriters](translation/src/main/scala/org/opencypher/gremlin/translation/ir/rewrite) to adapt the query for system specifics of different Gremlin implementations (JanusGraph, Cosmos DB, AWS Neptune), then converted to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode).
 
