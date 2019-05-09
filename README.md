@@ -7,7 +7,7 @@ Cypher for Gremlin is a toolkit for users of [Apache TinkerPop™](https://tinke
 
 Cypher query is translated to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode):
 
-<img src="https://drive.google.com/uc?export=view&id=1HPxZrNkJxrmnd8BlB8YQqX5-pc9TWKUn" width="600" />
+<img src="https://opencypher.github.io/cypher-for-gremlin/img/translation.svg" width="600" />
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 
 ## Overview
 
-<img src="https://drive.google.com/uc?export=view&id=1jSZH9sJtm4sBu8ZoAaEdb7CLXzRWdUlq" />
+<img src="https://opencypher.github.io/cypher-for-gremlin/img/ecosystem.svg" />
 
 ## Highlights
 
@@ -34,7 +34,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 [Gremlin Console plugin](tinkerpop/cypher-gremlin-console-plugin) that enables client-side translation of Cypher queries 
 or communication with a Cypher-enabled Gremlin Server (click to play/[view source](testware/integration-tests/src/test/resources/snippets/console-demo.out)):
 
-<img src="https://drive.google.com/uc?export=view&id=1vncDfbO8o9Ef060SFOBmlQpt4v7etGrJ" />
+<img src="https://opencypher.github.io/cypher-for-gremlin/img/console.svg" />
 
 ### Gremlin Server Client
 
@@ -165,7 +165,7 @@ You are very welcome to report any [issues](https://github.com/opencypher/cypher
 
 ## Implementation
 
-<img src="https://drive.google.com/uc?export=view&id=1-7jcZiVaNBfP1-6S9eFemu_NhazIBnqG" />
+<img src="https://opencypher.github.io/cypher-for-gremlin/img/implementation.svg" />
 
 The translation process uses a reasonably sophisticated and flexible approach. Cypher query is parsed by the [openCypher Frontend](https://github.com/opencypher/front-end) and translated to an [internal representation](translation/src/main/scala/org/opencypher/gremlin/translation/ir/model) by the Cypher for Gremlin. The internal representation is transformed by a set of [rewriters](translation/src/main/scala/org/opencypher/gremlin/translation/ir/rewrite) to adapt the query for system specifics of different Gremlin implementations (JanusGraph, Cosmos DB, AWS Neptune), then converted to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode).
 
