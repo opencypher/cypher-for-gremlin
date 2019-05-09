@@ -7,7 +7,7 @@ Cypher for Gremlin is a toolkit for users of [Apache TinkerPop™](https://tinke
 
 Cypher query is translated to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode):
 
-<img src="../../gh-pages/img/translation.svg?raw=true" width="600" />
+<img src="../../blob/gh-pages/img/translation.svg?raw=true" width="600" />
 
 ## Table of Contents
 
