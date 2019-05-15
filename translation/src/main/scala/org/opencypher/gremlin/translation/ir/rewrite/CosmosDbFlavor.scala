@@ -35,7 +35,8 @@ object CosmosDbFlavor extends GremlinRewriter {
       replaceSelectValues(_),
       replaceSelectValues(_),
       stringIds(_),
-      neqOnDiff(_)
+      neqOnDiff(_),
+      rewriteLoopsInVarLength(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -125,6 +126,18 @@ object CosmosDbFlavor extends GremlinRewriter {
     replace({
       case Is(Neq(value)) :: rest =>
         Not(Is(Eq(value)) :: Nil) :: rest
+    })(steps)
+  }
+
+  private def rewriteLoopsInVarLength(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    def gremlinPathLength(edges: Int): Int = if (edges == 0) 0 else edges * 2 + 1
+
+    replace({
+      case EmitT(Loops :: Is(Gte(lower: Int)) :: Nil) :: Repeat(directionT) :: Times(upper) :: rest =>
+        val lowerBound = gremlinPathLength(lower)
+        val upperBound = gremlinPathLength(upper)
+        Emit :: Repeat(directionT) :: Until(Path :: CountS(Scope.local) :: Is(Gte(upperBound)) :: Nil) :: WhereT(
+          Path :: CountS(Scope.local) :: Is(Between(lowerBound, upperBound + 1)) :: Nil) :: rest
     })(steps)
   }
 }
