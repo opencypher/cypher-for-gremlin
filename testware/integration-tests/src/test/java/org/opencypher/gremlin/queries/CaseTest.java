@@ -308,4 +308,31 @@ public class CaseTest {
             .extracting("r")
             .containsExactlyInAnyOrder("a_a");
     }
+
+    @Test
+    @Category(SkipWithCosmosDB.NoNoneToken.class)
+    public void returnNullPropertiesInWith() throws Exception {
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (n)\n" +
+                "WITH" +
+                "  n.name as name," +
+                "  CASE n.lang WHEN 'java'" +
+                "    THEN 'YES!'" +
+                "    ELSE n.lang" +
+                "  END\n" +
+                "AS java\n" +
+                "RETURN name, java"
+        );
+
+        assertThat(results)
+            .extracting("name", "java")
+            .containsExactlyInAnyOrder(
+                tuple("ripple", "YES!"),
+                tuple("lop", "YES!"),
+                tuple("marko", null),
+                tuple("vadas", null),
+                tuple("josh", null),
+                tuple("peter", null)
+            );
+    }
 }

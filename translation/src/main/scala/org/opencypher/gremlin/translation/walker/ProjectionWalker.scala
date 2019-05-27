@@ -217,7 +217,7 @@ private class ProjectionWalker[T, P](context: WalkerContext[T, P], g: GremlinSte
     expression match {
       case _: Add | _: ContainerIndex | _: CountStar | _: Divide | _: FunctionInvocation | _: ListLiteral | _: Literal |
           _: MapExpression | _: Modulo | _: Multiply | _: Null | _: Parameter | _: PatternComprehension | _: Pow |
-          _: Property | _: Subtract | _: Variable | _: StartsWith | _: Contains | _: EndsWith =>
+          _: Property | _: Subtract | _: Variable | _: StartsWith | _: Contains | _: EndsWith | _: CaseExpression =>
         false
       case _ =>
         true
