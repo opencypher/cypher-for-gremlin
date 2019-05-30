@@ -96,14 +96,6 @@ In Gremlin different steps are required for each type:
 
 If type information is unknown (or on string concatenation) - custom function is used. If Gremlin Extensions for Cypher Support are not installed, translation falls back to number operator.
 
-### Copying Properties from node to node
-
-```cypher
-MATCH (n:FROM)-[r]->(m:TO) SET m=n RETURN m
-```
-
-Gremlin [AddProperty step](http://tinkerpop.apache.org/docs/current/reference/#addproperty-step) only allows setting a single value, where the property name is constant. It is unknown how to copy all properties from one element to another.
-
 ## Translation Workarounds
 
 ### Null handling

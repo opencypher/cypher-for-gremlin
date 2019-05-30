@@ -494,6 +494,12 @@ public class GroovyGremlinSteps implements GremlinSteps<String, GroovyPredicate>
     }
 
     @Override
+    public GremlinSteps<String, GroovyPredicate> property(GremlinSteps<String, GroovyPredicate> keyTraversal, GremlinSteps<String, GroovyPredicate> valueTraversal) {
+        g.append(chain("property", traversal(keyTraversal), traversal(valueTraversal)));
+        return this;
+    }
+
+    @Override
     public GremlinSteps<String, GroovyPredicate> property(Cardinality cardinality, String key, GremlinSteps<String, GroovyPredicate> traversal) {
         g.append(chain("property", cardinality, key, traversal(traversal)));
         return this;

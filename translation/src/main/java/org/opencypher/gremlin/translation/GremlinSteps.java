@@ -200,6 +200,8 @@ public interface GremlinSteps<T, P> {
 
     GremlinSteps<T, P> property(String key, GremlinSteps<T, P> traversal);
 
+    GremlinSteps<T, P> property(GremlinSteps<T, P> keyTraversal, GremlinSteps<T, P> valueTraversal);
+
     GremlinSteps<T, P> property(Cardinality cardinality, String key, GremlinSteps<T, P> traversal);
 
     GremlinSteps<T, P> project(String... keys);

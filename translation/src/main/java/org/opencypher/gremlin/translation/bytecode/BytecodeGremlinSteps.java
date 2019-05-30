@@ -485,6 +485,12 @@ public class BytecodeGremlinSteps implements GremlinSteps<Bytecode, P> {
     }
 
     @Override
+    public GremlinSteps<Bytecode, P> property(GremlinSteps<Bytecode, P> keyTraversal, GremlinSteps<Bytecode, P> valueTraversal) {
+        bytecode.addStep(Symbols.property, keyTraversal.current(), valueTraversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<Bytecode, P> property(Cardinality cardinality, String key, GremlinSteps<Bytecode, P> traversal) {
         bytecode.addStep(Symbols.property, cardinality, key, traversal.current());
         return this;
