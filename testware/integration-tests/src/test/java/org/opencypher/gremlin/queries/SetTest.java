@@ -294,8 +294,7 @@ public class SetTest {
     public void copyPropertiesFromNull() {
         submitAndGet("CREATE (:TO {prop1: 'x', prop3: 'y'})");
 
-        assertThatThrownBy(() -> submitAndGet("OPTIONAL MATCH (x:NOT_EXISTING) WITH x MATCH (to:TO) SET to=x RETURN to"))
-            .hasMessageContaining("Expected   cypher.null to be Element");
+        assertThatThrownBy(() -> submitAndGet("OPTIONAL MATCH (x:NOT_EXISTING) WITH x MATCH (to:TO) SET to=x RETURN to"));
     }
 
     @Test

@@ -521,6 +521,12 @@ public class TraversalGremlinSteps implements GremlinSteps<GraphTraversal, P> {
     }
 
     @Override
+    public GremlinSteps<GraphTraversal, P> property(GremlinSteps<GraphTraversal, P> keyTraversal, GremlinSteps<GraphTraversal, P> valueTraversal) {
+        g.property(keyTraversal.current(), valueTraversal.current());
+        return this;
+    }
+
+    @Override
     public GremlinSteps<GraphTraversal, P> property(Cardinality cardinality, String key, GremlinSteps<GraphTraversal, P> traversal) {
         g.property(cardinality, key, traversal.current());
         return this;

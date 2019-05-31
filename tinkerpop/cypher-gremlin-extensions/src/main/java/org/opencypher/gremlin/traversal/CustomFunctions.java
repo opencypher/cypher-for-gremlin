@@ -464,20 +464,6 @@ public final class CustomFunctions {
             String.class, String.class, String.class);
     }
 
-    public static Function<Traverser, Object> cypherCopyProperties() {
-        return traverser -> {
-            List args = cast(traverser.get(), List.class);
-            if (args.get(0) == Tokens.NULL) {
-                return Tokens.NULL;
-            }
-
-            Element to = cast(args.get(0), Element.class);
-            Element from = cast(args.get(1), Element.class);
-            from.properties().forEachRemaining(prop -> to.property(prop.key(), prop.value()));
-            return to;
-        };
-    }
-
     public static Function<Traverser, Object> cypherException() {
         return traverser -> {
             String message = CypherExceptions.messageByName(traverser.get());

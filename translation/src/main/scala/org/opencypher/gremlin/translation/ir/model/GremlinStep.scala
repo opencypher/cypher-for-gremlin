@@ -319,6 +319,16 @@ case class PropertyT(key: String, traversal: Seq[GremlinStep]) extends GremlinSt
   }
 }
 
+case class PropertyT2(keyTraversal: Seq[GremlinStep], valueTraversal: Seq[GremlinStep]) extends GremlinStep {
+  override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
+    PropertyT2(f(keyTraversal), f(valueTraversal))
+  }
+
+  override def foldTraversals[R](z: R)(op: (R, Seq[GremlinStep]) => R): R = {
+    op(op(z, keyTraversal), valueTraversal)
+  }
+}
+
 case class PropertyTC(cardinality: Cardinality, key: String, traversal: Seq[GremlinStep]) extends GremlinStep {
   override def mapTraversals(f: Seq[GremlinStep] => Seq[GremlinStep]): GremlinStep = {
     PropertyTC(cardinality, key, f(traversal))

@@ -423,6 +423,14 @@ class IRGremlinSteps extends GremlinSteps[Seq[GremlinStep], GremlinPredicate] {
   }
 
   override def property(
+      keyTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate],
+      valueTraversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate])
+    : GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {
+    buf += PropertyT2(keyTraversal.current(), valueTraversal.current())
+    this
+  }
+
+  override def property(
       cardinality: Cardinality,
       key: String,
       traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]): GremlinSteps[Seq[GremlinStep], GremlinPredicate] = {

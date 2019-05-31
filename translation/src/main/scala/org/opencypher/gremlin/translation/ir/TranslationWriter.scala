@@ -222,6 +222,8 @@ sealed class TranslationWriter[T, P] private (translator: Translator[T, P], para
           g.property(cardinality, key, writeValue(value))
         case PropertyT(key, traversal) =>
           g.property(key, writeLocalSteps(traversal))
+        case PropertyT2(keyTraversal, valueTraversal) =>
+          g.property(writeLocalSteps(keyTraversal), writeLocalSteps(valueTraversal))
         case PropertyTC(cardinality, key, traversal) =>
           g.property(cardinality, key, writeLocalSteps(traversal))
         case Project(keys @ _*) =>
