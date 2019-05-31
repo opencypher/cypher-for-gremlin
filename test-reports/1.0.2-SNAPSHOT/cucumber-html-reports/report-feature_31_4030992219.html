@@ -77,7 +77,7 @@ $(document).ready(function() {
     <tr class="info">
       <td>cypher-for-gremlin</td>
               <td>1.0.2-SNAPSHOT</td>
-            <td>31 May 2019, 13:11</td>
+            <td>31 May 2019, 13:18</td>
     </tr>
   </tbody>
 </table>
@@ -141,7 +141,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="18">0.000</td>
+          <td class="duration" data-value="26">0.000</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -254,7 +254,7 @@ $(document).ready(function() {
         </div>
         <div id="output-3" class="collapse collapsable-details " >
           
-          <pre><p>13:10:08.246 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+          <pre><p>13:17:40.787 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:36715, hostUri=ws://localhost:36715/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -302,9 +302,9 @@ $(document).ready(function() {
         </div>
         <div id="output-5" class="collapse collapsable-details " >
           
-          <pre><p>13:10:08.248 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (n:A)-[:LOOP]-&gt;(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
-13:10:08.251 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (n:A)-[:LOOP]-&gt;(n)
-13:10:08.254 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('n').addE('LOOP').from('n').to('n').barrier().limit(0)
+          <pre><p>13:17:40.788 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (n:A)-[:LOOP]-&gt;(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:36715, hostUri=ws://localhost:36715/gremlin}}
+13:17:40.788 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (n:A)-[:LOOP]-&gt;(n)
+13:17:40.801 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('n').addE('LOOP').from('n').to('n').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -354,11 +354,11 @@ RETURN p1 = p2</pre>
         </div>
         <div id="output-7" class="collapse collapsable-details " >
           
-          <pre><p>13:10:08.283 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p1 = (:A)--&gt;() MATCH p2 = (:A)&lt;--() RETURN p1 = p2
-13:10:08.284 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p1 = (:A)--&gt;()
+          <pre><p>13:17:40.853 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p1 = (:A)--&gt;()
 MATCH p2 = (:A)&lt;--()
-RETURN p1 = p2}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
-13:10:08.290 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.p1').hasLabel('A').outE().aggregate('  cypher.path.edge.p1').inV().path().from('  cypher.path.start.p1').as('p1').V().as('  cypher.path.start.p2').hasLabel('A').inE().aggregate('  cypher.path.edge.p2').outV().path().from('  cypher.path.start.p2').as('p2').select('p1', 'p2').project('p1 = p2').by(__.select('p2').as('  GENERATED1').select('p1').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED1').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(eq('  GENERATED1')), __.constant(true), __.constant(false))))
+RETURN p1 = p2}} to - Connection{host=Host{address=localhost/127.0.0.1:36715, hostUri=ws://localhost:36715/gremlin}}
+13:17:40.853 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p1 = (:A)--&gt;() MATCH p2 = (:A)&lt;--() RETURN p1 = p2
+13:17:40.861 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.p1').hasLabel('A').outE().aggregate('  cypher.path.edge.p1').inV().path().from('  cypher.path.start.p1').as('p1').V().as('  cypher.path.start.p2').hasLabel('A').inE().aggregate('  cypher.path.edge.p2').outV().path().from('  cypher.path.start.p2').as('p2').select('p1', 'p2').project('p1 = p2').by(__.select('p2').as('  GENERATED1').select('p1').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED1').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(eq('  GENERATED1')), __.constant(true), __.constant(false))))
 </p></pre>
         </div>
       </div>
