@@ -77,7 +77,7 @@ $(document).ready(function() {
     <tr class="info">
       <td>cypher-for-gremlin</td>
               <td>1.0.2-SNAPSHOT</td>
-            <td>31 May 2019, 12:38</td>
+            <td>31 May 2019, 12:50</td>
     </tr>
   </tbody>
 </table>
@@ -141,7 +141,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="20">0.000</td>
+          <td class="duration" data-value="30">0.000</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -254,7 +254,7 @@ $(document).ready(function() {
         </div>
         <div id="output-3" class="collapse collapsable-details " >
           
-          <pre><p>12:37:33.514 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
+          <pre><p>12:49:22.365 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -308,15 +308,15 @@ $(document).ready(function() {
         </div>
         <div id="output-5" class="collapse collapsable-details " >
           
-          <pre><p>12:37:33.515 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (n0:Node),
+          <pre><p>12:49:22.366 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (n0:Node),
        (n1:Node),
        (n2:Node),
        (n3:Node),
        (n0)-[:EDGE]-&gt;(n1),
        (n1)-[:EDGE]-&gt;(n2),
-       (n2)-[:EDGE]-&gt;(n3)}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:33.515 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (n0:Node),        (n1:Node),        (n2:Node),        (n3:Node),        (n0)-[:EDGE]-&gt;(n1),        (n1)-[:EDGE]-&gt;(n2),        (n2)-[:EDGE]-&gt;(n3)
-12:37:33.518 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('Node').as('n0').addV('Node').as('n1').addV('Node').as('n2').addV('Node').as('n3').addE('EDGE').from('n0').to('n1').addE('EDGE').from('n1').to('n2').addE('EDGE').from('n2').to('n3').barrier().limit(0)
+       (n2)-[:EDGE]-&gt;(n3)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:22.366 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (n0:Node),        (n1:Node),        (n2:Node),        (n3:Node),        (n0)-[:EDGE]-&gt;(n1),        (n1)-[:EDGE]-&gt;(n2),        (n2)-[:EDGE]-&gt;(n3)
+12:49:22.370 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('Node').as('n0').addV('Node').as('n1').addV('Node').as('n2').addV('Node').as('n3').addE('EDGE').from('n0').to('n1').addE('EDGE').from('n1').to('n2').addE('EDGE').from('n2').to('n3').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -366,12 +366,12 @@ RETURN count(p) AS c</pre>
         </div>
         <div id="output-7" class="collapse collapsable-details " >
           
-          <pre><p>12:37:33.537 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r:EDGE]-()
+          <pre><p>12:49:22.391 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r:EDGE]-()
 MATCH p = (n)-[*0..1]-()-[r]-()-[*0..1]-(m)
-RETURN count(p) AS c}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:33.537 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r:EDGE]-() MATCH p = (n)-[*0..1]-()-[r]-()-[*0..1]-(m) RETURN count(p) AS c
-12:37:33.546 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').bothE('EDGE').as('r').otherV().as('  UNNAMED19').dedup('  cypher.path.start.GENERATED1', 'r', '  UNNAMED19').V().as('n').as('  cypher.path.start.p').emit(__.loops().is(gte(0))).repeat(__.bothE().as('  UNNAMED35').aggregate('  cypher.path.edge.p').otherV()).times(1).simplePath().from('  cypher.path.start.p').as('  UNNAMED44').as('  cypher.path.start.p').bothE().as('  GENERATED2').where(__.select('  GENERATED2').where(eq('r'))).aggregate('  cypher.path.edge.p').otherV().as('  UNNAMED51').as('  cypher.path.start.p').emit(__.loops().is(gte(0))).repeat(__.bothE().as('  UNNAMED53').aggregate('  cypher.path.edge.p').otherV()).times(1).simplePath().from('  cypher.path.start.p').as('m').dedup('n', '  UNNAMED35', '  UNNAMED44', 'r', '  UNNAMED51', '  UNNAMED53', 'm').path().from('n').is(neq('  cypher.null')).count().project('c').by(__.identity())
-12:37:33.549 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
+RETURN count(p) AS c}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:22.391 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r:EDGE]-() MATCH p = (n)-[*0..1]-()-[r]-()-[*0..1]-(m) RETURN count(p) AS c
+12:49:22.400 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('  cypher.path.start.GENERATED1').bothE('EDGE').as('r').otherV().as('  UNNAMED19').dedup('  cypher.path.start.GENERATED1', 'r', '  UNNAMED19').V().as('n').as('  cypher.path.start.p').emit(__.loops().is(gte(0))).repeat(__.bothE().as('  UNNAMED35').aggregate('  cypher.path.edge.p').otherV()).times(1).simplePath().from('  cypher.path.start.p').as('  UNNAMED44').as('  cypher.path.start.p').bothE().as('  GENERATED2').where(__.select('  GENERATED2').where(eq('r'))).aggregate('  cypher.path.edge.p').otherV().as('  UNNAMED51').as('  cypher.path.start.p').emit(__.loops().is(gte(0))).repeat(__.bothE().as('  UNNAMED53').aggregate('  cypher.path.edge.p').otherV()).times(1).simplePath().from('  cypher.path.start.p').as('m').dedup('n', '  UNNAMED35', '  UNNAMED44', 'r', '  UNNAMED51', '  UNNAMED53', 'm').path().from('n').is(neq('  cypher.null')).count().project('c').by(__.identity())
+12:49:22.403 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
 java.lang.IllegalArgumentException: Neither the sideEffects, map, nor path has a   UNNAMED35-key: DedupGlobalStep([r,   UNNAMED35,   UNNAMED44,   UNNAMED53,   UNNAMED51, m, n])
 	at org.apache.tinkerpop.gremlin.process.traversal.step.Scoping.getScopeValue(Scoping.java:124)
 	at org.apache.tinkerpop.gremlin.process.traversal.step.filter.DedupGlobalStep.lambda$filter$0(DedupGlobalStep.java:77)

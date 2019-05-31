@@ -77,7 +77,7 @@ $(document).ready(function() {
     <tr class="info">
       <td>cypher-for-gremlin</td>
               <td>1.0.2-SNAPSHOT</td>
-            <td>31 May 2019, 12:38</td>
+            <td>31 May 2019, 12:50</td>
     </tr>
   </tbody>
 </table>
@@ -141,7 +141,7 @@ $(document).ready(function() {
           <td  class="failed"    >6</td>
           <td class="total">6</td>
 
-          <td class="duration" data-value="226">0.000</td>
+          <td class="duration" data-value="252">0.000</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -254,7 +254,7 @@ $(document).ready(function() {
         </div>
         <div id="output-3" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.343 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
+          <pre><p>12:49:24.880 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -304,11 +304,11 @@ $(document).ready(function() {
         </div>
         <div id="output-5" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.345 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),
+          <pre><p>12:49:24.885 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),
        (root)-[:T]-&gt;(:Child {id: 'xx'}),
-       (root)-[:T]-&gt;(:Child)}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.345 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),        (root)-[:T]-&gt;(:Child {id: 'xx'}),        (root)-[:T]-&gt;(:Child)
-12:37:35.349 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('Root').as('root').addV('Child').as('  UNNAMED26').property(single, 'id', 0).addE('T').from('root').to('  UNNAMED26').addV('Child').as('  UNNAMED64').property(single, 'id', 'xx').addE('T').from('root').to('  UNNAMED64').addV('Child').as('  UNNAMED105').addE('T').from('root').to('  UNNAMED105').barrier().limit(0)
+       (root)-[:T]-&gt;(:Child)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:24.885 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),        (root)-[:T]-&gt;(:Child {id: 'xx'}),        (root)-[:T]-&gt;(:Child)
+12:49:24.890 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('Root').as('root').addV('Child').as('  UNNAMED26').property(single, 'id', 0).addE('T').from('root').to('  UNNAMED26').addV('Child').as('  UNNAMED64').property(single, 'id', 'xx').addE('T').from('root').to('  UNNAMED64').addV('Child').as('  UNNAMED105').addE('T').from('root').to('  UNNAMED105').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -358,12 +358,12 @@ RETURN i.id</pre>
         </div>
         <div id="output-7" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.368 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (:Root)--&gt;(i:Child)
+          <pre><p>12:49:24.918 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (:Root)--&gt;(i:Child)
 WHERE exists(i.id) AND i.id &gt; 'x'
-RETURN i.id}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.368 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (:Root)--&gt;(i:Child) WHERE exists(i.id) AND i.id &gt; 'x' RETURN i.id
-12:37:35.375 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().hasLabel('Root').outE().inV().as('i').hasLabel('Child').has('id', gt('x')).where(__.select('i').choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))).choose(__.is(neq('  cypher.null')), __.constant(true), __.constant(false)).is(neq('  cypher.null')).is(eq(true))).select('i').project('i.id').by(__.choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))))
-12:37:35.377 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
+RETURN i.id}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:24.918 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (:Root)--&gt;(i:Child) WHERE exists(i.id) AND i.id &gt; 'x' RETURN i.id
+12:49:24.924 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().hasLabel('Root').outE().inV().as('i').hasLabel('Child').has('id', gt('x')).where(__.select('i').choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))).choose(__.is(neq('  cypher.null')), __.constant(true), __.constant(false)).is(neq('  cypher.null')).is(eq(true))).select('i').project('i.id').by(__.choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))))
+12:49:24.926 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
 java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Long
 	at java.lang.Long.compareTo(Long.java:54)
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$3.test(Compare.java:92)
@@ -726,7 +726,7 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: java
         </div>
         <div id="output-11" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.379 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
+          <pre><p>12:49:24.930 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -776,11 +776,11 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: java
         </div>
         <div id="output-13" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.380 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),
+          <pre><p>12:49:24.930 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),
        (root)-[:T]-&gt;(:Child {id: 'xx'}),
-       (root)-[:T]-&gt;(:Child)}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.380 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),        (root)-[:T]-&gt;(:Child {id: 'xx'}),        (root)-[:T]-&gt;(:Child)
-12:37:35.388 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('Root').as('root').addV('Child').as('  UNNAMED26').property(single, 'id', 0).addE('T').from('root').to('  UNNAMED26').addV('Child').as('  UNNAMED64').property(single, 'id', 'xx').addE('T').from('root').to('  UNNAMED64').addV('Child').as('  UNNAMED105').addE('T').from('root').to('  UNNAMED105').barrier().limit(0)
+       (root)-[:T]-&gt;(:Child)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:24.931 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (root:Root)-[:T]-&gt;(:Child {id: 0}),        (root)-[:T]-&gt;(:Child {id: 'xx'}),        (root)-[:T]-&gt;(:Child)
+12:49:24.942 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('Root').as('root').addV('Child').as('  UNNAMED26').property(single, 'id', 0).addE('T').from('root').to('  UNNAMED26').addV('Child').as('  UNNAMED64').property(single, 'id', 'xx').addE('T').from('root').to('  UNNAMED64').addV('Child').as('  UNNAMED105').addE('T').from('root').to('  UNNAMED105').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -830,12 +830,12 @@ RETURN i.id</pre>
         </div>
         <div id="output-15" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.409 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (:Root)--&gt;(i:Child) WHERE NOT exists(i.id) OR i.id &gt; 'x' RETURN i.id
-12:37:35.409 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (:Root)--&gt;(i:Child)
+          <pre><p>12:49:24.959 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (:Root)--&gt;(i:Child)
 WHERE NOT exists(i.id) OR i.id &gt; 'x'
-RETURN i.id}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.417 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().hasLabel('Root').outE().inV().as('i').hasLabel('Child').where(__.or(__.not(__.select('i').choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))).choose(__.is(neq('  cypher.null')), __.constant(true), __.constant(false)).is(neq('  cypher.null')).is(eq(true))), __.select('i').values('id').is(gt('x')))).select('i').project('i.id').by(__.choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))))
-12:37:35.418 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
+RETURN i.id}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:24.959 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (:Root)--&gt;(i:Child) WHERE NOT exists(i.id) OR i.id &gt; 'x' RETURN i.id
+12:49:24.970 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().hasLabel('Root').outE().inV().as('i').hasLabel('Child').where(__.or(__.not(__.select('i').choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))).choose(__.is(neq('  cypher.null')), __.constant(true), __.constant(false)).is(neq('  cypher.null')).is(eq(true))), __.select('i').values('id').is(gt('x')))).select('i').project('i.id').by(__.choose(neq('  cypher.null'), __.choose(__.values('id'), __.values('id'), __.constant('  cypher.null'))))
+12:49:24.971 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
 java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Long
 	at java.lang.Long.compareTo(Long.java:54)
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$3.test(Compare.java:92)
@@ -1201,7 +1201,7 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: java
         </div>
         <div id="output-19" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.419 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
+          <pre><p>12:49:24.973 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -1249,9 +1249,9 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: java
         </div>
         <div id="output-21" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.420 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.420 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
-12:37:35.423 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
+          <pre><p>12:49:24.981 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:24.987 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
+12:49:24.995 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -1307,7 +1307,8 @@ RETURN lhs, rhs</pre>
         </div>
         <div id="output-23" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.453 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
+          <pre><p>12:49:25.035 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &lt; rhs AS result WHERE result RETURN lhs, rhs
+12:49:25.040 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
 WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types
 UNWIND range(0, size(types) - 1) AS i
 UNWIND range(0, size(types) - 1) AS j
@@ -1315,10 +1316,9 @@ WITH types[i] AS lhs, types[j] AS rhs
 WHERE i &lt;&gt; j
 WITH lhs, rhs, lhs &lt; rhs AS result
 WHERE result
-RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.453 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &lt; rhs AS result WHERE result RETURN lhs, rhs
-12:37:35.470 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(lt('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(lt('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
-12:37:35.473 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
+RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:25.059 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(lt('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(lt('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
+12:49:25.064 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
 java.lang.ClassCastException: org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerVertex cannot be cast to java.lang.Comparable
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$5.test(Compare.java:136)
 	at org.apache.tinkerpop.gremlin.process.traversal.P.test(P.java:72)
@@ -1709,7 +1709,7 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: org.
         </div>
         <div id="output-27" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.475 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
+          <pre><p>12:49:25.066 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -1757,9 +1757,9 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: org.
         </div>
         <div id="output-29" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.477 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.477 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
-12:37:35.487 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
+          <pre><p>12:49:25.068 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:25.068 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
+12:49:25.071 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -1815,7 +1815,8 @@ RETURN lhs, rhs</pre>
         </div>
         <div id="output-31" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.523 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
+          <pre><p>12:49:25.104 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &lt;= rhs AS result WHERE result RETURN lhs, rhs
+12:49:25.108 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
 WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types
 UNWIND range(0, size(types) - 1) AS i
 UNWIND range(0, size(types) - 1) AS j
@@ -1823,10 +1824,9 @@ WITH types[i] AS lhs, types[j] AS rhs
 WHERE i &lt;&gt; j
 WITH lhs, rhs, lhs &lt;= rhs AS result
 WHERE result
-RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.523 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &lt;= rhs AS result WHERE result RETURN lhs, rhs
-12:37:35.559 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(lte('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(lte('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
-12:37:35.568 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
+RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:25.125 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(lte('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(lte('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
+12:49:25.129 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
 java.lang.ClassCastException: org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerVertex cannot be cast to java.lang.Comparable
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$3.test(Compare.java:91)
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$6.test(Compare.java:158)
@@ -2218,7 +2218,7 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: org.
         </div>
         <div id="output-35" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.588 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
+          <pre><p>12:49:25.131 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -2266,9 +2266,9 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: org.
         </div>
         <div id="output-37" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.591 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.596 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
-12:37:35.599 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
+          <pre><p>12:49:25.133 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:25.134 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
+12:49:25.137 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -2324,8 +2324,7 @@ RETURN lhs, rhs</pre>
         </div>
         <div id="output-39" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.657 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &gt;= rhs AS result WHERE result RETURN lhs, rhs
-12:37:35.666 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
+          <pre><p>12:49:25.166 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
 WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types
 UNWIND range(0, size(types) - 1) AS i
 UNWIND range(0, size(types) - 1) AS j
@@ -2333,9 +2332,10 @@ WITH types[i] AS lhs, types[j] AS rhs
 WHERE i &lt;&gt; j
 WITH lhs, rhs, lhs &gt;= rhs AS result
 WHERE result
-RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.678 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(gte('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(gte('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
-12:37:35.682 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
+RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:25.166 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &gt;= rhs AS result WHERE result RETURN lhs, rhs
+12:49:25.196 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(gte('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(gte('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
+12:49:25.205 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
 java.lang.ClassCastException: org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerVertex cannot be cast to java.lang.Comparable
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$5.test(Compare.java:136)
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$4.test(Compare.java:113)
@@ -2727,7 +2727,7 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: org.
         </div>
         <div id="output-43" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.684 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
+          <pre><p>12:49:25.215 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -2775,9 +2775,9 @@ Caused by: org.apache.tinkerpop.gremlin.driver.exception.ResponseException: org.
         </div>
         <div id="output-45" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.686 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.686 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
-12:37:35.689 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
+          <pre><p>12:49:25.216 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE ()-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:25.219 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE ()-[:T]-&gt;()
+12:49:25.225 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('  UNNAMED8').addV().as('  UNNAMED17').addE('T').from('  UNNAMED8').to('  UNNAMED17').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -2833,8 +2833,7 @@ RETURN lhs, rhs</pre>
         </div>
         <div id="output-47" class="collapse collapsable-details " >
           
-          <pre><p>12:37:35.723 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &gt; rhs AS result WHERE result RETURN lhs, rhs
-12:37:35.728 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
+          <pre><p>12:49:25.275 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n)-[r]-&gt;()
 WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types
 UNWIND range(0, size(types) - 1) AS i
 UNWIND range(0, size(types) - 1) AS j
@@ -2842,9 +2841,10 @@ WITH types[i] AS lhs, types[j] AS rhs
 WHERE i &lt;&gt; j
 WITH lhs, rhs, lhs &gt; rhs AS result
 WHERE result
-RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:37927, hostUri=ws://localhost:37927/gremlin}}
-12:37:35.746 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(gt('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(gt('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
-12:37:35.751 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
+RETURN lhs, rhs}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+12:49:25.275 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n)-[r]-&gt;() WITH [n, r, p, '', 1, 3.14, true, null, [], {}] AS types UNWIND range(0, size(types) - 1) AS i UNWIND range(0, size(types) - 1) AS j WITH types[i] AS lhs, types[j] AS rhs WHERE i &lt;&gt; j WITH lhs, rhs, lhs &gt; rhs AS result WHERE result RETURN lhs, rhs
+12:49:25.306 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().as('r').aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'r', 'p').map(__.project('  GENERATED1', '  GENERATED2', '  GENERATED3', '  GENERATED4', '  GENERATED5', '  GENERATED6', '  GENERATED7', '  GENERATED8', '  GENERATED9', '  GENERATED10').by(__.select('n')).by(__.select('r')).by(__.select('p')).by(__.constant('')).by(__.constant(1)).by(__.constant(3.14d)).by(__.constant(true)).by(__.constant('  cypher.null')).by(__.constant([])).by(__.constant([:])).select(values)).as('types').constant(1).as('__GENERATED15').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED15').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED15')).as('__GENERATED14').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED14 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED13'))).until(__.loops().where(gt('__GENERATED14'))).select('  GENERATED13').unfold().as('i').constant(1).as('__GENERATED19').select('types').count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('__GENERATED19').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.math('_ - __GENERATED19')).as('__GENERATED18').sideEffect(__.is(lt(0)).constant('INVALID_RANGE').map(cypherException())).sideEffect(__.math('__GENERATED18 - 0').is(gt(10000)).constant('INVALID_RANGE').map(cypherException())).repeat(__.sideEffect(__.loops().aggregate('  GENERATED17'))).until(__.loops().where(gt('__GENERATED18'))).select('  GENERATED17').unfold().as('j').select('types', 'i', 'j').project('lhs', 'rhs').by(__.project('  GENERATED20', '  GENERATED21').by(__.select('types')).by(__.select('i')).select(values).map(cypherContainerIndex())).by(__.project('  GENERATED22', '  GENERATED23').by(__.select('types')).by(__.select('j')).select(values).map(cypherContainerIndex())).where(__.select('i').where(neq('j'))).as('  GENERATED24').select('lhs').as('lhs').select('  GENERATED24').select('rhs').as('rhs').where(__.select('lhs').where(gt('rhs'))).select('lhs', 'rhs').project('lhs', 'rhs', 'result').by(__.select('lhs')).by(__.select('rhs')).by(__.select('rhs').as('  GENERATED25').select('lhs').choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED25').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(gt('  GENERATED25')), __.constant(true), __.constant(false)))).as('  GENERATED26').select('lhs').as('lhs').select('  GENERATED26').select('rhs').as('rhs').select('  GENERATED26').select('result').as('result').select('lhs', 'rhs').project('lhs', 'rhs').by(__.select('lhs')).by(__.select('rhs'))
+12:49:25.322 [gremlin-server-worker-1] ERROR o.o.g.s.o.c.CypherOpProcessor - Error during traversal iteration
 java.lang.ClassCastException: org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerVertex cannot be cast to java.lang.Comparable
 	at org.apache.tinkerpop.gremlin.process.traversal.Compare$3.test(Compare.java:91)
 	at org.apache.tinkerpop.gremlin.process.traversal.P.test(P.java:72)
