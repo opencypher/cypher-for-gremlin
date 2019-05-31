@@ -77,7 +77,7 @@ $(document).ready(function() {
     <tr class="info">
       <td>cypher-for-gremlin</td>
               <td>1.0.2-SNAPSHOT</td>
-            <td>31 May 2019, 12:50</td>
+            <td>31 May 2019, 13:11</td>
     </tr>
   </tbody>
 </table>
@@ -141,7 +141,7 @@ $(document).ready(function() {
           <td >0</td>
           <td class="total">15</td>
 
-          <td class="duration" data-value="1530">0.000</td>
+          <td class="duration" data-value="1344">0.000</td>
           <td class="passed">Passed</td>
         </tr>
         </tbody>
@@ -254,7 +254,7 @@ $(document).ready(function() {
         </div>
         <div id="output-3" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.440 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:28.415 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -303,10 +303,10 @@ CREATE (a)-[:T]-&gt;(b)</pre>
         </div>
         <div id="output-5" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.443 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a {time: 10}), (b {time: 20}) CREATE (a)-[:T]-&gt;(b)
-12:48:38.448 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('a').property(single, 'time', 10).addV().as('b').property(single, 'time', 20).addE('T').from('a').to('b').barrier().limit(0)
-12:48:38.449 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a {time: 10}), (b {time: 20})
-CREATE (a)-[:T]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:28.420 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a {time: 10}), (b {time: 20}) CREATE (a)-[:T]-&gt;(b)
+13:09:28.420 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a {time: 10}), (b {time: 20})
+CREATE (a)-[:T]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.427 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('a').property(single, 'time', 10).addV().as('b').property(single, 'time', 20).addE('T').from('a').to('b').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -356,11 +356,11 @@ RETURN [p = (liker)--() | p] AS isNew
         </div>
         <div id="output-7" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.502 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (liker)
+          <pre><p>13:09:28.485 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (liker) RETURN [p = (liker)--() | p] AS isNew   ORDER BY liker.time
+13:09:28.488 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (liker)
 RETURN [p = (liker)--() | p] AS isNew
-  ORDER BY liker.time}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.502 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (liker) RETURN [p = (liker)--() | p] AS isNew   ORDER BY liker.time
-12:48:38.572 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('liker').project('isNew').by(__.as('liker').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('liker'))).bothE().as('  REL34').aggregate('  cypher.path.edge.isNew').otherV().as('  NODE36').dedup('liker', '  REL34', '  NODE36').path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).order().by(__.select('liker').choose(neq('  cypher.null'), __.choose(__.values('time'), __.values('time'), __.constant('  cypher.null'))), asc).project('isNew').by(__.select('isNew').choose(neq('  cypher.null'), __.local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.isNew').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold())))
+  ORDER BY liker.time}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.534 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('liker').project('isNew').by(__.as('liker').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('liker'))).bothE().as('  REL34').aggregate('  cypher.path.edge.isNew').otherV().as('  NODE36').dedup('liker', '  REL34', '  NODE36').path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).order().by(__.select('liker').choose(neq('  cypher.null'), __.choose(__.values('time'), __.values('time'), __.constant('  cypher.null'))), asc).project('isNew').by(__.select('isNew').choose(neq('  cypher.null'), __.local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.isNew').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold())))
 </p></pre>
         </div>
       </div>
@@ -434,19 +434,19 @@ RETURN [p = (liker)--() | p] AS isNew
         </div>
         <div id="output-8" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.595 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.597 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:38.603 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:38.605 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.605 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:38.620 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:38.623 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:28.554 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.555 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:28.560 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:28.561 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.561 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:28.570 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:28.571 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.623 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:38.630 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:38.643 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.645 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.571 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:28.576 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:28.584 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.588 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -543,7 +543,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-11" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.659 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:28.611 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -593,11 +593,11 @@ CREATE (a)-[:T]-&gt;(:B),
         </div>
         <div id="output-13" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.661 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A) CREATE (a)-[:T]-&gt;(:B),        (a)-[:T]-&gt;(:C)
-12:48:38.667 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('  UNNAMED31').addE('T').from('a').to('  UNNAMED31').addV('C').as('  UNNAMED54').addE('T').from('a').to('  UNNAMED54').barrier().limit(0)
-12:48:38.668 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A)
+          <pre><p>13:09:28.613 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A) CREATE (a)-[:T]-&gt;(:B),        (a)-[:T]-&gt;(:C)
+13:09:28.613 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A)
 CREATE (a)-[:T]-&gt;(:B),
-       (a)-[:T]-&gt;(:C)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+       (a)-[:T]-&gt;(:C)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.620 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('  UNNAMED31').addE('T').from('a').to('  UNNAMED31').addV('C').as('  UNNAMED54').addE('T').from('a').to('  UNNAMED54').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -646,10 +646,10 @@ RETURN [p = (n)--&gt;() | p] AS ps</pre>
         </div>
         <div id="output-15" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.734 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
-RETURN [p = (n)--&gt;() | p] AS ps}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.734 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN [p = (n)--&gt;() | p] AS ps
-12:48:38.744 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').project('ps').by(__.as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE().aggregate('  cypher.path.edge.ps').inV().path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('ps').by(__.select('ps').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.ps').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
+          <pre><p>13:09:28.674 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+RETURN [p = (n)--&gt;() | p] AS ps}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.675 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN [p = (n)--&gt;() | p] AS ps
+13:09:28.691 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').project('ps').by(__.as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE().aggregate('  cypher.path.edge.ps').inV().path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('ps').by(__.select('ps').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.ps').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
 </p></pre>
         </div>
       </div>
@@ -726,19 +726,19 @@ RETURN [p = (n)--&gt;() | p] AS ps}} to - Connection{host=Host{address=localhost
         </div>
         <div id="output-16" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.751 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.753 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:38.759 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:38.761 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.761 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:38.772 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:38.774 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:28.706 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.707 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:28.712 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:28.713 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.715 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:28.724 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:28.725 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.774 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:38.780 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:38.782 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.792 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.729 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:28.753 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:28.762 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.777 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -835,7 +835,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-19" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.813 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:28.795 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -886,12 +886,12 @@ CREATE (a)-[:T]-&gt;(b),
         </div>
         <div id="output-21" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.816 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (b:B), (c:C), (d:D) CREATE (a)-[:T]-&gt;(b),        (a)-[:T]-&gt;(c),        (a)-[:T]-&gt;(d)
-12:48:38.824 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('b').addV('C').as('c').addV('D').as('d').addE('T').from('a').to('b').addE('T').from('a').to('c').addE('T').from('a').to('d').barrier().limit(0)
-12:48:38.830 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (b:B), (c:C), (d:D)
+          <pre><p>13:09:28.803 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (b:B), (c:C), (d:D)
 CREATE (a)-[:T]-&gt;(b),
        (a)-[:T]-&gt;(c),
-       (a)-[:T]-&gt;(d)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+       (a)-[:T]-&gt;(d)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.804 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (b:B), (c:C), (d:D) CREATE (a)-[:T]-&gt;(b),        (a)-[:T]-&gt;(c),        (a)-[:T]-&gt;(d)
+13:09:28.811 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('b').addV('C').as('c').addV('D').as('d').addE('T').from('a').to('b').addE('T').from('a').to('c').addE('T').from('a').to('d').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -940,10 +940,10 @@ RETURN [p = (n)--&gt;(:B) | p]</pre>
         </div>
         <div id="output-23" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.890 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:A) RETURN [p = (n)--&gt;(:B) | p]
-12:48:38.899 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:A)
-RETURN [p = (n)--&gt;(:B) | p]}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.907 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('A').project('[p = (n)--&gt;(:B) | p]').by(__.as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE().aggregate('  cypher.path.edge.[p = (n)--&gt;(:B) | p]').inV().hasLabel('B').path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('[p = (n)--&gt;(:B) | p]').by(__.select('[p = (n)--&gt;(:B) | p]').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.[p = (n)--&gt;(:B) | p]').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
+          <pre><p>13:09:28.887 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:A)
+RETURN [p = (n)--&gt;(:B) | p]}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.887 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:A) RETURN [p = (n)--&gt;(:B) | p]
+13:09:28.894 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('A').project('[p = (n)--&gt;(:B) | p]').by(__.as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE().aggregate('  cypher.path.edge.[p = (n)--&gt;(:B) | p]').inV().hasLabel('B').path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('[p = (n)--&gt;(:B) | p]').by(__.select('[p = (n)--&gt;(:B) | p]').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.[p = (n)--&gt;(:B) | p]').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
 </p></pre>
         </div>
       </div>
@@ -1014,19 +1014,19 @@ RETURN [p = (n)--&gt;(:B) | p]}} to - Connection{host=Host{address=localhost/127
         </div>
         <div id="output-24" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.913 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.914 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:38.924 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:38.925 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.926 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:38.936 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:38.937 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:28.901 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:28.902 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.906 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:28.907 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.908 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:28.913 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:28.914 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.938 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:38.943 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:38.945 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.966 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.918 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:28.922 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:28.923 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:28.930 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -1123,7 +1123,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-27" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.988 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:28.942 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -1172,10 +1172,10 @@ CREATE (a)-[:T]-&gt;(b)</pre>
         </div>
         <div id="output-29" class="collapse collapsable-details " >
           
-          <pre><p>12:48:38.990 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (b:B) CREATE (a)-[:T]-&gt;(b)
-12:48:38.992 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (b:B)
-CREATE (a)-[:T]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:38.995 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('b').addE('T').from('a').to('b').barrier().limit(0)
+          <pre><p>13:09:28.943 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (b:B) CREATE (a)-[:T]-&gt;(b)
+13:09:28.946 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('b').addE('T').from('a').to('b').barrier().limit(0)
+13:09:28.947 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (b:B)
+CREATE (a)-[:T]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -1224,10 +1224,10 @@ RETURN [p = (a)-[*]-&gt;(b) | p] AS paths</pre>
         </div>
         <div id="output-31" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.064 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:A), (b:B) RETURN [p = (a)-[*]-&gt;(b) | p] AS paths
-12:48:39.073 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:A), (b:B)
-RETURN [p = (a)-[*]-&gt;(b) | p] AS paths}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.098 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('A').V().as('b').hasLabel('B').select('a', 'b').project('paths').by(__.as('  GENERATED3').select('a').as('a').select('  GENERATED3').select('b').as('b').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).repeat(__.outE().aggregate('  cypher.path.edge.paths').inV()).emit().times(10).as('  GENERATED2').where(__.select('  GENERATED2').where(eq('b'))).path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('paths').by(__.select('paths').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.paths').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
+          <pre><p>13:09:29.003 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:A), (b:B) RETURN [p = (a)-[*]-&gt;(b) | p] AS paths
+13:09:29.003 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:A), (b:B)
+RETURN [p = (a)-[*]-&gt;(b) | p] AS paths}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.011 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('A').V().as('b').hasLabel('B').select('a', 'b').project('paths').by(__.as('  GENERATED3').select('a').as('a').select('  GENERATED3').select('b').as('b').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).repeat(__.outE().aggregate('  cypher.path.edge.paths').inV()).emit().times(10).as('  GENERATED2').where(__.select('  GENERATED2').where(eq('b'))).path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('paths').by(__.select('paths').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.paths').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
 </p></pre>
         </div>
       </div>
@@ -1298,19 +1298,19 @@ RETURN [p = (a)-[*]-&gt;(b) | p] AS paths}} to - Connection{host=Host{address=lo
         </div>
         <div id="output-32" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.107 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.112 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:39.118 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:39.120 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.123 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:39.128 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:39.129 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.017 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.018 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.023 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.024 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.024 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.038 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.039 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.130 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:39.134 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:39.136 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.145 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.040 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:29.045 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:29.046 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.061 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -1407,7 +1407,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-35" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.154 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.076 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -1457,11 +1457,11 @@ CREATE (a)-[:T]-&gt;(:B),
         </div>
         <div id="output-37" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.158 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A) CREATE (a)-[:T]-&gt;(:B),        (a)-[:T]-&gt;(:C)
-12:48:39.168 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A)
+          <pre><p>13:09:29.077 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A) CREATE (a)-[:T]-&gt;(:B),        (a)-[:T]-&gt;(:C)
+13:09:29.084 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('  UNNAMED31').addE('T').from('a').to('  UNNAMED31').addV('C').as('  UNNAMED54').addE('T').from('a').to('  UNNAMED54').barrier().limit(0)
+13:09:29.086 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A)
 CREATE (a)-[:T]-&gt;(:B),
-       (a)-[:T]-&gt;(:C)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.170 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('B').as('  UNNAMED31').addE('T').from('a').to('  UNNAMED31').addV('C').as('  UNNAMED54').addE('T').from('a').to('  UNNAMED54').barrier().limit(0)
+       (a)-[:T]-&gt;(:C)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -1511,11 +1511,11 @@ RETURN ps, c</pre>
         </div>
         <div id="output-39" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.219 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n)--&gt;(b) WITH [p = (n)--&gt;() | p] AS ps, count(b) AS c RETURN ps, c
-12:48:39.232 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)--&gt;(b)
+          <pre><p>13:09:29.135 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n)--&gt;(b) WITH [p = (n)--&gt;() | p] AS ps, count(b) AS c RETURN ps, c
+13:09:29.143 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)--&gt;(b)
 WITH [p = (n)--&gt;() | p] AS ps, count(b) AS c
-RETURN ps, c}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.233 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().inV().as('b').select('n', 'b').group().by(__.select('n').as('n').map(__.coalesce(__.V().as('  cypher.match.start.ps').as('  GENERATED2').where(__.select('  GENERATED2').where(eq('n'))).outE().aggregate('  cypher.path.edge.ps').inV().path().from('  cypher.match.start.ps'), __.constant('  cypher.unused')).fold())).by(__.fold().project('ps', 'c').by(__.unfold().select('n').as('n').map(__.coalesce(__.V().as('  cypher.match.start.ps').as('  GENERATED2').where(__.select('  GENERATED2').where(eq('n'))).outE().aggregate('  cypher.path.edge.ps').inV().path().from('  cypher.match.start.ps'), __.constant('  cypher.unused')).fold())).by(__.unfold().select('b').is(neq('  cypher.null')).count())).unfold().select(values).as('  GENERATED5').select('ps').as('ps').select('  GENERATED5').select('c').as('c').select('ps', 'c').project('ps', 'c').by(__.select('ps').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.ps').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold())).by(__.select('c').identity())
+RETURN ps, c}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.154 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').outE().inV().as('b').select('n', 'b').group().by(__.select('n').as('n').map(__.coalesce(__.V().as('  cypher.match.start.ps').as('  GENERATED2').where(__.select('  GENERATED2').where(eq('n'))).outE().aggregate('  cypher.path.edge.ps').inV().path().from('  cypher.match.start.ps'), __.constant('  cypher.unused')).fold())).by(__.fold().project('ps', 'c').by(__.unfold().select('n').as('n').map(__.coalesce(__.V().as('  cypher.match.start.ps').as('  GENERATED2').where(__.select('  GENERATED2').where(eq('n'))).outE().aggregate('  cypher.path.edge.ps').inV().path().from('  cypher.match.start.ps'), __.constant('  cypher.unused')).fold())).by(__.unfold().select('b').is(neq('  cypher.null')).count())).unfold().select(values).as('  GENERATED5').select('ps').as('ps').select('  GENERATED5').select('c').as('c').select('ps', 'c').project('ps', 'c').by(__.select('ps').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.ps').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold())).by(__.select('c').identity())
 </p></pre>
         </div>
       </div>
@@ -1588,19 +1588,19 @@ RETURN ps, c}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, host
         </div>
         <div id="output-40" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.247 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.247 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:39.253 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:39.254 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.254 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:39.261 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:39.263 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.166 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.167 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.174 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.175 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.175 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.186 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.187 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.263 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:39.269 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:39.271 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.282 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.188 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:29.193 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:29.195 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.204 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -1697,7 +1697,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-43" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.309 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.213 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -1745,9 +1745,9 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-45" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.313 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (:A)-[:T]-&gt;(:B)
-12:48:39.319 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('  UNNAMED8').addV('B').as('  UNNAMED19').addE('T').from('  UNNAMED8').to('  UNNAMED19').barrier().limit(0)
-12:48:39.321 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (:A)-[:T]-&gt;(:B)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.220 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (:A)-[:T]-&gt;(:B)
+13:09:29.220 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (:A)-[:T]-&gt;(:B)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.222 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('  UNNAMED8').addV('B').as('  UNNAMED19').addE('T').from('  UNNAMED8').to('  UNNAMED19').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -1797,11 +1797,11 @@ RETURN paths, c</pre>
         </div>
         <div id="output-47" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.422 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:A), (b:B) WITH [p = (a)-[*]-&gt;(b) | p] AS paths, count(a) AS c RETURN paths, c
-12:48:39.422 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:A), (b:B)
+          <pre><p>13:09:29.270 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:A), (b:B)
 WITH [p = (a)-[*]-&gt;(b) | p] AS paths, count(a) AS c
-RETURN paths, c}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.435 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('A').V().as('b').hasLabel('B').select('a', 'b').group().by(__.as('  GENERATED3').select('a').as('a').select('  GENERATED3').select('b').as('b').map(__.coalesce(__.V().as('  cypher.match.start.paths').as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).repeat(__.outE().aggregate('  cypher.path.edge.paths').inV()).emit().times(10).as('  GENERATED2').where(__.select('  GENERATED2').where(eq('b'))).path().from('  cypher.match.start.paths'), __.constant('  cypher.unused')).fold())).by(__.fold().project('paths', 'c').by(__.unfold().as('  GENERATED3').select('a').as('a').select('  GENERATED3').select('b').as('b').map(__.coalesce(__.V().as('  cypher.match.start.paths').as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).repeat(__.outE().aggregate('  cypher.path.edge.paths').inV()).emit().times(10).as('  GENERATED2').where(__.select('  GENERATED2').where(eq('b'))).path().from('  cypher.match.start.paths'), __.constant('  cypher.unused')).fold())).by(__.unfold().select('a').is(neq('  cypher.null')).count())).unfold().select(values).as('  GENERATED6').select('paths').as('paths').select('  GENERATED6').select('c').as('c').select('paths', 'c').project('paths', 'c').by(__.select('paths').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.paths').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold())).by(__.select('c').identity())
+RETURN paths, c}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.270 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:A), (b:B) WITH [p = (a)-[*]-&gt;(b) | p] AS paths, count(a) AS c RETURN paths, c
+13:09:29.290 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('A').V().as('b').hasLabel('B').select('a', 'b').group().by(__.as('  GENERATED3').select('a').as('a').select('  GENERATED3').select('b').as('b').map(__.coalesce(__.V().as('  cypher.match.start.paths').as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).repeat(__.outE().aggregate('  cypher.path.edge.paths').inV()).emit().times(10).as('  GENERATED2').where(__.select('  GENERATED2').where(eq('b'))).path().from('  cypher.match.start.paths'), __.constant('  cypher.unused')).fold())).by(__.fold().project('paths', 'c').by(__.unfold().as('  GENERATED3').select('a').as('a').select('  GENERATED3').select('b').as('b').map(__.coalesce(__.V().as('  cypher.match.start.paths').as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).repeat(__.outE().aggregate('  cypher.path.edge.paths').inV()).emit().times(10).as('  GENERATED2').where(__.select('  GENERATED2').where(eq('b'))).path().from('  cypher.match.start.paths'), __.constant('  cypher.unused')).fold())).by(__.unfold().select('a').is(neq('  cypher.null')).count())).unfold().select(values).as('  GENERATED6').select('paths').as('paths').select('  GENERATED6').select('c').as('c').select('paths', 'c').project('paths', 'c').by(__.select('paths').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.paths').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold())).by(__.select('c').identity())
 </p></pre>
         </div>
       </div>
@@ -1874,19 +1874,19 @@ RETURN paths, c}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, h
         </div>
         <div id="output-48" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.455 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.456 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:39.460 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:39.461 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.463 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:39.473 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:39.474 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.300 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.300 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.307 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.308 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.308 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.313 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.314 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.474 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:39.480 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:39.481 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.491 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.316 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:29.323 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:29.324 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.337 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -1983,7 +1983,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-51" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.503 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.347 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -2032,10 +2032,10 @@ CREATE (a)-[:HAS]-&gt;()</pre>
         </div>
         <div id="output-53" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.505 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (:A), (:A) CREATE (a)-[:HAS]-&gt;()
-12:48:39.510 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('A').addV('A').addV().as('  UNNAMED45').addE('HAS').from('a').to('  UNNAMED45').barrier().limit(0)
-12:48:39.511 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (:A), (:A)
-CREATE (a)-[:HAS]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.349 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (:A), (:A) CREATE (a)-[:HAS]-&gt;()
+13:09:29.355 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('A').addV('A').addV().as('  UNNAMED45').addE('HAS').from('a').to('  UNNAMED45').barrier().limit(0)
+13:09:29.356 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (:A), (:A)
+CREATE (a)-[:HAS]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -2084,10 +2084,10 @@ RETURN [p = (n)-[:HAS]-&gt;() | p] AS ps</pre>
         </div>
         <div id="output-55" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.582 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:A) RETURN [p = (n)-[:HAS]-&gt;() | p] AS ps
-12:48:39.582 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:A)
-RETURN [p = (n)-[:HAS]-&gt;() | p] AS ps}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.591 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('A').project('ps').by(__.as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('HAS').aggregate('  cypher.path.edge.ps').inV().path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('ps').by(__.select('ps').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.ps').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
+          <pre><p>13:09:29.413 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:A)
+RETURN [p = (n)-[:HAS]-&gt;() | p] AS ps}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.413 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:A) RETURN [p = (n)-[:HAS]-&gt;() | p] AS ps
+13:09:29.424 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('A').project('ps').by(__.as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('HAS').aggregate('  cypher.path.edge.ps').inV().path().from('  GENERATED1'), __.constant('  cypher.unused')).fold())).project('ps').by(__.select('ps').local(__.unfold().choose(neq('  cypher.null'), __.is(neq('  cypher.unused')).project('  cypher.relationship', '  cypher.element').by(__.select('  cypher.path.edge.ps').unfold().project('  cypher.id', '  cypher.inv', '  cypher.outv').by(__.id()).by(__.inV().id()).by(__.outV().id()).fold()).by(__.unfold().is(neq('  cypher.start')).valueMap().with('~tinkerpop.valueMap.tokens').fold())).fold()))
 </p></pre>
         </div>
       </div>
@@ -2164,19 +2164,19 @@ RETURN [p = (n)-[:HAS]-&gt;() | p] AS ps}} to - Connection{host=Host{address=loc
         </div>
         <div id="output-56" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.596 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.604 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:39.608 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:39.610 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.610 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:39.617 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:39.618 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.432 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.433 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.439 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.440 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.441 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.447 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.449 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.619 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:39.624 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:39.625 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.635 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.450 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:29.455 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:29.457 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.465 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -2273,7 +2273,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-59" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.647 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.477 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -2322,10 +2322,10 @@ CREATE (a)-[:HAS]-&gt;()</pre>
         </div>
         <div id="output-61" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.650 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (:A), (:A) CREATE (a)-[:HAS]-&gt;()
-12:48:39.655 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('A').addV('A').addV().as('  UNNAMED45').addE('HAS').from('a').to('  UNNAMED45').barrier().limit(0)
-12:48:39.656 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (:A), (:A)
-CREATE (a)-[:HAS]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.479 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:A), (:A), (:A) CREATE (a)-[:HAS]-&gt;()
+13:09:29.479 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:A), (:A), (:A)
+CREATE (a)-[:HAS]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.485 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('A').as('a').addV('A').addV('A').addV().as('  UNNAMED45').addE('HAS').from('a').to('  UNNAMED45').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -2374,10 +2374,10 @@ RETURN count([p = (n)-[:HAS]-&gt;() | p]) AS c</pre>
         </div>
         <div id="output-63" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.716 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:A) RETURN count([p = (n)-[:HAS]-&gt;() | p]) AS c
-12:48:39.716 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:A)
-RETURN count([p = (n)-[:HAS]-&gt;() | p]) AS c}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.730 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('A').as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('HAS').aggregate('  cypher.path.edge.c').inV().path().from('  GENERATED1'), __.constant('  cypher.unused')).fold()).is(neq('  cypher.null')).count().project('c').by(__.identity())
+          <pre><p>13:09:29.550 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:A) RETURN count([p = (n)-[:HAS]-&gt;() | p]) AS c
+13:09:29.550 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:A)
+RETURN count([p = (n)-[:HAS]-&gt;() | p]) AS c}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.563 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('A').as('n').map(__.coalesce(__.V().as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('HAS').aggregate('  cypher.path.edge.c').inV().path().from('  GENERATED1'), __.constant('  cypher.unused')).fold()).is(neq('  cypher.null')).count().project('c').by(__.identity())
 </p></pre>
         </div>
       </div>
@@ -2448,19 +2448,19 @@ RETURN count([p = (n)-[:HAS]-&gt;() | p]) AS c}} to - Connection{host=Host{addre
         </div>
         <div id="output-64" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.736 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.737 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:39.746 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:39.750 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.751 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:39.762 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:39.763 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.570 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.570 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.576 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.577 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.577 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.587 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.588 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.765 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:39.777 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:39.778 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.794 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.588 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:29.594 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:29.595 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.606 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -2557,7 +2557,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-67" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.812 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.619 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -2606,10 +2606,10 @@ CREATE (a)-[:T]-&gt;()</pre>
         </div>
         <div id="output-69" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.815 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:X {prop: 42}), (:X {prop: 43}) CREATE (a)-[:T]-&gt;()
-12:48:39.815 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:X {prop: 42}), (:X {prop: 43})
-CREATE (a)-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.821 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('a').property(single, 'prop', 42).addV('X').property(single, 'prop', 43).addV().as('  UNNAMED59').addE('T').from('a').to('  UNNAMED59').barrier().limit(0)
+          <pre><p>13:09:29.622 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a:X {prop: 42}), (:X {prop: 43})
+CREATE (a)-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.622 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a:X {prop: 42}), (:X {prop: 43}) CREATE (a)-[:T]-&gt;()
+13:09:29.627 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('a').property(single, 'prop', 42).addV('X').property(single, 'prop', 43).addV().as('  UNNAMED59').addE('T').from('a').to('  UNNAMED59').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -2658,10 +2658,10 @@ RETURN n, size([(n)--() | 1]) &gt; 0 AS b</pre>
         </div>
         <div id="output-71" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.875 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:X) RETURN n, size([(n)--() | 1]) &gt; 0 AS b
-12:48:39.875 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:X)
-RETURN n, size([(n)--() | 1]) &gt; 0 AS b}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.904 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('X').project('n', 'b').by(__.identity()).by(__.constant(0).as('  GENERATED1').map(__.select('n').as('  GENERATED2').where(__.select('  GENERATED2').where(eq('n'))).bothE().as('  REL32').otherV().as('  NODE34').dedup('n', '  REL32', '  NODE34').constant(1).fold()).count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED1').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(gt('  GENERATED1')), __.constant(true), __.constant(false)))).project('n', 'b').by(__.select('n').choose(neq('  cypher.null'), __.valueMap().with('~tinkerpop.valueMap.tokens'))).by(__.select('b').identity())
+          <pre><p>13:09:29.675 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n:X)
+RETURN n, size([(n)--() | 1]) &gt; 0 AS b}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.676 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n:X) RETURN n, size([(n)--() | 1]) &gt; 0 AS b
+13:09:29.700 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('X').project('n', 'b').by(__.identity()).by(__.constant(0).as('  GENERATED1').map(__.select('n').as('  GENERATED2').where(__.select('  GENERATED2').where(eq('n'))).bothE().as('  REL32').otherV().as('  NODE34').dedup('n', '  REL32', '  NODE34').constant(1).fold()).count(local).choose(__.or(__.is(eq('  cypher.null')), __.select('  GENERATED1').is(eq('  cypher.null'))), __.constant('  cypher.null'), __.choose(__.where(gt('  GENERATED1')), __.constant(true), __.constant(false)))).project('n', 'b').by(__.select('n').choose(neq('  cypher.null'), __.valueMap().with('~tinkerpop.valueMap.tokens'))).by(__.select('b').identity())
 </p></pre>
         </div>
       </div>
@@ -2738,19 +2738,19 @@ RETURN n, size([(n)--() | 1]) &gt; 0 AS b}} to - Connection{host=Host{address=lo
         </div>
         <div id="output-72" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.921 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.921 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:39.926 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:39.936 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.937 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:39.942 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:39.943 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.708 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.709 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.722 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.723 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.724 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.735 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.736 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.947 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:39.960 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:39.961 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.968 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.737 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:29.741 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:29.742 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.744 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -2847,7 +2847,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-75" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.978 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.753 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -2902,16 +2902,16 @@ CREATE (n2)-[:T]-&gt;(m2),
         </div>
         <div id="output-77" class="collapse collapsable-details " >
           
-          <pre><p>12:48:39.980 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (n1:X {n: 1}), (m1:Y), (i1:Y), (i2:Y)
+          <pre><p>13:09:29.754 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (n1:X {n: 1}), (m1:Y), (i1:Y), (i2:Y)
 CREATE (n1)-[:T]-&gt;(m1),
        (m1)-[:T]-&gt;(i1),
        (m1)-[:T]-&gt;(i2)
 CREATE (n2:X {n: 2}), (m2), (i3:L), (i4:Y)
 CREATE (n2)-[:T]-&gt;(m2),
        (m2)-[:T]-&gt;(i3),
-       (m2)-[:T]-&gt;(i4)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:39.980 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (n1:X {n: 1}), (m1:Y), (i1:Y), (i2:Y) CREATE (n1)-[:T]-&gt;(m1),        (m1)-[:T]-&gt;(i1),        (m1)-[:T]-&gt;(i2) CREATE (n2:X {n: 2}), (m2), (i3:L), (i4:Y) CREATE (n2)-[:T]-&gt;(m2),        (m2)-[:T]-&gt;(i3),        (m2)-[:T]-&gt;(i4)
-12:48:39.998 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('n1').property(single, 'n', 1).addV('Y').as('m1').addV('Y').as('i1').addV('Y').as('i2').addE('T').from('n1').to('m1').addE('T').from('m1').to('i1').addE('T').from('m1').to('i2').addV('X').as('n2').property(single, 'n', 2).addV().as('m2').addV('L').as('i3').addV('Y').as('i4').addE('T').from('n2').to('m2').addE('T').from('m2').to('i3').addE('T').from('m2').to('i4').barrier().limit(0)
+       (m2)-[:T]-&gt;(i4)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.755 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (n1:X {n: 1}), (m1:Y), (i1:Y), (i2:Y) CREATE (n1)-[:T]-&gt;(m1),        (m1)-[:T]-&gt;(i1),        (m1)-[:T]-&gt;(i2) CREATE (n2:X {n: 2}), (m2), (i3:L), (i4:Y) CREATE (n2)-[:T]-&gt;(m2),        (m2)-[:T]-&gt;(i3),        (m2)-[:T]-&gt;(i4)
+13:09:29.772 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('n1').property(single, 'n', 1).addV('Y').as('m1').addV('Y').as('i1').addV('Y').as('i2').addE('T').from('n1').to('m1').addE('T').from('m1').to('i1').addE('T').from('m1').to('i2').addV('X').as('n2').property(single, 'n', 2).addV().as('m2').addV('L').as('i3').addV('Y').as('i4').addE('T').from('n2').to('m2').addE('T').from('m2').to('i3').addE('T').from('m2').to('i4').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -2960,10 +2960,10 @@ RETURN n, [x IN nodes(p) | size([(x)--&gt;(:Y) | 1])] AS list</pre>
         </div>
         <div id="output-79" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.059 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n:X)--&gt;(b)
-RETURN n, [x IN nodes(p) | size([(x)--&gt;(:Y) | 1])] AS list}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.059 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n:X)--&gt;(b) RETURN n, [x IN nodes(p) | size([(x)--&gt;(:Y) | 1])] AS list
-12:48:40.094 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('X').outE().aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'p').project('n', 'list').by(__.select('n')).by(__.select('p').map(__.unfold().is(cypherIsNode()).fold()).map(__.unfold().as('x').map(__.select('x').as('x').outE().inV().hasLabel('Y').constant(1).fold()).count(local).fold())).project('n', 'list').by(__.select('n').valueMap().with('~tinkerpop.valueMap.tokens')).by(__.select('list').local(__.unfold().identity().fold()))
+          <pre><p>13:09:29.823 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH p = (n:X)--&gt;(b) RETURN n, [x IN nodes(p) | size([(x)--&gt;(:Y) | 1])] AS list
+13:09:29.824 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH p = (n:X)--&gt;(b)
+RETURN n, [x IN nodes(p) | size([(x)--&gt;(:Y) | 1])] AS list}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.847 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').hasLabel('X').outE().aggregate('  cypher.path.edge.p').inV().path().from('n').as('p').select('n', 'p').project('n', 'list').by(__.select('n')).by(__.select('p').map(__.unfold().is(cypherIsNode()).fold()).map(__.unfold().as('x').map(__.select('x').as('x').outE().inV().hasLabel('Y').constant(1).fold()).count(local).fold())).project('n', 'list').by(__.select('n').valueMap().with('~tinkerpop.valueMap.tokens')).by(__.select('list').local(__.unfold().identity().fold()))
 </p></pre>
         </div>
       </div>
@@ -3040,19 +3040,19 @@ RETURN n, [x IN nodes(p) | size([(x)--&gt;(:Y) | 1])] AS list}} to - Connection{
         </div>
         <div id="output-80" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.101 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.109 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:40.114 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:40.116 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.116 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:40.131 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:40.133 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.851 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.853 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.858 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.859 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.860 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.866 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.868 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.134 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:40.139 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:40.143 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.156 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.871 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:29.876 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:29.878 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.880 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -3149,7 +3149,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-83" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.168 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:29.893 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -3200,12 +3200,12 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-85" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.171 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (x:X),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;()
-12:48:40.177 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('x').addV().as('  UNNAMED27').addE('T').from('x').to('  UNNAMED27').addV().as('  UNNAMED43').addE('T').from('x').to('  UNNAMED43').addV().as('  UNNAMED59').addE('T').from('x').to('  UNNAMED59').barrier().limit(0)
-12:48:40.178 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (x:X),
+          <pre><p>13:09:29.895 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (x:X),
   (x)-[:T]-&gt;(),
   (x)-[:T]-&gt;(),
-  (x)-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+  (x)-[:T]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.895 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (x:X),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;()
+13:09:29.907 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('x').addV().as('  UNNAMED27').addE('T').from('x').to('  UNNAMED27').addV().as('  UNNAMED43').addE('T').from('x').to('  UNNAMED43').addV().as('  UNNAMED59').addE('T').from('x').to('  UNNAMED59').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -3254,10 +3254,10 @@ RETURN size([(a)--&gt;() | 1]) AS length</pre>
         </div>
         <div id="output-87" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.238 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:X) RETURN size([(a)--&gt;() | 1]) AS length
-12:48:40.246 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:X)
-RETURN size([(a)--&gt;() | 1]) AS length}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.249 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('X').project('length').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).outE().inV().constant(1).fold()).count(local))
+          <pre><p>13:09:29.962 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:X)
+RETURN size([(a)--&gt;() | 1]) AS length}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.962 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:X) RETURN size([(a)--&gt;() | 1]) AS length
+13:09:29.974 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('X').project('length').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).outE().inV().constant(1).fold()).count(local))
 </p></pre>
         </div>
       </div>
@@ -3328,19 +3328,19 @@ RETURN size([(a)--&gt;() | 1]) AS length}} to - Connection{host=Host{address=loc
         </div>
         <div id="output-88" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.251 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.252 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:40.257 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:40.258 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.259 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:40.265 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:40.266 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:29.976 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.976 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:29.981 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:29.988 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.988 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:29.995 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:29.997 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.267 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:40.273 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:40.274 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.284 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:29.997 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:30.008 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:30.009 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.021 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -3437,7 +3437,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-91" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.301 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:30.036 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -3489,13 +3489,13 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-93" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.303 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (x:X),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:OTHER]-&gt;()
-12:48:40.311 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('x').addV().as('  UNNAMED27').addE('T').from('x').to('  UNNAMED27').addV().as('  UNNAMED43').addE('T').from('x').to('  UNNAMED43').addV().as('  UNNAMED59').addE('T').from('x').to('  UNNAMED59').addV().as('  UNNAMED79').addE('OTHER').from('x').to('  UNNAMED79').barrier().limit(0)
-12:48:40.314 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (x:X),
+          <pre><p>13:09:30.039 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (x:X),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:OTHER]-&gt;()
+13:09:30.041 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (x:X),
   (x)-[:T]-&gt;(),
   (x)-[:T]-&gt;(),
   (x)-[:T]-&gt;(),
-  (x)-[:OTHER]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+  (x)-[:OTHER]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.045 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('x').addV().as('  UNNAMED27').addE('T').from('x').to('  UNNAMED27').addV().as('  UNNAMED43').addE('T').from('x').to('  UNNAMED43').addV().as('  UNNAMED59').addE('T').from('x').to('  UNNAMED59').addV().as('  UNNAMED79').addE('OTHER').from('x').to('  UNNAMED79').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -3544,10 +3544,10 @@ RETURN size([(a)-[:T]-&gt;() | 1]) AS length</pre>
         </div>
         <div id="output-95" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.366 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:X) RETURN size([(a)-[:T]-&gt;() | 1]) AS length
-12:48:40.374 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:X)
-RETURN size([(a)-[:T]-&gt;() | 1]) AS length}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.376 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('X').project('length').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).outE('T').inV().constant(1).fold()).count(local))
+          <pre><p>13:09:30.110 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:X)
+RETURN size([(a)-[:T]-&gt;() | 1]) AS length}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.111 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:X) RETURN size([(a)-[:T]-&gt;() | 1]) AS length
+13:09:30.120 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('X').project('length').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).outE('T').inV().constant(1).fold()).count(local))
 </p></pre>
         </div>
       </div>
@@ -3618,19 +3618,19 @@ RETURN size([(a)-[:T]-&gt;() | 1]) AS length}} to - Connection{host=Host{address
         </div>
         <div id="output-96" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.379 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.379 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:40.385 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:40.386 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.386 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:40.394 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:40.395 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:30.122 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.122 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:30.126 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:30.127 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.128 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:30.135 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:30.136 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.396 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:40.402 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:40.403 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.414 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.137 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:30.142 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:30.143 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.156 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -3727,7 +3727,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-99" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.426 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:30.174 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -3779,13 +3779,13 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-101" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.428 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (x:X),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:OTHER]-&gt;()
-12:48:40.443 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('x').addV().as('  UNNAMED27').addE('T').from('x').to('  UNNAMED27').addV().as('  UNNAMED43').addE('T').from('x').to('  UNNAMED43').addV().as('  UNNAMED59').addE('T').from('x').to('  UNNAMED59').addV().as('  UNNAMED79').addE('OTHER').from('x').to('  UNNAMED79').barrier().limit(0)
-12:48:40.444 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (x:X),
+          <pre><p>13:09:30.176 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (x:X),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:T]-&gt;(),   (x)-[:OTHER]-&gt;()
+13:09:30.180 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (x:X),
   (x)-[:T]-&gt;(),
   (x)-[:T]-&gt;(),
   (x)-[:T]-&gt;(),
-  (x)-[:OTHER]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+  (x)-[:OTHER]-&gt;()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.184 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV('X').as('x').addV().as('  UNNAMED27').addE('T').from('x').to('  UNNAMED27').addV().as('  UNNAMED43').addE('T').from('x').to('  UNNAMED43').addV().as('  UNNAMED59').addE('T').from('x').to('  UNNAMED59').addV().as('  UNNAMED79').addE('OTHER').from('x').to('  UNNAMED79').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -3834,10 +3834,10 @@ RETURN size([(a)-[:T|OTHER]-&gt;() | 1]) AS length</pre>
         </div>
         <div id="output-103" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.523 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:X) RETURN size([(a)-[:T|OTHER]-&gt;() | 1]) AS length
-12:48:40.531 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:X)
-RETURN size([(a)-[:T|OTHER]-&gt;() | 1]) AS length}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.533 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('X').project('length').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).outE('T', 'OTHER').inV().constant(1).fold()).count(local))
+          <pre><p>13:09:30.244 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (a:X)
+RETURN size([(a)-[:T|OTHER]-&gt;() | 1]) AS length}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.245 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (a:X) RETURN size([(a)-[:T|OTHER]-&gt;() | 1]) AS length
+13:09:30.255 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('a').hasLabel('X').project('length').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('a'))).outE('T', 'OTHER').inV().constant(1).fold()).count(local))
 </p></pre>
         </div>
       </div>
@@ -3908,19 +3908,19 @@ RETURN size([(a)-[:T|OTHER]-&gt;() | 1]) AS length}} to - Connection{host=Host{a
         </div>
         <div id="output-104" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.536 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.537 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:40.543 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:40.544 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.545 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:40.551 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:40.552 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:30.258 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:30.258 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.263 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:30.265 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.265 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:30.272 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:30.273 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.553 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:40.559 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:40.560 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.570 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.274 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:30.278 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:30.280 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.289 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -4017,7 +4017,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-107" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.592 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:30.304 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -4066,10 +4066,10 @@ CREATE (a)-[:T]-&gt;(b)</pre>
         </div>
         <div id="output-109" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.597 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a), (b {prop: 'val'}) CREATE (a)-[:T]-&gt;(b)
-12:48:40.608 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a), (b {prop: 'val'})
-CREATE (a)-[:T]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.609 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('a').addV().as('b').property(single, 'prop', 'val').addE('T').from('a').to('b').barrier().limit(0)
+          <pre><p>13:09:30.307 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a), (b {prop: 'val'})
+CREATE (a)-[:T]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.307 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a), (b {prop: 'val'}) CREATE (a)-[:T]-&gt;(b)
+13:09:30.322 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('a').addV().as('b').property(single, 'prop', 'val').addE('T').from('a').to('b').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -4118,10 +4118,10 @@ RETURN [(n)-[:T]-&gt;(b) | b.prop] AS list</pre>
         </div>
         <div id="output-111" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.665 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN [(n)-[:T]-&gt;(b) | b.prop] AS list
-12:48:40.668 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
-RETURN [(n)-[:T]-&gt;(b) | b.prop] AS list}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.672 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').project('list').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('T').inV().as('b').select('b').choose(neq('  cypher.null'), __.choose(__.values('prop'), __.values('prop'), __.constant('  cypher.null'))).fold()))
+          <pre><p>13:09:30.374 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+RETURN [(n)-[:T]-&gt;(b) | b.prop] AS list}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.374 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN [(n)-[:T]-&gt;(b) | b.prop] AS list
+13:09:30.380 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').project('list').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('T').inV().as('b').select('b').choose(neq('  cypher.null'), __.choose(__.values('prop'), __.values('prop'), __.constant('  cypher.null'))).fold()))
 </p></pre>
         </div>
       </div>
@@ -4195,19 +4195,19 @@ RETURN [(n)-[:T]-&gt;(b) | b.prop] AS list}} to - Connection{host=Host{address=l
         </div>
         <div id="output-112" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.676 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.676 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:40.681 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:40.682 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.683 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:40.689 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:40.690 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:30.384 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.384 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:30.390 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:30.391 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.391 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:30.396 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:30.397 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.691 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:40.696 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:40.702 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.707 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.397 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:30.404 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:30.411 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.419 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
@@ -4304,7 +4304,7 @@ RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40
         </div>
         <div id="output-115" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.717 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+          <pre><p>13:09:30.429 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().drop()}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 </p></pre>
         </div>
       </div>
@@ -4353,10 +4353,10 @@ CREATE (a)-[:T {prop: 'val'}]-&gt;(b)</pre>
         </div>
         <div id="output-117" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.725 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a), (b) CREATE (a)-[:T {prop: 'val'}]-&gt;(b)
-12:48:40.728 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a), (b)
-CREATE (a)-[:T {prop: 'val'}]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.731 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('a').addV().as('b').addE('T').from('a').to('b').property('prop', 'val').barrier().limit(0)
+          <pre><p>13:09:30.434 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: CREATE (a), (b) CREATE (a)-[:T {prop: 'val'}]-&gt;(b)
+13:09:30.437 [Test worker] DEBUG o.a.t.g.driver.Client - CREATE (a), (b)
+CREATE (a)-[:T {prop: 'val'}]-&gt;(b)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.440 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.addV().as('a').addV().as('b').addE('T').from('a').to('b').property('prop', 'val').barrier().limit(0)
 </p></pre>
         </div>
       </div>
@@ -4405,10 +4405,10 @@ RETURN [(n)-[r:T]-&gt;() | r.prop] AS list</pre>
         </div>
         <div id="output-119" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.788 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
-RETURN [(n)-[r:T]-&gt;() | r.prop] AS list}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.788 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN [(n)-[r:T]-&gt;() | r.prop] AS list
-12:48:40.806 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').project('list').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('T').as('r').inV().select('r').select('r').choose(neq('  cypher.null'), __.choose(__.values('prop'), __.values('prop'), __.constant('  cypher.null'))).fold()))
+          <pre><p>13:09:30.492 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN [(n)-[r:T]-&gt;() | r.prop] AS list
+13:09:30.492 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+RETURN [(n)-[r:T]-&gt;() | r.prop] AS list}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.507 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().as('n').project('list').by(__.map(__.as('  GENERATED1').where(__.select('  GENERATED1').where(eq('n'))).outE('T').as('r').inV().select('r').select('r').choose(neq('  cypher.null'), __.choose(__.values('prop'), __.values('prop'), __.constant('  cypher.null'))).fold()))
 </p></pre>
         </div>
       </div>
@@ -4482,19 +4482,19 @@ RETURN [(n)-[r:T]-&gt;() | r.prop] AS list}} to - Connection{host=Host{address=l
         </div>
         <div id="output-120" class="collapse collapsable-details " >
           
-          <pre><p>12:48:40.813 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.813 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
-12:48:40.823 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
-12:48:40.824 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.825 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
-12:48:40.830 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
-12:48:40.832 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
+          <pre><p>13:09:30.510 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n) RETURN id(n)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.510 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) RETURN id(n)
+13:09:30.515 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().project('id(n)').by(__.id())
+13:09:30.516 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH ()-[r]-&gt;() RETURN id(r)}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.518 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH ()-[r]-&gt;() RETURN id(r)
+13:09:30.524 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.E().project('id(r)').by(__.id())
+13:09:30.525 [Test worker] DEBUG o.a.t.g.driver.Client - MATCH (n)
 UNWIND labels(n) AS label
-RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.832 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
-12:48:40.837 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
-12:48:40.842 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
-12:48:40.851 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40209, hostUri=ws://localhost:40209/gremlin}}
+RETURN DISTINCT label}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.525 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Cypher: MATCH (n) UNWIND labels(n) AS label RETURN DISTINCT label
+13:09:30.530 [gremlin-server-worker-1] INFO  o.o.g.s.o.c.CypherOpProcessor - Gremlin: g.V().map(__.label().is(neq('vertex')).fold()).unfold().project('label').by(__.identity()).dedup()
+13:09:30.537 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().as('V').properties().project('nodeId', 'key', 'value').by(__.select('V').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
+13:09:30.546 [Test worker] DEBUG o.a.t.g.driver.Client - g.V().outE().as('E').properties().project('relId', 'key', 'value').by(__.select('E').id()).by(__.key()).by(__.value())}} to - Connection{host=Host{address=localhost/127.0.0.1:40749, hostUri=ws://localhost:40749/gremlin}}
 -labels:        0
 +labels:        0
 +nodes:         0
