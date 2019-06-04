@@ -1,11 +1,18 @@
-// npm install gremlin@2.7.0
 
-const gremlin = require('gremlin');
+async function start() {
+    // freshReadmeSnippet: example
+    // npm install gremlin@3.4.2
 
-const client = gremlin.createClient(8182, "localhost", {processor: "cypher"})
+    const gremlin = require('gremlin');
+    const client = new gremlin.driver.Client('ws://localhost:8182/gremlin', { traversalSource: 'g', processor: 'cypher'});
+    const cypherQuery = 'MATCH (n) RETURN n.name'
 
-const cypherQuery = 'MATCH (n) RETURN n.name'
+    const results = await client.submit(cypherQuery);
 
-client.execute(cypherQuery, (err, results) => {
-    console.log(results)
-});
+    for (const result of results) {
+      console.log(result);
+    }
+    // freshReadmeSnippet: example
+}
+
+start();
