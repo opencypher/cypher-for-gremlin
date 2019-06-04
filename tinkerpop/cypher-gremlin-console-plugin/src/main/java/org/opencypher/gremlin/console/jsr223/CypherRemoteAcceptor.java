@@ -68,8 +68,7 @@ public class CypherRemoteAcceptor implements RemoteAcceptor {
 
     private static CypherGremlinClient configureClient(Client gremlinClient, List<String> args) {
         if (args.contains(TOKEN_TRANSLATE)) {
-            Translator<String, GroovyPredicate> translator = translatorByName(args);
-            return CypherGremlinClient.translating(gremlinClient, () -> translator);
+            return CypherGremlinClient.translating(gremlinClient, () -> translatorByName(args));
         } else {
             return CypherGremlinClient.plugin(gremlinClient);
         }
