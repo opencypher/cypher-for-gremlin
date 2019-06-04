@@ -19,6 +19,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opencypher.gremlin.console.jsr223.CypherGremlinPlugin.NAME;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.Before;
@@ -96,6 +99,42 @@ public class GremlinConsoleTest {
         assertThat(queryResult)
             .doesNotContain("CypherOpProcessor")
             .contains(PERSON_NAMES_RESULT);
+    }
+
+    @Test
+    public void remoteCypherMultiple() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval(":remote connect " + NAME + " " + server.remoteConfiguration());
+        assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
+
+        List<String> queryResult1 = resultLines(eval(":> RETURN 1"));
+        List<String> queryResult2 = resultLines(eval(":> RETURN 1"));
+        List<String> queryResult3 = resultLines(eval(":> RETURN 1"));
+
+        assertThat(queryResult1)
+            .isEqualTo(queryResult2)
+            .isEqualTo(queryResult3)
+            .containsExactly("==>[1:1]");
+    }
+
+    @Test
+    public void remoteTranslatingCypherMultiple() throws Exception {
+        String usePlugin = eval(":plugin use " + NAME);
+        assertThat(usePlugin).contains("==>" + NAME + " activated");
+
+        String remoteConnect = eval(":remote connect " + NAME + " " + server.remoteConfiguration() + " translate");
+        assertThat(remoteConnect).contains("==>Configured localhost/127.0.0.1:" + server.getPort());
+
+        List<String> queryResult1 = resultLines(eval(":> RETURN 1"));
+        List<String> queryResult2 = resultLines(eval(":> RETURN 1"));
+        List<String> queryResult3 = resultLines(eval(":> RETURN 1"));
+
+        assertThat(queryResult1)
+            .isEqualTo(queryResult2)
+            .isEqualTo(queryResult3)
+            .containsExactly("==>[1:1]");
     }
 
     @Test
@@ -212,4 +251,9 @@ public class GremlinConsoleTest {
             .replaceAll("\u001B\\[m", "");
     }
 
+    private List<String> resultLines(String queryResult) {
+        return Arrays.stream(queryResult.split("\n"))
+            .filter(n -> n.startsWith("==>"))
+            .collect(Collectors.toList());
+    }
 }

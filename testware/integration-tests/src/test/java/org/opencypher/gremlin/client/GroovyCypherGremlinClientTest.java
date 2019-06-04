@@ -107,4 +107,17 @@ public class GroovyCypherGremlinClientTest {
         assertThat(throwable)
             .hasMessageContaining("Invalid parameter name: goto");
     }
+
+    @Test
+    public void multiple() {
+        List<Map<String, Object>> result1 = client.submit("RETURN 1").all();
+        List<Map<String, Object>> result2 = client.submit("RETURN 1").all();
+        List<Map<String, Object>> result3 = client.submit("RETURN 1").all();
+
+        assertThat(result1)
+            .isEqualTo(result2)
+            .isEqualTo(result3)
+            .extracting("1")
+            .containsExactly(1L);
+    }
 }
