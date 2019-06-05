@@ -19,7 +19,7 @@ The plugin and its dependencies can be automatically downloaded and installed in
 
 ### Automated Installation
 
-* For TinkerPop 3.3.x:
+* For TinkerPop 3.3.0+:
   - Run `bin/gremlin-server.sh` with `install` switch and supply the Maven coordinates of the plugin:
 
   ```sh
@@ -77,22 +77,21 @@ ResultSet results = client.submitAsync(request).get();
 
 ### Gremlin-Javascript
 
-Example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript) 2.7.0 by setting `processor` to `cypher`:
+Example connect using [Gremlin-JavaScript](http://tinkerpop.apache.org/docs/current/reference/#gremlin-javascript) 3.4.2+ by setting `processor` to `cypher`:
 
-<!-- [freshReadmeSource](../../testware/integration-tests/src/test/resources/snippets/gremlin-javascript.js) -->
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/resources/snippets/gremlin-javascript.js#example) -->
 ```js
-// npm install gremlin@2.7.0
+// npm install gremlin@3.4.2
 
 const gremlin = require('gremlin');
-
-const client = gremlin.createClient(8182, "localhost", {processor: "cypher"})
-
+const client = new gremlin.driver.Client('ws://localhost:8182/gremlin', { traversalSource: 'g', processor: 'cypher'});
 const cypherQuery = 'MATCH (n) RETURN n.name'
 
-client.execute(cypherQuery, (err, results) => {
-    console.log(results)
-});
+const results = await client.submit(cypherQuery);
 
+for (const result of results) {
+  console.log(result);
+}
 ```
 
 ### Gremlin-Python
