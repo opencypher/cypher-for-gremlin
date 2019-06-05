@@ -72,6 +72,20 @@ public final class ReturnNormalizer {
         return (Map<String, Object>) normalizeValue(row);
     }
 
+    public Iterator normalize(Iterator source) {
+        return new Iterator() {
+            @Override
+            public boolean hasNext() {
+                return source.hasNext();
+            }
+
+            @Override
+            public Object next() {
+                return normalize(source.next());
+            }
+        };
+    }
+
     private Object normalizeValue(Object value) {
         if (value instanceof Map) {
             return normalizeMap((Map<?, ?>) value);
