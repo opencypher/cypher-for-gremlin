@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import io.netty.channel.ChannelHandlerContext;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +32,6 @@ import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 import org.apache.tinkerpop.gremlin.driver.message.ResponseMessage;
 import org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -124,7 +124,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
         GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, traversalTranslator, parameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
-        Traversal<?, Map<String, Object>> normalizedTraversal = traversal.map(returnNormalizer::normalize);
+        Iterator normalizedTraversal = returnNormalizer.normalize(traversal);
         inTransaction(gts, () -> handleIterator(context, normalizedTraversal));
     }
 
@@ -186,7 +186,7 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
                 .statusMessage(errorMessage).create());
     }
 
-    private void handleIterator(Context context, Traversal traversal) {
+    protected void handleIterator(Context context, Iterator traversal) {
         try {
             super.handleIterator(context, traversal);
         } catch (Exception ex) {
