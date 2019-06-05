@@ -188,7 +188,7 @@ public class SetTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.class)
+    @Category(SkipCollectionsInProperties.ListDataType.class)
     public void addPropertiesWithMapParameter() {
         submitAndGet("CREATE (n:person {loc: 'uk'})");
 
