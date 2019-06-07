@@ -66,11 +66,6 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       case n =>
         context.unsupported("pattern element", n)
     }
-
-    val undirected = namedChain.exists {
-      case RelationshipPattern(_, _, _, _, BOTH, _, _) => true
-      case _                                           => false
-    }
   }
 
   private def walkNode(node: NodePattern): Unit = {
