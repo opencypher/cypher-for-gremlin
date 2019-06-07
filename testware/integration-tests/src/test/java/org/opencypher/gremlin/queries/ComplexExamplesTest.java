@@ -31,6 +31,7 @@ import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.groups.SkipExtensions;
 import org.opencypher.gremlin.groups.SkipWithCosmosDB;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class ComplexExamplesTest {
 
@@ -351,5 +352,37 @@ public class ComplexExamplesTest {
         assertThat(results)
             .extracting("x")
             .containsExactly(0L);
+    }
+
+    @Test
+    public void multipleUndirectedMatches() throws Exception {
+        submitAndGet(TestCommons.DELETE_ALL);
+
+        submitAndGet(
+            "CREATE (org1:org {name: 'org1'}), " +
+                "(org2:org {name: 'org2'})," +
+                "(p1:person {name: 'foo'})," +
+                "(p2:person {name: 'boo'})," +
+                "(doc:doc {title: 'doc1'})," +
+                "(org1)-[:e]->(p1)," +
+                "(org1)-[:e]->(p2)," +
+                "(org2)-[:e]->(p1)," +
+                "(org2)-[:e]->(p2)," +
+                "(org1)-[:e]->(doc)," +
+                "(org2)-[:e]->(doc)"
+        );
+
+        List<Map<String, Object>> results = submitAndGet(
+            "MATCH (org1:org)--(p:person)--(org2:org)\n" +
+                "MATCH (org1:org)--(doc:doc)--(org2:org)\n" +
+                "WHERE org1.name = 'org1' AND id(org1) <> id(org2)\n" +
+                "RETURN p.name AS personName, org2.name AS orgName");
+
+        assertThat(results)
+            .extracting("personName", "orgName")
+            .containsExactly(
+                tuple("foo", "org2"),
+                tuple("boo", "org2")
+            );
     }
 }
