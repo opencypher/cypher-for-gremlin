@@ -71,9 +71,6 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
       case RelationshipPattern(_, _, _, _, BOTH, _, _) => true
       case _                                           => false
     }
-    if (undirected) {
-      g.dedup(aliases: _*)
-    }
   }
 
   private def walkNode(node: NodePattern): Unit = {
@@ -93,7 +90,7 @@ class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
 
     val directionT = g.start()
     direction match {
-      case BOTH     => directionT.bothE(typeNames: _*)
+      case BOTH     => directionT.bothE(typeNames: _*).dedup().by(__.path())
       case INCOMING => directionT.inE(typeNames: _*)
       case OUTGOING => directionT.outE(typeNames: _*)
     }
