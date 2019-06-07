@@ -41,6 +41,8 @@ object PatternWalker {
 }
 
 class PatternWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T, P]) {
+  private def __ = g.start()
+
   def walk(node: PatternElement, pathName: Option[String], startNewTraversal: Boolean): Unit = {
     val chain = flattenRelationshipChain(node)
     val (namedChain, aliases) = ensurePatternsHasNames(chain)
