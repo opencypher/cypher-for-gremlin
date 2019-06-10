@@ -151,7 +151,7 @@ Coverage of TCK M13 ([excluding Temporal Types](tinkerpop/cypher-gremlin-extensi
 
 - 75% of the scenarios are supported with common Gremlin steps
 - Additional 15% with [extensions](tinkerpop/cypher-gremlin-extensions) to Gremlin to enable full support for Cypher functionality
-- See [latest TCK Report](https://opencypher.github.io/cypher-for-gremlin/test-reports/1.0.1/cucumber-html-reports/overview-features.html) for a detailed overview of language coverage.
+- See [latest TCK Report](https://opencypher.github.io/cypher-for-gremlin/test-reports/1.0.2/cucumber-html-reports/overview-features.html) for a detailed overview of language coverage.
 - To see feature support on different platforms (Neptune, JanusGraph, Cosmos DB), refer to [Gremlin implementations documentation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations).
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
