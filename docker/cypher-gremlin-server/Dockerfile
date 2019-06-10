@@ -1,4 +1,4 @@
-FROM tinkerpop/gremlin-server:3.4.0
+FROM tinkerpop/gremlin-server:3.4.2
 
 COPY libs/*.jar lib/
 
