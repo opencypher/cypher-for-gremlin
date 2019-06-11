@@ -152,11 +152,32 @@ Coverage of TCK M13 ([excluding Temporal Types](tinkerpop/cypher-gremlin-extensi
 - 75% of the scenarios are supported with common Gremlin steps
 - Additional 15% with [extensions](tinkerpop/cypher-gremlin-extensions) to Gremlin to enable full support for Cypher functionality
 - See [latest TCK Report](https://opencypher.github.io/cypher-for-gremlin/test-reports/1.0.2/cucumber-html-reports/overview-features.html) for a detailed overview of language coverage.
-- To see feature support on different platforms (Neptune, JanusGraph, Cosmos DB), refer to [Gremlin implementations documentation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations).
 
 <img src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=130625852&format=image" width="500">
 
 You are very welcome to report any [issues](https://github.com/opencypher/cypher-for-gremlin/issues) with the translation that you encounter.
+
+### Gremlin Implementations
+
+Cypher for Gremlin is tested on following Gremlin implementations:
+
+* With [Gremlin Extensions for Cypher Support](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-extensions)
+    - [TinkerGraph](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#tinkergraph-with-gremlin-extensions-for-cypher-support)
+    - [JanusGraph](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#janusgraph-with-cypher-plugin)
+    - [Neo4j-Gremlin](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#neo4j-gremlin-with-cypher-plugin)
+* Without extensions
+    - [TinkerGraph](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#tinkergraph)
+    - [Neptune](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#neptune) with `neptune` [flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors)
+    - [CosmosDB](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#cosmos-db) with `cosmosDb` [flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors)
+
+Each Gremlin implementation has its own level of Gremlin support and Gremlin step implementation specifics. In some cases, queries need to be adapted for target implementation using [flavor](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#flavors). 
+
+Because of these specifics, Cypher support varies on different implementations. Refer to [wiki](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations) for more details.
+
+<img width="600" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=1484632847&amp;format=image"/>
+
+<img width="600" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRn3d4ross5VEuEX6m7IZpttIEzzJrtt00UbkDH0UD3A0VAWU7i-ClZU4PSaI3YbDGCQn5vKEX1Hkyr/pubchart?oid=1517076405&amp;format=image"/>
+
 
 ## Related
 
