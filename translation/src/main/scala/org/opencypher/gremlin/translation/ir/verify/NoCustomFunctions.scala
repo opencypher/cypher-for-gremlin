@@ -29,7 +29,10 @@ object NoCustomFunctions extends GremlinPostCondition {
     })(steps).sorted.distinct
 
     if (all.nonEmpty) {
-      Some(s"Custom functions and predicates are not supported: ${all.mkString(", ")}")
+      Some(
+        s"Custom functions and predicates are not supported on target implementation: ${all.mkString(", ")}. " +
+          "Consider installing Extensions to Gremlin to enable full support for Cypher functionality: " +
+          "https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-extensions")
     } else {
       None
     }
@@ -50,6 +53,7 @@ object NoCustomFunctions extends GremlinPostCondition {
       case _: IsNode         => Some("cypherIsNode")
       case _: IsString       => Some("cypherIsString")
       case _: IsRelationship => Some("cypherIsRelationship")
+      case _: RegexMatch     => Some("cypherRegex")
       case _                 => None
     })
 
