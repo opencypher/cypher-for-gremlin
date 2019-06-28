@@ -49,7 +49,9 @@ If extensions are installed on a target server and translation happens on the cl
 Functions that are present in Cypher but not in Gremlin:
 
 * Type Conversion [functions](https://neo4j.com/docs/cypher-manual/current/functions/scalar/): `toString`, `toBoolean`, `toInteger`, `toFloat`
+* Type [predicates](https://github.com/opencypher/cypher-for-gremlin/tree/master/tinkerpop/cypher-gremlin-extensions#queries-that-require-type-information): `isString`, `isRelationship`, `isNode`
 * [String functions](https://neo4j.com/docs/cypher-manual/current/functions/string/): `reverse`, `substring`, `trim`, `toUpper`, `toLower`...
+* [Regex predicate](https://neo4j.com/docs/cypher-manual/current/clauses/where/#query-where-regex): `regex`
 * Percentile functions: [percentileCont](https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-percentilecont), [percentileDisc](https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-percentiledisc)
 * [round](https://neo4j.com/docs/cypher-manual/current/functions/mathematical-numeric/#functions-round) function
 

@@ -32,12 +32,13 @@ class NoCustomFunctionsTest {
   @Test
   def predicates(): Unit = {
     val ast = CypherAst.parse("""MATCH (u:User)
+                                |WHERE u.name =~ 'Tim.*'
                                 |WITH {key: u} AS nodes
                                 |DELETE nodes.key""".stripMargin)
     val translator = Translator.builder.gremlinGroovy.build(flavor)
 
     assertThatThrownBy(() => ast.buildTranslation(translator))
-      .hasMessageContaining("cypherIsNode")
+      .hasMessageContaining("cypherIsNode, cypherRegex")
   }
 
   @Test

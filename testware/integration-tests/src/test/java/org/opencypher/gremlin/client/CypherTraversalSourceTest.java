@@ -123,7 +123,7 @@ public class CypherTraversalSourceTest {
     @Test
     public void translate() {
         assertThatThrownBy(() -> g.cypher("RETURN toupper('test')", "cosmosdb"))
-            .hasMessageContaining("Custom functions and predicates are not supported: cypherToUpper");
+            .hasMessageContaining("Custom functions and predicates are not supported on target implementation: cypherToUpper");
     }
 
 
