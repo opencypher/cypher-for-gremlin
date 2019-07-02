@@ -18,15 +18,25 @@ package org.opencypher.gremlin.tck
 import java.io.File
 import java.util
 import java.util.concurrent.TimeUnit.SECONDS
+import java.util.function.Supplier
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tototoshi.csv.CSVReader
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
-import org.opencypher.gremlin.tck.GremlinQueries._
+import org.opencypher.gremlin.server.EmbeddedGremlinServer
 import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.reports.CucumberReportAdapter
-import org.opencypher.gremlin.traversal.PredefinedProcedureRegistry
+import org.opencypher.gremlin.traversal.GremlinQueries._
+import org.opencypher.gremlin.traversal.{
+  GremlinQueries,
+  PredefinedProcedureRegistry,
+  ProcedureContext,
+  TckPredefinedProceduresPlugin
+}
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
@@ -35,7 +45,8 @@ import scala.collection.JavaConverters._
 object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
   val TIME_OUT_SECONDS = 10
 
-  val tinkerGraphServerEmbedded = new GremlinServerExternalResource
+  private val tinkerGraphServerEmbedded = getGremlinServer
+
   tinkerGraphServerEmbedded.before()
   tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
 
@@ -60,15 +71,44 @@ object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
     }
   }
 
+  val mapper = new ObjectMapper()
+
   override def registerProcedure(signature: String, values: CypherValueRecords): Unit = {
     val header = values.header.asJava
     val rows = values.rows.map(row => row.mapValues(fromCypherValue(_).asInstanceOf[Object]).asJava).asJava
+
+    val headerJson = mapper.writeValueAsString(header)
+    val rowsJson = mapper.writeValueAsString(rows)
+    val query = GremlinQueries.registerProcedure(signature, headerJson, rowsJson).toString
+    tinkerGraphServerEmbedded.gremlinClient().submit(query).all().join()
+
     PredefinedProcedureRegistry.register(signature, header, rows)
   }
 
   override def close(): Unit = {
     tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
-    PredefinedProcedureRegistry.clear()
+    if (!ProcedureContext.global.getSignatures.isEmpty) {
+      PredefinedProcedureRegistry.clear()
+      tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
+    }
+  }
+
+  private def getGremlinServer = {
+    new GremlinServerExternalResource(
+      new Supplier[EmbeddedGremlinServer] {
+        override def get(): EmbeddedGremlinServer =
+          EmbeddedGremlinServer
+            .builder()
+            .port(0)
+            .propertiesPath("graph", "../testware-common/src/main/resources/tinkergraph-empty.properties")
+            .scriptPath("../testware-common/src/main/resources/generate-empty.groovy")
+            .serializer(
+              classOf[GraphBinaryMessageSerializerV1],
+              java.util.Collections.singletonList(classOf[TinkerIoRegistryV3d0]))
+            .addPlugin(classOf[TckPredefinedProceduresPlugin].getName, java.util.Collections.emptyMap())
+            .build()
+      }
+    )
   }
 }
 
