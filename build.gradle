@@ -368,6 +368,18 @@ project(':testware:tck') {
         rename { fileName -> "TckTest-before.xml" }
     }
 
+    task testJar(type: Jar) {
+        baseName = project.name + '-all'
+        from {
+            configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+        from {
+            configurations.testCompile.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+        from sourceSets.test.output
+        with jar
+    }
+
     dependencies {
         compile project(':testware:testware-common')
 

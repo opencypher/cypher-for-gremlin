@@ -83,6 +83,7 @@ public final class EmbeddedGremlinServer {
         private int port;
         private Map<String, String> graphs = new HashMap<>();
         private String scriptPath;
+        public Map<String, Map<String, Object>> plugins = new HashMap<>();
         private Multimap<Class<? extends MessageSerializer>, Class<? extends IoRegistry>> serializers =
             HashMultimap.create();
 
@@ -110,6 +111,11 @@ public final class EmbeddedGremlinServer {
             return this;
         }
 
+        public Builder addPlugin(String name, Map<String, Object> properties) {
+            plugins.put(name, properties);
+            return this;
+        }
+
         public EmbeddedGremlinServer build() {
             graphs.values().forEach(path -> checkFile("propertiesPath", path));
             checkFile("scriptPath", scriptPath);
@@ -124,6 +130,7 @@ public final class EmbeddedGremlinServer {
             gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin", emptyMap());
             gremlinGroovy.plugins.put("org.opencypher.gremlin.server.jsr223.CypherPlugin", emptyMap());
             gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin", singletonMap("files", singletonList(scriptPath)));
+            gremlinGroovy.plugins.putAll(plugins);
             gremlinGroovy.staticImports.add("java.lang.Math.PI");
 
             settings.serializers = new ArrayList<>(settings.serializers);

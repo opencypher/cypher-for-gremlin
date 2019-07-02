@@ -13,46 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opencypher.gremlin.tck
+package org.opencypher.gremlin.traversal
 
 import org.opencypher.gremlin.translation.groovy.GroovyGremlinSteps
 import org.opencypher.tools.tck.constants.TCKQueries
 
 object GremlinQueries {
+  private def __ = new GroovyGremlinSteps()
+
   val dropQuery: String = new GroovyGremlinSteps().V().drop().toString
 
-  private val getNodeProperties = {
-    val b = new GroovyGremlinSteps()
-    b.V()
+  val getNodeProperties =
+    __.V()
       .as("V")
       .properties()
       .project("nodeId", "key", "value")
       .by(
-        b.start()
+        __.start()
           .select("V")
           .id())
-      .by(b.start().key())
-      .by(b.start().value())
-  }
+      .by(__.start().key())
+      .by(__.start().value())
+      .toString
 
-  private val getRelProperties = {
-    val b = new GroovyGremlinSteps()
-    b.V()
+  val getRelProperties =
+    __.V()
       .outE()
       .as("E")
       .properties()
       .project("relId", "key", "value")
       .by(
-        b.start()
+        __.start()
           .select("E")
           .id())
-      .by(b.start().key())
-      .by(b.start().value())
-  }
+      .by(__.start().key())
+      .by(__.start().value())
+      .toString
 
-  val cypherToGremlinQueries = Map(
-    TCKQueries.NODE_PROPS_QUERY -> getNodeProperties.toString,
-    TCKQueries.REL_PROPS_QUERY -> getRelProperties.toString
+  val cypherToGremlinQueries: Map[String, String] = Map(
+    TCKQueries.NODE_PROPS_QUERY -> getNodeProperties,
+    TCKQueries.REL_PROPS_QUERY -> getRelProperties
   )
+
+  def registerProcedure(signature: String, rowsJson: String, headerJson: String) =
+    __.inject(rowsJson)
+      .inject(headerJson)
+      .inject(signature)
+      .fold()
+      .map(new CustomFunction("registerTckProcedure", null))
+      .toString
+
+  val clearProcedures =
+    __.inject("start")
+      .map(new CustomFunction("clearTckProcedures", null))
+      .toString
 
 }

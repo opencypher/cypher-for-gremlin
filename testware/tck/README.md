@@ -98,3 +98,22 @@ Creates a [better Cucumber report](https://github.com/damianszczepanik/cucumber-
   ```    
 
 By default `cucumber.json` report file is created in a working directory. To configure report format and location use `-Dcucumber.options="--plugin PLUGIN[:PATH_OR_URL]"`
+
+### Predefined procedures
+
+To test Gremlin Server with TCK Predefined procedures:
+
+```bash
+gradle testware:tck:testJar
+cp testware/tck/build/libs/*.jar /path/to/gremlin-server/lib
+```
+
+In server config `.yaml` add `TckPredefinedProceduresPlugin`:
+
+```yaml
+scriptEngines: {
+  gremlin-groovy: {
+    plugins: { 
+      org.opencypher.gremlin.traversal.TckPredefinedProceduresPlugin: {}
+    //...
+```  
