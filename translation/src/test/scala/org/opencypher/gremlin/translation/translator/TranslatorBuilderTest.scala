@@ -153,25 +153,6 @@ class TranslatorBuilderTest {
   }
 
   @Test
-  def vanilla(): Unit = {
-    val dslBuilder = createBuilder.build("vanilla")
-
-    assertThatThrownBy(
-      () =>
-        parse("RETURN toupper('test')")
-          .buildTranslation(dslBuilder))
-      .hasMessageContaining("Custom functions and predicates are not supported on target implementation: cypherToUpper")
-
-    val steps = parse("MATCH (n) RETURN n.name")
-      .buildTranslation(dslBuilder)
-
-    assertThat(dslBuilder.flavor().rewriters.contains(CustomFunctionFallback)).isTrue
-    assertThat(dslBuilder.isEnabled(TranslatorFeature.CYPHER_EXTENSIONS)).isFalse
-    assertThat(dslBuilder.isEnabled(TranslatorFeature.MULTIPLE_LABELS)).isFalse
-    assertThat(dslBuilder.isEnabled(TranslatorFeature.RETURN_GREMLIN_ELEMENTS)).isFalse
-  }
-
-  @Test
   def empty(): Unit = {
     val dslBuilder = createBuilder.build("")
 
@@ -223,6 +204,19 @@ class TranslatorBuilderTest {
   }
 
   @Test
+  def multiplePlus(): Unit = {
+    val dslBuilder = createBuilder.build("gremlin++cfog_server_extensions+")
+
+    val steps = parse("MATCH (n) RETURN toupper(n.name)")
+      .buildTranslation(dslBuilder)
+
+    assertThat(dslBuilder.flavor().rewriters.contains(CustomFunctionFallback)).isFalse
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.CYPHER_EXTENSIONS)).isTrue
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.MULTIPLE_LABELS)).isFalse
+    assertThat(dslBuilder.isEnabled(TranslatorFeature.RETURN_GREMLIN_ELEMENTS)).isFalse
+  }
+
+  @Test
   def gremlinFunction(): Unit = {
     val dslBuilder = createBuilder.build("gremlin+experimental_gremlin_function")
 
@@ -235,6 +229,18 @@ class TranslatorBuilderTest {
     assertThat(dslBuilder.isEnabled(TranslatorFeature.RETURN_GREMLIN_ELEMENTS)).isFalse
 
     assertContains(steps, __.V().hasLabel("inject"))
+  }
+
+  @Test
+  def invalidTranslator(): Unit = {
+    assertThatThrownBy(() => createBuilder.build("not_existing+cfog_server_extensions"))
+      .hasMessageContaining("Unknown translator type in `not_existing+cfog_server_extensions`")
+  }
+
+  @Test
+  def invalidFeature(): Unit = {
+    assertThatThrownBy(() => createBuilder.build("cosmosdb+not_existing"))
+      .hasMessageContaining("Unknown translator feature: not_existing in `cosmosdb+not_existing`")
   }
 
   private def createBuilder = {

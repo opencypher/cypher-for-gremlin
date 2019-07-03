@@ -16,9 +16,16 @@
 package org.opencypher.gremlin.translation.translator;
 
 
+import static java.lang.String.format;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -300,8 +307,8 @@ public final class Translator<T, P> {
         }
 
         /**
-         * <p>Builds a {@link Translator} from string definition. Recommended usage is for parsing user input. Consider
-         * using builder API for all other cases.</p>
+         * <p>Builds a {@link Translator} from string definition in format `"FLAVOR[+FEATURE][+FEATURE]..."`.
+         * Recommended usage is for parsing user input. Consider using builder API for all other cases.</p>
          *
          * <p>Valid parameters are:
          * <ul>
@@ -311,41 +318,83 @@ public final class Translator<T, P> {
          * <li><code>neptune+cfog_server_extensions</code></li>
          * <li><code>gremlin</code></li>
          * <li><code>gremlin+cfog_server_extensions</code></li>
+         * <li><code>gremlin33x</code></li>
          * <li><code>gremlin</code></li>
-         * <li><code>gremlin+cfog_server_extensions</code></li>
+         * <li><code>gremlin+cfog_server_extensions+inline_parameters</code></li>
+         * <li><code>...</code></li>
          * </ul>
          *
-         * @param translatorType string definition
+         * @param translatorDefinition string definition
          * @return translator
+         * @see TranslatorFeature
          */
-        public Translator<T, P> build(String translatorType) {
-            TranslatorFlavor flavor;
+        public Translator<T, P> build(String translatorDefinition) {
+            TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
 
-            if (translatorType.startsWith("cosmosdb")) {
-                flavor = TranslatorFlavor.cosmosDb();
-            } else if (translatorType.startsWith("neptune")) {
-                flavor = TranslatorFlavor.neptune();
+            String[] tokens = translatorDefinition.split("\\+");
+
+            if (tokens.length > 0 && !"".equals(tokens[0])) {
+                try {
+                    String flavorName = tokens[0];
+                    Method method = getMethodStream()
+                        .filter(m -> m.getName().equalsIgnoreCase(flavorName))
+                        .findAny()
+                        .get();
+                    flavor = (TranslatorFlavor) method.invoke(TranslatorFlavor$.MODULE$);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(
+                        errorMessage("Unknown translator type", translatorDefinition), e);
+                }
+            }
+
+            if (translatorDefinition.startsWith("neptune")) {
                 inlineParameters();
                 enableMultipleLabels();
-            } else if (translatorType.startsWith("gremlin33x")) {
-                flavor = TranslatorFlavor.gremlinServer33x();
-            } else if (translatorType.startsWith("gremlin")
-                || translatorType.startsWith("vanilla")
-                || translatorType.isEmpty()) {
-                flavor = TranslatorFlavor.gremlinServer();
-            } else {
-                throw new IllegalArgumentException("Unknown translator type: " + translatorType);
             }
 
-            if (translatorType.contains("+cfog_server_extensions")) {
-                enableCypherExtensions();
-            }
-
-            if (translatorType.contains("+experimental_gremlin_function")) {
-                features.add(TranslatorFeature.EXPERIMENTAL_GREMLIN_FUNCTION);
+            List<String> features = Arrays.asList(tokens).subList(1, tokens.length);
+            for (String feature : features) {
+                feature = feature.trim();
+                if ("".equals(feature)) {
+                    // do nothing
+                } else if ("inline_parameters".equals(feature)) {
+                    inlineParameters();
+                } else if ("cfog_server_extensions".equals(feature)) {
+                    enableCypherExtensions();
+                } else {
+                    try {
+                        TranslatorFeature translatorFeature = TranslatorFeature.valueOf(feature.toUpperCase());
+                        this.features.add(translatorFeature);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException(
+                            errorMessage("Unknown translator feature: " + feature, translatorDefinition), e);
+                    }
+                }
             }
 
             return build(flavor);
+        }
+
+        private String errorMessage(String start, String translatorDefinition) {
+            String validMethods = getMethodStream()
+                .map(Method::getName)
+                .collect(Collectors.joining(", "));
+
+            String validFeatures = Arrays.stream(TranslatorFeature.values())
+                .map(f -> f.name().toLowerCase())
+                .collect(Collectors.joining(", "))
+                + ", inline_parameters, cfog_server_extensions";
+
+            return format("%s in `%s`\nFormat is `FLAVOR[+FEATURE][+FEATURE]...`\n" +
+                    "Valid FLAVOR: %s\nValid FEATURE: %s\nExample: gremlin+cfog_server_extensions+inline_parameters",
+                start, translatorDefinition, validMethods, validFeatures
+            );
+        }
+
+        private Stream<Method> getMethodStream() {
+            return Arrays.stream(TranslatorFlavor$.MODULE$.getClass().getDeclaredMethods())
+                .filter(m -> m.getReturnType() == TranslatorFlavor.class)
+                .filter(m -> m.getParameterTypes().length == 0);
         }
 
         protected FlavorBuilder<T, P> inlineParameters() {

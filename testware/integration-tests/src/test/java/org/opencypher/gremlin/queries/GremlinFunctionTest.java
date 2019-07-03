@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.Collections.singletonMap;
 import static org.apache.tinkerpop.gremlin.structure.util.ElementHelper.asMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -23,23 +24,25 @@ import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.CypherResultSet;
-import org.opencypher.gremlin.groups.SkipWithPlugin;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
+import org.opencypher.gremlin.server.EmbeddedGremlinServer;
+import org.opencypher.gremlin.server.op.cypher.CypherOpProcessor;
 import org.opencypher.gremlin.test.TestCommons;
 
-/**
- * Currently experimental `gremlin` function is supported only for client-side translation, and should be enabled explicitly.
- * Run this test with `-Dtranslate=gremlin+cfog_server_extensions+experimental_gremlin_function` or
- * `-Dtranslate=bytecode+cfog_server_extensions+experimental_gremlin_function`
- */
-@Category(SkipWithPlugin.class)
 public class GremlinFunctionTest {
 
     @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
+    public static final GremlinServerExternalResource gremlinServer =
+        new GremlinServerExternalResource(TestCommons::modernGraph,
+            () -> EmbeddedGremlinServer.builder()
+                .processorSettings(
+                    CypherOpProcessor.class,
+                    singletonMap("translatorDefinition",
+                                "gremlin+cfog_server_extensions+inline_parameters+experimental_gremlin_function"))
+                .defaultParameters()
+                .build());
 
     private List<Map<String, Object>> submitAndGet(String cypher) {
         return gremlinServer.cypherGremlinClient().submit(cypher).all();

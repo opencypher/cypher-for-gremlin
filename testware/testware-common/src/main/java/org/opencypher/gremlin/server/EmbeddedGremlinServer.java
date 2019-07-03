@@ -33,9 +33,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.MessageSerializer;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
+import org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin;
 import org.apache.tinkerpop.gremlin.server.GremlinServer;
 import org.apache.tinkerpop.gremlin.server.Settings;
+import org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin;
 import org.apache.tinkerpop.gremlin.structure.io.IoRegistry;
+import org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin;
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0;
+import org.opencypher.gremlin.server.jsr223.CypherPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,11 +89,19 @@ public final class EmbeddedGremlinServer {
         private int port;
         private Map<String, String> graphs = new HashMap<>();
         private String scriptPath;
-        public Map<String, Map<String, Object>> plugins = new HashMap<>();
+        private Map<String, Map<String, Object>> plugins = new HashMap<>();
+        private List<Settings.ProcessorSettings> processorSettings = new ArrayList<>();
         private Multimap<Class<? extends MessageSerializer>, Class<? extends IoRegistry>> serializers =
             HashMultimap.create();
 
         private Builder() {
+        }
+
+        public Builder defaultParameters() {
+            return port(0)
+                .propertiesPath("graph", "../testware-common/src/main/resources/tinkergraph-empty.properties")
+                .scriptPath("../testware-common/src/main/resources/generate-empty.groovy")
+                .serializer(GraphBinaryMessageSerializerV1.class, singletonList(TinkerIoRegistryV3d0.class));
         }
 
         public Builder port(int port) {
@@ -111,8 +125,16 @@ public final class EmbeddedGremlinServer {
             return this;
         }
 
-        public Builder addPlugin(String name, Map<String, Object> properties) {
-            plugins.put(name, properties);
+        public Builder addPlugin(Class<?> clazz, Map<String, Object> properties) {
+            plugins.put(clazz.getName(), properties);
+            return this;
+        }
+
+        public Builder processorSettings(Class<?> clazz, Map<String, Object> config) {
+            Settings.ProcessorSettings settings = new Settings.ProcessorSettings();
+            settings.className = clazz.getName();
+            settings.config = config;
+            this.processorSettings.add(settings);
             return this;
         }
 
@@ -125,11 +147,11 @@ public final class EmbeddedGremlinServer {
             settings.graphs = graphs;
 
             Settings.ScriptEngineSettings gremlinGroovy = settings.scriptEngines.get("gremlin-groovy");
-            gremlinGroovy.imports.add("java.lang.Math");
-            gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin", emptyMap());
-            gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin", emptyMap());
-            gremlinGroovy.plugins.put("org.opencypher.gremlin.server.jsr223.CypherPlugin", emptyMap());
-            gremlinGroovy.plugins.put("org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin", singletonMap("files", singletonList(scriptPath)));
+            gremlinGroovy.imports.add(java.lang.Math.class.getName());
+            gremlinGroovy.plugins.put(GremlinServerGremlinPlugin.class.getName(), emptyMap());
+            gremlinGroovy.plugins.put(CypherPlugin.class.getName(), emptyMap());
+            gremlinGroovy.plugins.put(TinkerGraphGremlinPlugin.class.getName(), emptyMap());
+            gremlinGroovy.plugins.put(ScriptFileGremlinPlugin.class.getName(), singletonMap("files", singletonList(scriptPath)));
             gremlinGroovy.plugins.putAll(plugins);
             gremlinGroovy.staticImports.add("java.lang.Math.PI");
 
@@ -142,6 +164,8 @@ public final class EmbeddedGremlinServer {
                     .collect(toList()));
                 settings.serializers.add(serializerSettings);
             });
+
+            settings.processors.addAll(processorSettings);
 
             return new EmbeddedGremlinServer(settings);
         }

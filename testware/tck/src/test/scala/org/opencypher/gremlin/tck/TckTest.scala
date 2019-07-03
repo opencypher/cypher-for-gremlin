@@ -18,25 +18,18 @@ package org.opencypher.gremlin.tck
 import java.io.File
 import java.util
 import java.util.concurrent.TimeUnit.SECONDS
-import java.util.function.Supplier
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tototoshi.csv.CSVReader
-import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.server.EmbeddedGremlinServer
 import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
 import org.opencypher.gremlin.tck.reports.CucumberReportAdapter
+import org.opencypher.gremlin.test.TestCommons
 import org.opencypher.gremlin.traversal.GremlinQueries._
-import org.opencypher.gremlin.traversal.{
-  GremlinQueries,
-  PredefinedProcedureRegistry,
-  ProcedureContext,
-  TckPredefinedProceduresPlugin
-}
+import org.opencypher.gremlin.traversal._
 import org.opencypher.tools.tck.api._
 import org.opencypher.tools.tck.values.CypherValue
 
@@ -93,23 +86,16 @@ object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
     }
   }
 
-  private def getGremlinServer = {
+  private def getGremlinServer =
     new GremlinServerExternalResource(
-      new Supplier[EmbeddedGremlinServer] {
-        override def get(): EmbeddedGremlinServer =
-          EmbeddedGremlinServer
-            .builder()
-            .port(0)
-            .propertiesPath("graph", "../testware-common/src/main/resources/tinkergraph-empty.properties")
-            .scriptPath("../testware-common/src/main/resources/generate-empty.groovy")
-            .serializer(
-              classOf[GraphBinaryMessageSerializerV1],
-              java.util.Collections.singletonList(classOf[TinkerIoRegistryV3d0]))
-            .addPlugin(classOf[TckPredefinedProceduresPlugin].getName, java.util.Collections.emptyMap())
-            .build()
-      }
+      TestCommons.emptyGraph(_),
+      () =>
+        EmbeddedGremlinServer
+          .builder()
+          .defaultParameters()
+          .addPlugin(classOf[TckPredefinedProceduresPlugin], java.util.Collections.emptyMap())
+          .build()
     )
-  }
 }
 
 @ExtendWith(Array(classOf[CucumberReportAdapter]))
