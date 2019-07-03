@@ -15,6 +15,7 @@
  */
 package org.opencypher.gremlin.server.op.cypher;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode.SERVER_ERROR;
@@ -23,6 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import io.netty.channel.ChannelHandlerContext;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,7 +50,6 @@ import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.ir.TranslationWriter;
 import org.opencypher.gremlin.translation.ir.model.GremlinStep;
 import org.opencypher.gremlin.translation.translator.Translator;
-import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 import org.opencypher.gremlin.traversal.ParameterNormalizer;
 import org.opencypher.gremlin.traversal.ProcedureContext;
 import org.opencypher.gremlin.traversal.ReturnNormalizer;
@@ -67,6 +68,7 @@ import scala.collection.Seq;
  * </pre>
  */
 public class CypherOpProcessor extends AbstractEvalOpProcessor {
+    private static final String DEFAULT_TRANSLATOR_DEFINITION = "gremlin+cfog_server_extensions+inline_parameters";
 
     private static final Logger logger = getLogger(CypherOpProcessor.class);
 
@@ -100,14 +102,17 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
         ProcedureContext procedureContext = ProcedureContext.global();
         CypherAst ast = CypherAst.parse(cypher, parameters, procedureContext.getSignatures());
 
-        TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
-        Seq<GremlinStep> ir = ast.translate(flavor, procedureContext);
+        String translatorDefinition = getTranslatorDefinition(context);
 
         Translator<String, GroovyPredicate> stringTranslator = Translator.builder()
             .gremlinGroovy()
-            .inlineParameters()
-            .enableCypherExtensions()
-            .build();
+            .build(translatorDefinition);
+
+        Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
+            .traversal(g)
+            .build(translatorDefinition);
+
+        Seq<GremlinStep> ir = ast.translate(stringTranslator.flavor(), stringTranslator.features(), procedureContext);
 
         String gremlin = TranslationWriter.write(ir, stringTranslator, parameters);
         logger.info("Gremlin: {}", gremlin);
@@ -116,11 +121,6 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
             explainQuery(context, ast, gremlin);
             return;
         }
-
-        Translator<GraphTraversal, P> traversalTranslator = Translator.builder()
-            .traversal(g)
-            .enableCypherExtensions()
-            .build();
 
         GraphTraversal<?, ?> traversal = TranslationWriter.write(ir, traversalTranslator, parameters);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
@@ -228,4 +228,21 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
             return new HashMap<>();
         }
     }
+
+    private String getTranslatorDefinition(Context context) {
+        Map<String, Object> config = context.getSettings().optionalProcessor(CypherOpProcessor.class)
+            .map(p -> p.config)
+            .orElse(emptyMap());
+
+        HashSet<String> properties = new HashSet<>(config.keySet());
+        properties.remove("translatorDefinition");
+        properties.remove("translatorFeatures");
+        if (!properties.isEmpty()) {
+            throw new IllegalStateException("Unknown configuration parameters found for CypherOpProcessor: " + properties);
+        }
+
+        return config.getOrDefault("translatorDefinition", DEFAULT_TRANSLATOR_DEFINITION) + "+" +
+            config.getOrDefault("translatorFeatures", "");
+    }
+
 }

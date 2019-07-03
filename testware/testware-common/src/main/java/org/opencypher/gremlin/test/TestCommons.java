@@ -82,6 +82,10 @@ public class TestCommons {
         client.submit(createModern).all();
     }
 
+    public static void emptyGraph(CypherGremlinClient client) throws IOException {
+        client.submit(DELETE_ALL).all();
+    }
+
     public static Map<String, Object> parameterMap(Object... parameters) {
         HashMap<String, Object> result = new HashMap<>();
         for (int i = 0; i < parameters.length; i += 2) {

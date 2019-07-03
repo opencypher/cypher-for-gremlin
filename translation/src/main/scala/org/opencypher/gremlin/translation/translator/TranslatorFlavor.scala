@@ -68,6 +68,11 @@ object TranslatorFlavor {
   val gremlinServer: TranslatorFlavor = gremlinServer34x
 
   /**
+    * Alias for [[gremlinServer]]
+    */
+  val gremlin: TranslatorFlavor = gremlinServer34x
+
+  /**
     * A translator flavor that is suitable for Gremlin Server with TinkerPop 3.3.x.
     */
   val gremlinServer33x: TranslatorFlavor = gremlinServer.extend(
@@ -76,6 +81,11 @@ object TranslatorFlavor {
     ),
     postConditions = Nil
   )
+
+  /**
+    * Alias for [[gremlinServer33x]]
+    */
+  val gremlin33x: TranslatorFlavor = gremlinServer33x
 
   /**
     * A translator flavor that is suitable for Cosmos DB.

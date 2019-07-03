@@ -161,7 +161,7 @@ Note that Cypher query may return null values, represented by [string constant](
 ## Gremlin function
 
 Experimental `gremlin` Cypher function that allows including Gremlin steps in translated query. Note that currently
-function is supported only for client-side translation, and should be enabled explicitly.
+function should be enabled explicitly.
 
 <!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#enableExperimentalGremlin) -->
 ```java
@@ -178,5 +178,7 @@ List<Map<String, Object>> results = cypherGremlinClient.submit(
     "MATCH (n:person {name: 'marko'}) " +
         "RETURN gremlin(\"select('n').outE().label()\") as r").all();
 ```
+
+For Gremlin Server set `translatorFeatures: "+multiple_labels"` in [opProcessor configuration](../cypher-gremlin-server-plugin/#Configuration) 
 
 

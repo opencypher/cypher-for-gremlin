@@ -69,12 +69,20 @@ class CypherAst private (
     */
   def translate(flavor: TranslatorFlavor, procedures: ProcedureContext = ProcedureContext.empty()): Seq[GremlinStep] = {
     val defaultFeatures = MULTIPLE_LABELS :: CYPHER_EXTENSIONS :: Nil
-    translate(flavor, defaultFeatures, procedures)
+    translate(flavor, defaultFeatures.asJava, procedures)
   }
 
-  private def translate(
+  /**
+    * Creates an intermediate representation of the translation.
+    *
+    * @param flavor     translation flavor
+    * @param features   translator features
+    * @param procedures registered procedure context
+    * @return to-Gremlin translation
+    */
+  def translate(
       flavor: TranslatorFlavor,
-      features: Seq[TranslatorFeature],
+      features: util.Collection[TranslatorFeature],
       procedures: ProcedureContext): Seq[GremlinStep] = {
     val dslBuilder = Translator
       .builder()
@@ -83,7 +91,7 @@ class CypherAst private (
         new IRGremlinPredicates,
         new IRGremlinBindings
       )
-    features.foreach(dslBuilder.enable)
+    features.asScala.foreach(dslBuilder.enable)
     val dsl = dslBuilder.build()
 
     val context = WalkerContext(dsl, expressionTypes, procedures, parameters)
@@ -108,7 +116,7 @@ class CypherAst private (
     * @return to-Gremlin translation
     */
   def buildTranslation[T, P](dsl: Translator[T, P]): T = {
-    val ir = translate(dsl.flavor(), dsl.features().asScala.toSeq, ProcedureContext.empty())
+    val ir = translate(dsl.flavor(), dsl.features(), ProcedureContext.empty())
     TranslationWriter.write(ir, dsl, parameters)
   }
 

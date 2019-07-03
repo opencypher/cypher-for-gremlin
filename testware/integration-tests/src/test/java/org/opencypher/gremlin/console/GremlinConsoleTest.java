@@ -31,13 +31,20 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.opencypher.gremlin.rules.GremlinConsoleExternalResource;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
-import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
+import org.opencypher.gremlin.server.EmbeddedGremlinServer;
+import org.opencypher.gremlin.test.TestCommons;
 
 public class GremlinConsoleTest {
 
     @ClassRule
     public static final GremlinServerExternalResource server =
-        new GremlinServerExternalResource(() -> EmbeddedGremlinServerFactory.tinkerGraphMultiple(0));
+        new GremlinServerExternalResource(TestCommons::modernGraph, () -> EmbeddedGremlinServer
+            .builder()
+            .defaultParameters()
+            .propertiesPath("graph2","../testware-common/src/main/resources/tinkergraph-empty.properties")
+            .scriptPath("../testware-common/src/main/resources/generate-multiple.groovy")
+            .build()
+        );
 
     private static final String PERSON_NAMES_QUERY = "MATCH (p:person) RETURN p.name AS name";
     private static final String[] PERSON_NAMES_RESULT = {
