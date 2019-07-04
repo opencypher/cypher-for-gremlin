@@ -28,6 +28,7 @@ import org.opencypher.gremlin.translation.traversal.DeprecatedOrderAccessor
 import org.opencypher.gremlin.traversal.CustomFunction
 
 import scala.collection.JavaConverters._
+import scala.util.{Failure, Success, Try}
 
 class TranslatorBuilderTest {
   @Test
@@ -234,7 +235,7 @@ class TranslatorBuilderTest {
   @Test
   def invalidTranslator(): Unit = {
     assertThatThrownBy(() => createBuilder.build("not_existing+cfog_server_extensions"))
-      .hasMessageContaining("Unknown translator type in `not_existing+cfog_server_extensions`")
+      .hasMessageContaining("Unknown translator type: not_existing in `not_existing+cfog_server_extensions`")
   }
 
   @Test
@@ -243,7 +244,37 @@ class TranslatorBuilderTest {
       .hasMessageContaining("Unknown translator feature: not_existing in `cosmosdb+not_existing`")
   }
 
-  private def createBuilder = {
+  @Test
+  def allFlavorsSupported(): Unit = {
+    allFlavors.foreach(
+      createBuilder.build(_)
+    )
+  }
+
+  @Test
+  def allFlavorsSupportedignoringCase(): Unit = {
+    allFlavors
+      .map(_.toUpperCase())
+      .foreach(
+        createBuilder.build(_)
+      )
+  }
+
+  @Test
+  def allFlavorsInErrorMessage(): Unit = {
+    Try(createBuilder.build("not_existing")) match {
+      case Success(_) => throw new IllegalStateException("Expected to fail")
+      case Failure(e) => assertThat(e.getMessage).contains(allFlavors.map(_.toLowerCase): _*)
+    }
+  }
+
+  private def allFlavors =
+    classOf[TranslatorFlavor].getDeclaredMethods
+      .filter(_.getReturnType == classOf[TranslatorFlavor])
+      .filter(_.getParameterTypes.length == 0)
+      .map(_.getName)
+
+  private def createBuilder =
     Translator
       .builder()
       .custom(
@@ -251,15 +282,10 @@ class TranslatorBuilderTest {
         new IRGremlinPredicates,
         new IRGremlinBindings
       )
-  }
 
-  private def assertContains(steps: Seq[GremlinStep], traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]) = {
+  private def assertContains(steps: Seq[GremlinStep], traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]) =
     TraversalAssertions.traversalContains("Traversal", steps, traversal.current())
-  }
 
-  private def assertNotContains(
-      steps: Seq[GremlinStep],
-      traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]) = {
+  private def assertNotContains(steps: Seq[GremlinStep], traversal: GremlinSteps[Seq[GremlinStep], GremlinPredicate]) =
     TraversalAssertions.traversalNotContains("Traversal", steps, traversal.current())
-  }
 }
