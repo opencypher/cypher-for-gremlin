@@ -18,14 +18,14 @@ package org.opencypher.gremlin.translation.translator;
 
 import static java.lang.String.format;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Bytecode;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -235,6 +235,19 @@ public final class Translator<T, P> {
     }
 
     public static class FlavorBuilder<T, P> {
+        private static final Map<String, TranslatorFlavor> flavors = new HashMap<>();
+
+        static {
+            flavors.put("gremlinserver34x", TranslatorFlavor.gremlinServer34x());
+            flavors.put("gremlinserver", TranslatorFlavor.gremlinServer());
+            flavors.put("gremlin", TranslatorFlavor.gremlin());
+            flavors.put("gremlinserver33x", TranslatorFlavor.gremlinServer33x());
+            flavors.put("gremlin33x", TranslatorFlavor.gremlin33x());
+            flavors.put("cosmosdb", TranslatorFlavor.cosmosDb());
+            flavors.put("neptune", TranslatorFlavor.neptune());
+            flavors.put("empty", TranslatorFlavor.empty());
+        }
+
         private final GremlinSteps<T, P> steps;
         private final GremlinPredicates<P> predicates;
         protected GremlinBindings bindings;
@@ -329,25 +342,15 @@ public final class Translator<T, P> {
          * @see TranslatorFeature
          */
         public Translator<T, P> build(String translatorDefinition) {
-            TranslatorFlavor flavor = TranslatorFlavor.gremlinServer();
-
             String[] tokens = translatorDefinition.split("\\+");
-
-            if (tokens.length > 0 && !"".equals(tokens[0])) {
-                try {
-                    String flavorName = tokens[0];
-                    Method method = getMethodStream()
-                        .filter(m -> m.getName().equalsIgnoreCase(flavorName))
-                        .findAny()
-                        .get();
-                    flavor = (TranslatorFlavor) method.invoke(TranslatorFlavor$.MODULE$);
-                } catch (Exception e) {
-                    throw new IllegalArgumentException(
-                        errorMessage("Unknown translator type", translatorDefinition), e);
-                }
+            String flavorName = tokens[0].toLowerCase();
+            if (!flavorName.equals("") && !flavors.containsKey(flavorName)) {
+                throw new IllegalArgumentException(errorMessage("Unknown translator type: " + flavorName,
+                    translatorDefinition));
             }
+            TranslatorFlavor flavor = flavors.getOrDefault(flavorName, TranslatorFlavor.gremlinServer());
 
-            if (translatorDefinition.startsWith("neptune")) {
+            if (flavorName.equals("neptune")) {
                 inlineParameters();
                 enableMultipleLabels();
             }
@@ -376,9 +379,7 @@ public final class Translator<T, P> {
         }
 
         private String errorMessage(String start, String translatorDefinition) {
-            String validMethods = getMethodStream()
-                .map(Method::getName)
-                .collect(Collectors.joining(", "));
+            String validMethods = String.join(", ", flavors.keySet());
 
             String validFeatures = Arrays.stream(TranslatorFeature.values())
                 .map(f -> f.name().toLowerCase())
@@ -389,12 +390,6 @@ public final class Translator<T, P> {
                     "Valid FLAVOR: %s\nValid FEATURE: %s\nExample: gremlin+cfog_server_extensions+inline_parameters",
                 start, translatorDefinition, validMethods, validFeatures
             );
-        }
-
-        private Stream<Method> getMethodStream() {
-            return Arrays.stream(TranslatorFlavor$.MODULE$.getClass().getDeclaredMethods())
-                .filter(m -> m.getReturnType() == TranslatorFlavor.class)
-                .filter(m -> m.getParameterTypes().length == 0);
         }
 
         protected FlavorBuilder<T, P> inlineParameters() {
