@@ -7,38 +7,44 @@ Included in the plugin:
 - [`OpProcessor`](https://tinkerpop.apache.org/docs/current/reference/#opprocessor-configurations) implementation for Gremlin Server that translates Cypher queries to [`GraphTraversal`](https://tinkerpop.apache.org/docs/current/reference/#traversal)
 - [Gremlin Extensions for Cypher](../cypher-gremlin-extensions) for Gremlin in the form of custom functions and predicates
 
-## Prerequisites
-
-- [Gremlin Server](https://tinkerpop.apache.org/) based on TinkerPop 3.4.0+ or a compatible graph database
-  - For 3.2.0+ compatibility use [0.9.13](https://github.com/opencypher/cypher-for-gremlin/releases/tag/v0.9.13)
-- Ability to install Gremlin Server plugins
 
 ## Installation
 
 The plugin and its dependencies can be automatically downloaded and installed into the Gremlin Server by using `bin/gremlin-server.sh install`. You can also manually "install" the plugin by copying jar file into the server classpath.
 
+Cypher for Gremlin could be installed on any TinkerPop server with ability to install Gremlin Server plugins. Latest version of Cypher for Gremlin has dependencies on TinkerPop 3.4.2 and Scala 2.12, so for legacy implementations please use previous releases. For more information about compatibility with different Gremlin implementation refer to [documentation](https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations).
+
+`$VERSION` depends on target implementation:
+
+
+|             Gremlin Server             | Cypher for Gremlin |
+|----------------------------------------|--------------------|
+| TinkerPop 3.4.x                        | 1.0.2 (latest)     |
+| TinkerPop 3.3.x                        | 0.9.13             |
+| JanusGraph 0.4.x ([Scala 2.12][scala]) | 1.0.2 (latest)     |
+| JanusGraph 0.4.x                       | 1.0.0              |
+| JanusGraph 0.3.x                       | 0.9.13             |
+| JanusGraph 0.2.x                       | Not compatible     |
+
+[scala]: https://github.com/opencypher/cypher-for-gremlin/wiki/Gremlin-implementations#janusgraph-with-cypher-plugin
+
+
 ### Automated Installation
 
-* For TinkerPop 3.3.0+:
-  - Run `bin/gremlin-server.sh` with `install` switch and supply the Maven coordinates of the plugin:
+Run `bin/gremlin-server.sh` with `install` switch and supply the Maven coordinates of the plugin:
 
-  ```sh
-  bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugin 1.0.2
-  Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin 1.0.2
-  ...
-  ```
-* For TinkerPop 3.2.x (including JanusGraph):
-  - Run `bin/gremlin-server.sh` with `-i` switch and supply the Maven coordinates of the plugin:
-  ```sh
-  bin/gremlin-server.sh -i org.opencypher.gremlin cypher-gremlin-server-plugin 0.9.13
-  ...
+```sh
+bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugin $VERSION
+Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin $VERSION
+...
+```
   ```
   
 ### Manual Installation
 
 Run the following commands from project root.
 
-1. Download [the latest release](https://github.com/opencypher/cypher-for-gremlin/releases) or build the plugin JAR file:
+1. Download [compatible release](https://github.com/opencypher/cypher-for-gremlin/releases) or build the plugin JAR file:
    ```sh
    ./gradlew :tinkerpop:cypher-gremlin-server-plugin:shadowJar
    ```
