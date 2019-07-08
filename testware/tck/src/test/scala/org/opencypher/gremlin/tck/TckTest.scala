@@ -82,7 +82,7 @@ object TinkerGraphServerEmbeddedGraph extends Graph with ProcedureSupport {
     tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
     if (!ProcedureContext.global.getSignatures.isEmpty) {
       PredefinedProcedureRegistry.clear()
-      tinkerGraphServerEmbedded.gremlinClient().submit(dropQuery).all().join()
+      tinkerGraphServerEmbedded.gremlinClient().submit(clearProcedures).all().join()
     }
   }
 
