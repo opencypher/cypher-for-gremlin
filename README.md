@@ -21,6 +21,7 @@ Cypher query is translated to one of Gremlin representations (Gremlin Groovy str
 * [Development](#development)
 * [How to contribute](#how-to-contribute)
 * [License](#license)
+* [Contact](#contact)
 * [Copyright](#copyright)
 
 ## Overview
@@ -213,6 +214,10 @@ We would love to find out about any [issues](https://github.com/opencypher/cyphe
 ## License
 
 The project is licensed under the Apache Software License, Version 2.0
+
+## Contact
+
+Please report any bugs or feature requests by creating [an issue](https://github.com/opencypher/cypher-for-gremlin/issues) (preferrable) or write [email](mailto:product.support@neueda.com).
 
 ## Copyright
 
