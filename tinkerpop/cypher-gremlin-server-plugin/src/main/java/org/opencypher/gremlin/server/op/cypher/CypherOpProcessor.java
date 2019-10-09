@@ -29,6 +29,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import org.apache.tinkerpop.gremlin.driver.Tokens;
 import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 import org.apache.tinkerpop.gremlin.driver.message.ResponseMessage;
@@ -38,6 +41,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.TraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalInterruptedException;
 import org.apache.tinkerpop.gremlin.server.Context;
 import org.apache.tinkerpop.gremlin.server.GraphManager;
 import org.apache.tinkerpop.gremlin.server.OpProcessor;
@@ -187,16 +191,41 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
     }
 
     protected void handleIterator(Context context, Iterator traversal) {
-        try {
-            super.handleIterator(context, traversal);
-        } catch (Exception ex) {
-            logger.error("Error during traversal iteration", ex);
-            ChannelHandlerContext ctx = context.getChannelHandlerContext();
-            ctx.writeAndFlush(ResponseMessage.build(context.getRequestMessage())
-                .code(SERVER_ERROR)
-                .statusMessage(ex.getMessage())
-                .statusAttributeException(ex)
-                .create());
+        RequestMessage msg = context.getRequestMessage();
+        final long timeout = msg.getArgs().containsKey(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT)
+            ? ((Number) msg.getArgs().get(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT)).longValue()
+            : context.getSettings().scriptEvaluationTimeout;
+
+        FutureTask<Void> evalFuture = new FutureTask<>(() -> {
+            try {
+                super.handleIterator(context, traversal);
+            } catch (Exception ex) {
+                String errorMessage = getErrorMessage(msg, ex);
+
+                logger.error("Error during traversal iteration", ex);
+                ChannelHandlerContext ctx = context.getChannelHandlerContext();
+                ctx.writeAndFlush(ResponseMessage.build(msg)
+                    .code(SERVER_ERROR)
+                    .statusMessage(errorMessage)
+                    .statusAttributeException(ex)
+                    .create());
+            }
+            return null;
+        }
+        );
+
+        final Future<?> executionFuture = context.getGremlinExecutor().getExecutorService().submit(evalFuture);
+        if (timeout > 0) {
+            context.getScheduledExecutorService().schedule(() -> executionFuture.cancel(true), timeout, TimeUnit.MILLISECONDS);
+        }
+
+    }
+
+    private String getErrorMessage(RequestMessage msg, Exception ex) {
+        if (ex instanceof InterruptedException || ex instanceof TraversalInterruptedException) {
+            return String.format("A timeout occurred during traversal evaluation of [%s] - consider increasing the limit given to scriptEvaluationTimeout", msg);
+        } else {
+            return ex.getMessage();
         }
     }
 
