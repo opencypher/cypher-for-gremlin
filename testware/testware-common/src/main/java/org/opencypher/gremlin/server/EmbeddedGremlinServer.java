@@ -91,6 +91,7 @@ public final class EmbeddedGremlinServer {
         private String scriptPath;
         private Map<String, Map<String, Object>> plugins = new HashMap<>();
         private List<Settings.ProcessorSettings> processorSettings = new ArrayList<>();
+        private long scriptEvaluationTimeout = 30000L;
         private Multimap<Class<? extends MessageSerializer>, Class<? extends IoRegistry>> serializers =
             HashMultimap.create();
 
@@ -130,6 +131,11 @@ public final class EmbeddedGremlinServer {
             return this;
         }
 
+        public Builder scriptEvaluationTimeout(long timeoutMs) {
+            this.scriptEvaluationTimeout = timeoutMs;
+            return this;
+        }
+
         public Builder processorSettings(Class<?> clazz, Map<String, Object> config) {
             Settings.ProcessorSettings settings = new Settings.ProcessorSettings();
             settings.className = clazz.getName();
@@ -145,6 +151,7 @@ public final class EmbeddedGremlinServer {
             Settings settings = new Settings();
             settings.port = getFreePort();
             settings.graphs = graphs;
+            settings.scriptEvaluationTimeout = scriptEvaluationTimeout;
 
             Settings.ScriptEngineSettings gremlinGroovy = settings.scriptEngines.get("gremlin-groovy");
             gremlinGroovy.imports.add(java.lang.Math.class.getName());
