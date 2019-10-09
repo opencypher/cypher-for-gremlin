@@ -219,3 +219,4 @@ The project is licensed under the Apache Software License, Version 2.0
 © Copyright 2018-2019 Neo4j, Inc.
 
 Apache TinkerPop™, TinkerPop, and Apache are registered trademarks of the [Apache Software Foundation](https://www.apache.org/).
+
