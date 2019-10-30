@@ -36,7 +36,8 @@ object CosmosDbFlavor extends GremlinRewriter {
       replaceSelectValues(_),
       stringIds(_),
       neqOnDiff(_),
-      rewriteLoopsInVarLength(_)
+      rewriteLoopsInVarLength(_),
+      limit0Workaround(_)
     ).foldLeft(steps) { (steps, rewriter) =>
       mapTraversals(rewriter)(steps)
     }
@@ -126,6 +127,13 @@ object CosmosDbFlavor extends GremlinRewriter {
     replace({
       case Is(Neq(value)) :: rest =>
         Not(Is(Eq(value)) :: Nil) :: rest
+    })(steps)
+  }
+
+  private def limit0Workaround(steps: Seq[GremlinStep]): Seq[GremlinStep] = {
+    replace({
+      case Barrier :: Limit(0) :: rest =>
+        SelectK(Tokens.NONEXISTENT) :: rest
     })(steps)
   }
 

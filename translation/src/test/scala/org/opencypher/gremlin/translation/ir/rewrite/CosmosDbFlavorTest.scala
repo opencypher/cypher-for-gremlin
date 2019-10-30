@@ -21,6 +21,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.ThrowableAssert
 import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
+import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.ir.builder.IRGremlinPredicates
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.__
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
@@ -149,5 +150,14 @@ class CosmosDbFlavorTest {
       .adds(
         __.property(Cardinality.single, "id", __.constant("1"))
       )
+  }
+
+  @Test
+  def limit0Workaround(): Unit = {
+    assertThat(parse("CREATE ()"))
+      .withFlavor(flavor)
+      .rewritingWith(NeptuneFlavor)
+      .removes(__.limit(0))
+      .adds(__.select(Tokens.NONEXISTENT))
   }
 }
