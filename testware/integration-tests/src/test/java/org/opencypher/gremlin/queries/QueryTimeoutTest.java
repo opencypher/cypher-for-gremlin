@@ -15,6 +15,8 @@
  */
 package org.opencypher.gremlin.queries;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.Map;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.rules.GremlinServerExternalResource;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
 import org.opencypher.gremlin.translation.TranslationFacade;
@@ -38,14 +41,10 @@ public class QueryTimeoutTest {
             .build()
     );
 
-    private static final String SLOW_QUERY = "UNWIND range(0,10000) as a CREATE (n :test {test: a})";
-
-    private List<Map<String, Object>> submitAndGet(String cypher) {
-        return gremlinServer.cypherGremlinClient().submit(cypher).all();
-    }
+    private static final String SLOW_QUERY = "UNWIND range(0,10000) as a CREATE (n :test {test: a}) RETURN 'ok' AS ok";
 
     @Test
-    public void testPluginGremlin() throws Exception {
+    public void gremlinTimeout() throws Exception {
         Client client = gremlinServer.gremlinClient();
 
         String gremlin = new TranslationFacade().toGremlinGroovy(SLOW_QUERY);
@@ -55,8 +54,23 @@ public class QueryTimeoutTest {
     }
 
     @Test
-    public void testPluginTimeout() throws Exception {
-        assertThatThrownBy(() -> submitAndGet(SLOW_QUERY))
+    public void pluginTimeout() throws Exception {
+        CypherGremlinClient client = gremlinServer.cypherGremlinClient();
+
+        assertThatThrownBy(() -> client.submit(SLOW_QUERY).all())
             .hasMessageContaining("scriptEvaluationTimeout");
+    }
+
+    @Test
+    public void pluginConfigurableTimeout() throws Exception {
+        CypherGremlinClient client = gremlinServer.cypherGremlinClient();
+
+        List<Map<String, Object>> result = client.statement(SLOW_QUERY)
+            .withTimeout(10, SECONDS)
+            .submit().get().all();
+
+        assertThat(result)
+            .hasSize(10001)
+            .allMatch(e -> e.get("ok").equals("ok"));
     }
 }

@@ -48,11 +48,11 @@ final class InMemoryCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
+    public CompletableFuture<CypherResultSet> submitAsync(CypherStatement statement) {
+        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(statement.parameters());
         CypherAst ast;
         try {
-            ast = CypherAst.parse(cypher, normalizedParameters);
+            ast = CypherAst.parse(statement.query(), normalizedParameters);
         } catch (Exception e) {
             return completedFuture(exceptional(e));
         }

@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.configuration.BaseConfiguration;
@@ -38,6 +39,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opencypher.gremlin.client.CypherGremlinClient;
@@ -51,9 +53,15 @@ import org.opencypher.gremlin.translation.translator.TranslatorFeature;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 public class CypherGremlinServerClientSnippets {
-
     @ClassRule
-    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource(TestCommons::modernGraph);
+    public static final GremlinServerExternalResource gremlinServer = new GremlinServerExternalResource();
+
+    public static TestCommons.ModernGraph g;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        g = TestCommons.modernGraph(gremlinServer.cypherGremlinClient());
+    }
 
     @Test
     public void demo() throws Exception {
@@ -85,6 +93,32 @@ public class CypherGremlinServerClientSnippets {
         assertThat(gremlinResults)
             .extracting("p.name")
             .containsExactly("marko", "vadas", "josh", "peter");
+    }
+
+    @Test
+    public void advanced() throws Exception {
+        BaseConfiguration configuration = new BaseConfiguration();
+        configuration.setProperty("port", gremlinServer.getPort());
+        configuration.setProperty("hosts", singletonList("localhost"));
+        configuration.setProperty("serializer.className", GraphBinaryMessageSerializerV1.class.getName());
+
+        Cluster cluster = Cluster.open(configuration);
+        Client gremlinClient = cluster.connect();
+
+        // freshReadmeSnippet: advanced
+        CypherGremlinClient client = CypherGremlinClient.plugin(gremlinClient);
+
+        List<Map<String, Object>> results = client.statement("MATCH (n) WHERE n.name=$p1 AND n.age=$p2 RETURN n")
+            .addParameter("p1", "marko")
+            .addParameter("p2", 29L)
+            .withTimeout(30, TimeUnit.SECONDS)
+            .submit()
+            .get().all();
+        // freshReadmeSnippet: advanced
+
+        assertThat(results)
+            .extracting("n")
+            .containsExactly(g.MARKO);
     }
 
     @Test

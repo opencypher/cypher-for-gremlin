@@ -25,6 +25,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
+import org.apache.tinkerpop.gremlin.driver.Tokens;
+import org.apache.tinkerpop.gremlin.driver.message.RequestMessage;
 import org.opencypher.gremlin.translation.CypherAst;
 import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
 import org.opencypher.gremlin.translation.translator.Translator;
@@ -47,11 +49,11 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
+    public CompletableFuture<CypherResultSet> submitAsync(CypherStatement statement) {
+        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(statement.parameters());
         CypherAst ast;
         try {
-            ast = CypherAst.parse(cypher, normalizedParameters);
+            ast = CypherAst.parse(statement.query(), normalizedParameters);
         } catch (Exception e) {
             return completedFuture(exceptional(e));
         }
@@ -68,10 +70,25 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
             return completedFuture(exceptional(e));
         }
 
-        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(gremlin, normalizedParameters);
+        RequestMessage request = buildRequest(gremlin, normalizedParameters, statement).create();
+
+        CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(request);
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
         return resultSetFuture
             .thenApply(ResultSet::iterator)
             .thenApply(resultIterator -> new CypherResultSet(resultIterator, returnNormalizer::normalize));
+    }
+
+    private static RequestMessage.Builder buildRequest(String query, Map<String, Object> normalizedParameters, CypherStatement statement) {
+        RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
+            .add(Tokens.ARGS_GREMLIN, query);
+
+        statement.timeout().ifPresent(t -> request.add(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT, t));
+
+        if (!normalizedParameters.isEmpty()) {
+            request.addArg(Tokens.ARGS_BINDINGS, normalizedParameters);
+        }
+
+        return request;
     }
 }

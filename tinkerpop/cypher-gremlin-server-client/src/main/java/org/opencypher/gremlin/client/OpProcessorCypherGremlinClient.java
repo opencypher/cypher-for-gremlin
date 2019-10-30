@@ -38,8 +38,8 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        RequestMessage requestMessage = buildRequest(cypher, parameters).create();
+    public CompletableFuture<CypherResultSet> submitAsync(CypherStatement statement) {
+        RequestMessage requestMessage = buildRequest(statement).create();
         CompletableFuture<ResultSet> resultSetFuture = client.submitAsync(requestMessage);
 
         return resultSetFuture
@@ -47,10 +47,14 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
             .thenApply(CypherResultSet::new);
     }
 
-    private static RequestMessage.Builder buildRequest(String query, Map<String, ?> parameters) {
+    private static RequestMessage.Builder buildRequest(CypherStatement statement) {
+        Map<String, ?> parameters = statement.parameters();
+
         RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
             .processor(CYPHER_OP_PROCESSOR_NAME)
-            .add(Tokens.ARGS_GREMLIN, query);
+            .add(Tokens.ARGS_GREMLIN, statement.query());
+
+        statement.timeout().ifPresent(timeout -> request.add(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT, timeout));
 
         if (parameters != null && !parameters.isEmpty()) {
             request.addArg(Tokens.ARGS_BINDINGS, parameters);
