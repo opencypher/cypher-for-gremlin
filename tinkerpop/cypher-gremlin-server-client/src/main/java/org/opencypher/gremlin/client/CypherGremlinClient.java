@@ -211,11 +211,33 @@ public interface CypherGremlinClient extends Closeable {
     }
 
     /**
+     * Builder for Cypher statement advanced configuration.
+     *
+     * @param cypher query text
+     * @return statement builder
+     */
+    default CypherStatement.Submittable statement(String cypher) {
+        return new CypherStatement.Submittable(this, cypher, 0L, emptyMap());
+    }
+
+    /**
      * Submits a Cypher query asynchronously.
      *
      * @param cypher     query text
      * @param parameters query parameters
      * @return Cypher-style results
      */
-    CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters);
+    default CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
+        return submitAsync(CypherStatement.create(cypher, parameters));
+    }
+
+    /**
+     * Submits a Cypher statement asynchronously.
+     *
+     * @param cypher     query text
+     * @param parameters query parameters
+     * @return Cypher-style results
+     * @see #statement(String)
+     */
+    CompletableFuture<CypherResultSet> submitAsync(CypherStatement statement);
 }

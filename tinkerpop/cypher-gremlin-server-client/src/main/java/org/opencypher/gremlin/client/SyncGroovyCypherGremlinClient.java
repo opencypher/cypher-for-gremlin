@@ -52,10 +52,9 @@ final class SyncGroovyCypherGremlinClient implements CypherGremlinClient {
         return submit(cypher, new HashMap<>());
     }
 
-    @Override
-    public CypherResultSet submit(String cypher, Map<String, ?> parameters) {
-        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(parameters);
-        CypherAst ast = CypherAst.parse(cypher, normalizedParameters);
+    public CypherResultSet submit(CypherStatement statement) {
+        Map<String, Object> normalizedParameters = ParameterNormalizer.normalize(statement.parameters());
+        CypherAst ast = CypherAst.parse(statement.query(), normalizedParameters);
 
         if (ast.getOptions().contains(EXPLAIN)) {
             return explain(ast);
@@ -67,7 +66,9 @@ final class SyncGroovyCypherGremlinClient implements CypherGremlinClient {
         ReturnNormalizer returnNormalizer = ReturnNormalizer.create(ast.getReturnTypes());
 
         try {
-            List<Result> resultSet = client.submit(gremlin, normalizedParameters).all().get();
+            CypherStatement updatedStatement = CypherStatement.create(statement.query(), normalizedParameters);
+
+            List<Result> resultSet = client.submit(gremlin, updatedStatement.requestOptions()).all().get();
             return new CypherResultSet(resultSet.iterator(), returnNormalizer::normalize);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
@@ -75,8 +76,8 @@ final class SyncGroovyCypherGremlinClient implements CypherGremlinClient {
     }
 
     @Override
-    public CompletableFuture<CypherResultSet> submitAsync(String cypher, Map<String, ?> parameters) {
-        CypherResultSet result = submit(cypher, parameters);
+    public CompletableFuture<CypherResultSet> submitAsync(CypherStatement statement) {
+        CypherResultSet result = submit(statement);
         return CompletableFuture.completedFuture(result);
     }
 }

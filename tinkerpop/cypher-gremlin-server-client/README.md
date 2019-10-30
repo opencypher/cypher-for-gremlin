@@ -72,6 +72,20 @@ If the target Gremlin Server does not have the [Cypher plugin](../cypher-gremlin
 CypherGremlinClient cypherGremlinClient = CypherGremlinClient.translating(gremlinClient);
 ```
 
+It is possible to configure statement parameters and timeout:
+
+<!-- [freshReadmeSource](../../testware/integration-tests/src/test/java/org/opencypher/gremlin/snippets/CypherGremlinServerClientSnippets.java#advanced) -->
+```java
+CypherGremlinClient client = CypherGremlinClient.plugin(gremlinClient);
+
+List<Map<String, Object>> results = client.statement("MATCH (n) WHERE n.name=$p1 AND n.age=$p2 RETURN n")
+    .addParameter("p1", "marko")
+    .addParameter("p2", 29L)
+    .withTimeout(30, TimeUnit.SECONDS)
+    .submit()
+    .get().all();
+```
+
 ### Azure Cosmos DB
 
 A translating client for Azure Cosmos DB can be configured like so:
