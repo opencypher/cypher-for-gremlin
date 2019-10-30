@@ -165,13 +165,13 @@ public class RangeTest {
     @Category({SkipWithJanusGraph.NoExceptionDetailMessage.class, SkipWithNeptune.NoExceptionDetailMessage.class})
     public void runTimeNullValidations() throws Exception {
         assertThatThrownBy(() -> submitAndGet("WITH [null] AS a RETURN RANGE (a[0], 3, 1)"))
-            .hasStackTraceContaining("cannot be cast");
+            .hasStackTraceContaining("Cannot compare");
 
         assertThatThrownBy(() -> submitAndGet("WITH [null] AS a RETURN RANGE (0, a[0], 1)"))
-            .hasStackTraceContaining("cannot be cast");
+            .hasStackTraceContaining("Cannot compare");
 
         assertThatThrownBy(() -> submitAndGet("WITH [null] AS a RETURN RANGE (0, 3, a[0])"))
-            .hasStackTraceContaining("cannot be cast");
+            .hasStackTraceContaining("Cannot compare");
     }
 
 }

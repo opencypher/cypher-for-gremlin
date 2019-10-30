@@ -192,9 +192,9 @@ public class CypherOpProcessor extends AbstractEvalOpProcessor {
 
     protected void handleIterator(Context context, Iterator traversal) {
         RequestMessage msg = context.getRequestMessage();
-        final long timeout = msg.getArgs().containsKey(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT)
-            ? ((Number) msg.getArgs().get(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT)).longValue()
-            : context.getSettings().scriptEvaluationTimeout;
+        final long timeout = msg.getArgs().containsKey(Tokens.ARGS_EVAL_TIMEOUT)
+            ? ((Number) msg.getArgs().get(Tokens.ARGS_EVAL_TIMEOUT)).longValue()
+            : context.getSettings().evaluationTimeout;
 
         FutureTask<Void> evalFuture = new FutureTask<>(() -> {
             try {
