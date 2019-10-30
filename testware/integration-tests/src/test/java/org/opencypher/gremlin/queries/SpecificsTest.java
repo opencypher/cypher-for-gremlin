@@ -359,7 +359,6 @@ public class SpecificsTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.NegativeRange.class)
     public void negativeRange() throws Exception {
 
         Client client = gremlinServer.gremlinClient();
@@ -372,7 +371,6 @@ public class SpecificsTest {
     }
 
     @Test
-    @Category(SkipWithCosmosDB.SignIsLost.class)
     public void signIsLost() throws Exception {
         Client client = gremlinServer.gremlinClient();
 
