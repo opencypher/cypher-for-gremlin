@@ -83,9 +83,6 @@ jobs:
           path: ~/repo/testware/tck/build/test-results
 
       - store_artifacts:
-          path: ~/repo/testware/tck/build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml
-
-      - store_artifacts:
           path: ~/repo/testware/tck/build/reports/tests/cucumber/cucumber-html-reports
 
       - run:
@@ -108,7 +105,7 @@ jobs:
             fi
 
       - store_artifacts:
-          path: ~/repo/testware/tck/build/reports/tests/regression.html
+          path: ~/repo/testware/tck/build/reports/tests/comparison.html
 
       - run:
           name: Save TCK report to CI cache

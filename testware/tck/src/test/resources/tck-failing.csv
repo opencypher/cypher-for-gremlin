@@ -1,0 +1,80 @@
+feature,scenario,status
+Aggregation,`max()` over mixed numeric values,failed
+Aggregation,`max()` over mixed values,failed
+Aggregation,`min()` over mixed values,failed
+Aggregation,`max()` over list values,failed
+Aggregation,`min()` over list values,failed
+AggregationAcceptance,Handle aggregation on functions,failed
+AggregationAcceptance,Multiple aggregates on same variable,failed
+AggregationAcceptance,No overflow during summation,failed
+Comparability,Comparing strings and integers using > in an AND'd predicate,failed
+Comparability,Comparing strings and integers using > in a OR'd predicate,failed
+Comparability,"Comparing across types yields null, except numbers",failed
+Comparability,"Comparing across types yields null, except numbers",failed
+Comparability,"Comparing across types yields null, except numbers",failed
+Comparability,"Comparing across types yields null, except numbers",failed
+CreateAcceptance,Create a single node with multiple labels,failed
+CreateAcceptance,"Combine MATCH, WITH and CREATE",failed
+FunctionsAcceptance,Functions should return null if they get path containing unbound,failed
+FunctionsAcceptance,`percentileDisc()` failing in more involved query,failed
+FunctionsAcceptance,`labels()` should accept type Any,failed
+FunctionsAcceptance,`labels()` failing on invalid arguments,failed
+LabelsAcceptance,Adding a single label,failed
+LabelsAcceptance,Ignore space before colon,failed
+LabelsAcceptance,Adding multiple labels,failed
+LabelsAcceptance,Ignoring intermediate whitespace 1,failed
+LabelsAcceptance,Ignoring intermediate whitespace 2,failed
+LabelsAcceptance,Creating node with two labels,failed
+LabelsAcceptance,Ignore space when creating node with labels,failed
+LabelsAcceptance,Fail when adding new label predicate on a node that is already bound 5,failed
+LabelsAcceptance,Removing a label,failed
+LabelsAcceptance,Removing a non-existent label,failed
+ListOperations,IN should return null if LHS and RHS are null - list version,failed
+ListOperations,"IN should return null if comparison with null is required, list version",failed
+ListOperations,IN should return null when comparing two so-called identical lists where one element is null,failed
+ListOperations,"IN should return null if comparison with null is required, list version 2",failed
+ListOperations,Equality between almost equal lists with null should return null,failed
+ListOperations,Equality between almost equal nested lists with null should return null,failed
+ListOperations,Collect and filter using a list comprehension,failed
+ListOperations,Size of list comprehension,failed
+MatchAcceptance2,Matching nodes using multiple labels,failed
+MatchAcceptance2,"Matching with LIMIT and predicates, then matching again using a relationship and node that are both already bound along with a duplicate predicate",failed
+MatchAcceptance2,Matching relationships into a list and matching variable length using the list,failed
+MatchAcceptance2,"Matching relationships into a list and matching variable length using the list, with bound nodes",failed
+MatchAcceptance2,Matching variable length pattern with property predicate,failed
+MatchAcceptance2,Named path with undirected fixed variable length pattern,failed
+MatchAcceptance2,Variable length relationship variables are lists of relationships,failed
+MatchAcceptance2,Projecting a list of nodes and relationships,failed
+MatchAcceptance2,Projecting a map of nodes and relationships,failed
+MatchAcceptance2,Matching nodes with many labels,failed
+MatchAcceptance2,Matching longer variable length paths,failed
+MergeNodeAcceptance,Merge node with label add label on create,failed
+MergeNodeAcceptance,Merge node with label add label on match when it exists,failed
+MergeNodeAcceptance,Should be able to set labels on match,failed
+MergeNodeAcceptance,Should be able to set labels on match and on create,failed
+MergeNodeAcceptance,Merge must properly handle multiple labels,failed
+MiscellaneousErrorAcceptance,Failing on merging relationship with null property,failed
+MiscellaneousErrorAcceptance,Failing on merging node with null property,failed
+MiscellaneousErrorAcceptance,Failing when setting a list of maps as a property,failed
+NullAcceptance,Property existence check on null node,failed
+NullAcceptance,Ignore null when setting label,failed
+NullAcceptance,Ignore null when removing label,failed
+OptionalMatchAcceptance,OPTIONAL MATCH with labels on the optional end node,failed
+OptionalMatchAcceptance,Variable length optional relationships,failed
+PathEquality,"Direction of traversed relationship is not significant for path equality, simple",failed
+ProcedureCallAcceptance,In-query call to procedure that takes no arguments and yields no results,failed
+ProcedureCallAcceptance,In-query call to procedure with explicit arguments that drops all result fields,failed
+ProcedureCallAcceptance,Standalone call to procedure with implicit arguments,failed
+RemoveAcceptance,Remove a single label,failed
+RemoveAcceptance,Remove multiple labels,failed
+ReturnAcceptance2,Fail when sorting on variable removed by DISTINCT,failed
+ReturnAcceptance2,Arithmetic expressions inside aggregation,failed
+SemanticErrorAcceptance,Failing when performing property access on a non-map 2,failed
+SetAcceptance,Add a label to a node,failed
+SkipLimitAcceptanceTest,SKIP with an expression that does not depend on variables,failed
+StartsWithAcceptance,No string does not start with null,failed
+StartsWithAcceptance,No string does not end with null,failed
+StartsWithAcceptance,No string does not contain null,failed
+StartsWithAcceptance,NOT with CONTAINS,failed
+VarLengthAcceptance,Handling mixed relationship patterns and directions 2,failed
+VarLengthAcceptance2,Handling relationships that are already bound in variable length paths,failed
