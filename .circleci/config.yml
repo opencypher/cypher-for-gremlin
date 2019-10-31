@@ -86,38 +86,11 @@ jobs:
           path: ~/repo/testware/tck/build/reports/tests/cucumber/cucumber-html-reports
 
       - run:
-          # CircleCI hack: print variable to a file because using env variable as cache key is not supported.
-          name: Get base commit hash
-          command: |
-            export BASE_COMMIT=$(git merge-base remotes/origin/master ${CIRCLE_BRANCH})
-            echo $BASE_COMMIT > ~/.base-commit.txt
-            echo $BASE_COMMIT
-
-      - restore_cache:
-          keys:
-          - v1-tck-master-{{ checksum "~/.base-commit.txt" }}
-
-      - run:
-          name: Compare TCK results with master branch
-          command: |
-            if [ "${CIRCLE_BRANCH}" != "master" ]; then
-              ./gradlew --no-daemon -Pci tckRegression
-            fi
+          name: Compare TCK results with expected
+          command: ./gradlew --no-daemon -Pci tckRegression
 
       - store_artifacts:
           path: ~/repo/testware/tck/build/reports/tests/comparison.html
-
-      - run:
-          name: Save TCK report to CI cache
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./gradlew --no-daemon -Pci tckSaveReport
-            fi
-
-      - save_cache:
-          paths:
-            - ~/repo/testware/tck/build/test-results/tck/TckTest-before.xml
-          key: v1-tck-{{ .Branch }}-{{ checksum "~/.base-commit.txt" }}
 
 workflows:
   version: 2
