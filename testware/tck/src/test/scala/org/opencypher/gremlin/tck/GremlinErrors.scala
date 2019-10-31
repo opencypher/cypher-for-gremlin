@@ -22,7 +22,7 @@ import org.opencypher.tools.tck.constants.TCKErrorTypes._
 
 object GremlinErrors {
   val mappings = Map(
-    "Invalid input '-(.+)' is not a valid value, must be a positive integer .+" ->
+    "fail" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, NEGATIVE_INTEGER_ARGUMENT),
     "Type mismatch: expected (.+) but was (.+)" ->
       ExecutionFailed(SYNTAX_ERROR, COMPILE_TIME, INVALID_ARGUMENT_TYPE),
