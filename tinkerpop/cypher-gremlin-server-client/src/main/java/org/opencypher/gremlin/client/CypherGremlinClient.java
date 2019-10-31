@@ -234,8 +234,7 @@ public interface CypherGremlinClient extends Closeable {
     /**
      * Submits a Cypher statement asynchronously.
      *
-     * @param cypher     query text
-     * @param parameters query parameters
+     * @param statement Cypher statement
      * @return Cypher-style results
      * @see #statement(String)
      */

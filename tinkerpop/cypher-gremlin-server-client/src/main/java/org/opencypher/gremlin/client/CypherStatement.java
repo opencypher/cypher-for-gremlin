@@ -37,7 +37,7 @@ public class CypherStatement {
     /**
      * Create a new statement
      *
-     * @param text query text
+     * @param query query text
      */
     public static Simple create(String query) {
         return new Simple(query, null, Collections.emptyMap());
@@ -46,7 +46,7 @@ public class CypherStatement {
     /**
      * Create a new statement with parameters
      *
-     * @param text       query text
+     * @param query       query text
      * @param parameters statement parameters
      */
     public static Simple create(String query, Map<String, ?> parameters) {

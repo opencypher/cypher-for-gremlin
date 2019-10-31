@@ -19,7 +19,7 @@ To add a dependency using Maven:
 <dependency>
     <groupId>org.opencypher.gremlin</groupId>
     <artifactId>cypher-gremlin-neo4j-driver</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
@@ -27,7 +27,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'org.opencypher.gremlin:cypher-gremlin-neo4j-driver:1.0.2'
+  compile 'org.opencypher.gremlin:cypher-gremlin-neo4j-driver:1.0.3'
 }
 ```
 

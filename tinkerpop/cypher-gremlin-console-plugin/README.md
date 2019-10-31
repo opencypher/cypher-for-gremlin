@@ -24,8 +24,8 @@ The plugin and its dependencies can be automatically downloaded and installed in
 
 1. Install Gremlin Console Cypher plugin:
     ```
-    gremlin> :install org.opencypher.gremlin cypher-gremlin-console-plugin 1.0.2
-    ==>Loaded: [org.opencypher.gremlin, cypher-gremlin-console-plugin, 1.0.2] - restart the console to use [opencypher.gremlin]
+    gremlin> :install org.opencypher.gremlin cypher-gremlin-console-plugin 1.0.3
+    ==>Loaded: [org.opencypher.gremlin, cypher-gremlin-console-plugin, 1.0.3] - restart the console to use [opencypher.gremlin]
     ```
 
 1. Restart Gremlin Console
@@ -129,7 +129,7 @@ gremlin> :remote connect opencypher.gremlin conf/remote-objects.yaml translate c
  
 ### Combining Cypher and Gremlin
 
-With [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/1.0.2/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
+With [CypherTraversalSource](https://opencypher.github.io/cypher-for-gremlin/api/1.0.3/java/org/opencypher/gremlin/client/CypherTraversalSource.html)
 its possible to combine Cypher and Gremlin in single query. Traversal can start with `cypher` step that allows to run Cypher 
 query (which will be translated to Gremlin) then continue traversal using other Gremlin steps. Note that `cypher` step returns list of maps, corresponding to rows and named columns.
 To continue traversal with other Gremlin steps, use [select step](http://tinkerpop.apache.org/docs/current/reference/#select-step):
@@ -162,7 +162,7 @@ gremlin> g.cypher('MATCH (p:person) RETURN p.name AS name', 'cosmosdb')
 ==>[name:peter]
 ```
 
-Note that Cypher query may return null values, represented by [string constant](https://opencypher.github.io/cypher-for-gremlin/api/1.0.2/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).   
+Note that Cypher query may return null values, represented by [string constant](https://opencypher.github.io/cypher-for-gremlin/api/1.0.3/java/constant-values.html#org.opencypher.gremlin.translation.Tokens.NULL).   
 
 ## Troubleshooting
 
