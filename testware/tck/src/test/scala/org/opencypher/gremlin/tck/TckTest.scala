@@ -26,11 +26,11 @@ import org.junit.jupiter.api.{DynamicTest, TestFactory}
 import org.opencypher.gremlin.rules.GremlinServerExternalResource
 import org.opencypher.gremlin.server.EmbeddedGremlinServer
 import org.opencypher.gremlin.tck.TckGremlinCypherValueConverter._
-import org.opencypher.gremlin.tck.reports.CucumberReportAdapter
 import org.opencypher.gremlin.test.TestCommons
 import org.opencypher.gremlin.traversal.GremlinQueries._
 import org.opencypher.gremlin.traversal._
 import org.opencypher.tools.tck.api._
+import org.opencypher.tools.tck.reporting.cucumber.CucumberReportAdapter
 import org.opencypher.tools.tck.values.CypherValue
 
 import scala.collection.JavaConverters._

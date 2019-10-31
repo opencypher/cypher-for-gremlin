@@ -313,6 +313,11 @@ project(':testware:tck') {
     apply plugin: 'scala'
     apply plugin: 'com.kncept.junit5.reporter'
 
+    ext.cucumberReportDir = "${project.buildDir.absolutePath}/reports/tests/cucumber"
+    ext.cucumberReportPath = "${ext.cucumberReportDir}/cucumber.json"
+    ext.tckReportName = "tck-failing.csv"
+    ext.tckReportDir = "${project.rootDir.absolutePath}/testware/tck/src/test/resources/"
+    ext.tckReportPath = "${ext.tckReportDir}/${ext.tckReportName}"
     ext.hasTckTask = {
         project.getGradle().
             getStartParameter().
@@ -326,8 +331,7 @@ project(':testware:tck') {
 
     task('tck', type: Test) {
         onlyIf { project.hasTckTask() }
-        ext.cucumberReportDir = "${project.buildDir.absolutePath}/reports/tests/cucumber"
-        systemProperty "cucumber.options", "--plugin 'json:${ext.cucumberReportDir}/cucumber.json"
+        systemProperty "cucumber.options", "--plugin 'json:${project.cucumberReportPath}'"
         useJUnitPlatform()
         ignoreFailures true
 
@@ -354,14 +358,9 @@ project(':testware:tck') {
     }
 
     task('tckRegression', type: JavaExec) {
-        main = 'org.opencypher.gremlin.tck.regression.TckResultsComparator'
+        main = 'org.opencypher.tools.tck.reporting.comparison.TckResultsComparator'
         classpath = sourceSets.test.runtimeClasspath
-    }
-
-    task('tckSaveReport', type: Copy) {
-        from 'build/test-results/tck/TEST-org.opencypher.gremlin.tck.TckTest.xml'
-        into 'build/test-results/tck/'
-        rename { fileName -> "TckTest-before.xml" }
+        args "${project.cucumberReportPath}", "--verifyFailures", "${project.tckReportPath}"
     }
 
     task testJar(type: Jar) {
@@ -383,7 +382,10 @@ project(':testware:tck') {
         testCompile "org.scala-lang.modules:scala-java8-compat_${scalaVersion}:0.8.0"
         testCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
-        testCompile "org.opencypher:tck-api_${scalaVersion}:${tckVersion}"
+        testCompile "org.opencypher:tck:${tckVersion}"
+        testCompile("org.opencypher:tck-api_${scalaVersion}:${tckVersion}")
+        testCompile('org.opencypher:tck-report-comparison:1.0.0-M15') { exclude group: 'org.opencypher' }
+        testCompile('org.opencypher:tck-reporting:1.0.0-M15') { exclude group: 'org.opencypher' }
         testCompile 'io.cucumber:cucumber-core:4.2.0'
         testCompile 'net.masterthought:cucumber-reporting:4.5.1'
         testCompile 'org.freemarker:freemarker:2.3.23'
@@ -528,7 +530,7 @@ gitPublish {
         from(project(':translation').getTasks().getByName('scaladoc')) {
             into "api/${->project.version}/scala"
         }
-        from(project(':testware:tck').getTasks().getByName('tck').cucumberReportDir) {
+        from(project(':testware:tck').cucumberReportDir) {
             into "test-reports/${->project.version}"
         }
     }
