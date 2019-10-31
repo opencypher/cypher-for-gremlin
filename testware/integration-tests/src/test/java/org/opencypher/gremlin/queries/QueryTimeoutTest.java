@@ -50,7 +50,7 @@ public class QueryTimeoutTest {
         String gremlin = new TranslationFacade().toGremlinGroovy(SLOW_QUERY);
 
         assertThatThrownBy(() -> client.submit(gremlin).all().get())
-            .hasMessageContaining("scriptEvaluationTimeout");
+            .hasMessageMatching("(?i).*timeout.*");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class QueryTimeoutTest {
         CypherGremlinClient client = gremlinServer.cypherGremlinClient();
 
         assertThatThrownBy(() -> client.submit(SLOW_QUERY).all())
-            .hasMessageContaining("scriptEvaluationTimeout");
+            .hasMessageMatching("(?i).*timeout.*");
     }
 
     @Test

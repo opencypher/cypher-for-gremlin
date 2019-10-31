@@ -32,12 +32,9 @@ import org.apache.tinkerpop.gremlin.driver.message.ResponseStatus;
 import org.apache.tinkerpop.gremlin.driver.message.ResponseStatusCode;
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection;
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteTraversal;
-import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteTraversalSideEffects;
 import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0;
 import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0;
 import org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV2d0;
-import org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0;
-import org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0;
 import org.apache.tinkerpop.gremlin.driver.ser.JsonBuilderGryoSerializer;
 import org.apache.tinkerpop.gremlin.driver.ser.MessageTextSerializer;
 import org.apache.tinkerpop.gremlin.driver.ser.SerTokens;
@@ -75,8 +72,6 @@ public abstract class CypherPlugin extends AbstractGremlinPlugin {
             GraphSONMessageSerializerGremlinV1d0.class,
             GraphSONMessageSerializerV1d0.class,
             GraphSONMessageSerializerV2d0.class,
-            GryoMessageSerializerV1d0.class,
-            GryoMessageSerializerV3d0.class,
             JsonBuilderGryoSerializer.class,
             MessageTextSerializer.class,
             SerializationException.class,
@@ -84,7 +79,6 @@ public abstract class CypherPlugin extends AbstractGremlinPlugin {
             SerTokens.class,
             DriverRemoteConnection.class,
             DriverRemoteTraversal.class,
-            DriverRemoteTraversalSideEffects.class,
             CypherTraversalSource.class
         ).create();
 

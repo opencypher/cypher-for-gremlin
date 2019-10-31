@@ -83,7 +83,7 @@ final class GroovyCypherGremlinClient implements CypherGremlinClient {
         RequestMessage.Builder request = RequestMessage.build(Tokens.OPS_EVAL)
             .add(Tokens.ARGS_GREMLIN, query);
 
-        statement.timeout().ifPresent(t -> request.add(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT, t));
+        statement.timeout().ifPresent(t -> request.add(Tokens.ARGS_EVAL_TIMEOUT, t));
 
         if (!normalizedParameters.isEmpty()) {
             request.addArg(Tokens.ARGS_BINDINGS, normalizedParameters);
