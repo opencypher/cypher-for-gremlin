@@ -151,7 +151,7 @@ public final class EmbeddedGremlinServer {
             Settings settings = new Settings();
             settings.port = getFreePort();
             settings.graphs = graphs;
-            settings.evaluationTimeout = scriptEvaluationTimeout;
+            settings.scriptEvaluationTimeout = scriptEvaluationTimeout;
 
             Settings.ScriptEngineSettings gremlinGroovy = settings.scriptEngines.get("gremlin-groovy");
             gremlinGroovy.imports.add(java.lang.Math.class.getName());
