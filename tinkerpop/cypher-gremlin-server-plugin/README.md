@@ -19,9 +19,9 @@ Cypher for Gremlin could be installed on any TinkerPop server with ability to in
 
 |             Gremlin Server             | Cypher for Gremlin |
 |----------------------------------------|--------------------|
-| TinkerPop 3.4.x                        | 1.0.3 (latest)     |
+| TinkerPop 3.4.x                        | 1.0.4 (latest)     |
 | TinkerPop 3.3.x                        | 0.9.13             |
-| JanusGraph 0.4.x ([Scala 2.12][scala]) | 1.0.3 (latest)     |
+| JanusGraph 0.4.x ([Scala 2.12][scala]) | 1.0.4 (latest)     |
 | JanusGraph 0.4.x                       | 1.0.0              |
 | JanusGraph 0.3.x                       | 0.9.13             |
 | JanusGraph 0.2.x                       | Not compatible     |
@@ -143,9 +143,9 @@ In most of the cases, the plugin does not need any additional configuration.  Ho
 Configuration options:
 
 * `translatorDefinition` - full translator definition in format: `"FLAVOR[+FEATURE][+FEATURE]..."`
-* `translatorFeatures` - additional [TranslatorFeature](https://opencypher.github.io/cypher-for-gremlin/api/1.0.3/java/org/opencypher/gremlin/translation/translator/TranslatorFeature.html#skip.navbar.top) that will be added to default configuration
+* `translatorFeatures` - additional [TranslatorFeature](https://opencypher.github.io/cypher-for-gremlin/api/1.0.4/java/org/opencypher/gremlin/translation/translator/TranslatorFeature.html#skip.navbar.top) that will be added to default configuration
 
-For examples, refer to `DEFAULT_TRANSLATOR_DEFINITION` in [CypherOpProcessor](src/main/java/org/opencypher/gremlin/server/op/cypher/CypherOpProcessor.java#L70) or [Translator.FlavorBuilder#build(String)](https://opencypher.github.io/cypher-for-gremlin/api/1.0.3/java/org/opencypher/gremlin/translation/translator/Translator.FlavorBuilder.html#build-java.lang.String-).
+For examples, refer to `DEFAULT_TRANSLATOR_DEFINITION` in [CypherOpProcessor](src/main/java/org/opencypher/gremlin/server/op/cypher/CypherOpProcessor.java#L70) or [Translator.FlavorBuilder#build(String)](https://opencypher.github.io/cypher-for-gremlin/api/1.0.4/java/org/opencypher/gremlin/translation/translator/Translator.FlavorBuilder.html#build-java.lang.String-).
 
 In `processors` section of [Gremlin server configuration](https://github.com/apache/tinkerpop/blob/master/gremlin-server/conf/gremlin-server.yaml) add following:
 
