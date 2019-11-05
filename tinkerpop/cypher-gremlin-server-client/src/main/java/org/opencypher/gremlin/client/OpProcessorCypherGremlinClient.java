@@ -54,7 +54,7 @@ final class OpProcessorCypherGremlinClient implements CypherGremlinClient {
             .processor(CYPHER_OP_PROCESSOR_NAME)
             .add(Tokens.ARGS_GREMLIN, statement.query());
 
-        statement.timeout().ifPresent(timeout -> request.add(Tokens.ARGS_EVAL_TIMEOUT, timeout));
+        statement.timeout().ifPresent(timeout -> request.add(Tokens.ARGS_SCRIPT_EVAL_TIMEOUT, timeout));
 
         if (parameters != null && !parameters.isEmpty()) {
             request.addArg(Tokens.ARGS_BINDINGS, parameters);
