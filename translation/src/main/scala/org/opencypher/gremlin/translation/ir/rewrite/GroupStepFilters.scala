@@ -99,6 +99,9 @@ object GroupStepFilters extends GremlinRewriter {
       case ChooseT3(Seq(Constant(value)), _, _) :: Is(_) :: As(_) :: SelectK(stepLabel) :: ChooseP2(_, Seq(Id)) :: Is(_) :: WhereP(
             _: Eq) :: Nil =>
         (stepLabel, HasP(T.id.getAccessor, Eq(value))) :: Nil
+      case ChooseT3(Seq(Constant(value)), _, _) :: Is(_) :: As(_) :: SelectK(stepLabel) :: ChooseP2(_, Seq(Id)) :: Is(_) :: WhereP(
+            _: Within) :: Nil =>
+        (stepLabel, HasP(T.id.getAccessor, Within(value))) :: Nil
       case SelectK(stepLabel) :: rest if rest.forall(_.isInstanceOf[HasLabel]) =>
         rest.map((stepLabel, _))
       case _ =>
@@ -115,6 +118,9 @@ object GroupStepFilters extends GremlinRewriter {
         None
       case ChooseT3(Seq(Constant(_)), _, _) :: Is(_) :: As(_) :: SelectK(alias) :: ChooseP2(_, Seq(Id)) :: Is(_) :: WhereP(
             _: Eq) :: Nil if aliases.contains(alias) =>
+        None
+      case ChooseT3(Seq(Constant(_)), _, _) :: Is(_) :: As(_) :: SelectK(alias) :: ChooseP2(_, Seq(Id)) :: Is(_) :: WhereP(
+            _: Within) :: Nil if aliases.contains(alias) =>
         None
       case SelectK(alias) :: rest if aliases.contains(alias) && rest.forall(_.isInstanceOf[HasLabel]) =>
         None

@@ -21,6 +21,7 @@ import org.junit.Test
 import org.opencypher.gremlin.translation.CypherAst.parse
 import org.opencypher.gremlin.translation.Tokens
 import org.opencypher.gremlin.translation.Tokens.{GENERATED, NULL, UNNAMED}
+import org.opencypher.gremlin.translation.ir.builder.IRGremlinBindings
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssert.{P, __}
 import org.opencypher.gremlin.translation.ir.helpers.CypherAstAssertions.assertThat
 import org.opencypher.gremlin.translation.ir.model.GremlinBinding
@@ -282,5 +283,18 @@ class GroupStepFiltersTest {
       .withFlavor(flavor)
       .rewritingWith(GroupStepFilters)
       .keeps(__.addV().as("a").property(single, "x", __.constant(1)))
+  }
+
+  @Test
+  def collectionOfParameters(): Unit = {
+    val ids = new IRGremlinBindings().bind("ids", 1)
+
+    assertThat(parse("MATCH (p:Person) WHERE id(p) in {ids} RETURN p.name"))
+      .withFlavor(flavor)
+      .rewritingWith(GroupStepFilters)
+      .removes(__.choose(__.constant(ids), __.constant(ids), __.constant(NULL)))
+      .removes(__.where(P.within(GENERATED + "1")))
+      .adds(__.has("~id", P.within(ids)))
+      .debug()
   }
 }
