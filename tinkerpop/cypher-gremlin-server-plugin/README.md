@@ -38,7 +38,8 @@ bin/gremlin-server.sh install org.opencypher.gremlin cypher-gremlin-server-plugi
 Installing dependency org.opencypher.gremlin cypher-gremlin-server-plugin $VERSION
 ...
 ```
-  ```
+
+⚠ If you got error about `Custom functions and predicates are not supported on target implementation`, follow [steps 3-5](#manual-installation) of manual instalation. 
   
 ### Manual Installation
 
@@ -53,7 +54,24 @@ Run the following commands from project root.
    cp tinkerpop/cypher-gremlin-server-plugin/build/libs/cypher-gremlin-server-plugin-*-all.jar /path/to/gremlin-server/lib/
    ```
 1. [Register](https://tinkerpop.apache.org/docs/current/reference/#opprocessor-configurations) the `org.opencypher.gremlin.server.op.cypher.CypherOpProcessor`.
-1. Add `['org.opencypher.gremlin.process.traversal.CustomPredicates.*']` to [Gremlin Server configuration file](https://tinkerpop.apache.org/docs/current/reference/#_configuring_2) at `scriptEngines`/`gremlin-groovy`/`staticImports`.
+1. Add `['org.opencypher.gremlin.process.traversal.CustomPredicates.*','org.opencypher.gremlin.traversal.CustomFunctions.*']` to [Gremlin Server configuration file](https://tinkerpop.apache.org/docs/current/reference/#_configuring_2) at `scriptEngines`/`gremlin-groovy`/`staticImports`.
+1. Add class and method imports for `org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin`. Example
+   ```yaml
+    scriptEngines:
+      gremlin-groovy:
+        plugins:
+          # ...
+          org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin:
+            classImports:
+              - java.lang.Math
+              - org.opencypher.gremlin.traversal.CustomFunctions
+              - org.opencypher.gremlin.traversal.CustomPredicate
+            methodImports:
+              - java.lang.Math#*
+              - org.opencypher.gremlin.traversal.CustomPredicate#*
+              - org.opencypher.gremlin.traversal.CustomFunctions#*
+          # ...
+   ```
 1. Restart Gremlin Server.
 1. If the plugin has been installed correctly, you should see the following line among the logs:
    ```
