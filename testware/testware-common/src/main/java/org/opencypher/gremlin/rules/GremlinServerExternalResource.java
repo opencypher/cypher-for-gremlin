@@ -32,7 +32,6 @@ import org.junit.rules.TemporaryFolder;
 import org.opencypher.gremlin.client.CypherGremlinClient;
 import org.opencypher.gremlin.client.GremlinClientFactory;
 import org.opencypher.gremlin.server.EmbeddedGremlinServer;
-import org.opencypher.gremlin.server.EmbeddedGremlinServerFactory;
 import org.opencypher.gremlin.test.TestCommons;
 import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
@@ -55,14 +54,13 @@ public class GremlinServerExternalResource extends ExternalResource {
         this((o) -> o.submit(TestCommons.DELETE_ALL));
     }
 
-    public GremlinServerExternalResource(Supplier<EmbeddedGremlinServer> serverSupplier) {
-        this.serverSupplier = serverSupplier;
-        this.setup = (o) -> {
-        };
+    public GremlinServerExternalResource(ThrowingConsumer<CypherGremlinClient> setup) {
+        this.serverSupplier = () -> EmbeddedGremlinServer.builder().defaultParameters().build();
+        this.setup = setup;
     }
 
-    public GremlinServerExternalResource(ThrowingConsumer<CypherGremlinClient> setup) {
-        this.serverSupplier = (EmbeddedGremlinServerFactory::tinkerGraph);
+    public GremlinServerExternalResource(ThrowingConsumer<CypherGremlinClient> setup, Supplier<EmbeddedGremlinServer> serverSupplier) {
+        this.serverSupplier = serverSupplier;
         this.setup = setup;
     }
 
@@ -145,8 +143,8 @@ public class GremlinServerExternalResource extends ExternalResource {
     public String driverRemoteConfiguration() throws Exception {
         String clusterFile = remoteConfiguration();
         String configuration = "gremlin.remote.remoteConnectionClass=org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection\n" +
-        "gremlin.remote.driver.clusterFile=" + clusterFile +
-        "\ngremlin.remote.driver.sourceName=g";
+            "gremlin.remote.driver.clusterFile=" + clusterFile +
+            "\ngremlin.remote.driver.sourceName=g";
 
         File file = tempFolder.newFile();
         Files.asCharSink(file, UTF_8).write(configuration);
