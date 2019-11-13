@@ -182,6 +182,7 @@ Because of these specifics, Cypher support varies on different implementations. 
 ## Related
 
 * [Gizmo](https://github.com/rebar-cloud/gizmo) is a Web UI that makes it easy to interact with TinkerPop graph databases such as AWS Neptune and Azure CosmosDB with the Cypher query language. Uses [Cypher Gremlin Neo4j Driver](tinkerpop/cypher-gremlin-neo4j-driver) for translation.
+* [Graph Database support plugin for IntellJ] allows you to work with Tinkerpop and Neo4j databases without leaving IDE.
 
 ## Implementation
 
