@@ -190,6 +190,8 @@ Because of these specifics, Cypher support varies on different implementations. 
 
 The translation process uses a reasonably sophisticated and flexible approach. Cypher query is parsed by the [openCypher Frontend](https://github.com/opencypher/front-end) and translated to an [internal representation](translation/src/main/scala/org/opencypher/gremlin/translation/ir/model) by the Cypher for Gremlin. The internal representation is transformed by a set of [rewriters](translation/src/main/scala/org/opencypher/gremlin/translation/ir/rewrite) to adapt the query for system specifics of different Gremlin implementations (JanusGraph, Cosmos DB, AWS Neptune), then converted to one of Gremlin representations (Gremlin Groovy string, Traversal object or Gremlin bytecode).
 
+See also [How to implement new Cypher feature?](https://github.com/opencypher/cypher-for-gremlin/wiki/How-to-implement-new-Cypher-feature%3F)
+
 ## Development
 
 To build and run Cypher for Gremlin you need Java 8.
