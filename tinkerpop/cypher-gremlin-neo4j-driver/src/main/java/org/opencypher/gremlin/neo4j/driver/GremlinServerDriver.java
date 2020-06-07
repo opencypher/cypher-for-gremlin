@@ -42,7 +42,7 @@ class GremlinServerDriver implements GremlinDriver {
         Client gremlinClient = cluster.connect();
 
         CypherGremlinClient cypherGremlinClient = config.translationEnabled()
-            ? CypherGremlinClient.translating(gremlinClient, config.flavor())
+            ? (config.hasFlavor() ? CypherGremlinClient.translating(gremlinClient, config.flavor()) : CypherGremlinClient.translating(gremlinClient, config.translatorSupplier()))
             : CypherGremlinClient.plugin(gremlinClient);
 
         GremlinCypherValueConverter converter = new GremlinCypherValueConverter(config.isIgnoreIds());
