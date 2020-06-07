@@ -15,6 +15,9 @@
  */
 package org.opencypher.gremlin.neo4j.driver;
 
+import java.util.function.Supplier;
+import org.opencypher.gremlin.translation.groovy.GroovyPredicate;
+import org.opencypher.gremlin.translation.translator.Translator;
 import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
 
 /**
@@ -31,11 +34,13 @@ import org.opencypher.gremlin.translation.translator.TranslatorFlavor;
  */
 public class Config {
     private final TranslatorFlavor flavor;
+    private final Supplier<Translator<String, GroovyPredicate>> translatorSupplier;
     private final boolean ignoreIds;
 
     private Config(ConfigBuilder configBuilder) {
         flavor = configBuilder.flavor;
         ignoreIds = configBuilder.ignoreIds;
+        translatorSupplier = configBuilder.translatorSupplier;
     }
 
     /**
@@ -53,10 +58,24 @@ public class Config {
     }
 
     /**
-     * @return true if Cypher Query is translated to Gremlin before sending it to Gremlin Server
+     * @return true if config has a flavor
+     */
+    public boolean hasFlavor() {
+        return flavor != null;
+    }
+
+    /**
+     * @return translatorSupplier if it is set, null otherwise
+     */
+    public Supplier<Translator<String, GroovyPredicate>> translatorSupplier() {
+        return translatorSupplier;
+    }
+
+    /**
+     * @return true if Cypher Query is translated to Gremlin before sending it to Gremlin Server (either via flavor or by translatorSupplier)
      */
     public boolean translationEnabled() {
-        return flavor != null;
+        return (flavor != null || translatorSupplier != null);
     }
 
     /**
@@ -80,6 +99,7 @@ public class Config {
      */
     public static class ConfigBuilder {
         private TranslatorFlavor flavor;
+        private Supplier<Translator<String, GroovyPredicate>> translatorSupplier;
         private boolean ignoreIds = false;
 
         private ConfigBuilder() {
@@ -103,6 +123,17 @@ public class Config {
          */
         public ConfigBuilder withTranslation(TranslatorFlavor flavor) {
             this.flavor = flavor;
+            return this;
+        }
+
+        /**
+         * Translate Cypher query to Gremlin before sending it to Gremlin Server.
+         *
+         * @param translatorSupplier for translation
+         * @return a {@link ConfigBuilder} instance
+         */
+        public ConfigBuilder withTranslation(Supplier<Translator<String, GroovyPredicate>> translatorSupplier) {
+            this.translatorSupplier = translatorSupplier;
             return this;
         }
 
