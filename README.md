@@ -1,3 +1,6 @@
+# **_NOTE:_**  The cypher-to-gremlin transpiler is not maintained anymore.
+
+
 # Cypher for Gremlin
 
 [![CircleCI](https://circleci.com/gh/opencypher/cypher-for-gremlin.svg?style=shield)](https://circleci.com/gh/opencypher/cypher-for-gremlin)
