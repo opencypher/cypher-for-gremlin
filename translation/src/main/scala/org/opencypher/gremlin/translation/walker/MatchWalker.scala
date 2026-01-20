@@ -62,7 +62,7 @@ private class MatchWalker[T, P](context: WalkerContext[T, P], g: GremlinSteps[T,
     val subG = g.start()
     MatchWalker.walkPatternParts(context, subG, patternParts, whereOption)
 
-    g.choose(subG, subG, nullG)
+    g.optional(subG)
   }
 
   def walkPatternParts(patternParts: Seq[PatternPart], whereOption: Option[Where]): Unit = {
