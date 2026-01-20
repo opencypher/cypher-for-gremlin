@@ -75,12 +75,22 @@ public final class StringTranslationUtils {
         return argument.toString();
     }
 
-    private static String toStringLiteral(String agrument) {
-        String s = agrument.replaceAll("(['\\\\])", "\\\\$1");
-        if (s.contains("\n")) {
-            return "\"\"\"" + s + "\"\"\"";
+    private static String toStringLiteral(String argument) {
+        if (argument.contains("\n")) {
+            // Handle multiline strings
+            if (argument.contains("\"\"\"")) {
+                // If the string contains """, use single quotes and escape newlines and quotes
+                return "'" + argument.replaceAll("(['\\\\])", "\\\\$1")
+                                .replaceAll("\n", "\\\\n")
+                                .replaceAll("\r", "\\\\r") + "'";
+            } else {
+                // Use triple quotes for multiline strings, but escape any ending triple quotes
+                String processed = argument.replaceAll("\"\"\"", "\\\\\"\\\\\"\\\\\"");
+                return "\"\"\"" + processed + "\"\"\"";
+            }
         } else {
-            return "'" + s + "'";
+            // For single line strings, use the original approach with single quotes
+            return "'" + argument.replaceAll("(['\\\\])", "\\\\$1") + "'";
         }
     }
 
